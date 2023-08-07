@@ -12,7 +12,7 @@ export class PermissionGuard implements CanActivate {
     const userPermissions = req?.user?.permissions || [];
     const requiredPermissions = this.reflector.get('permissions',context.getHandler()) || []
     const hasAllRequiredPermissions = requiredPermissions.every(permissions => userPermissions.includes(permissions));
-
+git 
     if(requiredPermissions.length === 0 || hasAllRequiredPermissions){
         return true;
     }
