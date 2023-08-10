@@ -8,11 +8,21 @@ import { MailerModule } from '@nestjs-modules/mailer';
 import { HandlebarsAdapter } from '@nestjs-modules/mailer/dist/adapters/handlebars.adapter';
 import { join } from 'path';
 import { APP_GUARD } from '@nestjs/core';
-import { AtGuard } from 'src/common/guards';
+// import { AtGuard } from 'src/common/guards';
 import { LoggingInterceptor } from './logging.interceptor';
 import { APP_INTERCEPTOR } from '@nestjs/core';
+import { AppController } from './app.controller';
+import { AppService } from './app.service';
+import { OrganizationModule } from './modules/organization/organization.module';
+import { UsersModule } from './modules/users/users.module';
+import { mailerConfig } from './mail/configs/mailer.config';
+
+
 @Module({
   imports: [
+
+    MailerModule.forRoot(mailerConfig),
+
     ConfigModule.forRoot({
       envFilePath: '.env',
       isGlobal: true
@@ -35,36 +45,36 @@ import { APP_INTERCEPTOR } from '@nestjs/core';
       },
     }),
 
-    MailerModule.forRootAsync({
-      imports: [ConfigModule],
-      useFactory: async (config: ConfigService) => ({
-        transport: {
-          host: config.get('MAIL_HOST'),
-          // secure: false,
-          port: 465,
-          ignoreTLS: true,
-          secure: true,
+    // MailerModule.forRootAsync({
+    //   imports: [ConfigModule],
+    //   useFactory: async (config: ConfigService) => ({
+    //     transport: {
+    //       host: config.get('MAIL_HOST'),
+    //       // secure: false,
+    //       port: 465,
+    //       ignoreTLS: true,
+    //       secure: true,
 
-          auth: {
-            user: config.get('MAIL_USERNAME'),
-            pass: config.get('MAIL_PASSWORD'),
-          },
-        },
-        defaults: {
-          from: config.get('MAIL_FROM_ADDRESS')
-        },
-        template: {
-          dir: join(__dirname, 'mails'),
-          adapter: new HandlebarsAdapter(),
-          options: {
-            strict: true
-          }
-        }
-      }),
+    //       auth: {
+    //         user: config.get('MAIL_USERNAME'),
+    //         pass: config.get('MAIL_PASSWORD'),
+    //       },
+    //     },
+    //     defaults: {
+    //       from: config.get('MAIL_FROM_ADDRESS')
+    //     },
+    //     template: {
+    //       dir: join(__dirname, 'mails'),
+    //       adapter: new HandlebarsAdapter(),
+    //       options: {
+    //         strict: true
+    //       }
+    //     }
+    //   }),
 
       
-      inject: [ConfigService]
-    }),
+    //   inject: [ConfigService]
+    // }),
 
 
     SequelizeModule.forRoot({
@@ -72,16 +82,31 @@ import { APP_INTERCEPTOR } from '@nestjs/core';
       ...DB_CONFIGS[process.env.NODE_ENV],
       autoLoadModels: true,
     }),
+
+
+    OrganizationModule,
+
+
+    UsersModule,
+
+
+
+  
+
+
+    
   ],
 
   controllers: [],
   providers: [
+
+    // AppService,
     
-    {
-      provide: APP_GUARD,
-      useClass: AtGuard
+    // {
+    //   provide: APP_GUARD,
+    //   useClass: AtGuard
       
-    },
+    // },
 
     {
       provide: APP_INTERCEPTOR,

@@ -5,6 +5,8 @@ import { SwaggerModule, DocumentBuilder } from '@nestjs/swagger';
 import { urlencoded, json } from 'express';
 import { join } from 'path';
 import { ConfigService } from '@nestjs/config';
+import { ValidationPipe } from '@nestjs/common';
+
 
 // import { Logger } from 'nestjs-pino';
 // import { MetricsModule, MetricsMiddleware } from '@nestjs/metrics';
@@ -13,6 +15,7 @@ async function bootstrap() {
 
   const app = await NestFactory.create<NestExpressApplication>(AppModule);
   app.enableCors();
+  app.useGlobalPipes(new ValidationPipe())
   app.setGlobalPrefix('api/v1');
   app.use(json({ limit: '50mb' }));
   app.use(urlencoded({ extended: true, limit: '50mb' }));
@@ -24,7 +27,7 @@ async function bootstrap() {
 const configService = app.get(ConfigService);
 
   const Swagconfig = new DocumentBuilder()
-    .setTitle('School App Backend EndPoint')
+    .setTitle('Reception App Backend EndPoint')
     .setDescription('')
     .setVersion('1.0')
     .addBearerAuth(undefined, 'defaultBearerAuth')

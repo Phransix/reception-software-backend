@@ -435,8 +435,8 @@ console.log(data?.rows?.length)
 
 
 export const createEmailToken = (data) => {
-  let {email,customer_id } = data
-  return jwt.sign({email,customer_id}, process.env.JWT_EMAIL_TOKEN, {expiresIn: '2h'});
+  let {email,organization_id } = data
+  return jwt.sign({email,organization_id}, process.env.JWT_EMAIL_TOKEN, {expiresIn: '2h'});
 }
 
 export const verifyEmailToken = (token) => {
