@@ -10,7 +10,7 @@ export class  CreateOrganizationDto {
 
     @IsString()
    @IsNotEmpty() 
-readonly organization_Name: string;
+  readonly organization_Name: string;
 
  @ApiProperty({
     description:'The email of the Organization',

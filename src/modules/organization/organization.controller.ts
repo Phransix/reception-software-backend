@@ -19,15 +19,15 @@ export class OrganizationController {
     // private readonly mailerSevice: MailerService
   ) {}
 
- @ApiTags('Organization')
-  @ApiOkResponse({
-    description:'Registration Successfully',
-    type: Organization
-  })
-  @ApiBadRequestResponse({
-    description: 'Registration Failed',
-    type: Organization
-  })
+//  @ApiTags('Organization')
+//   @ApiOkResponse({
+//     description:'Registration Successfully',
+//     type: Organization
+//   })
+//   @ApiBadRequestResponse({
+//     description: 'Registration Failed',
+//     type: Organization
+//   })
   @UseGuards(DoesUserExist)
   @Post('signUp')
    async signUp(@Body() createOrganizationDto: CreateOrganizationDto, @Res() res: Response) {

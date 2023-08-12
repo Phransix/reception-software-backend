@@ -15,13 +15,17 @@ import { AppController } from './app.controller';
 import { AppService } from './app.service';
 import { OrganizationModule } from './modules/organization/organization.module';
 import { UsersModule } from './modules/users/users.module';
-import { mailerConfig } from './mail/configs/mailer.config';
 
 
 @Module({
   imports: [
 
-    MailerModule.forRoot(mailerConfig),
+    BullModule.forRoot({
+      redis: {
+        host: 'localhost',
+        port: 6379
+      },
+    }),
 
     ConfigModule.forRoot({
       envFilePath: '.env',
@@ -38,43 +42,37 @@ import { mailerConfig } from './mail/configs/mailer.config';
       ignoreErrors: false,
     }),
     
-    BullModule.forRoot({
-      redis: {
-        host: 'localhost',
-        port: 6379
-      },
-    }),
 
-    // MailerModule.forRootAsync({
-    //   imports: [ConfigModule],
-    //   useFactory: async (config: ConfigService) => ({
-    //     transport: {
-    //       host: config.get('MAIL_HOST'),
-    //       // secure: false,
-    //       port: 465,
-    //       ignoreTLS: true,
-    //       secure: true,
+    MailerModule.forRootAsync({
+      imports: [ConfigModule],
+      useFactory: async (config: ConfigService) => ({
+        transport: {
+          host: config.get('MAIL_HOST'),
+          // secure: false,
+          port: 465,
+          ignoreTLS: true,
+          secure: true,
 
-    //       auth: {
-    //         user: config.get('MAIL_USERNAME'),
-    //         pass: config.get('MAIL_PASSWORD'),
-    //       },
-    //     },
-    //     defaults: {
-    //       from: config.get('MAIL_FROM_ADDRESS')
-    //     },
-    //     template: {
-    //       dir: join(__dirname, 'mails'),
-    //       adapter: new HandlebarsAdapter(),
-    //       options: {
-    //         strict: true
-    //       }
-    //     }
-    //   }),
+          auth: {
+            user: config.get('MAIL_USERNAME'),
+            pass: config.get('MAIL_PASSWORD'),
+          },
+        },
+        defaults: {
+          from: config.get('MAIL_FROM_ADDRESS')
+        },
+        template: {
+          dir: join(__dirname, 'mails'),
+          adapter: new HandlebarsAdapter(),
+          options: {
+            strict: true
+          }
+        }
+      }),
 
       
-    //   inject: [ConfigService]
-    // }),
+      inject: [ConfigService]
+    }),
 
 
     SequelizeModule.forRoot({
@@ -85,8 +83,6 @@ import { mailerConfig } from './mail/configs/mailer.config';
 
 
     OrganizationModule,
-
-
     UsersModule,
 
 

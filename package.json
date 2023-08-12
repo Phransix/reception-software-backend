@@ -29,7 +29,7 @@
   "dependencies": {
     "@hapi/joi": "^17.1.1",
     "@nestjs-modules/mailer": "^1.9.1",
-    "@nestjs/bull": "^0.6.1",
+    "@nestjs/bull": "^0.6.3",
     "@nestjs/common": "^9.0.0",
     "@nestjs/config": "^3.0.0",
     "@nestjs/core": "^9.0.0",
@@ -43,7 +43,7 @@
     "bcrypt": "^5.1.0",
     "bluebird": "^3.7.2",
     "buffer": "^6.0.3",
-    "bull": "^4.10.1",
+    "bull": "^4.11.2",
     "class-transformer": "^0.5.1",
     "class-validator": "^0.13.2",
     "csvtojson": "^2.0.10",
@@ -79,7 +79,8 @@
     "uint8arrays": "^3.1.0",
     "uuid": "^8.3.2",
     "validate-date": "^2.0.0",
-    "validator": "^13.9.0"
+    "validator": "^13.9.0",
+    "yarn": "^1.22.19"
   },
   "devDependencies": {
     "@nestjs/cli": "^9.0.0",

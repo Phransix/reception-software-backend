@@ -35,7 +35,7 @@ const configService = app.get(ConfigService);
   const document = SwaggerModule.createDocument(app, Swagconfig);
   SwaggerModule.setup('api', app, document);
   // app.useLogger(app.get(Logger));
-  await app.listen(process.env.PORT || 3005);
+  await app.listen(process.env.PORT);
   console.log(`Application is running on : ${await app.getUrl()}`);
 }
 bootstrap();

@@ -4,6 +4,11 @@ import { UpdateOrganizationDto } from './dto/update-organization.dto';
 import { InjectModel } from '@nestjs/sequelize';
 import { Organization } from './entities/organization.entity';
 import { createEmailToken } from 'src/utils';
+import { InjectQueue } from '@nestjs/bull';
+import { EmailService } from 'src/helper/EmailHelper';
+import { or } from 'sequelize';
+
+
 
 
 
@@ -11,11 +16,23 @@ import { createEmailToken } from 'src/utils';
 export class OrganizationService {
   constructor (
     @InjectModel(Organization) private organizationModel: typeof Organization,
+    private emailService:EmailService
+    
+  
     
     ){}
 
   async signUp(createOrganizationDto: CreateOrganizationDto): Promise<Organization> {
    const organization = await this.organizationModel.create(createOrganizationDto)
+
+   let data={
+    org_id : organization?.id,
+    email: organization?.email,
+    org_name : createOrganizationDto?.organization_Name
+   }
+
+  let result = await this?.emailService?.sendMailNotification({...data})
+  console.log(result)
       return organization;
 
   }
