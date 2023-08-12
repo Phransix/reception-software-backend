@@ -24,7 +24,7 @@ async function bootstrap() {
 const configService = app.get(ConfigService);
 
   const Swagconfig = new DocumentBuilder()
-    .setTitle('School App Backend EndPoint')
+    .setTitle('Reception App Backend EndPoint')
     .setDescription('')
     .setVersion('1.0')
     .addBearerAuth(undefined, 'defaultBearerAuth')
