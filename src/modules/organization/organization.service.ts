@@ -39,7 +39,6 @@ export class OrganizationService {
 
 
 
-
   findAll() {
     return `This action returns all organization`;
   }
