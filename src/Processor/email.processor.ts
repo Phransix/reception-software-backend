@@ -19,7 +19,7 @@ export class EmailProcessor{
             await this.mailService.sendMail({
                 to: details?.emal,
                 subject: 'Account Verification',
-                template: 'verification',
+                template: '/verification',
                 context: {
                     email : details?.email,
                     org_name: details?.org_name,

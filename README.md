@@ -108,3 +108,9 @@ npx sequelize-cli seed:generate --name users
 
 git@github.com:Webber-Mill-Ltd/reception-software-backend.git
 
+
+ git add .
+ git commit -m 'updated'
+git push origin albert
+
+

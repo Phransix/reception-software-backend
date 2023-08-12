@@ -62,14 +62,13 @@ import { UsersModule } from './modules/users/users.module';
           from: config.get('MAIL_FROM_ADDRESS')
         },
         template: {
-          dir: join(__dirname, 'mails'),
+          dir: join(__dirname, '/mails'),
           adapter: new HandlebarsAdapter(),
           options: {
             strict: true
           }
         }
       }),
-
       
       inject: [ConfigService]
     }),
