@@ -25,7 +25,8 @@ export class EnquiriesService {
       
     }catch(error){
       console.log(error)
-      return Util
+      // return Util
+      return Util?.handleFailResponse('Enquiry registration failed')
     }
   };
 
@@ -34,14 +35,13 @@ export class EnquiriesService {
   async findAll(){
     try {
       const enquiries = await Enquiry.findAll()
-      return Util?.handleSuccessRespone(enquiries,"Enquiry Data retrieved successfully.")
+      return Util?.handleSuccessRespone(enquiries,"Enquiries Data retrieved successfully.")
 
     }catch(error){
       console.log(error)
       return Util?.handleTryCatchError(Util?.getTryCatchMsg(error));
     }
   };
-
 
   async findOne(id: number) {
     try{
@@ -81,13 +81,22 @@ export class EnquiriesService {
 
 
   async remove(id: number) {
+    try{
+      const enquiry = await Enquiry.findOne({where:{id}});
+      if (!enquiry) {
+        throw new Error('Enquiry not found.'); 
+      }
 
-    const enquiry = await Enquiry.findOne({where:{id}});
-    if (!enquiry) {
-      throw new Error('Enquiry not found.'); 
+      Object.assign(enquiry)
+     
+      // await enquiry.remove()
+      return Util?.handleSuccessRespone(Util?.SuccessRespone,"Enquiry deleted successfully.")
+
+    }catch(error){
+      console.log(error)
+      return Util?.handleTryCatchError(Util?.getTryCatchMsg(error));
     }
-
-    await enquiry.destroy
-    return Util?.handleSuccessRespone(Util?.SuccessRespone,"Enquiry deleted successfully.")
+   
   }
 }
+

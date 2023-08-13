@@ -1,9 +1,21 @@
 
-import { Column, DataType, Model, Table } from "sequelize-typescript";
+import { BelongsTo, Column, DataType, ForeignKey, Model, Table } from "sequelize-typescript";
+import { Organization } from "src/modules/organization/entities/organization.entity";
 
 
 @Table
 export class Enquiry extends Model<Enquiry>{
+
+  @ForeignKey(() => Organization)
+  @Column({
+      type: DataType.INTEGER,
+      allowNull: false
+  })
+  organization_Id: number;
+
+   @BelongsTo(() => Organization)
+   organization: Organization
+   
    
     @Column({
         type: DataType.STRING,

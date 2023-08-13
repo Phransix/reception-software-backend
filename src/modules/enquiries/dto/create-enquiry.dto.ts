@@ -1,13 +1,21 @@
 import { ApiProperty } from "@nestjs/swagger";
 import { IsEmail, IsEnum, IsNotEmpty, IsString, Matches, MaxLength, MinLength } from "class-validator";
 
-enum Gender {
+enum Purpose {
     OFFICAIL = 'Official',
     PERSONAL = 'personal'
 };
 
 
 export class CreateEnquiryDto {
+
+    @ApiProperty({
+        description: 'The Id of the Organization',
+        example: '1'
+    })
+    @IsNotEmpty()
+    readonly organization_Id: string;
+
     @ApiProperty({
         description: 'The Name of the Person',
         example: 'Nana Kwame'
@@ -40,7 +48,7 @@ export class CreateEnquiryDto {
         example: 'Official'
     })
     @IsNotEmpty()
-    @IsEnum(Gender, {
+    @IsEnum(Purpose, {
         message: 'Purpose must be an official or personal '
      })
     readonly purpose: string;

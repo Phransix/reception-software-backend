@@ -9,6 +9,12 @@ module.exports = {
         primaryKey: true,
         type: Sequelize.INTEGER,
       },
+
+      organization_Id: {
+        type: Sequelize.INTEGER,
+        allowNull: false,
+      },
+
       name: {
         allowNull: false,
         type: Sequelize.STRING,
@@ -35,6 +41,10 @@ module.exports = {
       },
       updatedAt: {
         allowNull: false,
+        type: Sequelize.DATE,
+      },
+      deletedAt: {
+        allowNull: true,
         type: Sequelize.DATE,
       },
     });

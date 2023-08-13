@@ -3,6 +3,7 @@ import { EnquiriesService } from './enquiries.service';
 import { CreateEnquiryDto } from './dto/create-enquiry.dto';
 import { UpdateEnquiryDto } from './dto/update-enquiry.dto';
 import * as Util from '../../utils/index'
+import { Enquiry } from './entities/enquiry.entity';
 
 
 
@@ -37,7 +38,7 @@ export class EnquiriesController {
   @Get(':id')
   async findOne(@Param('id') id: number){
     try {
-      let enquiryData = this.enquiriesService.findOne(id)
+      let enquiryData = await this.enquiriesService.findOne(id)
       return enquiryData
 
     }catch(error){
@@ -63,6 +64,11 @@ export class EnquiriesController {
   @Delete(':id')
   async remove(@Param('id') id: number) {
      try {
+
+      const enquiry = await Enquiry.findOne({where:{id}});
+      if(!enquiry) {
+        throw new Error('Enquiry not Found')
+      }
       
       let enquiryDelete = await this.enquiriesService.remove(id)
       return enquiryDelete

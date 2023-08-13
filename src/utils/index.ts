@@ -413,8 +413,8 @@ console.log(data?.rows?.length)
 // }
 
 
-  export const  createToken = (customer_id:any) => {
-    return jwt.sign({customer_id}, process.env.JWT_PRIVATE_KEY, {expiresIn: '24h',algorithm: 'RS256'});
+  export const  createToken = (organization_id:any ,user_id:any) => {
+    return jwt.sign({organization_id,user_id}, process.env.JWT_PRIVATE_KEY, {expiresIn: '24h',algorithm: 'RS256'});
   };
 
   export const verifyUserToken = (token) =>{
