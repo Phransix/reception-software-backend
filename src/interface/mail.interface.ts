@@ -1,9 +1,9 @@
 
 export interface Mail {
-    from: `kemiqal93@gmail.com`;
-    to: `email`;
-    subject: 'Welcome';
-    text: 'Verification';
+    from: string;
+    to: string;
+    subject: string;
+    text: string;
     organization: string;
     [key: string]: any;
   }

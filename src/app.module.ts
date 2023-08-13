@@ -15,6 +15,7 @@ import { AppController } from './app.controller';
 import { AppService } from './app.service';
 import { OrganizationModule } from './modules/organization/organization.module';
 import { UsersModule } from './modules/users/users.module';
+import { EnquiriesModule } from './modules/enquiries/enquiries.module';
 
 
 @Module({
@@ -69,7 +70,6 @@ import { UsersModule } from './modules/users/users.module';
           }
         }
       }),
-
       
       inject: [ConfigService]
     }),
@@ -84,6 +84,7 @@ import { UsersModule } from './modules/users/users.module';
 
     OrganizationModule,
     UsersModule,
+    EnquiriesModule,
 
 
 

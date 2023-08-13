@@ -3,10 +3,10 @@ import { CreateOrganizationDto } from './dto/create-organization.dto';
 import { UpdateOrganizationDto } from './dto/update-organization.dto';
 import { InjectModel } from '@nestjs/sequelize';
 import { Organization } from './entities/organization.entity';
-import { createEmailToken } from 'src/utils';
-import { InjectQueue } from '@nestjs/bull';
-import { EmailService } from 'src/helper/EmailHelper';
-import { or } from 'sequelize';
+import * as Util from '../../utils/index'
+import { Sequelize } from 'sequelize-typescript';
+import { User } from 'src/modules/users/entities/user.entity';
+// import {  }
 
 
 
@@ -16,43 +16,117 @@ import { or } from 'sequelize';
 export class OrganizationService {
   constructor (
     @InjectModel(Organization) private organizationModel: typeof Organization,
-    private emailService:EmailService
-    
-  
-    
+    @InjectModel(User) private user: typeof User,
+    private sequelize : Sequelize,
+    // private emailService:EmailService
     ){}
 
-  async signUp(createOrganizationDto: CreateOrganizationDto): Promise<Organization> {
-   const organization = await this.organizationModel.create(createOrganizationDto)
 
-   let data={
-    org_id : organization?.id,
-    email: organization?.email,
-    org_name : createOrganizationDto?.organization_Name
-   }
 
-  let result = await this?.emailService?.sendMailNotification({...data})
-  console.log(result)
-      return organization;
+async create(createOrganizationDto: CreateOrganizationDto) {
+  let t = await this.sequelize?.transaction();
+  try {
+    console.log(createOrganizationDto)
+    const organization = await this.organizationModel?.create({...createOrganizationDto},{transaction:t})
+
+    // let data={
+    //     org_id : organization?.id,
+    //     email: organization?.email,
+    //     org_name : createOrganizationDto?.organization_Name
+    //    }
+
+       let cus_data = {
+        organization_Id : organization?.id,
+        fullname : createOrganizationDto?.fullname,
+        email: organization?.email,
+        phoneNumber : createOrganizationDto?.phoneNumber
+       }
+       await this.user?.create({...cus_data},{transaction:t})
+       t.commit()
+       
+
+       return Util?.handleSuccessRespone(Util?.SuccessRespone,"Organization created successfully.")
+
+      }catch(error){
+        t.rollback()
+      console.log(error)
+       throw new Error(error);
+      
+ 
+}
+};
+
+
+
+  async findAll(){
+
+   try {
+    const orgs = await Organization.findAll()
+    return Util?.handleSuccessRespone(orgs,"Organizations Data retrieved successfully.")
+
+   }catch(error){
+    console.log(error)
+    return Util?.handleTryCatchError(Util?.getTryCatchMsg(error));
+  }
 
   }
 
+ async findOne(id: number) {
 
+  try{
+    const org = await Organization.findOne({where:{id}});
+    if (!org) {
+      throw new Error('Organization not found.'); 
+    }
 
-  findAll() {
-    return `This action returns all organization`;
+    return Util?.handleSuccessRespone(org,"Organization retrieve successfully.")
+
+  }catch(error){
+    console.log(error)
+    return Util?.handleTryCatchError(Util?.getTryCatchMsg(error));
   }
 
-  findOne(id: number) {
-    return `This action returns a #${id} organization`;
   }
 
-  update(id: number, updateOrganizationDto: UpdateOrganizationDto) {
-    return `This action updates a #${id} organization`;
+  async update(id: number, updateOrganizationDto: UpdateOrganizationDto) {
+
+    try {
+    
+      const org = await Organization.findOne({where:{id}});
+      if (!org) {
+        throw new Error('Enquiry not found.'); 
+      }
+
+      Object.assign(org, updateOrganizationDto)
+      await org.save()
+      return Util?.handleSuccessRespone(Util?.SuccessRespone,"Organization updated successfully.")
+
+  }catch(error){
+    console.log(error)
+    return Util?.handleTryCatchError(Util?.getTryCatchMsg(error));
   }
 
-  remove(id: number) {
-    return `This action removes a #${id} organization`;
+    
+  }
+
+  async remove(id: number) {
+
+    try{
+      const org = await Organization.findOne({where:{id}});
+      if (!org) {
+        throw new Error('Organization not found.'); 
+      }
+
+      Object.assign(org)
+      
+      // await org.remove()
+      return Util?.handleSuccessRespone(Util?.SuccessRespone,"Organization deleted successfully.")
+
+    }catch(error){
+      console.log(error)
+      return Util?.handleTryCatchError(Util?.getTryCatchMsg(error));
+    }
+
   }
 
   async findOneByorganizationName(organization_Name: string): Promise<Organization>{

@@ -19,13 +19,7 @@ export class User extends Model<User> {
         type: DataType.STRING,
         allowNull: false
     })
-    firstName: string;
-
-    @Column({
-        type: DataType.STRING,
-        allowNull: false
-    })
-    lastName: string;
+    fullname: string;
 
     @Column({
       type: DataType.STRING,

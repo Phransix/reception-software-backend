@@ -1,14 +1,10 @@
-import { Controller, Get, Post, Body, Patch, Param, Delete, UseGuards,Res,HttpStatus } from '@nestjs/common';
-import { Response } from 'express';
+import { Controller, Get, Post, Body, Patch, Param, Delete, UseGuards} from '@nestjs/common';
 import { OrganizationService } from './organization.service';
 import { CreateOrganizationDto } from './dto/create-organization.dto';
 import { UpdateOrganizationDto } from './dto/update-organization.dto';
 import { DoesUserExist } from 'src/common/guards/doesUserExist.guard';
 import { ApiBadRequestResponse, ApiOkResponse, ApiTags } from '@nestjs/swagger';
-import { Organization } from './entities/organization.entity';
-import { MailerService } from '@nestjs-modules/mailer';
-// import { MailService } from 'src/mail/mail.service';
-import { createEmailToken } from 'src/utils';
+import * as Util from '../../utils/index'
 
 
  
@@ -28,69 +24,79 @@ export class OrganizationController {
 //     description: 'Registration Failed',
 //     type: Organization
 //   })
-  @UseGuards(DoesUserExist)
+
+
+@UseGuards(DoesUserExist)
   @Post('signUp')
-   async signUp(@Body() createOrganizationDto: CreateOrganizationDto, @Res() res: Response) {
-   try {
-    const { organization_Name, email,phoneNumber } = createOrganizationDto
+  async create(@Body() createOrganizationDto: CreateOrganizationDto) {
+    try {
 
-    const organization = await this.organizationService.signUp({
-      organization_Name,email,phoneNumber
-    });
+      let new_Enquiry = this.organizationService.create(createOrganizationDto);
+      return new_Enquiry;
 
-
-    // const mail = {
-    //   to: organization.email,
-    //   from:'noreply@application.com',
-    //   subject: 'Email de confirmação',
-    //     template: 'email-confirmation',
-    //     context: {}
-    // }
-    //  await this.mailerSevice.sendMail(mail)
-
-    if (organization){
-      // this.organizationService.sendVerificationEmail(organization)
-
-      return res.status(HttpStatus.CREATED).send({
-          status: 'success',
-          message: 'Organization registered successfully',
-        });
-
-    } else {
-      return res.status(HttpStatus.CONFLICT).send({
-          status: 'error',
-          message: 'Organization already exists',
-        });
+    }catch(error){
+      console.log(error)
+      return Util?.handleTryCatchError(Util?.getTryCatchMsg(error)) 
     }
-
   }
-  catch (error) {
-      console.log(error);
-      return res
-        .status(HttpStatus.INTERNAL_SERVER_ERROR)
-        .send({ status: 'error', message: 'Organization registration failed' });
-    }
-}
 
 
 
-  @Get()
-  findAll() {
-    return this.organizationService.findAll();
+  @Get('getAllOrganizations')
+ async findAll() {
+
+  try {
+    const allQueries = this.organizationService.findAll()
+    return allQueries;
+
+  }catch(error){
+    console.log(error)
+    return Util?.handleTryCatchError(Util?.getTryCatchMsg(error)) 
   }
+
+  };
 
   @Get(':id')
-  findOne(@Param('id') id: string) {
-    return this.organizationService.findOne(+id);
-  }
+  async findOne(@Param('id') id: number) {
+
+    try {
+      let orgData = this.organizationService.findOne(id)
+      return orgData
+
+    }catch(error){
+      console.log(error)
+      return Util?.handleTryCatchError(Util?.getTryCatchMsg(error)) 
+    }
+
+
+  };
 
   @Patch(':id')
-  update(@Param('id') id: string, @Body() updateOrganizationDto: UpdateOrganizationDto) {
-    return this.organizationService.update(+id, updateOrganizationDto);
+  async update(@Param('id') id: number, @Body() updateOrganizationDto: UpdateOrganizationDto) {
+
+    try {
+      const orgUpdate = await this.organizationService.update(id, updateOrganizationDto)
+      return orgUpdate
+
+    }catch(error){
+      console.log(error)
+      return Util?.handleTryCatchError(Util?.getTryCatchMsg(error)) 
+    }
+
   }
 
   @Delete(':id')
-  remove(@Param('id') id: string) {
-    return this.organizationService.remove(+id);
+ async remove(@Param('id') id: number) {
+
+    try {
+      
+      let orgDelete = await this.organizationService.remove(id)
+      return orgDelete
+
+     }catch(error){
+      console.log(error)
+      return Util?.handleTryCatchError(Util?.getTryCatchMsg(error)) 
+     }
+
   }
 }

@@ -3,6 +3,7 @@ import { Process, Processor } from "@nestjs/bull";
 import { Job } from "bull";
 import Mail from "nodemailer/lib/mailer";
 
+
 import { Logger } from '@nestjs/common';
 
 @Processor('emailVerification')
@@ -19,7 +20,7 @@ export class EmailProcessor{
             await this.mailService.sendMail({
                 to: details?.emal,
                 subject: 'Account Verification',
-                template: 'verification',
+                template: './verification',
                 context: {
                     email : details?.email,
                     org_name: details?.org_name,
