@@ -3,11 +3,18 @@ import { Column, DataType, Table ,Model} from "sequelize-typescript";
 
 @Table
 export class Visitor extends Model <Visitor> {
+
     @Column({
         type: DataType.STRING,
         allowNull: false
     })
-    name: string
+    visitor: string
+
+    @Column({
+        type: DataType.STRING,
+        allowNull: false
+    })
+    phonenumber: string
 
     @Column({
         type: DataType.STRING,
@@ -17,26 +24,20 @@ export class Visitor extends Model <Visitor> {
 
     @Column({
         type: DataType.STRING,
-        allowNull: false
-    })
-    email: string
-
-    @Column({
-        type: DataType.STRING,
         allowNull: false,
     })
-    phonenumber: string;
-
-    @Column({
-        type: DataType.DATE,
-        allowNull: false,
-    })
-    date: string;
+    host: string;
 
     @Column({
         type: DataType.ENUM,
         values: ['active','inactive'],
         allowNull: false,
     })
-    status: string;
+    visit_Status: string;
+
+    @Column({
+        type: DataType.DATE,
+        allowNull: false,
+    })
+    date: string;
 }

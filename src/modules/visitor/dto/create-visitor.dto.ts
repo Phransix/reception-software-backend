@@ -1,31 +1,37 @@
-import { IsBoolean, IsDateString, IsEmail, IsNotEmpty, IsString, MaxLength, MinLength } from 'class-validator'
+import { IsBoolean, IsDateString, IsEmail, IsEnum, IsNotEmpty, IsString, MaxLength, MinLength } from 'class-validator'
+
+enum Status {
+    ACTIVE = 'active',
+    INACTIVE = 'inactive',
+}
 export class CreateVisitorDto {
-        
-    @IsString()
-    @IsNotEmpty()
-    readonly name: string
+
 
     @IsString()
     @IsNotEmpty()
-    readonly purpose: string
-
-    @IsString()
-    @IsNotEmpty()
-    @IsEmail()
-    readonly email: string
-
+    readonly visitor: string;
 
     @IsNotEmpty()
     @MinLength(10)
     @MaxLength(10)
-    readonly phonenumber: string
+    readonly phonenumber: string;
+
+    @IsString()
+    @IsNotEmpty()
+    readonly purpose: string;
+
+    @IsString()
+    @IsNotEmpty()
+    readonly host: string;
+        
+    @IsNotEmpty()
+    @IsEnum(Status, {
+        message: 'The visitor status must be either active or inactive',
+    })
+    readonly visit_Status: string;
 
     @IsNotEmpty()
     @IsDateString()
-    readonly date: string
-
-    
-    @IsNotEmpty()
-    readonly status: string
+    readonly date: string;
 
 }

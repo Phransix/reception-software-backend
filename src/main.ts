@@ -6,9 +6,6 @@ import { urlencoded, json } from 'express';
 import { join } from 'path';
 import { ConfigService } from '@nestjs/config';
 
-// import { Logger } from 'nestjs-pino';
-// import { MetricsModule, MetricsMiddleware } from '@nestjs/metrics';
-//var bodyParser = require('body-parser')
 async function bootstrap() {
 
   const app = await NestFactory.create<NestExpressApplication>(AppModule);

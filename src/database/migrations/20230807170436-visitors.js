@@ -16,17 +16,7 @@ module.exports = {
         primaryKey: true,
         type: Sequelize.INTEGER,
       },
-      name: {
-        type: Sequelize.STRING,
-        allowNull: false,
-        required:true,
-      },
-      purpose: {
-        type: Sequelize.STRING,
-        allowNull: false,
-        required:true,
-      },
-      email: {
+      visitor: {
         type: Sequelize.STRING,
         allowNull: false,
         required:true,
@@ -36,10 +26,21 @@ module.exports = {
         allowNull: false,
         required:true,
       },
-      status: {
+      purpose: {
+        type: Sequelize.STRING,
+        allowNull: false,
+        required:true,
+      },
+      host: {
+        type: Sequelize.STRING,
+        allowNull: false,
+        required:true,
+      },
+      visit_Status: {
         type: Sequelize.ENUM('active', 'inactive'),
         allowNull: false,
         required:true,
+        defaultValue: 'inactive',
         validate: {
           isIn: [['active', 'inactive']] // Validates that the value is either 'active' or 'inactive'
         }

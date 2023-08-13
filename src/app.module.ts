@@ -12,6 +12,7 @@ import { APP_GUARD } from '@nestjs/core';
 import { LoggingInterceptor } from './logging.interceptor';
 import { APP_INTERCEPTOR } from '@nestjs/core';
 import { VisitorModule } from './modules/visitor/visitor.module';
+import { DeliveryModule } from './modules/delivery/delivery.module';
 
 @Module({
   imports: [
@@ -77,6 +78,9 @@ import { VisitorModule } from './modules/visitor/visitor.module';
 
 
     VisitorModule,
+
+
+    DeliveryModule,
 
   ],
 
