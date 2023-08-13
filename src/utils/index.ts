@@ -413,8 +413,8 @@ console.log(data?.rows?.length)
 // }
 
 
-  export const  createToken = (customer_id:any) => {
-    return jwt.sign({customer_id}, process.env.JWT_PRIVATE_KEY, {expiresIn: '24h',algorithm: 'RS256'});
+  export const  createToken = (organization_id:any ,user_id:any) => {
+    return jwt.sign({organization_id,user_id}, process.env.JWT_PRIVATE_KEY, {expiresIn: '24h',algorithm: 'RS256'});
   };
 
   export const verifyUserToken = (token) =>{
@@ -435,8 +435,8 @@ console.log(data?.rows?.length)
 
 
 export const createEmailToken = (data) => {
-  let {email,customer_id } = data
-  return jwt.sign({email,customer_id}, process.env.JWT_EMAIL_TOKEN, {expiresIn: '2h'});
+  let {email,organization_id } = data
+  return jwt.sign({email,organization_id}, process.env.JWT_EMAIL_TOKEN, {expiresIn: '2h'});
 }
 
 export const verifyEmailToken = (token) => {
