@@ -15,6 +15,7 @@ import { AppController } from './app.controller';
 import { AppService } from './app.service';
 import { OrganizationModule } from './modules/organization/organization.module';
 import { UsersModule } from './modules/users/users.module';
+import { EnquiriesModule } from './modules/enquiries/enquiries.module';
 
 
 @Module({
@@ -62,7 +63,7 @@ import { UsersModule } from './modules/users/users.module';
           from: config.get('MAIL_FROM_ADDRESS')
         },
         template: {
-          dir: join(__dirname, '/mails'),
+          dir: join(__dirname, 'mails'),
           adapter: new HandlebarsAdapter(),
           options: {
             strict: true
@@ -83,6 +84,7 @@ import { UsersModule } from './modules/users/users.module';
 
     OrganizationModule,
     UsersModule,
+    EnquiriesModule,
 
 
 
