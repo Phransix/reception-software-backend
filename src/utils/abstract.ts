@@ -1,6 +1,18 @@
 
 import * as argon from 'argon2';
-export const createData = (model, newItem,t) => {
+export const createData = (model, newItem) => {
+
+    const item = model.create(newItem);
+    if (item) {
+      return item;
+  
+    } else {
+      return {};
+    }
+  
+  }
+
+  export const createDatawithTranz = (model, newItem,t) => {
 
     const item = model.create(newItem,t);
     if (item) {
@@ -13,7 +25,18 @@ export const createData = (model, newItem,t) => {
   }
   
   
-  export const updateData = (req, model, oldItem, where,t) => {
+  
+  export const updateData = (req, model, oldItem, where) => {
+    if (req.id) {
+      const item = model.update(oldItem, where);
+      return item;
+    } else {
+      return {};
+    }
+  
+  }
+
+  export const updateDataWithTranz = (req, model, oldItem, where,t) => {
     if (req.id) {
       const item = model.update(oldItem, where,t);
       return item;

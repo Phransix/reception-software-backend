@@ -8,9 +8,12 @@ import { MailerModule } from '@nestjs-modules/mailer';
 import { HandlebarsAdapter } from '@nestjs-modules/mailer/dist/adapters/handlebars.adapter';
 import { join } from 'path';
 import { APP_GUARD } from '@nestjs/core';
-import { AtGuard } from 'src/common/guards';
+// import { AtGuard } from 'src/common/guards';
 import { LoggingInterceptor } from './logging.interceptor';
 import { APP_INTERCEPTOR } from '@nestjs/core';
+import { VisitorModule } from './modules/visitor/visitor.module';
+import { DeliveryModule } from './modules/delivery/delivery.module';
+
 @Module({
   imports: [
     ConfigModule.forRoot({
@@ -72,16 +75,23 @@ import { APP_INTERCEPTOR } from '@nestjs/core';
       ...DB_CONFIGS[process.env.NODE_ENV],
       autoLoadModels: true,
     }),
+
+
+    VisitorModule,
+
+
+    DeliveryModule,
+
   ],
 
   controllers: [],
   providers: [
     
-    {
-      provide: APP_GUARD,
-      useClass: AtGuard
+    // {
+    //   provide: APP_GUARD,
+    //   useClass: AtGuard
       
-    },
+    // },
 
     {
       provide: APP_INTERCEPTOR,

@@ -38,7 +38,7 @@ export const handleCustonCreateResponse = (data, msg) => {
     };
   };
 
-  export const handleCreateSuccessRespone = (msg:any) => { 
+  export const handleCreateSuccessRespone = (data,msg) => { 
     return {
       status_code: HttpStatus.CREATED,
       message: msg    };

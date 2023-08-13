@@ -6,9 +6,6 @@ import { urlencoded, json } from 'express';
 import { join } from 'path';
 import { ConfigService } from '@nestjs/config';
 
-// import { Logger } from 'nestjs-pino';
-// import { MetricsModule, MetricsMiddleware } from '@nestjs/metrics';
-//var bodyParser = require('body-parser')
 async function bootstrap() {
 
   const app = await NestFactory.create<NestExpressApplication>(AppModule);
@@ -24,7 +21,7 @@ async function bootstrap() {
 const configService = app.get(ConfigService);
 
   const Swagconfig = new DocumentBuilder()
-    .setTitle('School App Backend EndPoint')
+    .setTitle('Reception App Backend EndPoint')
     .setDescription('')
     .setVersion('1.0')
     .addBearerAuth(undefined, 'defaultBearerAuth')
