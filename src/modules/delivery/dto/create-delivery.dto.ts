@@ -1,4 +1,4 @@
-import { IsEnum, IsNotEmpty, IsString } from "class-validator";
+import { IsEnum, IsNotEmpty, IsString, Matches, IsEmail} from "class-validator";
 
 enum Status_type {
     FOOD = 'food',
@@ -14,6 +14,9 @@ enum Status {
 
 export class CreateDeliveryDto {
 
+    @IsNotEmpty()
+    readonly organization_Id: string;
+
     @IsString()
     @IsNotEmpty()
     readonly from: string;
@@ -27,7 +30,11 @@ export class CreateDeliveryDto {
     readonly phonenumber: string;
 
     @IsString()
+    @IsEmail()
     @IsNotEmpty()
+    @Matches(/^[a-zA-Z0-9._%+-]+@.+\.com$/, {
+        message: 'Invalid Format, must be a valid email with the .com',
+     })
     readonly email: string;
 
     @IsString()

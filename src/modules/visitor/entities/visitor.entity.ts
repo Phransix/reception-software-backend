@@ -5,6 +5,12 @@ import { Column, DataType, Table ,Model} from "sequelize-typescript";
 export class Visitor extends Model <Visitor> {
 
     @Column({
+        type: DataType.INTEGER,
+        allowNull: false
+    })
+    organization_Id: number;
+
+    @Column({
         type: DataType.STRING,
         allowNull: false
     })

@@ -71,3 +71,46 @@ Nest is an MIT-licensed open source project. It can grow thanks to the sponsors 
 ## License
 
 Nest is [MIT licensed](LICENSE).
+
+
+
+npm install -g sequelize
+npm install --save sequelize sequelize-typescript pg-hstore pg
+npm install --save-dev @types/sequelize
+npm install dotenv --save
+
+Create Database
+npx sequelize-cli db:create 
+
+Drop Database
+npx sequelize-cli db:drop  
+
+Migrate Database Tables
+npx sequelize-cli db:migrate  
+
+command line for creating new migration file (table)
+npx sequelize-cli migration:generate --name user
+
+
+Seed Records into Tables
+npx sequelize-cli db:seed:all 
+npx sequelize-cli db:seed --seed <seed-file-name>.js
+
+
+command line for creating new migration file (table)
+
+
+
+command line for creating new seed file 
+npx sequelize-cli seed:generate --name users
+
+
+
+git@github.com:Webber-Mill-Ltd/reception-software-backend.git
+
+
+ git add .
+ git commit -m 'updated'
+git push origin albert
+
+

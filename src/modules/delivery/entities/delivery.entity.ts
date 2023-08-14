@@ -5,6 +5,12 @@ import { Column, DataType, Model, Table } from "sequelize-typescript";
 export class Delivery extends Model <Delivery> {
 
     @Column({
+        type: DataType.INTEGER,
+        allowNull: false
+    })
+    organization_Id: number;
+
+    @Column({
         type: DataType.STRING,
         allowNull: false
     })

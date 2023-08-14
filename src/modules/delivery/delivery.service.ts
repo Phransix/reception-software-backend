@@ -1,4 +1,4 @@
-import { Injectable } from '@nestjs/common';
+import { Injectable, NotAcceptableException } from '@nestjs/common';
 import { CreateDeliveryDto } from './dto/create-delivery.dto';
 import { UpdateDeliveryDto } from './dto/update-delivery.dto';
 import { InjectModel } from '@nestjs/sequelize';
@@ -9,33 +9,74 @@ import * as Util from '../../utils/index'
 @Injectable()
 export class DeliveryService {
 
-  constructor (
-    @InjectModel(Delivery) private readonly DeliveryModel: typeof Delivery)
-    {}
+  constructor(
+    @InjectModel(Delivery) private readonly DeliveryModel: typeof Delivery) { }
 
   async create(createDeliveryDto: CreateDeliveryDto) {
     try {
-      await Abstract?.createData(Delivery,createDeliveryDto);
-      return Util?.handleCreateSuccessRespone(Util?.SuccessRespone,"Delivery Created Successfully");
+      await Abstract?.createData(Delivery, createDeliveryDto);
+      return Util?.handleCreateSuccessRespone(Util?.SuccessRespone, "Delivery Created Successfully");
     } catch (error) {
       console.error(error)
       return Util?.handleTryCatchError(Util?.getTryCatchMsg(error))
     }
   }
 
-  findAll() {
-    return `This action returns all delivery`;
+  async findAll() {
+    // return `This action returns all delivery`;
+    try {
+      const delivery = this.DeliveryModel.findAll()
+      return Util?.handleSuccessRespone(delivery, "Deliveries Data retrieved Successfully")
+
+    } catch (error) {
+      console.log(error)
+      return Util?.handleTryCatchError(Util?.getTryCatchMsg(error))
+    }
+  };
+
+  async findOne(id: number) {
+    // return `This action returns a #${id} delivery`;
+    try {
+      const delivery = this.DeliveryModel.findOne({ where: { id } });
+      if (!delivery) {
+        throw new NotAcceptableException('The Delivery does not exist')
+      }
+      return Util?.handleCreateSuccessRespone(delivery, "Delivery Data retrieved successfully")
+    } catch (error) {
+      console.log(error)
+      return Util?.handleTryCatchError(Util?.getTryCatchMsg(error))
+    }
   }
 
-  findOne(id: number) {
-    return `This action returns a #${id} delivery`;
-  }
-
-  update(id: number, updateDeliveryDto: UpdateDeliveryDto) {
-    return `This action updates a #${id} delivery`;
-  }
+  async update(id: number, updateDeliveryDto: UpdateDeliveryDto) {
+    // return `This action updates a #${id} delivery`;
+    try {
+      const delivery = this.DeliveryModel.findOne({ where: { id } });
+      if (!delivery) {
+        throw new NotAcceptableException('Delivery Data not Found')
+      }
+      Object.assign(delivery, updateDeliveryDto);
+      (await delivery).save()
+      return Util?.handleSuccessRespone(Util?.SuccessRespone, 'Delivery Data successfullt updated')
+    } catch (error) {
+      console.log(error)
+      return Util?.handleTryCatchError(Util?.getTryCatchMsg(error));
+    }
+  };
 
   remove(id: number) {
-    return `This action removes a #${id} delivery`;
+    // return `This action removes a #${id} delivery`;
+    try {
+      const delivery = this.DeliveryModel.findOne({ where: { id } });
+      if (!delivery) {
+        throw new NotAcceptableException("Delivery Data doen not exist")
+      }
+      Object.assign(delivery)
+      return Util?.handleSuccessRespone(Util?.SuccessRespone, "Delivery Data deleted Successfully")
+
+    } catch (error) {
+      console.log(error)
+      return Util?.handleTryCatchError(Util?.getTryCatchMsg(error))
+    }
   }
 }
