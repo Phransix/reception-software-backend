@@ -7,10 +7,13 @@ import { BullModule } from '@nestjs/bull';
 import { MailerModule } from '@nestjs-modules/mailer';
 import { HandlebarsAdapter } from '@nestjs-modules/mailer/dist/adapters/handlebars.adapter';
 import { join } from 'path';
-import { APP_GUARD } from '@nestjs/core';
-// import { AtGuard } from 'src/common/guards';
+// import { APP_GUARD } from '@nestjs/core';
+import { AtGuard } from 'src/common/guards';
 import { LoggingInterceptor } from './logging.interceptor';
 import { APP_INTERCEPTOR } from '@nestjs/core';
+
+import { VisitorModule } from './modules/visitor/visitor.module';
+import { DeliveryModule } from './modules/delivery/delivery.module';
 import { AppController } from './app.controller';
 import { AppService } from './app.service';
 import { OrganizationModule } from './modules/organization/organization.module';
@@ -42,12 +45,12 @@ import { EnquiriesModule } from './modules/enquiries/enquiries.module';
       verboseMemoryLeak: false,
       ignoreErrors: false,
     }),
-    
 
     MailerModule.forRootAsync({
       imports: [ConfigModule],
       useFactory: async (config: ConfigService) => ({
         transport: {
+          service: 'Gmail',
           host: config.get('MAIL_HOST'),
           // secure: false,
           port: 465,
@@ -80,24 +83,18 @@ import { EnquiriesModule } from './modules/enquiries/enquiries.module';
       ...DB_CONFIGS[process.env.NODE_ENV],
       autoLoadModels: true,
     }),
-
-
+    VisitorModule,
+    DeliveryModule,
     OrganizationModule,
     UsersModule,
     EnquiriesModule,
-
-
-
-  
-
-
     
   ],
 
   controllers: [],
   providers: [
 
-    // AppService,
+    AppService,
     
     // {
     //   provide: APP_GUARD,

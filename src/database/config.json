@@ -3,7 +3,7 @@
       "username": "postgres",
       "password": "admin",
       "port": 5432,
-      "database": "reception_db",
+      "database": "reception",
       "host": "localhost",
       "dialect": "postgres",
       "distinct": true,
