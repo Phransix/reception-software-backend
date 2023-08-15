@@ -9,7 +9,7 @@ module.exports = {
      * Example:
      * await queryInterface.createTable('users', { id: Sequelize.INTEGER });
      */
-    await queryInterface.createTable("Deliveries", {
+    await queryInterface.createTable("Visitors", {
       id: {
         allowNull: false,
         autoIncrement: true,
@@ -20,12 +20,7 @@ module.exports = {
         type: Sequelize.INTEGER,
         allowNull: false,
       },
-      from: {
-        type: Sequelize.STRING,
-        allowNull: false,
-        required:true,
-      },
-      to: {
+      visitor: {
         type: Sequelize.STRING,
         allowNull: false,
         required:true,
@@ -35,37 +30,32 @@ module.exports = {
         allowNull: false,
         required:true,
       },
-      email: {
+      purpose: {
+        type: Sequelize.ENUM('personal', 'unofficial'),
+        allowNull: false,
+        required:true,
+        defaultValue: 'unofficial',
+        validate: {
+          isIn: [['personal', 'unofficial']] // Validates that the value is either 'active' or 'inactive'
+        }
+      },
+      host: {
         type: Sequelize.STRING,
         allowNull: false,
         required:true,
       },
-      date_and_time: {
+      visit_Status: {
+        type: Sequelize.ENUM('active', 'inactive'),
+        allowNull: false,
+        required:true,
+        defaultValue: 'inactive',
+        validate: {
+          isIn: [['active', 'inactive']] // Validates that the value is either 'active' or 'inactive'
+        }
+      },
+      date: {
         type: Sequelize.DATE,
         allowNull: false,
-        defaultValue: Sequelize.literal('CURRENT_TIMESTAMP'),
-      },
-      status: {
-        type: Sequelize.ENUM('delivered', 'not delivered'),
-        allowNull: false,
-        defaultValue: 'not delivered',
-        required:true,
-        validate: {
-          isIn: [['delivered', 'not delivered']]
-        }
-      },
-      type: {
-        type: Sequelize.ENUM('document', 'food', 'other'),
-        allowNull: false,
-        defaultValue: 'other',
-        required:true,
-        validate: {
-          isIn: [['document', 'food', 'other']]
-        }
-      },
-      Delivery_Description: {
-        type: Sequelize.STRING,
-        allowNull: true,
       },
       createdAt: {
         type: Sequelize.DATE,
@@ -87,6 +77,6 @@ module.exports = {
      * Example:
      * await queryInterface.dropTable('users');
      */
-    await queryInterface.dropTable('Deliveries');
+    await queryInterface.dropTable('Visitors');
   }
 };

@@ -16,13 +16,11 @@ async function bootstrap() {
   app.setGlobalPrefix('api/v1');
   app.use(json({ limit: '50mb' }));
   app.use(urlencoded({ extended: true, limit: '50mb' }));
- // app.use(bodyParser({limit:'5000kb'}))
    app.useStaticAssets(join(__dirname, '..', 'public'), {
     index: false,
     prefix: '/public',
 });
 const configService = app.get(ConfigService);
-
   const Swagconfig = new DocumentBuilder()
     .setTitle('Reception App Backend EndPoint')
     .setDescription('')

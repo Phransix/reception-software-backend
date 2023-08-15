@@ -68,7 +68,7 @@ export class UsersService {
       }
 
       Object.assign(user)
-      // await user.remove()
+      await user.destroy()
       return Util?.handleSuccessRespone(Util?.SuccessRespone,"User deleted successfully.")
 
     }catch(error){

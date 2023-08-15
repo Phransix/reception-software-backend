@@ -1,3 +1,4 @@
+import { ApiProperty } from "@nestjs/swagger";
 import { IsEnum, IsNotEmpty, IsString, Matches, IsEmail} from "class-validator";
 
 enum Status_type {
@@ -8,27 +9,46 @@ enum Status_type {
 
 enum Status {
     DELIVERED = 'delivered',
-    NOT_DELIVERED = 'not delivered'
+    NOT_DELIVERED = 'received'
 }
-
 
 export class CreateDeliveryDto {
 
+    @ApiProperty({
+        description: 'The Id of the Organization',
+        example: '1'
+    })
     @IsNotEmpty()
     readonly organization_Id: string;
 
+    @ApiProperty({
+        description: 'The sender of the Delivery',
+        example: 'Akoto'
+    })
     @IsString()
     @IsNotEmpty()
     readonly from: string;
 
+    @ApiProperty({
+        description: 'The receipient the Delivery',
+        example: 'Ansah'
+    })
     @IsString()
     @IsNotEmpty()
     readonly to: string;
 
+    @ApiProperty({
+        description: "The sender/'s phone  number",
+        example: '0546987415'
+    })
     @IsString()
     @IsNotEmpty()
     readonly phonenumber: string;
 
+    @ApiProperty({
+        description: "The senders'/s email address",
+        example: 'ansah@gmail.com'
+    })
     @IsString()
     @IsEmail()
     @IsNotEmpty()
@@ -37,22 +57,39 @@ export class CreateDeliveryDto {
      })
     readonly email: string;
 
+    
+    @ApiProperty({
+        description: "The date and time of delivery",
+        example: '20-08-2023-12-24-01'
+    })
     @IsString()
     @IsNotEmpty()
     readonly data_and_time: string;
 
+    @ApiProperty({
+        description: "The status of delivery",
+        example: 'Delivered or Not Delivered'
+    })
     @IsString()
     @IsEnum(Status, {
-        message: 'Choose the type of status: delivered not delivered'
+        message: 'Choose the type of status: delivered or received'
     })
     readonly status: string;
 
+    @ApiProperty({
+        description: "The type of delivery",
+        example: 'Food, Delivery,Other'
+    })
     @IsString()
     @IsEnum(Status_type, {
         message: 'Choose the type of delivery: food,document,other'
     })
     readonly type: string;
 
+    @ApiProperty({
+        description: "The Description of the delivery",
+        example: 'Any important detail of the delivery'
+    })
     @IsString()
     readonly Delivery_Description: string;
 }

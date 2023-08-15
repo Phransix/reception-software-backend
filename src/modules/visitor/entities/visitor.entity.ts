@@ -23,10 +23,11 @@ export class Visitor extends Model <Visitor> {
     phonenumber: string
 
     @Column({
-        type: DataType.STRING,
-        allowNull: false
+        type: DataType.ENUM,
+        values: ['personal','unofficial'],
+        allowNull: false,
     })
-    purpose: string
+    purpose: string;
 
     @Column({
         type: DataType.STRING,

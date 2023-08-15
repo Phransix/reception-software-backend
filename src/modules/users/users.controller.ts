@@ -4,16 +4,19 @@ import { CreateUserDto } from './dto/create-user.dto';
 import { UpdateUserDto } from './dto/update-user.dto';
 import * as Util from '../../utils/index'
 import { User } from './entities/user.entity';
+import { ApiTags } from '@nestjs/swagger';
 
 @Controller('users')
 export class UsersController {
   constructor(private readonly usersService: UsersService) {}
 
+  @ApiTags('Users')
   @Post()
   create(@Body() createUserDto: CreateUserDto) {
     return this.usersService.create(createUserDto);
   }
 
+  @ApiTags('Users')
   @Get('getAllUsers')
   async findAll() {
 
@@ -29,6 +32,7 @@ export class UsersController {
   };
 
 
+  @ApiTags('Users')
   @Get(':id')
   async findOne(@Param('id') id: number) {
 
@@ -45,6 +49,7 @@ export class UsersController {
   };
 
 
+  @ApiTags('Users')
   @Patch(':id')
   async update(@Param('id') id: number, @Body() updateUserDto: UpdateUserDto) {
 
@@ -60,7 +65,7 @@ export class UsersController {
 
   };
 
-
+  @ApiTags('Users')
   @Delete(':id')
   async remove(@Param('id') id: number) {
 

@@ -6,6 +6,7 @@ import { Organization } from './entities/organization.entity';
 import * as Util from '../../utils/index'
 import { Sequelize } from 'sequelize-typescript';
 import { User } from 'src/modules/users/entities/user.entity';
+import { EmailService } from 'src/helper/EmailHelper';
 // import {  }
 
 
@@ -18,7 +19,7 @@ export class OrganizationService {
     @InjectModel(Organization) private organizationModel: typeof Organization,
     @InjectModel(User) private user: typeof User,
     private sequelize : Sequelize,
-    // private emailService:EmailService
+    private emailService:EmailService
     ){}
 
 
@@ -26,14 +27,14 @@ export class OrganizationService {
 async create(createOrganizationDto: CreateOrganizationDto) {
   let t = await this.sequelize?.transaction();
   try {
-    console.log(createOrganizationDto)
+    // console.log(createOrganizationDto)
     const organization = await this.organizationModel?.create({...createOrganizationDto},{transaction:t})
 
-    // let data={
-    //     org_id : organization?.id,
-    //     email: organization?.email,
-    //     org_name : createOrganizationDto?.organization_Name
-    //    }
+    let data={
+        org_id : organization?.id,
+        email: createOrganizationDto?.email,
+        org_name : createOrganizationDto?.organization_Name
+       }
 
        let cus_data = {
         organization_Id : organization?.id,
@@ -42,9 +43,9 @@ async create(createOrganizationDto: CreateOrganizationDto) {
         phoneNumber : createOrganizationDto?.phoneNumber
        }
        await this.user?.create({...cus_data},{transaction:t})
+        await this?.emailService?.sendMailNotification({...data})
        t.commit()
-       
-
+      
        return Util?.handleSuccessRespone(Util?.SuccessRespone,"Organization created successfully.")
 
       }catch(error){
@@ -118,8 +119,7 @@ async create(createOrganizationDto: CreateOrganizationDto) {
       }
 
       Object.assign(org)
-      
-      // await org.remove()
+      await org.destroy()
       return Util?.handleSuccessRespone(Util?.SuccessRespone,"Organization deleted successfully.")
 
     }catch(error){
@@ -141,8 +141,5 @@ async create(createOrganizationDto: CreateOrganizationDto) {
      async findOneByPhoneNumber(phoneNumber: string): Promise<Organization> {
     return await this.organizationModel.findOne<Organization>({where: {phoneNumber}})
   }
-
-
-  
 
 }
