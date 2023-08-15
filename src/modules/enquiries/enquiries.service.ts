@@ -88,8 +88,7 @@ export class EnquiriesService {
       }
 
       Object.assign(enquiry)
-     
-      // await enquiry.remove()
+      await enquiry.destroy()
       return Util?.handleSuccessRespone(Util?.SuccessRespone,"Enquiry deleted successfully.")
 
     }catch(error){

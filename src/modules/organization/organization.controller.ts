@@ -1,15 +1,20 @@
-import { Controller, Get, Post, Body, Patch, Param, Delete, UseGuards} from '@nestjs/common';
+import { Controller, Get, Post, Body, Patch, Param, Delete, UseGuards, HttpException, HttpStatus} from '@nestjs/common';
 import { OrganizationService } from './organization.service';
 import { CreateOrganizationDto } from './dto/create-organization.dto';
 import { UpdateOrganizationDto } from './dto/update-organization.dto';
 import { DoesUserExist } from 'src/common/guards/doesUserExist.guard';
 import { ApiBadRequestResponse, ApiOkResponse, ApiTags } from '@nestjs/swagger';
+import * as bcrypt from 'bcrypt';
 import * as Util from '../../utils/index'
+import { User } from '../users/entities/user.entity';
+import { UsersService } from '../users/users.service';
+import { LoginDTO } from 'src/guard/auth/loginDTO';
 
 
- 
+ @ApiTags('Organization')
 @Controller('organization')
 export class OrganizationController {
+ 
   constructor(
     private readonly organizationService: OrganizationService,
     // private readonly mailerSevice: MailerService
@@ -40,8 +45,56 @@ export class OrganizationController {
     }
   }
 
+  @Get('token')
+  async verifyEmail(@Param('token') token: string){
+    try{
+      console.log(token)
+      
+      const emailVerify = await this.organizationService.verifyEmail(token)
+      return emailVerify
+
+    }catch(error){
+    console.log(error)
+    return Util?.handleTryCatchError(Util?.getTryCatchMsg(error)) 
+  }
+  };
+
+  // @Post('login')
+  // async login(@Param('email,password') email: string, password: string){
+
+  //   try{
+
+  //     const user = this.User.findOne({where:{email}})
+  //     if(!user){
+  //       throw new Error('Invalide email or password')
+  //     }
+
+  //     const isPwordSame = await bcrypt.compare(password,user?.password)
+  //     if(!isPwordSame){
+  //       throw new Error('Invalide email or password')
+  //     }
+  //      return user
 
 
+  //   }catch(error){
+  //   console.log(error)
+  //   return Util?.handleTryCatchError(Util?.getTryCatchMsg(error)) 
+  // }
+
+  // };
+
+  @Post('login')
+  async login(@Body() loginDTO: LoginDTO){
+    const user = await this.organizationService.validateUser(loginDTO)
+    if(!user){
+      throw new HttpException('Invalid Credentials',HttpStatus.UNAUTHORIZED)
+    }else{
+      return user
+     
+    }
+  }
+
+  
   @Get('getAllOrganizations')
  async findAll() {
 
@@ -95,7 +148,8 @@ export class OrganizationController {
 
      }catch(error){
       console.log(error)
-      return Util?.handleTryCatchError(Util?.getTryCatchMsg(error)) 
+      return Util?.handleNotFoundResponse()
+      // return Util?.checkIfRecordNotFound
      }
 
   }

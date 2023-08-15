@@ -1,9 +1,15 @@
-import { Controller, Get, Post, Body, Patch, Param, Delete } from '@nestjs/common';
+import { Controller, Get, Post, Body, Patch, Param, Delete, BadRequestException, UseGuards, Request, NotFoundException, HttpException, HttpStatus } from '@nestjs/common';
 import { UsersService } from './users.service';
 import { CreateUserDto } from './dto/create-user.dto';
 import { UpdateUserDto } from './dto/update-user.dto';
 import * as Util from '../../utils/index'
 import { User } from './entities/user.entity';
+import { ApiTags } from '@nestjs/swagger';
+import { AuthGuard } from '@nestjs/passport';
+import { ChangePassDTO } from 'src/guard/auth/changePassDTO';
+// import { comparePassword ,hashPassword} from 'src/passwordhash/generatepasshash'
+
+@ApiTags('Users')
 
 @Controller('users')
 export class UsersController {
@@ -60,6 +66,16 @@ export class UsersController {
 
   };
 
+  @Get(':email')
+  async getUserByEmail(@Param('email') email: string) {
+    const user = await this.usersService.findByEmail(email);
+    if (user) {
+      return user;
+    } else {
+      throw new NotFoundException('User not found');
+    }
+  }
+
 
   @Delete(':id')
   async remove(@Param('id') id: number) {
@@ -74,14 +90,47 @@ export class UsersController {
       // return this.usersService.remove(id);
 
       Object.assign(user)
-      return this.usersService.remove(id);
-      // // await user.remove()
+      // return this.usersService.remove(id);
+      await user.destroy()
 
     }catch(error){
       console.log(error)
       return Util?.handleTryCatchError(Util?.getTryCatchMsg(error));
     }
 
-    // 
   }
+
+  
+    // change Password
+   
+    // @Patch(':id/change-password')
+    // // @UseGuards(AuthGuard())
+    // async changePassword(
+    //   @Request()req,
+    //   @Body('oldPassword') oldPassword: string,
+    //   @Body('newPassword') newPassword: string
+    // ){
+    //   const userId = req.user.id;
+    //   await this.usersService.changePassword(userId,oldPassword,newPassword)
+    // }
+ 
+    @Patch(':id/changePassword')
+    async changePassword(@Param('id') id: number,@Body() changePassDTO: ChangePassDTO) {
+      try {
+        const userPass = await this.usersService.changePass(id, changePassDTO)
+        return userPass
+        // console.log(userPass)
+      } catch (error) {
+        console.log(error)
+        return Util?.handleTryCatchError(Util?.getTryCatchMsg(error))
+      }
+     
+    }
+
+
+
+
+
+
+
 }

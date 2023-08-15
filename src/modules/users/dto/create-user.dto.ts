@@ -7,10 +7,7 @@ export class CreateUserDto {
     readonly organization_Id: string;
  
     @IsNotEmpty()
-    readonly firstName: string;
-
-    @IsNotEmpty()
-    readonly lastName: string;
+    readonly fullname: string;
 
     @IsNotEmpty()
     @IsEmail()

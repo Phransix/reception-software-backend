@@ -1,4 +1,4 @@
-import { Injectable } from '@nestjs/common';
+import { BadRequestException, Injectable, Param, Req, Res, UnauthorizedException } from '@nestjs/common';
 import { CreateOrganizationDto } from './dto/create-organization.dto';
 import { UpdateOrganizationDto } from './dto/update-organization.dto';
 import { InjectModel } from '@nestjs/sequelize';
@@ -6,143 +6,220 @@ import { Organization } from './entities/organization.entity';
 import * as Util from '../../utils/index'
 import { Sequelize } from 'sequelize-typescript';
 import { User } from 'src/modules/users/entities/user.entity';
-// import {  }
-
-
-
-
+import {  createAccessToken, generateRefreshToken, verifyEmailToken } from '../../utils/index';
+import { EmailService } from 'src/helper/EmailHelper';
+import * as bcrypt from 'bcrypt';
+import { LoginDTO } from 'src/guard/auth/loginDTO';
+import { ChangePassDTO } from 'src/guard/auth/changePassDTO';
 
 @Injectable()
 export class OrganizationService {
-  constructor (
+  // validateUser(email: string, password: string) {
+  //     throw new Error("Method not implemented.");
+  // }
+  constructor(
     @InjectModel(Organization) private organizationModel: typeof Organization,
     @InjectModel(User) private user: typeof User,
-    private sequelize : Sequelize,
-    // private emailService:EmailService
-    ){}
+    // private readonly jwtService: JwtService,
+    private sequelize: Sequelize,
+    private emailService:EmailService
+  ) { }
 
+  async create(createOrganizationDto: CreateOrganizationDto) {
+    let t = await this.sequelize?.transaction();
+    try {
 
+      const defaultPassword = 'admin12345';
+       const saltRounds = 10;
 
-async create(createOrganizationDto: CreateOrganizationDto) {
-  let t = await this.sequelize?.transaction();
-  try {
-    console.log(createOrganizationDto)
-    const organization = await this.organizationModel?.create({...createOrganizationDto},{transaction:t})
+      // Hash the defualt password
+      const hashedDefaultPassword = await bcrypt.hash(defaultPassword,saltRounds);
 
-    // let data={
-    //     org_id : organization?.id,
-    //     email: organization?.email,
-    //     org_name : createOrganizationDto?.organization_Name
-    //    }
-
-       let cus_data = {
-        organization_Id : organization?.id,
-        fullname : createOrganizationDto?.fullname,
-        email: organization?.email,
-        phoneNumber : createOrganizationDto?.phoneNumber
-       }
-       await this.user?.create({...cus_data},{transaction:t})
-       t.commit()
-       
-
-       return Util?.handleSuccessRespone(Util?.SuccessRespone,"Organization created successfully.")
-
-      }catch(error){
-        t.rollback()
-      console.log(error)
-       throw new Error(error);
+      console.log(createOrganizationDto)
+      const organization = await this.organizationModel?.create({ ...createOrganizationDto}, { transaction: t })
+   
       
- 
-}
-};
+      let org_data = {
+        organization_Id: organization?.id,
+        fullname: createOrganizationDto?.fullname,
+        email: organization?.email,
+        phoneNumber: createOrganizationDto?.phoneNumber,
+        password: hashedDefaultPassword
+        
+      }
+      const user = await this.user?.create({ ...org_data }, { transaction: t })
+      let send_Token = await this.emailService.sendMailNotification({...org_data})
+      console.log(send_Token)
+
+      t.commit()
+      console.log(user)
+      // return Util?.handleSuccessRespone(Util?.handleCreateSuccessRespone, "Organization created successfully.")
+      return Util?.handleCreateSuccessRespone("Organization created successfully.")
+
+    } catch (error) {
+      t.rollback()
+      console.log(error)
+      throw new Error(error);
+
+    }
+  };
 
 
+  async verifyEmail(@Param('token') token) {
+    try{
+      const decodeToken = verifyEmailToken(token);
+      console.log(decodeToken);
+      // return;
+       
+      if(!decodeToken){
+        return Util?.handleFailResponse('Organization not verified')
+      }
 
-  async findAll(){
+      // const orgToken = await this.organizationModel.findByPk(decodeToken.organizationId);
+      const orgToken = await Organization.findAll({where: { id: decodeToken?.organization_id ,email: decodeToken?.email}});
+      
 
-   try {
-    const orgs = await Organization.findAll()
-    return Util?.handleSuccessRespone(orgs,"Organizations Data retrieved successfully.")
+      if(!orgToken){
+        return Util?.handleFailResponse('Organization not verified')
+      }
 
-   }catch(error){
-    console.log(error)
-    return Util?.handleTryCatchError(Util?.getTryCatchMsg(error));
-  }
+      await Organization.update({isVerified: true},{where: {id: decodeToken?.id, email: decodeToken?.email}} )
+      return Util?.SuccessRespone('Your account has been successfully verified')
 
-  }
+    }catch (error) {
+      console.log(error)
+      return Util?.handleTryCatchError(Util?.getTryCatchMsg(error));
+    }
+  };
+    
+  async validateUser(loginDto: LoginDTO){
+    const {email,password} = loginDto
 
- async findOne(id: number) {
+    const user = await User.findOne({where:{email}})
+    if(!user){
+      throw new BadRequestException('User with this email does not exist')
+    }
+    const IsPasswordValid = await bcrypt.compare(password,user.password)
+    if(!IsPasswordValid){
+      throw new UnauthorizedException('Invalid Credentials')
+    }
+    let accessToken = await createAccessToken(user?.id);
+    let refreshToken = await generateRefreshToken(user?.id);
+    let tokens = {
+      accessToken,
+      refreshToken
+    }
+    // console.log(tokens)
 
-  try{
-    const org = await Organization.findOne({where:{id}});
-    if (!org) {
-      throw new Error('Organization not found.'); 
+       let org_data ={
+      id: user.id,
+      organization_Name: user.organization,
+      email: user.email,
+      IsPhoneNumber: user.phoneNumber
     }
 
-    return Util?.handleSuccessRespone(org,"Organization retrieve successfully.")
+    let userDetails = {
+      org_data,tokens
+    }
 
-  }catch(error){
-    console.log(error)
-    return Util?.handleTryCatchError(Util?.getTryCatchMsg(error));
+        //  Send user data and tokens
+        return Util?.handleSuccessRespone( userDetails,'Login successfully.')
+       
+   
   }
+  
 
-  }
 
-  async update(id: number, updateOrganizationDto: UpdateOrganizationDto) {
+  async findAll() {
 
     try {
-    
-      const org = await Organization.findOne({where:{id}});
-      if (!org) {
-        throw new Error('Enquiry not found.'); 
-      }
+      const orgs = await Organization.findAll()
+      return Util?.handleSuccessRespone(orgs, "Organizations Data retrieved successfully.")
 
-      Object.assign(org, updateOrganizationDto)
-      await org.save()
-      return Util?.handleSuccessRespone(Util?.SuccessRespone,"Organization updated successfully.")
-
-  }catch(error){
-    console.log(error)
-    return Util?.handleTryCatchError(Util?.getTryCatchMsg(error));
-  }
-
-    
-  }
-
-  async remove(id: number) {
-
-    try{
-      const org = await Organization.findOne({where:{id}});
-      if (!org) {
-        throw new Error('Organization not found.'); 
-      }
-
-      Object.assign(org)
-      
-      // await org.remove()
-      return Util?.handleSuccessRespone(Util?.SuccessRespone,"Organization deleted successfully.")
-
-    }catch(error){
+    } catch (error) {
       console.log(error)
       return Util?.handleTryCatchError(Util?.getTryCatchMsg(error));
     }
 
   }
 
-  async findOneByorganizationName(organization_Name: string): Promise<Organization>{
-    return await this.organizationModel.findOne<Organization>({where: {organization_Name}})
+  async findOne(id: number) {
+
+    try {
+      const org = await Organization.findOne({ where: { id } });
+      if (!org) {
+        throw new Error('Organization not found.');
+      }
+
+      return Util?.handleSuccessRespone(org, "Organization retrieve successfully.")
+
+    } catch (error) {
+      console.log(error)
+      return Util?.handleTryCatchError(Util?.getTryCatchMsg(error));
+    }
+
+  }
+
+  async update(id: number, updateOrganizationDto: UpdateOrganizationDto) {
+
+    try {
+
+      const org = await Organization.findOne({ where: { id } });
+      if (!org) {
+        throw new Error('Enquiry not found.');
+      }
+
+      Object.assign(org, updateOrganizationDto)
+      await org.save()
+      return Util?.handleSuccessRespone(Util?.SuccessRespone, "Organization updated successfully.")
+
+    } catch (error) {
+      console.log(error)
+      return Util?.handleTryCatchError(Util?.getTryCatchMsg(error));
+    }
+
+
+  }
+
+  async remove(id: number) {
+
+    try {
+      const org = await Organization.findOne({ where: { id } });
+      if (!org) 
+        // throw new Error('Organization not found.');
+        return Util?.checkIfRecordNotFound("Organization not found.")
+      
+
+      Object.assign(org)
+      await org.destroy()
+      return Util?.handleSuccessRespone(Util?.SuccessRespone, "Organization deleted successfully.")
+
+    } catch (error) {
+      console.log(error)
+      // return Util?.handleTryCatchError(Util?.getTryCatchMsg(error));
+      return Util?.checkIfRecordNotFound("Organization not found.")
+    }
+
+  }
+
+  async findOneByorganizationName(organization_Name: string): Promise<Organization> {
+    return await this.organizationModel.findOne<Organization>({ where: { organization_Name } })
+  }
+
+  // async findOneByuseFullname(fullname: string): Promise<Organization>{
+  //   return await this.organizationModel.findOne<Organization>({where: {fullname}})
+  // }
+
+
+  async findOneByEmail(email: string): Promise<Organization> {
+    return await this.organizationModel.findOne<Organization>({ where: { email } })
+  }
+
+  async findOneByPhoneNumber(phoneNumber: string): Promise<Organization> {
+    return await this.organizationModel.findOne<Organization>({ where: { phoneNumber } })
   }
 
 
-  async findOneByEmail(email: string): Promise<Organization>{
-    return await this.organizationModel.findOne<Organization>({where: {email}})
-  }
 
-     async findOneByPhoneNumber(phoneNumber: string): Promise<Organization> {
-    return await this.organizationModel.findOne<Organization>({where: {phoneNumber}})
-  }
-
-
-  
 
 }

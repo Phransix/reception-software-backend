@@ -18,7 +18,7 @@ export class EmailService {
             let details = {
                 email,
                 org_name,
-                link: process.env.FRONT_END_URL + token,
+                link: process.env.FRONT_END_URL + '/'+ token,
                 year: new Date().getFullYear(),
 
             }

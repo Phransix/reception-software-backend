@@ -4,9 +4,10 @@ import { CreateEnquiryDto } from './dto/create-enquiry.dto';
 import { UpdateEnquiryDto } from './dto/update-enquiry.dto';
 import * as Util from '../../utils/index'
 import { Enquiry } from './entities/enquiry.entity';
+import { ApiTags } from '@nestjs/swagger';
 
 
-
+@ApiTags('Equiries')
 @Controller('enquiries')
 export class EnquiriesController {
   constructor(private readonly enquiriesService: EnquiriesService) {}
