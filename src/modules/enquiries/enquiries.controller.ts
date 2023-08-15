@@ -7,7 +7,7 @@ import { Enquiry } from './entities/enquiry.entity';
 import { ApiTags } from '@nestjs/swagger';
 
 
-
+@ApiTags('Equiries')
 @Controller('enquiries')
 export class EnquiriesController {
   constructor(private readonly enquiriesService: EnquiriesService) {}

@@ -4,6 +4,12 @@ import { Organization } from "src/modules/organization/entities/organization.ent
 
 @Table
 export class User extends Model<User> {
+  static save(user: User) {
+    throw new Error('Method not implemented.');
+  }
+  hash(hash: any) {
+    throw new Error('Method not implemented.');
+  }
 
     @ForeignKey(() => Organization)
     @Column({

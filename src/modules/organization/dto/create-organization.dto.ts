@@ -41,7 +41,9 @@ export class CreateOrganizationDto {
    @IsNotEmpty()
    @MaxLength(10)
    @MinLength(10)
-   readonly phoneNumber: string
+   readonly phoneNumber: string;
+
+   readonly isVerified: boolean
 
 }
 

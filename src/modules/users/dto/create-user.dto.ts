@@ -16,6 +16,7 @@ export class CreateUserDto {
         example: 'Kingsley'
     })
     @IsNotEmpty()
+<<<<<<< HEAD
     readonly firstName: string;
 
     @ApiProperty({
@@ -24,6 +25,9 @@ export class CreateUserDto {
     })
     @IsNotEmpty()
     readonly lastName: string;
+=======
+    readonly fullname: string;
+>>>>>>> aa6d0897bd7c6ca8d03c116f5aa87cc7778c1b40
 
     @ApiProperty({
         description: 'The email of the User/Customer',

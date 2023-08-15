@@ -4,8 +4,6 @@ import * as argon from 'argon2';
 import fs = require('fs');
 import path = require('path');
 var randomize = require('randomatic');
-// const JWT_PUBLIC_KEY = join(__dirname + '../../jwtRS256.key.pub')
-// const JWT_PRIVATE_KEY = join(__dirname + '../../jwtRS256.key')
 
 
 export const handleCustonCreateResponse = (data, msg) => {
@@ -38,10 +36,10 @@ export const handleCustonCreateResponse = (data, msg) => {
     };
   };
 
-  export const handleCreateSuccessRespone = (data,msg) => { 
+  export const handleCreateSuccessRespone = (msg) => { 
     return {
       status_code: HttpStatus.CREATED,
-      data: data,
+      // data: data,
       message: msg 
     };
   };
@@ -415,15 +413,24 @@ console.log(data?.rows?.length)
 // }
 
 
-  export const  createToken = (organization_id:any ,user_id:any) => {
-    return jwt.sign({organization_id,user_id}, process.env.JWT_PRIVATE_KEY, {expiresIn: '24h',algorithm: 'RS256'});
+  export const  createToken = (organization_id:any ) => {
+    return jwt.sign({organization_id}, process.env.JWT_SECRET, {expiresIn: '24h',algorithm: 'RS256'});
   };
+
+  // const token = jwt.sign(payload, secretKey, { expiresIn: '1h' });
+
 
   export const verifyUserToken = (token) =>{
    const decode = jwt.verify(token,process.env.JWT_PUBLIC_KEY);
    return decode;
  
  };
+
+//  export const verifyOrganizationToken = (token) =>{
+//   const decode = jwt.verify(token,process.env.JWT_PUBLIC_KEY);
+//   return decode;
+
+// };
 
  export const  reseetpassToken = (customer_id)  => {
    return jwt.sign({customer_id}, process.env.JWT_RESET_PASSWORD, {expiresIn: '20m'});
@@ -433,6 +440,16 @@ console.log(data?.rows?.length)
    const decode = jwt.verify(token,process.env.JWT_RESET_PASSWORD);
    return decode;
 
+};
+
+export const  createAccessToken = ({id})  => {
+  const decode= jwt.sign({organization_Id:id}, process.env.jWT_ACCESS_SECRET, {expiresIn: '30m'});
+  return decode
+};
+
+
+ export const  generateRefreshToken = ({id})  => {
+  return jwt.sign({organization_Id : id}, process.env.jWT_REFRESH_SECRET, {expiresIn: '30d'});
 };
 
 

@@ -4,6 +4,9 @@ import { User } from "src/modules/users/entities/user.entity";
 
 @Table
 export class Organization extends Model<Organization>   {
+    static createAccessToken(user: Organization) {
+      throw new Error('Method not implemented.');
+    }
   
     @Column({
        type: DataType.STRING,
@@ -21,7 +24,15 @@ export class Organization extends Model<Organization>   {
       type: DataType.STRING,
       allowNull: false
     })
-    phoneNumber: string
+    phoneNumber: string;
+
+    @Column({
+      type: DataType.BOOLEAN,
+      allowNull: true,
+      defaultValue: false
+    })
+    isVerified: boolean;
+
 
     @HasMany(() => User)
     users: User[];
