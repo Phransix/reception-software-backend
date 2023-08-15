@@ -44,7 +44,6 @@ import { EnquiriesModule } from './modules/enquiries/enquiries.module';
       verboseMemoryLeak: false,
       ignoreErrors: false,
     }),
-    
 
     MailerModule.forRootAsync({
       imports: [ConfigModule],
@@ -92,11 +91,6 @@ import { EnquiriesModule } from './modules/enquiries/enquiries.module';
     OrganizationModule,
     UsersModule,
     EnquiriesModule,
-
-
-
-  
-
 
     
   ],

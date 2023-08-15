@@ -4,6 +4,7 @@ import { CreateEnquiryDto } from './dto/create-enquiry.dto';
 import { UpdateEnquiryDto } from './dto/update-enquiry.dto';
 import * as Util from '../../utils/index'
 import { Enquiry } from './entities/enquiry.entity';
+import { ApiTags } from '@nestjs/swagger';
 
 
 
@@ -11,6 +12,7 @@ import { Enquiry } from './entities/enquiry.entity';
 export class EnquiriesController {
   constructor(private readonly enquiriesService: EnquiriesService) {}
 
+  @ApiTags('Enquiries')
   @Post('creatEnquiry')
   async create(@Body() createEnquiryDto: CreateEnquiryDto) {
     try {
@@ -23,18 +25,20 @@ export class EnquiriesController {
     }
   }
 
-    @Get('getAllEnquireies')
-    async findAll() {
-      try {
-        const allQueries = this.enquiriesService.findAll()
-        return allQueries;
+  @ApiTags('Enquiries')
+  @Get('getAllEnquireies')
+  async findAll() {
+    try {
+      const allQueries = this.enquiriesService.findAll()
+      return allQueries;
 
-      }catch(error){
-        console.log(error)
-        return Util?.handleTryCatchError(Util?.getTryCatchMsg(error)) 
-      }
+    }catch(error){
+      console.log(error)
+      return Util?.handleTryCatchError(Util?.getTryCatchMsg(error)) 
     }
+  }
 
+  @ApiTags('Enquiries')
   @Get(':id')
   async findOne(@Param('id') id: number){
     try {
@@ -49,6 +53,7 @@ export class EnquiriesController {
   };
 
 
+  @ApiTags('Enquiries')
   @Patch(':id')
   async update(@Param('id') id: number, @Body() updateEnquiryDto: UpdateEnquiryDto) {
     try {
@@ -61,6 +66,7 @@ export class EnquiriesController {
     }
   }
 
+  @ApiTags('Enquiries')
   @Delete(':id')
   async remove(@Param('id') id: number) {
      try {

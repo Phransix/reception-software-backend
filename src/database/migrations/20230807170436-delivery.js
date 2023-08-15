@@ -9,7 +9,7 @@ module.exports = {
      * Example:
      * await queryInterface.createTable('users', { id: Sequelize.INTEGER });
      */
-    await queryInterface.createTable("Visitors", {
+    await queryInterface.createTable("Deliveries", {
       id: {
         allowNull: false,
         autoIncrement: true,
@@ -20,7 +20,12 @@ module.exports = {
         type: Sequelize.INTEGER,
         allowNull: false,
       },
-      visitor: {
+      from: {
+        type: Sequelize.STRING,
+        allowNull: false,
+        required:true,
+      },
+      to: {
         type: Sequelize.STRING,
         allowNull: false,
         required:true,
@@ -30,28 +35,37 @@ module.exports = {
         allowNull: false,
         required:true,
       },
-      purpose: {
+      email: {
         type: Sequelize.STRING,
         allowNull: false,
         required:true,
       },
-      host: {
-        type: Sequelize.STRING,
-        allowNull: false,
-        required:true,
-      },
-      visit_Status: {
-        type: Sequelize.ENUM('active', 'inactive'),
-        allowNull: false,
-        required:true,
-        defaultValue: 'inactive',
-        validate: {
-          isIn: [['active', 'inactive']] // Validates that the value is either 'active' or 'inactive'
-        }
-      },
-      date: {
+      date_and_time: {
         type: Sequelize.DATE,
         allowNull: false,
+        defaultValue: Sequelize.literal('CURRENT_TIMESTAMP'),
+      },
+      status: {
+        type: Sequelize.ENUM('delivered', 'received'),
+        allowNull: false,
+        defaultValue: 'delivered',
+        required:true,
+        validate: {
+          isIn: [['delivered', 'received']]
+        }
+      },
+      type: {
+        type: Sequelize.ENUM('document', 'food', 'other'),
+        allowNull: false,
+        defaultValue: 'other',
+        required:true,
+        validate: {
+          isIn: [['document', 'food', 'other']]
+        }
+      },
+      Delivery_Description: {
+        type: Sequelize.STRING,
+        allowNull: true,
       },
       createdAt: {
         type: Sequelize.DATE,
@@ -73,6 +87,6 @@ module.exports = {
      * Example:
      * await queryInterface.dropTable('users');
      */
-    await queryInterface.dropTable('Visitors');
+    await queryInterface.dropTable('Deliveries');
   }
 };

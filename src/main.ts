@@ -22,7 +22,6 @@ async function bootstrap() {
     prefix: '/public',
 });
 const configService = app.get(ConfigService);
-
   const Swagconfig = new DocumentBuilder()
     .setTitle('Reception App Backend EndPoint')
     .setDescription('')

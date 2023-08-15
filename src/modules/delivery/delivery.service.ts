@@ -64,7 +64,7 @@ export class DeliveryService {
     }
   };
 
-  remove(id: number) {
+  async remove(id: number) {
     // return `This action removes a #${id} delivery`;
     try {
       const delivery = this.DeliveryModel.findOne({ where: { id } });
@@ -72,6 +72,7 @@ export class DeliveryService {
         throw new NotAcceptableException("Delivery Data doen not exist")
       }
       Object.assign(delivery)
+      (await delivery).destroy()
       return Util?.handleSuccessRespone(Util?.SuccessRespone, "Delivery Data deleted Successfully")
 
     } catch (error) {

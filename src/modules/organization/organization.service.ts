@@ -118,8 +118,7 @@ async create(createOrganizationDto: CreateOrganizationDto) {
       }
 
       Object.assign(org)
-      
-      // await org.remove()
+      await org.destroy()
       return Util?.handleSuccessRespone(Util?.SuccessRespone,"Organization deleted successfully.")
 
     }catch(error){
@@ -141,8 +140,5 @@ async create(createOrganizationDto: CreateOrganizationDto) {
      async findOneByPhoneNumber(phoneNumber: string): Promise<Organization> {
     return await this.organizationModel.findOne<Organization>({where: {phoneNumber}})
   }
-
-
-  
 
 }

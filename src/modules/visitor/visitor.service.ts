@@ -37,11 +37,11 @@ export class VisitorService {
 
   async findOne(id: number) {
     try {
-      let visitor = this.VisitorModel.findOne({where:{id}});
+      const visitor = await Visitor.findOne({where:{id}});
       if (!visitor) {
         throw new NotAcceptableException('The visitor does not exist')
       }
-      return Util?.handleCreateSuccessRespone(visitor,"Visitor Data retrieval success");
+      return Util?.handleSuccessRespone(visitor,"Visitor Data retrieval success");
       // return visitor
     } catch (error) {
       console.log(error);
@@ -73,6 +73,7 @@ export class VisitorService {
         throw new NotAcceptableException("Visitor not found");
       }
       Object.assign(visitor)
+      await visitor.destroy()
       return Util?.handleSuccessRespone(Util?.SuccessRespone,"Visitor Deleted Successfully")
     } catch (error) {
       console.log(error)
