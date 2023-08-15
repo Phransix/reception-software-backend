@@ -18,10 +18,16 @@ import { AppService } from './app.service';
 import { OrganizationModule } from './modules/organization/organization.module';
 import { UsersModule } from './modules/users/users.module';
 import { EnquiriesModule } from './modules/enquiries/enquiries.module';
+import { PaginateModule } from 'nestjs-sequelize-paginate'
+
 
 
 @Module({
   imports: [
+
+    PaginateModule.forRoot({
+      url: 'http://localhost:3005',
+    }),
 
     BullModule.forRoot({
       redis: {

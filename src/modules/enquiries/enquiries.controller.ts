@@ -26,7 +26,7 @@ export class EnquiriesController {
   }
 
   @ApiTags('Enquiries')
-  @Get('getAllEnquireies')
+  @Get('getAllEnquiries')
   async findAll() {
     try {
       const allQueries = this.enquiriesService.findAll()
