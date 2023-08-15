@@ -26,9 +26,14 @@ export class VisitorService {
 
 
   async findAll() {
-    return await this.VisitorModel.findAll<Visitor>({
-    });
-  }
+    try {
+      const visitors = await Visitor.findAll()
+      return Util?.handleSuccessRespone(visitors,"Visitors Data retrieved successfully")
+    } catch (error) {
+      console.log(error)
+      return Util?.handleTryCatchError(Util?.getTryCatchMsg(error))
+    }
+  };
 
   async findOne(id: number) {
     try {
@@ -36,20 +41,43 @@ export class VisitorService {
       if (!visitor) {
         throw new NotAcceptableException('The visitor does not exist')
       }
-      // return Util?.handleCreateSuccessRespone(visitor,"Visitor retrieval success");
-      return visitor
+      return Util?.handleCreateSuccessRespone(visitor,"Visitor Data retrieval success");
+      // return visitor
     } catch (error) {
       console.log(error);
       return Util?.handleTryCatchError(Util?.getTryCatchMsg(error))
     }
   }
 
-  update(id: number, updateVisitorDto: UpdateVisitorDto) {
-    return `This action updates a #${id} visitor`;
-  }
+  async update(id: number, updateVisitorDto: UpdateVisitorDto) {
+    // return `This action updates a #${id} visitor`;
+    try {
+      const visitor = await Visitor.findOne({where:{ id }});
+      if (!visitor){
+        throw new NotAcceptableException('Visitor not found')
+      }
+      Object.assign(visitor, updateVisitorDto)
+      await visitor.save()
+      return Util?.handleSuccessRespone(Util?.SuccessRespone,"Visitor Data updated Successfully");
+    } catch (error) {
+      console.log(error)
+      return Util?.handleTryCatchError(Util?.getTryCatchMsg(error));
+    }
+  };
 
-  remove(id: number) {
-    return `This action removes a #${id} visitor`;
+  async remove(id: number) {
+    // return `This action removes a #${id} visitor`;
+    try {
+      const visitor = await Visitor.findOne({where: { id }});
+      if(!visitor) {
+        throw new NotAcceptableException("Visitor not found");
+      }
+      Object.assign(visitor)
+      return Util?.handleSuccessRespone(Util?.SuccessRespone,"Visitor Deleted Successfully")
+    } catch (error) {
+      console.log(error)
+      return Util?.handleTryCatchError(Util?.getTryCatchMsg(error));
+    }
   }
 }
 

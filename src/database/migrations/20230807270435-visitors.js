@@ -16,6 +16,10 @@ module.exports = {
         primaryKey: true,
         type: Sequelize.INTEGER,
       },
+      organization_Id: {
+        type: Sequelize.INTEGER,
+        allowNull: false,
+      },
       visitor: {
         type: Sequelize.STRING,
         allowNull: false,

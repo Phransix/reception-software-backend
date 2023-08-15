@@ -11,17 +11,15 @@ import { APP_GUARD } from '@nestjs/core';
 // import { AtGuard } from 'src/common/guards';
 import { LoggingInterceptor } from './logging.interceptor';
 import { APP_INTERCEPTOR } from '@nestjs/core';
-<<<<<<< HEAD
+
 import { VisitorModule } from './modules/visitor/visitor.module';
 import { DeliveryModule } from './modules/delivery/delivery.module';
-=======
 import { AppController } from './app.controller';
 import { AppService } from './app.service';
 import { OrganizationModule } from './modules/organization/organization.module';
 import { UsersModule } from './modules/users/users.module';
 import { EnquiriesModule } from './modules/enquiries/enquiries.module';
 
->>>>>>> albert
 
 @Module({
   imports: [
@@ -87,24 +85,16 @@ import { EnquiriesModule } from './modules/enquiries/enquiries.module';
     }),
 
 
-<<<<<<< HEAD
     VisitorModule,
 
 
     DeliveryModule,
 
-=======
+
     OrganizationModule,
     UsersModule,
     EnquiriesModule,
 
-
-
-  
-
-
-    
->>>>>>> albert
   ],
 
   controllers: [],

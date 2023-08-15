@@ -7,6 +7,9 @@ enum Status {
 export class CreateVisitorDto {
 
 
+    @IsNotEmpty()
+    readonly organization_Id: string;
+
     @IsString()
     @IsNotEmpty()
     readonly visitor: string;

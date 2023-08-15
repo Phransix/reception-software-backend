@@ -19,18 +19,32 @@ export class DeliveryController {
   }
 
   @Get()
-  findAll() {
+  async findAll() {
     return this.deliveryService.findAll();
   }
 
   @Get(':id')
-  findOne(@Param('id') id: string) {
-    return this.deliveryService.findOne(+id);
+  async findOne(@Param('id') id: number) {
+    // return this.deliveryService.findOne(+id);
+    try {
+      const delivery = await this.deliveryService.findOne(id);
+      return delivery;
+    } catch (error) {
+      console.log(error)
+      return Util?.handleTryCatchError(Util?.getTryCatchMsg(error))
+    }
   }
 
   @Patch(':id')
-  update(@Param('id') id: string, @Body() updateDeliveryDto: UpdateDeliveryDto) {
-    return this.deliveryService.update(+id, updateDeliveryDto);
+  update(@Param('id') id: number, @Body() updateDeliveryDto: UpdateDeliveryDto) {
+    // return this.deliveryService.update(+id, updateDeliveryDto);
+    try {
+      const delivery_Update = this.deliveryService.update(id,updateDeliveryDto)
+      return delivery_Update
+    } catch (error) {
+      console.log(error);
+      return Util?.handleTryCatchError(Util?.getTryCatchMsg(error))
+    }
   }
 
   @Delete(':id')

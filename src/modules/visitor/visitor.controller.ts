@@ -36,10 +36,10 @@ export class VisitorController {
   }
 
   @Patch(':id')
-  async update(@Param('id') id: number, @Body() updateVisitorDto: UpdateVisitorDto): Promise<string | void> {
+  async update(@Param('id') id: number, @Body() updateVisitorDto: UpdateVisitorDto) {
     // return this.visitorService.update(+id, updateVisitorDto);
     try {
-      let visitor_Update = this.visitorService.update(+id,updateVisitorDto)
+      const visitor_Update = this.visitorService.update(id,updateVisitorDto)
       return visitor_Update
     } catch (error) {
       console.log(error);
@@ -48,7 +48,7 @@ export class VisitorController {
   }
 
   @Delete(':id')
-  remove(@Param('id') id: string) {
+  async remove(@Param('id') id: string) {
     return this.visitorService.remove(+id);
   }
 }

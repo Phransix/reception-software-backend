@@ -41,7 +41,9 @@ export const handleCustonCreateResponse = (data, msg) => {
   export const handleCreateSuccessRespone = (data,msg) => { 
     return {
       status_code: HttpStatus.CREATED,
-      message: msg    };
+      data: data,
+      message: msg 
+    };
   };
 
 
@@ -449,10 +451,6 @@ export const generateId =(pattern,length) => {
 }
 
 
-export const createPhoneNumberToken = (data) => {
-  let {phone_number,opt } = data
-  return jwt.sign({phone_number,opt}, process.env.JWT_SMS_TOKEN, {expiresIn: '3m'});
-}
 
 
 
