@@ -7,11 +7,12 @@ import { BullModule } from '@nestjs/bull';
 import { EmailService } from 'src/helper/EmailHelper';
 import { EmailProcessor } from 'src/Processor/email.processor';
 import { User } from '../users/entities/user.entity';
+import { Role } from '../role/entities/role.entity';
 
 
 @Module({
   imports: [
-    SequelizeModule.forFeature([Organization,User]),
+    SequelizeModule.forFeature([Organization,User,Role]),
     BullModule.registerQueue({name:'emailVerification'})
   ],
   controllers: [OrganizationController],

@@ -27,7 +27,18 @@ export const createData = (model, newItem) => {
   
   
   
-  export const updateData = (req, model, oldItem, where,t) => {
+  
+  export const updateData = (req, model, oldItem, where) => {
+    if (req.id) {
+      const item = model.update(oldItem, where);
+      return item;
+    } else {
+      return {};
+    }
+  
+  }
+
+  export const updateDataWithTranz = (req, model, oldItem, where,t) => {
     if (req.id) {
       const item = model.update(oldItem, where,t);
       return item;

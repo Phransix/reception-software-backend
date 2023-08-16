@@ -15,15 +15,21 @@ module.exports = {
         primaryKey: true,
         type: Sequelize.INTEGER
       },
+
+      roleId: {
+        type: Sequelize.UUID,
+        defaultValue: Sequelize.UUIDV4,
+        allowNull: false,
+        unique: true,
+      },
+
       name: {
         type: Sequelize.STRING
       },
       status: {
         type: Sequelize.STRING
       },
-      description:{
-        type: Sequelize.STRING
-      },
+    
       createdAt: {
         type: Sequelize.DATE,
         allowNull: false,

@@ -6,6 +6,7 @@ import path = require('path');
 var randomize = require('randomatic');
 
 
+
 export const handleCustonCreateResponse = (data, msg) => {
 
   
@@ -36,10 +37,12 @@ export const handleCustonCreateResponse = (data, msg) => {
     };
   };
 
-  export const handleCreateSuccessRespone = (msg:any) => { 
+  export const handleCreateSuccessRespone = (msg) => { 
     return {
       status_code: HttpStatus.CREATED,
-      message: msg    };
+      // data: data,
+      message: msg 
+    };
   };
 
 
@@ -452,8 +455,8 @@ export const  createAccessToken = ({id})  => {
 
 
 export const createEmailToken = (data) => {
-  let {email,organization_id } = data
-  return jwt.sign({email,organization_id}, process.env.JWT_EMAIL_TOKEN, {expiresIn: '2h'});
+  let {email,organizationId } = data
+  return jwt.sign({email,organizationId}, process.env.JWT_EMAIL_TOKEN, {expiresIn: '2h'});
 }
 
 export const verifyEmailToken = (token) => {
@@ -466,10 +469,6 @@ export const generateId =(pattern,length) => {
 }
 
 
-export const createPhoneNumberToken = (data) => {
-  let {phone_number,opt } = data
-  return jwt.sign({phone_number,opt}, process.env.JWT_SMS_TOKEN, {expiresIn: '3m'});
-}
 
 
 

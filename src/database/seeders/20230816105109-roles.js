@@ -1,3 +1,4 @@
+
 'use strict';
 const { v4: uuidv4 } = require('uuid');
 
@@ -6,18 +7,19 @@ module.exports = {
     let [template, func] = await queryInterface.sequelize.query(`Select count(*) from "Roles"`);
 
     if(template[0]?.count <= 0){
+      
      queryInterface.bulkInsert("Roles", [
       {
-        name: 'Admin',
+        roleId: uuidv4(),
+        name: 'admin',
         status:true,
-        description: 'Administrator role',
         createdAt: new Date(),
         updatedAt: new Date()
       },
       {
-        name: 'Receptionist',
+        roleId: uuidv4(),
+        name: 'receptionist',
         status:true,
-        description: 'Regular user role',
         createdAt: new Date(),
         updatedAt: new Date()
       },

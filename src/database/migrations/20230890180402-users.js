@@ -8,21 +8,48 @@ module.exports = {
         primaryKey: true,
         type: Sequelize.INTEGER
       },
-      organization_Id: {
-        type: Sequelize.INTEGER,
-        allowNull: false,
+
+      userId: {
+          type: Sequelize.UUID,
+          defaultValue: Sequelize.UUIDV4,
+          allowNull: false,
+          unique: true
       },
-      fullname: {
+      roleId: {
+        type: Sequelize.UUID,
+        allowNull: false,
+        references: {
+          model:{
+            tableName: 'Roles',
+          },
+          key:'roleId'
+        },
+        onDelete: 'CASCADE'
+      },
+      organizationId: {
+        type: Sequelize.UUID,
+        allowNull: false,
+        references: {
+          model:{
+            tableName: 'Organizations',
+          },
+          key:'organizationId'
+        },
+        onDelete: 'CASCADE'
+      },
+      fullName: {
         type: Sequelize.STRING,
         allowNull: false
       },
       email: {
         type: Sequelize.STRING,
-        allowNull: false
+        allowNull: false,
+        unique: true
       },
       phoneNumber: {
         type:Sequelize.STRING,
-        allowNull: false
+        allowNull: false,
+        unique: true
       },
 
       password: {

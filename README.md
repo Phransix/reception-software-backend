@@ -1,116 +1,62 @@
-<p align="center">
-  <a href="http://nestjs.com/" target="blank"><img src="https://nestjs.com/img/logo-small.svg" width="200" alt="Nest Logo" /></a>
-</p>
+Commands:
+  sequelize-cli db:migrate                        Run pending migrations
+  sequelize-cli db:migrate:schema:timestamps:add  Update migration table to have timestamps
+  sequelize-cli db:migrate:status                 List the status of all migrations
+  sequelize-cli db:migrate:undo                   Reverts a migration
+  sequelize-cli db:migrate:undo:all               Revert all migrations ran
+  sequelize-cli db:seed                           Run specified seeder
+  sequelize-cli db:seed:undo                      Deletes data from the database
+  sequelize-cli db:seed:all                       Run every seeder
+  sequelize-cli db:seed:undo:all                  Deletes data from the database
+  sequelize-cli db:create                         Create database specified by configuration
+  sequelize-cli db:drop                           Drop database specified by configuration
+  sequelize-cli init                              Initializes project
+  sequelize-cli init:config                       Initializes configuration
+  sequelize-cli init:migrations                   Initializes migrations
+  sequelize-cli init:models                       Initializes models
+  sequelize-cli init:seeders                      Initializes seeders
+  sequelize-cli migration:generate                Generates a new migration file
+  sequelize-cli migration:create                  Generates a new migration file
+  sequelize-cli model:generate                    Generates a model and its migration
+  sequelize-cli model:create                      Generates a model and its migration
+  sequelize-cli seed:generate                     Generates a new seed file
+  sequelize-cli seed:create                       Generates a new seed file
 
-[circleci-image]: https://img.shields.io/circleci/build/github/nestjs/nest/master?token=abc123def456
-[circleci-url]: https://circleci.com/gh/nestjs/nest
+"@types/uuid": "^8.3.4",
 
-  <p align="center">A progressive <a href="http://nodejs.org" target="_blank">Node.js</a> framework for building efficient and scalable server-side applications.</p>
-    <p align="center">
-<a href="https://www.npmjs.com/~nestjscore" target="_blank"><img src="https://img.shields.io/npm/v/@nestjs/core.svg" alt="NPM Version" /></a>
-<a href="https://www.npmjs.com/~nestjscore" target="_blank"><img src="https://img.shields.io/npm/l/@nestjs/core.svg" alt="Package License" /></a>
-<a href="https://www.npmjs.com/~nestjscore" target="_blank"><img src="https://img.shields.io/npm/dm/@nestjs/common.svg" alt="NPM Downloads" /></a>
-<a href="https://circleci.com/gh/nestjs/nest" target="_blank"><img src="https://img.shields.io/circleci/build/github/nestjs/nest/master" alt="CircleCI" /></a>
-<a href="https://coveralls.io/github/nestjs/nest?branch=master" target="_blank"><img src="https://coveralls.io/repos/github/nestjs/nest/badge.svg?branch=master#9" alt="Coverage" /></a>
-<a href="https://discord.gg/G7Qnnhy" target="_blank"><img src="https://img.shields.io/badge/discord-online-brightgreen.svg" alt="Discord"/></a>
-<a href="https://opencollective.com/nest#backer" target="_blank"><img src="https://opencollective.com/nest/backers/badge.svg" alt="Backers on Open Collective" /></a>
-<a href="https://opencollective.com/nest#sponsor" target="_blank"><img src="https://opencollective.com/nest/sponsors/badge.svg" alt="Sponsors on Open Collective" /></a>
-  <a href="https://paypal.me/kamilmysliwiec" target="_blank"><img src="https://img.shields.io/badge/Donate-PayPal-ff3f59.svg"/></a>
-    <a href="https://opencollective.com/nest#sponsor"  target="_blank"><img src="https://img.shields.io/badge/Support%20us-Open%20Collective-41B883.svg" alt="Support us"></a>
-  <a href="https://twitter.com/nestframework" target="_blank"><img src="https://img.shields.io/twitter/follow/nestframework.svg?style=social&label=Follow"></a>
-</p>
-  <!--[![Backers on Open Collective](https://opencollective.com/nest/backers/badge.svg)](https://opencollective.com/nest#backer)
-  [![Sponsors on Open Collective](https://opencollective.com/nest/sponsors/badge.svg)](https://opencollective.com/nest#sponsor)-->
+"uuid": "^8.3.2",
 
-## Description
-
-[Nest](https://github.com/nestjs/nest) framework TypeScript starter repository.
-
-## Installation
-
-```bash
-$ yarn install
-```
-
-## Running the app
-
-```bash
-# development
-$ yarn run start
-
-# watch mode
-$ yarn run start:dev
-
-# production mode
-$ yarn run start:prod
-```
-
-## Test
-
-```bash
-# unit tests
-$ yarn run test
-
-# e2e tests
-$ yarn run test:e2e
-
-# test coverage
-$ yarn run test:cov
-```
-
-## Support
-
-Nest is an MIT-licensed open source project. It can grow thanks to the sponsors and support by the amazing backers. If you'd like to join them, please [read more here](https://docs.nestjs.com/support).
-
-## Stay in touch
-
-- Author - [Kamil Myśliwiec](https://kamilmysliwiec.com)
-- Website - [https://nestjs.com](https://nestjs.com/)
-- Twitter - [@nestframework](https://twitter.com/nestframework)
-
-## License
-
-Nest is [MIT licensed](LICENSE).
+@Column({defaultValue: uuidv4})
+    uuid: string
 
 
+    const { v4: uuidv4 } = require('uuid');
 
-npm install -g sequelize
-npm install --save sequelize sequelize-typescript pg-hstore pg
-npm install --save-dev @types/sequelize
-npm install dotenv --save
+    uuid: {
+      type: Sequelize.UUID,
+      defaultValue: Sequelize.UUIDV4,
+      allowNull: false,
+      unique: true,
+    },
 
-Create Database
-npx sequelize-cli db:create 
+    user_id: {
+        type: Sequelize.UUID,
+        references: {
+          model: {
+            tableName: 'Customers',
+          },
+          key: 'user_id',
+        },
+        onDelete: 'CASCADE',
+      },
 
-Drop Database
-npx sequelize-cli db:drop  
-
-Migrate Database Tables
-npx sequelize-cli db:migrate  
-
-command line for creating new migration file (table)
-npx sequelize-cli migration:generate --name user
-
-
-Seed Records into Tables
-npx sequelize-cli db:seed:all 
-npx sequelize-cli db:seed --seed <seed-file-name>.js
-
-
-command line for creating new migration file (table)
-
-
-
-command line for creating new seed file 
-npx sequelize-cli seed:generate --name users
-
-
-
-git@github.com:Webber-Mill-Ltd/reception-software-backend.git
-
-
- git add .
- git commit -m 'updated'
-git push origin albert
-
-
+      currency_id: {
+        type: Sequelize.INTEGER,
+        references: {
+          model: {
+            tableName: 'SystemCurrenciesTB',
+          },
+          key: 'id',
+        },
+        onDelete: 'NO ACTION',
+      },

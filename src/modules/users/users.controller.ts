@@ -5,21 +5,19 @@ import { UpdateUserDto } from './dto/update-user.dto';
 import * as Util from '../../utils/index'
 import { User } from './entities/user.entity';
 import { ApiTags } from '@nestjs/swagger';
-import { AuthGuard } from '@nestjs/passport';
 import { ChangePassDTO } from 'src/guard/auth/changePassDTO';
-// import { comparePassword ,hashPassword} from 'src/passwordhash/generatepasshash'
-
-@ApiTags('Users')
 
 @Controller('users')
 export class UsersController {
   constructor(private readonly usersService: UsersService) {}
 
+  @ApiTags('Users')
   @Post()
   create(@Body() createUserDto: CreateUserDto) {
     return this.usersService.create(createUserDto);
   }
 
+  @ApiTags('Users')
   @Get('getAllUsers')
   async findAll() {
 
@@ -35,6 +33,7 @@ export class UsersController {
   };
 
 
+  @ApiTags('Users')
   @Get(':id')
   async findOne(@Param('id') id: number) {
 
@@ -51,6 +50,7 @@ export class UsersController {
   };
 
 
+  @ApiTags('Users')
   @Patch(':id')
   async update(@Param('id') id: number, @Body() updateUserDto: UpdateUserDto) {
 
@@ -66,17 +66,7 @@ export class UsersController {
 
   };
 
-  @Get(':email')
-  async getUserByEmail(@Param('email') email: string) {
-    const user = await this.usersService.findByEmail(email);
-    if (user) {
-      return user;
-    } else {
-      throw new NotFoundException('User not found');
-    }
-  }
-
-
+  @ApiTags('Users')
   @Delete(':id')
   async remove(@Param('id') id: number) {
 
@@ -99,21 +89,8 @@ export class UsersController {
     }
 
   }
-
-  
-    // change Password
-   
-    // @Patch(':id/change-password')
-    // // @UseGuards(AuthGuard())
-    // async changePassword(
-    //   @Request()req,
-    //   @Body('oldPassword') oldPassword: string,
-    //   @Body('newPassword') newPassword: string
-    // ){
-    //   const userId = req.user.id;
-    //   await this.usersService.changePassword(userId,oldPassword,newPassword)
-    // }
- 
+     
+  @ApiTags('Users')
     @Patch(':id/changePassword')
     async changePassword(@Param('id') id: number,@Body() changePassDTO: ChangePassDTO) {
       try {

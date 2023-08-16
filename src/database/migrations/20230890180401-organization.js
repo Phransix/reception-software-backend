@@ -8,29 +8,40 @@ module.exports = {
         primaryKey: true,
         type: Sequelize.INTEGER
       },
-         organization_Name: {
-        type: Sequelize.STRING,
+
+      organizationId: {
+        type: Sequelize.UUID,
+        defaultValue: Sequelize.UUIDV4,
         allowNull: false,
-      },
-    
-      email: {
-        type: Sequelize.STRING,
-        allowNull: false
-      },
-      phoneNumber: {
-        type:Sequelize.STRING,
-        allowNull: false
+        unique: true
       },
 
-       isVerified: {
+      organizationName: {
+        type: Sequelize.STRING,
+        allowNull: false,
+        unique: true
+      },
+
+      email: {
+        type: Sequelize.STRING,
+        allowNull: false,
+        unique: true
+      },
+      phoneNumber: {
+        type: Sequelize.STRING,
+        allowNull: false,
+        unique: true
+      },
+
+      isVerified: {
         type: Sequelize.BOOLEAN,
-         defaultValue: false
+        defaultValue: false
       },
 
       createdAt: {
         allowNull: false,
         type: Sequelize.DATE
-        
+
       },
       updatedAt: {
         allowNull: false,
@@ -38,16 +49,16 @@ module.exports = {
       },
       deletedAt: {
         type: Sequelize.DATE,
-      allowNull: true,
-     defaultValue: Sequelize.literal('CURRENT_TIMESTAMP'),
-      }, 
+        allowNull: true,
+        defaultValue: Sequelize.literal('CURRENT_TIMESTAMP'),
+      },
       // soft_Delete: {
       //   type: Sequelize.Date,
       //   allowNull: true,
       //   defaultValue: Sequelize.literal('CURRENT_TIMESTAMP'),
       //   after: 'updatedAt'
       // }
-   
+
 
     });
   },

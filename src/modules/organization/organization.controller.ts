@@ -45,9 +45,10 @@ export class OrganizationController {
     }
   }
 
-  @Get('token')
+  @Get(':token')
   async verifyEmail(@Param('token') token: string){
     try{
+
       console.log(token)
       
       const emailVerify = await this.organizationService.verifyEmail(token)
@@ -75,25 +76,6 @@ export class OrganizationController {
   //     }
   //      return user
 
-
-  //   }catch(error){
-  //   console.log(error)
-  //   return Util?.handleTryCatchError(Util?.getTryCatchMsg(error)) 
-  // }
-
-  // };
-
-  @Post('login')
-  async login(@Body() loginDTO: LoginDTO){
-    const user = await this.organizationService.validateUser(loginDTO)
-    if(!user){
-      throw new HttpException('Invalid Credentials',HttpStatus.UNAUTHORIZED)
-    }else{
-      return user
-     
-    }
-  }
-
   
   @Get('getAllOrganizations')
  async findAll() {
@@ -109,6 +91,7 @@ export class OrganizationController {
 
   };
 
+ 
   @Get(':id')
   async findOne(@Param('id') id: number) {
 
@@ -124,6 +107,7 @@ export class OrganizationController {
 
   };
 
+  
   @Patch(':id')
   async update(@Param('id') id: number, @Body() updateOrganizationDto: UpdateOrganizationDto) {
 
@@ -138,6 +122,7 @@ export class OrganizationController {
 
   }
 
+  
   @Delete(':id')
  async remove(@Param('id') id: number) {
 

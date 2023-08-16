@@ -6,24 +6,23 @@ import { Organization } from './entities/organization.entity';
 import * as Util from '../../utils/index'
 import { Sequelize } from 'sequelize-typescript';
 import { User } from 'src/modules/users/entities/user.entity';
-import {  createAccessToken, generateRefreshToken, verifyEmailToken } from '../../utils/index';
 import { EmailService } from 'src/helper/EmailHelper';
+import {  createAccessToken, generateRefreshToken, verifyEmailToken } from '../../utils/index';
 import * as bcrypt from 'bcrypt';
 import { LoginDTO } from 'src/guard/auth/loginDTO';
-import { ChangePassDTO } from 'src/guard/auth/changePassDTO';
+import { Role } from '../role/entities/role.entity';
+// import { ChangePassDTO } from 'src/guard/auth/changePassDTO';
 
 @Injectable()
 export class OrganizationService {
-  // validateUser(email: string, password: string) {
-  //     throw new Error("Method not implemented.");
-  // }
+  
   constructor(
     @InjectModel(Organization) private organizationModel: typeof Organization,
     @InjectModel(User) private user: typeof User,
-    // private readonly jwtService: JwtService,
-    private sequelize: Sequelize,
+    @InjectModel(Role) private role: typeof Role,
+    private sequelize : Sequelize,
     private emailService:EmailService
-  ) { }
+    ){}
 
   async create(createOrganizationDto: CreateOrganizationDto) {
     let t = await this.sequelize?.transaction();
@@ -37,11 +36,17 @@ export class OrganizationService {
 
       console.log(createOrganizationDto)
       const organization = await this.organizationModel?.create({ ...createOrganizationDto}, { transaction: t })
+      let role = await this?.role?.findOne({where:{name:'admin'}});
+
+      if(!role)
+      return false
    
       
       let org_data = {
-        organization_Id: organization?.id,
-        fullname: createOrganizationDto?.fullname,
+        
+        organizationId: organization?.organizationId,
+        roleId: role?.roleId,
+        fullName: createOrganizationDto?.fullName,
         email: organization?.email,
         phoneNumber: createOrganizationDto?.phoneNumber,
         password: hashedDefaultPassword
@@ -65,8 +70,11 @@ export class OrganizationService {
   };
 
 
-  async verifyEmail(@Param('token') token) {
+  async verifyEmail( token: string) {
     try{
+
+
+
       const decodeToken = verifyEmailToken(token);
       console.log(decodeToken);
       // return;
@@ -76,7 +84,7 @@ export class OrganizationService {
       }
 
       // const orgToken = await this.organizationModel.findByPk(decodeToken.organizationId);
-      const orgToken = await Organization.findAll({where: { id: decodeToken?.organization_id ,email: decodeToken?.email}});
+      const orgToken = await Organization.findOne({where: { id: decodeToken?.organization_id ,email: decodeToken?.email}});
       
 
       if(!orgToken){
@@ -113,7 +121,7 @@ export class OrganizationService {
 
        let org_data ={
       id: user.id,
-      organization_Name: user.organization,
+      organizationName: user.organization,
       email: user.email,
       IsPhoneNumber: user.phoneNumber
     }
@@ -136,12 +144,19 @@ export class OrganizationService {
       const orgs = await Organization.findAll()
       return Util?.handleSuccessRespone(orgs, "Organizations Data retrieved successfully.")
 
-    } catch (error) {
-      console.log(error)
-      return Util?.handleTryCatchError(Util?.getTryCatchMsg(error));
-    }
+      // Object.assign(org, updateOrganizationDto)
+      // await org.save()
+      // return Util?.handleSuccessRespone(Util?.SuccessRespone,"Organization updated successfully.")
 
+  }catch(error){
+    console.log(error)
+    return Util?.handleTryCatchError(Util?.getTryCatchMsg(error));
   }
+
+    
+  }
+
+
 
   async findOne(id: number) {
 
@@ -202,8 +217,8 @@ export class OrganizationService {
 
   }
 
-  async findOneByorganizationName(organization_Name: string): Promise<Organization> {
-    return await this.organizationModel.findOne<Organization>({ where: { organization_Name } })
+  async findOneByorganizationName(organizationName: string): Promise<Organization> {
+    return await this.organizationModel.findOne<Organization>({ where: { organizationName } })
   }
 
   // async findOneByuseFullname(fullname: string): Promise<Organization>{

@@ -16,6 +16,11 @@ import { APP_INTERCEPTOR } from '@nestjs/core';
 import { OrganizationModule } from './modules/organization/organization.module';
 import { UsersModule } from './modules/users/users.module';
 import { EnquiriesModule } from './modules/enquiries/enquiries.module';
+import { VisitorModule } from './modules/visitor/visitor.module';
+import { DeliveryModule } from './modules/delivery/delivery.module';
+import { AppService } from './app.service';
+import { AuthModule } from './modules/auth/auth.module';
+import { RoleModule } from './modules/role/role.module';
 
 
 
@@ -43,12 +48,12 @@ import { EnquiriesModule } from './modules/enquiries/enquiries.module';
       verboseMemoryLeak: false,
       ignoreErrors: false,
     }),
-    
 
     MailerModule.forRootAsync({
       imports: [ConfigModule],
       useFactory: async (config: ConfigService) => ({
         transport: {
+          service: 'Gmail',
           host: config.get('MAIL_HOST'),
           // secure: false,
           port: 465,
@@ -81,24 +86,20 @@ import { EnquiriesModule } from './modules/enquiries/enquiries.module';
       ...DB_CONFIGS[process.env.NODE_ENV],
       autoLoadModels: true,
     }),
-
-
+    VisitorModule,
+    DeliveryModule,
     OrganizationModule,
     UsersModule,
     EnquiriesModule,
-
-
-
-  
-
-
+    AuthModule,
+    RoleModule,
     
   ],
 
   controllers: [],
   providers: [
 
-    // AppService,
+    AppService,
     
     // {
     //   provide: APP_GUARD,
