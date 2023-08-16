@@ -92,8 +92,11 @@ export class OrganizationService {
       // return;
 
       if(!orgToken){
-        return Util?.handleFailResponse('Organization not founf')
+        return Util?.handleFailResponse('Organization not found')
       }
+
+      if(orgToken?.isVerified === true)
+      return Util?.handleFailResponse('Organization account already verified')
 
       await Organization.update({isVerified: true},{where: {id: orgToken?.id, email: orgToken?.email}} )
       return Util?.SuccessRespone('Your account has been successfully verified')
