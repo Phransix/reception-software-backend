@@ -26,10 +26,10 @@ export class DoesUserExist implements CanActivate {
             throw new ForbiddenException('This organization name already exists');
             };
 
-            const existingUsername = await this.organizationService.findOneByorganizationName(fullname);
-            if (existingUsername) {
-            throw new ForbiddenException('This User name already exists');
-            };
+            // const existingUsername = await this.organizationService.findOneByorganizationName(fullname);
+            // if (existingUsername) {
+            // throw new ForbiddenException('This User name already exists');
+            // };
 
             const existingUserEmail = await this.organizationService.findOneByEmail(email);
             if (existingUserEmail) {

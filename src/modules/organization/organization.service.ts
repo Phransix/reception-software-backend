@@ -1,5 +1,5 @@
-import { BadRequestException, Injectable, Param, Req, Res, UnauthorizedException } from '@nestjs/common';
-import { CreateOrganizationDto } from './dto/create-organization.dto';
+import { BadRequestException, ForbiddenException, Injectable, Param, Req, Res, UnauthorizedException } from '@nestjs/common';
+import { CreateOrganizationDto, VerifyEmailDto } from './dto/create-organization.dto';
 import { UpdateOrganizationDto } from './dto/update-organization.dto';
 import { InjectModel } from '@nestjs/sequelize';
 import { Organization } from './entities/organization.entity';
@@ -35,12 +35,13 @@ export class OrganizationService {
       // Hash the defualt password
       const hashedDefaultPassword = await bcrypt.hash(defaultPassword,saltRounds);
 
-      console.log(createOrganizationDto)
+      // console.log(createOrganizationDto)
+      // return;
       const organization = await this.organizationModel?.create({ ...createOrganizationDto}, { transaction: t })
       let role = await this?.role?.findOne({where:{name:'admin'}});
 
       if(!role)
-      return false
+      throw new ForbiddenException('Role Not Found');
    
       
       let org_data = {
@@ -71,29 +72,30 @@ export class OrganizationService {
   };
 
 
-  async verifyEmail(token:any) {
+  async verifyEmail(verifyEmailDto:VerifyEmailDto) {
     try{
-console.log(token);
+  
 
 
-
-      const decodeToken = verifyEmailToken(token);
-      console.log(decodeToken);
-      // return;
+      const decodeToken = verifyEmailToken(verifyEmailDto?.token);
+      // console.log(decodeToken);
+     
        
       if(!decodeToken){
         return Util?.handleFailResponse('Organization not verified')
       }
 
-      // const orgToken = await this.organizationModel.findByPk(decodeToken.organizationId);
-      const orgToken = await Organization.findOne({where: { id: decodeToken?.organization_id ,email: decodeToken?.email}});
+   
+      const orgToken = await this.organizationModel.findOne({where:{email:decodeToken?.email}})
       
+      // console.log(decodeToken?.email);
+      // return;
 
       if(!orgToken){
-        return Util?.handleFailResponse('Organization not verified')
+        return Util?.handleFailResponse('Organization not founf')
       }
 
-      await Organization.update({isVerified: true},{where: {id: decodeToken?.id, email: decodeToken?.email}} )
+      await Organization.update({isVerified: true},{where: {id: orgToken?.id, email: orgToken?.email}} )
       return Util?.SuccessRespone('Your account has been successfully verified')
 
     }catch (error) {

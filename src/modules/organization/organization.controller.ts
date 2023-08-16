@@ -9,6 +9,7 @@ import * as Util from '../../utils/index'
 import { User } from '../users/entities/user.entity';
 import { UsersService } from '../users/users.service';
 import { LoginDTO } from 'src/guard/auth/loginDTO';
+import { log } from 'console';
 
 
  @ApiTags('Organization')
@@ -35,6 +36,9 @@ export class OrganizationController {
   @Post('signUp')
   async create(@Body() createOrganizationDto: CreateOrganizationDto) {
     try {
+// console.log(createOrganizationDto);
+// return
+
 
       let new_Enquiry = this.organizationService.create(createOrganizationDto);
       return new_Enquiry;
@@ -45,11 +49,11 @@ export class OrganizationController {
     }
   }
 
-  @Get('verifyEmail')
+  @Post('verifyEmail')
   async verifyEmail(@Body()token:VerifyEmailDto){
     try{
 
-      console.log(token)
+      // console.log(token)
       
       const emailVerify = await this.organizationService.verifyEmail(token)
       return emailVerify
