@@ -5,12 +5,15 @@ import { InjectModel } from '@nestjs/sequelize';
 import { Delivery } from './entities/delivery.entity';
 import * as Abstract from '../../utils/abstract'
 import * as Util from '../../utils/index'
+import { PaginateOptions, PaginateService } from 'nestjs-sequelize-paginate';
 
 @Injectable()
 export class DeliveryService {
 
   constructor(
-    @InjectModel(Delivery) private readonly DeliveryModel: typeof Delivery) { }
+    @InjectModel(Delivery) private readonly DeliveryModel: typeof Delivery,
+    private readonly paginateService: PaginateService
+    ){}
 
   async create(createDeliveryDto: CreateDeliveryDto) {
     try {
@@ -22,12 +25,18 @@ export class DeliveryService {
     }
   }
 
-  async findAll() {
+  // async findAll(options: PaginateOptions) 
+  async findAll(){
     // return `This action returns all delivery`;
     try {
       const delivery = this.DeliveryModel.findAll()
       return Util?.handleSuccessRespone(delivery, "Deliveries Data retrieved Successfully")
-
+      // // const paginate = this.paginateService.findAllPaginate({
+      // //   ...options,
+      // //   model: Delivery,
+      // //   path: '/delivery',
+      // // })
+      // return paginate
     } catch (error) {
       console.log(error)
       return Util?.handleTryCatchError(Util?.getTryCatchMsg(error))
@@ -41,7 +50,7 @@ export class DeliveryService {
       if (!delivery) {
         throw new NotAcceptableException('The Delivery does not exist')
       }
-      return Util?.handleCreateSuccessRespone("Delivery Data retrieved successfully")
+      return Util?.handleSuccessRespone(delivery, "Delivery Data retrieved successfully")
     } catch (error) {
       console.log(error)
       return Util?.handleTryCatchError(Util?.getTryCatchMsg(error))
@@ -72,7 +81,7 @@ export class DeliveryService {
         throw new NotAcceptableException("Delivery Data doen not exist")
       }
       Object.assign(delivery)
-      (await delivery).destroy()
+        (await delivery).destroy()
       return Util?.handleSuccessRespone(Util?.SuccessRespone, "Delivery Data deleted Successfully")
 
     } catch (error) {
@@ -80,4 +89,5 @@ export class DeliveryService {
       return Util?.handleTryCatchError(Util?.getTryCatchMsg(error))
     }
   }
+
 }
