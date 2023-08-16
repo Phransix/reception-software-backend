@@ -1,9 +1,9 @@
 import { Controller, Get, Post, Body, Patch, Param, Delete, UseGuards, HttpException, HttpStatus} from '@nestjs/common';
 import { OrganizationService } from './organization.service';
-import { CreateOrganizationDto, VerifyEmailDto } from './dto/create-organization.dto';
+import { CreateOrganizationDto, ForgotPasswordDto, ResetPasswordDto, VerifyEmailDto } from './dto/create-organization.dto';
 import { UpdateOrganizationDto } from './dto/update-organization.dto';
 import { DoesUserExist } from 'src/common/guards/doesUserExist.guard';
-import { ApiBadRequestResponse, ApiOkResponse, ApiTags } from '@nestjs/swagger';
+import { ApiBadRequestResponse, ApiOkResponse, ApiOperation, ApiParam, ApiTags } from '@nestjs/swagger';
 import * as bcrypt from 'bcrypt';
 import * as Util from '../../utils/index'
 import { User } from '../users/entities/user.entity';
@@ -126,6 +126,34 @@ export class OrganizationController {
 
   }
 
+
+  @ApiOperation({ summary: 'Forgot Customer Password' })
+  @Post('forgot-password')
+  async forgotPassword(@Body() data: ForgotPasswordDto) {
+
+
+    try {
+      let res = await this.organizationService.forgetPassword(data);
+      return res;
+    } catch (error) {
+      console.log(error)
+      return Util?.handleTryCatchError(Util?.getTryCatchMsg(error)) 
+    }
+  }
+
+  @ApiOperation({ summary: 'Reset Customer Password' })
+  @Post('reset-password/:token')
+  @ApiParam({ name: 'token', type: 'string', required: true })
+  async resetPassword(@Param('token') token: string, @Body() data: ResetPasswordDto) {
+    try {
+   
+      let res = await this.organizationService.resetPassword(token, data);
+      return res;
+    } catch (error) {
+      return Util?.handleTryCatchError(Util?.getTryCatchMsg(error)) 
+    }
+
+  }
   
   @Delete(':id')
  async remove(@Param('id') id: number) {

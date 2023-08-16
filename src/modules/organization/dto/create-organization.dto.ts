@@ -59,3 +59,18 @@ export class VerifyEmailDto {
    token: string;
 
  }
+
+
+ export class ForgotPasswordDto {
+   @IsNotEmpty()
+   @ApiProperty()
+   @IsEmail()
+   email: string;
+ }
+ 
+ export class ResetPasswordDto {
+   @IsNotEmpty()
+   @ApiProperty()
+   password: string;
+ }
+ 
