@@ -4,6 +4,7 @@ import { IsEmail, IsNotEmpty, IsString, Matches, MaxLength, MinLength } from 'cl
 
 export class CreateOrganizationDto {
 
+
    @ApiProperty({
       description: 'The Name of the User',
       example: 'Kofi'
@@ -11,7 +12,7 @@ export class CreateOrganizationDto {
 
    @IsString()
    @IsNotEmpty()
-   readonly fullname: string;
+   readonly fullName: string;
 
    @ApiProperty({
       description: 'The Name of the Organization',
@@ -20,7 +21,7 @@ export class CreateOrganizationDto {
 
    @IsString()
    @IsNotEmpty()
-   readonly organization_Name: string;
+    organizationName: string;
 
    @ApiProperty({
       description: 'The email of the Organization',

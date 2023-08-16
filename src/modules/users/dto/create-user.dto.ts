@@ -3,32 +3,33 @@ import { IsEmail, IsNotEmpty, MaxLength, MinLength } from 'class-validator'
 
 
 export class CreateUserDto {
+
+    @ApiProperty({
+        description: 'The Id of the Role',
+        example: '1'
+    })
+    @IsNotEmpty()
+    readonly roleId: string
     
     @ApiProperty({
         description: 'The Id of the Organization',
         example: '1'
     })
     @IsNotEmpty()
-    readonly organization_Id: string;
+    readonly organizationId: string;
  
     @ApiProperty({
         description: 'The firstname of the User/Customer',
         example: 'Kingsley'
     })
     @IsNotEmpty()
-<<<<<<< HEAD
-    readonly firstName: string;
+    readonly fullName: string;
 
     @ApiProperty({
         description: 'The lastname of the User/Customer',
         example: 'Ampong'
     })
-    @IsNotEmpty()
-    readonly lastName: string;
-=======
-    readonly fullname: string;
->>>>>>> aa6d0897bd7c6ca8d03c116f5aa87cc7778c1b40
-
+   
     @ApiProperty({
         description: 'The email of the User/Customer',
         example: 'ampong@gmail.com'

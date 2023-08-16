@@ -30,7 +30,7 @@ export class OrganizationController {
 //     type: Organization
 //   })
 
-@ApiTags('Organization')
+
 @UseGuards(DoesUserExist)
   @Post('signUp')
   async create(@Body() createOrganizationDto: CreateOrganizationDto) {
@@ -45,9 +45,10 @@ export class OrganizationController {
     }
   }
 
-  @Get('token')
+  @Get(':token')
   async verifyEmail(@Param('token') token: string){
     try{
+
       console.log(token)
       
       const emailVerify = await this.organizationService.verifyEmail(token)
@@ -75,30 +76,7 @@ export class OrganizationController {
   //     }
   //      return user
 
-<<<<<<< HEAD
-  @ApiTags('Organization')
-=======
-
-  //   }catch(error){
-  //   console.log(error)
-  //   return Util?.handleTryCatchError(Util?.getTryCatchMsg(error)) 
-  // }
-
-  // };
-
-  @Post('login')
-  async login(@Body() loginDTO: LoginDTO){
-    const user = await this.organizationService.validateUser(loginDTO)
-    if(!user){
-      throw new HttpException('Invalid Credentials',HttpStatus.UNAUTHORIZED)
-    }else{
-      return user
-     
-    }
-  }
-
   
->>>>>>> aa6d0897bd7c6ca8d03c116f5aa87cc7778c1b40
   @Get('getAllOrganizations')
  async findAll() {
 
@@ -113,7 +91,7 @@ export class OrganizationController {
 
   };
 
-  @ApiTags('Organization')
+ 
   @Get(':id')
   async findOne(@Param('id') id: number) {
 
@@ -129,7 +107,7 @@ export class OrganizationController {
 
   };
 
-  @ApiTags('Organization')
+  
   @Patch(':id')
   async update(@Param('id') id: number, @Body() updateOrganizationDto: UpdateOrganizationDto) {
 
@@ -144,7 +122,7 @@ export class OrganizationController {
 
   }
 
-  @ApiTags('Organization')
+  
   @Delete(':id')
  async remove(@Param('id') id: number) {
 

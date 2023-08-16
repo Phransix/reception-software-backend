@@ -1,6 +1,8 @@
 import sequelize from "sequelize";
-import { BelongsTo, Column, DataType, ForeignKey, Model, Table } from "sequelize-typescript";
+import { BelongsTo, Column, DataType, ForeignKey,Model, Table } from "sequelize-typescript";
 import { Organization } from "src/modules/organization/entities/organization.entity";
+import { Role } from "src/modules/role/entities/role.entity";
+const { v4: uuidv4 } = require('uuid');
 
 @Table
 export class User extends Model<User> {
@@ -11,21 +13,67 @@ export class User extends Model<User> {
     throw new Error('Method not implemented.');
   }
 
+//   @Column({
+//     type: DataType.INTEGER,
+//     allowNull: false,
+//     autoIncrement: true,
+//     primaryKey: true,
+// })
+// id: number
+
+  @Column({
+    defaultValue: uuidv4,
+    type: DataType.UUID,
+    allowNull: false,
+    unique: true
+  })
+  userId: string
+
+    
+  @ForeignKey(() => Role)
+    @Column({
+      defaultValue: uuidv4,
+        type: DataType.STRING,
+        allowNull: false,
+        unique: true,
+        references: {
+          model: {
+            tableName: 'Role',
+          },
+          key: 'roleId',
+        },
+        onDelete: 'CASCADE',
+    })
+    roleId: string;
+     @BelongsTo(() => Role)
+     role: Role
+
+
     @ForeignKey(() => Organization)
     @Column({
-        type: DataType.INTEGER,
-        allowNull: false
+      defaultValue: uuidv4,
+        type: DataType.STRING,
+        allowNull: false,
+        unique:true,
+        references: {
+          model: {
+            tableName: 'Organization',
+          },
+          key: 'organizationId',
+        },
+        onDelete: 'CASCADE',
     })
-    organization_Id: number;
+    organizationId: string;
      @BelongsTo(() => Organization)
      organization: Organization
 
 
     @Column({
         type: DataType.STRING,
-        allowNull: false
+        allowNull: false,
+        unique: true
     })
-    fullname: string;
+    fullName: string;
 
     @Column({
       type: DataType.STRING,

@@ -19,6 +19,8 @@ import { EnquiriesModule } from './modules/enquiries/enquiries.module';
 import { VisitorModule } from './modules/visitor/visitor.module';
 import { DeliveryModule } from './modules/delivery/delivery.module';
 import { AppService } from './app.service';
+import { AuthModule } from './modules/auth/auth.module';
+import { RoleModule } from './modules/role/role.module';
 
 
 
@@ -89,6 +91,8 @@ import { AppService } from './app.service';
     OrganizationModule,
     UsersModule,
     EnquiriesModule,
+    AuthModule,
+    RoleModule,
     
   ],
 

@@ -17,7 +17,7 @@ export class VisitorService {
   async create(createVisitorDto: CreateVisitorDto) {
     try {
       await Abstract?.createData(Visitor, createVisitorDto);
-      return Util?.handleCreateSuccessRespone(Util?.SuccessRespone,"Visitor Created Successfully");
+      return Util?.handleCreateSuccessRespone("Visitor Created Successfully");
     } catch (error) {
       console.error(error)
       return Util?.handleTryCatchError(Util?.getTryCatchMsg(error))

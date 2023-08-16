@@ -19,7 +19,7 @@ export class CreateDeliveryDto {
         example: '1'
     })
     @IsNotEmpty()
-    readonly organization_Id: string;
+    readonly organizationId: string;
 
     @ApiProperty({
         description: 'The sender of the Delivery',
@@ -78,7 +78,7 @@ export class CreateDeliveryDto {
 
     @ApiProperty({
         description: "The type of delivery",
-        example: 'Food, Delivery,Other'
+        example: 'Food, Documents,Other'
     })
     @IsString()
     @IsEnum(Status_type, {

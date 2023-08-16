@@ -16,9 +16,22 @@ module.exports = {
         primaryKey: true,
         type: Sequelize.INTEGER,
       },
-      organization_Id: {
-        type: Sequelize.INTEGER,
+      deliveryId: {
+        type: Sequelize.UUID,
+        defaultValue: Sequelize.UUIDV4,
         allowNull: false,
+        unique: true
+      },
+      organizationId: {
+        type: Sequelize.UUID,
+        allowNull: false,
+        references: {
+          model:{
+            tableName: 'Organizations',
+          },
+          key:'organizationId'
+        },
+        onDelete: 'CASCADE'
       },
       from: {
         type: Sequelize.STRING,
@@ -30,15 +43,16 @@ module.exports = {
         allowNull: false,
         required:true,
       },
-      phonenumber: {
+      phoneNumber: {
         type: Sequelize.STRING,
         allowNull: false,
-        required:true,
+        unique: true
       },
       email: {
         type: Sequelize.STRING,
-        allowNull: false,
-        required:true,
+        allowNull: true,
+        unique:true
+        // required:true,
       },
       date_and_time: {
         type: Sequelize.DATE,
@@ -63,7 +77,7 @@ module.exports = {
           isIn: [['document', 'food', 'other']]
         }
       },
-      Delivery_Description: {
+      deliveryDescription: {
         type: Sequelize.STRING,
         allowNull: true,
       },

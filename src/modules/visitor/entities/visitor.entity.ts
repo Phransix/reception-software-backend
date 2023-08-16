@@ -1,14 +1,46 @@
 // import { Model } from "sequelize";
-import { Column, DataType, Table ,Model} from "sequelize-typescript";
+import { Column, DataType, Table ,Model, ForeignKey, BelongsTo} from "sequelize-typescript";
+import { Organization } from "src/modules/organization/entities/organization.entity";
+const { v4: uuidv4 } = require('uuid');
+
 
 @Table
 export class Visitor extends Model <Visitor> {
 
     @Column({
         type: DataType.INTEGER,
-        allowNull: false
+        allowNull: false,
+        autoIncrement: true,
+        primaryKey: true,
     })
-    organization_Id: number;
+    id: number
+
+    @Column({
+        defaultValue: uuidv4,
+        type: DataType.UUID,
+        allowNull: false,
+        unique: true
+      })
+      visitorId: string
+
+
+      @ForeignKey(() => Organization)
+    @Column({
+        defaultValue: uuidv4,
+        type: DataType.STRING,
+        allowNull: false,
+        unique:true,
+        references: {
+          model: {
+            tableName: 'Organization',
+          },
+          key: 'organizationId',
+        },
+        onDelete: 'CASCADE',
+    })
+    organizationId: string;
+     @BelongsTo(() => Organization)
+     organization: Organization
 
     @Column({
         type: DataType.STRING,
@@ -20,7 +52,7 @@ export class Visitor extends Model <Visitor> {
         type: DataType.STRING,
         allowNull: false
     })
-    phonenumber: string
+    phoneNumber: string
 
     @Column({
         type: DataType.ENUM,
@@ -40,7 +72,7 @@ export class Visitor extends Model <Visitor> {
         values: ['active','inactive'],
         allowNull: false,
     })
-    visit_Status: string;
+    visitStatus: string;
 
     @Column({
         type: DataType.DATE,

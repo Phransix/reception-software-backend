@@ -5,7 +5,6 @@ import * as Util from '../../utils/index'
 import { User } from './entities/user.entity';
 import { InjectModel } from '@nestjs/sequelize';
 import * as bcrypt from 'bcrypt';
-import { hashPassword, comparePassword} from 'src/passwordhash/generatepasshash';
 import { UsersModule } from './users.module';
 import { ChangePassDTO } from 'src/guard/auth/changePassDTO';
 
@@ -39,11 +38,11 @@ export class UsersService {
         throw new Error('User not found.');
       }
 
-      return Util?.handleSuccessRespone(user, "Enquiry retrieve successfully.")
+      return Util?.handleSuccessRespone(user, "User retrieve successfully.")
 
     } catch (error) {
       console.log(error)
-      return Util?.handleTryCatchError(Util?.getTryCatchMsg(error));
+      return Util?.handleNotFoundResponse()
     }
   };
 

@@ -16,19 +16,33 @@ module.exports = {
         primaryKey: true,
         type: Sequelize.INTEGER,
       },
-      organization_Id: {
-        type: Sequelize.INTEGER,
+      visitorId: {
+        type: Sequelize.UUID,
+        defaultValue: Sequelize.UUIDV4,
         allowNull: false,
+        unique: true
+      },
+      organizationId: {
+        type: Sequelize.UUID,
+        allowNull: false,
+        references: {
+          model:{
+            tableName: 'Organizations',
+          },
+          key:'organizationId'
+        },
+        onDelete: 'CASCADE'
       },
       visitor: {
         type: Sequelize.STRING,
         allowNull: false,
         required:true,
       },
-      phonenumber: {
+      phoneNumber: {
         type: Sequelize.STRING,
         allowNull: false,
         required:true,
+        unique:true
       },
       purpose: {
         type: Sequelize.ENUM('personal', 'unofficial'),
@@ -36,7 +50,7 @@ module.exports = {
         required:true,
         defaultValue: 'unofficial',
         validate: {
-          isIn: [['personal', 'unofficial']] // Validates that the value is either 'active' or 'inactive'
+          isIn: [['personal', 'unofficial']] 
         }
       },
       host: {
@@ -44,7 +58,7 @@ module.exports = {
         allowNull: false,
         required:true,
       },
-      visit_Status: {
+      visitStatus: {
         type: Sequelize.ENUM('active', 'inactive'),
         allowNull: false,
         required:true,

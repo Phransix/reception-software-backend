@@ -15,7 +15,7 @@ export class DeliveryService {
   async create(createDeliveryDto: CreateDeliveryDto) {
     try {
       await Abstract?.createData(Delivery, createDeliveryDto);
-      return Util?.handleCreateSuccessRespone(Util?.SuccessRespone, "Delivery Created Successfully");
+      return Util?.handleCreateSuccessRespone( "Delivery Created Successfully");
     } catch (error) {
       console.error(error)
       return Util?.handleTryCatchError(Util?.getTryCatchMsg(error))
@@ -41,7 +41,7 @@ export class DeliveryService {
       if (!delivery) {
         throw new NotAcceptableException('The Delivery does not exist')
       }
-      return Util?.handleCreateSuccessRespone(delivery, "Delivery Data retrieved successfully")
+      return Util?.handleCreateSuccessRespone("Delivery Data retrieved successfully")
     } catch (error) {
       console.log(error)
       return Util?.handleTryCatchError(Util?.getTryCatchMsg(error))

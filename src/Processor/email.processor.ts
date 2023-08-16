@@ -5,6 +5,7 @@ import { Job } from "bull";
 
 import { Logger } from '@nestjs/common';
 
+
 @Processor('emailVerification')
 export class EmailProcessor{
     private readonly logger = new Logger(EmailProcessor.name);

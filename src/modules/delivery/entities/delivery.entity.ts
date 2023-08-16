@@ -1,14 +1,46 @@
-import { Column, DataType, Model, Table } from "sequelize-typescript";
-
+// import { DataType } from "sequelize";
+import { BelongsTo, Column, DataType, ForeignKey, Model, Table } from "sequelize-typescript";
+import { Organization } from "src/modules/organization/entities/organization.entity";
+const { v4: uuidv4 } = require('uuid');
 
 @Table
 export class Delivery extends Model <Delivery> {
 
     @Column({
         type: DataType.INTEGER,
-        allowNull: false
+        allowNull: false,
+        autoIncrement: true,
+        primaryKey: true,
     })
-    organization_Id: number;
+    id: number
+
+    @Column({
+        defaultValue: uuidv4,
+        type: DataType.UUID,
+        allowNull: false,
+        unique: true
+      })
+      deliveryId: string
+
+
+      @ForeignKey(() => Organization)
+      @Column({
+        defaultValue: uuidv4,
+          type: DataType.STRING,
+          allowNull: false,
+          unique:true,
+          references: {
+            model: {
+              tableName: 'Organization',
+            },
+            key: 'organizationId',
+          },
+          onDelete: 'CASCADE',
+      })
+      organizationId: string;
+       @BelongsTo(() => Organization)
+       organization: Organization
+
 
     @Column({
         type: DataType.STRING,
@@ -26,7 +58,7 @@ export class Delivery extends Model <Delivery> {
         type: DataType.STRING,
         allowNull: false
     })
-    phonenumber: string
+    phoneNumber: string
 
     @Column({
         type: DataType.STRING,
@@ -45,7 +77,7 @@ export class Delivery extends Model <Delivery> {
         values: ['delivered','not delivered'],
         allowNull: false,
     })
-    visit_Status: string;
+    visitStatus: string;
 
     @Column({
         type: DataType.ENUM,
@@ -58,6 +90,6 @@ export class Delivery extends Model <Delivery> {
         type: DataType.STRING,
         allowNull: true
     })
-    Delivery_Description: string
+    deliveryDescription: string
 
 }

@@ -5,14 +5,7 @@ import { UpdateUserDto } from './dto/update-user.dto';
 import * as Util from '../../utils/index'
 import { User } from './entities/user.entity';
 import { ApiTags } from '@nestjs/swagger';
-<<<<<<< HEAD
-=======
-import { AuthGuard } from '@nestjs/passport';
 import { ChangePassDTO } from 'src/guard/auth/changePassDTO';
-// import { comparePassword ,hashPassword} from 'src/passwordhash/generatepasshash'
-
-@ApiTags('Users')
->>>>>>> aa6d0897bd7c6ca8d03c116f5aa87cc7778c1b40
 
 @Controller('users')
 export class UsersController {
@@ -73,21 +66,7 @@ export class UsersController {
 
   };
 
-<<<<<<< HEAD
   @ApiTags('Users')
-=======
-  @Get(':email')
-  async getUserByEmail(@Param('email') email: string) {
-    const user = await this.usersService.findByEmail(email);
-    if (user) {
-      return user;
-    } else {
-      throw new NotFoundException('User not found');
-    }
-  }
-
-
->>>>>>> aa6d0897bd7c6ca8d03c116f5aa87cc7778c1b40
   @Delete(':id')
   async remove(@Param('id') id: number) {
 
@@ -110,21 +89,8 @@ export class UsersController {
     }
 
   }
-
-  
-    // change Password
-   
-    // @Patch(':id/change-password')
-    // // @UseGuards(AuthGuard())
-    // async changePassword(
-    //   @Request()req,
-    //   @Body('oldPassword') oldPassword: string,
-    //   @Body('newPassword') newPassword: string
-    // ){
-    //   const userId = req.user.id;
-    //   await this.usersService.changePassword(userId,oldPassword,newPassword)
-    // }
- 
+     
+  @ApiTags('Users')
     @Patch(':id/changePassword')
     async changePassword(@Param('id') id: number,@Body() changePassDTO: ChangePassDTO) {
       try {
