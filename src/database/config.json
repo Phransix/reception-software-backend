@@ -1,7 +1,7 @@
 {
     "development": {
       "username": "postgres",
-      "password": "102105",
+      "password": "admin",
       "port": 5432,
       "database": "reception_db",
       "host": "localhost",

@@ -11,6 +11,7 @@ import {  createAccessToken, generateRefreshToken, verifyEmailToken } from '../.
 import * as bcrypt from 'bcrypt';
 import { LoginDTO } from 'src/guard/auth/loginDTO';
 import { Role } from '../role/entities/role.entity';
+import { log } from 'console';
 // import { ChangePassDTO } from 'src/guard/auth/changePassDTO';
 
 @Injectable()
@@ -70,8 +71,9 @@ export class OrganizationService {
   };
 
 
-  async verifyEmail( token: string) {
+  async verifyEmail(token:any) {
     try{
+console.log(token);
 
 
 

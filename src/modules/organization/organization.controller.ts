@@ -1,6 +1,6 @@
 import { Controller, Get, Post, Body, Patch, Param, Delete, UseGuards, HttpException, HttpStatus} from '@nestjs/common';
 import { OrganizationService } from './organization.service';
-import { CreateOrganizationDto } from './dto/create-organization.dto';
+import { CreateOrganizationDto, VerifyEmailDto } from './dto/create-organization.dto';
 import { UpdateOrganizationDto } from './dto/update-organization.dto';
 import { DoesUserExist } from 'src/common/guards/doesUserExist.guard';
 import { ApiBadRequestResponse, ApiOkResponse, ApiTags } from '@nestjs/swagger';
@@ -45,8 +45,8 @@ export class OrganizationController {
     }
   }
 
-  @Get(':token')
-  async verifyEmail(@Param('token') token: string){
+  @Get('verifyEmail')
+  async verifyEmail(@Body()token:VerifyEmailDto){
     try{
 
       console.log(token)
