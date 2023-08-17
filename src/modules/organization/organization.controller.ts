@@ -1,3 +1,4 @@
+
 import { Controller, Get, Post, Body, Patch, Param, Delete, UseGuards, HttpException, HttpStatus} from '@nestjs/common';
 import { OrganizationService } from './organization.service';
 import { CreateOrganizationDto, ForgotPasswordDto, ResetPasswordDto, VerifyEmailDto } from './dto/create-organization.dto';
@@ -6,39 +7,29 @@ import { DoesUserExist } from 'src/common/guards/doesUserExist.guard';
 import { ApiBadRequestResponse, ApiOkResponse, ApiOperation, ApiParam, ApiTags } from '@nestjs/swagger';
 import * as bcrypt from 'bcrypt';
 import * as Util from '../../utils/index'
+import { LoginDTO } from 'src/guard/auth/loginDTO';
 import { User } from '../users/entities/user.entity';
 import { UsersService } from '../users/users.service';
-import { LoginDTO } from 'src/guard/auth/loginDTO';
-import { log } from 'console';
+// import { LoginDTO } from 'src/guard/auth/loginDTO';
 
 
  @ApiTags('Organization')
 @Controller('organization')
 export class OrganizationController {
- 
+  
+
   constructor(
     private readonly organizationService: OrganizationService,
-    // private readonly mailerSevice: MailerService
+    // private readonly userService: UsersService
+   
   ) {}
 
-//  @ApiTags('Organization')
-//   @ApiOkResponse({
-//     description:'Registration Successfully',
-//     type: Organization
-//   })
-//   @ApiBadRequestResponse({
-//     description: 'Registration Failed',
-//     type: Organization
-//   })
 
 
 @UseGuards(DoesUserExist)
   @Post('signUp')
   async create(@Body() createOrganizationDto: CreateOrganizationDto) {
     try {
-// console.log(createOrganizationDto);
-// return
-
 
       let new_Enquiry = this.organizationService.create(createOrganizationDto);
       return new_Enquiry;
@@ -53,7 +44,7 @@ export class OrganizationController {
   async verifyEmail(@Body()token:VerifyEmailDto){
     try{
 
-      // console.log(token)
+      console.log(token)
       
       const emailVerify = await this.organizationService.verifyEmail(token)
       return emailVerify
@@ -64,21 +55,16 @@ export class OrganizationController {
   }
   };
 
-  // @Post('login')
-  // async login(@Param('email,password') email: string, password: string){
-
-  //   try{
-
-  //     const user = this.User.findOne({where:{email}})
-  //     if(!user){
-  //       throw new Error('Invalide email or password')
-  //     }
-
-  //     const isPwordSame = await bcrypt.compare(password,user?.password)
-  //     if(!isPwordSame){
-  //       throw new Error('Invalide email or password')
-  //     }
-  //      return user
+  @Post('login')
+  async login(@Body() loginDto: LoginDTO){
+    const user = await this.organizationService.validateUser(loginDto);
+    if (!user){
+      throw new HttpException('Invalid Credentials',HttpStatus.UNAUTHORIZED)
+    }else{
+      // throw new HttpException('Login Successfully',HttpStatus.ACCEPTED)
+      return user
+    }
+  }
 
   
   @Get('getAllOrganizations')

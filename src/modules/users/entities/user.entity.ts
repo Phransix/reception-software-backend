@@ -1,25 +1,20 @@
 import sequelize from "sequelize";
-import { BelongsTo, Column, DataType, ForeignKey,Model, Table } from "sequelize-typescript";
+import { BeforeCreate, BelongsTo, Column, DataType, ForeignKey,Model, Table } from "sequelize-typescript";
+import { LoginDTO } from "src/guard/auth/loginDTO";
 import { Organization } from "src/modules/organization/entities/organization.entity";
 import { Role } from "src/modules/role/entities/role.entity";
 const { v4: uuidv4 } = require('uuid');
+import * as bcrypt from 'bcrypt';
 
 @Table
 export class User extends Model<User> {
-  static save(user: User) {
+  isVerified: any;
+  static validateUser(loginDto: LoginDTO) {
     throw new Error('Method not implemented.');
   }
-  hash(hash: any) {
-    throw new Error('Method not implemented.');
-  }
+ 
 
-//   @Column({
-//     type: DataType.INTEGER,
-//     allowNull: false,
-//     autoIncrement: true,
-//     primaryKey: true,
-// })
-// id: number
+
 
   @Column({
     defaultValue: uuidv4,
@@ -92,6 +87,15 @@ export class User extends Model<User> {
         allowNull: true
     })
     password: string;
+
+    @BeforeCreate
+      static async hashPassword(instance: User) {
+        const saltRounds = 10;
+        const hashedPassword = await bcrypt.hash(instance.password, saltRounds);
+        instance.password = hashedPassword;
+      }
+    
+    
 
 
 }

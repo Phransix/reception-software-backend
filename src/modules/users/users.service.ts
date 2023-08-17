@@ -1,22 +1,78 @@
-import { BadRequestException, HttpException, HttpStatus, Injectable, NotFoundException } from '@nestjs/common';
+import { BadRequestException, HttpException, HttpStatus, Injectable, NotFoundException, UnauthorizedException } from '@nestjs/common';
 import { CreateUserDto } from './dto/create-user.dto';
 import { UpdateUserDto } from './dto/update-user.dto';
 import * as Util from '../../utils/index'
 import { User } from './entities/user.entity';
 import { InjectModel } from '@nestjs/sequelize';
 import * as bcrypt from 'bcrypt';
-import { UsersModule } from './users.module';
+// import { UsersModule } from './users.module';
 import { ChangePassDTO } from 'src/guard/auth/changePassDTO';
+import { createAccessToken, generateRefreshToken } from '../../utils/index';
+import { LoginDTO } from 'src/guard/auth/loginDTO';
+import * as Abstract from '../../utils/abstract'
+
+
 
 @Injectable()
 export class UsersService {
 
-  constructor (@InjectModel(User) private userModel: typeof User,){}
+  constructor (@InjectModel(User) private userModel: typeof User,
+  
+  ){}
 
-  create(createUserDto: CreateUserDto) {
-    return 'This action adds a new user';
+
+
+
+//  Register New User
+  async create(createUserDto: CreateUserDto)  {
+    try {
+      await Abstract?.createData(User, createUserDto);
+      return Util?.handleCreateSuccessRespone( "User Created Successfully");
+    } catch (error) {
+      console.error(error)
+      return Util?.handleTryCatchError(Util?.getTryCatchMsg(error))
+    }
   }
 
+
+// Login users
+async validateUser(loginDto: LoginDTO){
+  const {email,password} = loginDto
+
+  const user = await User.findOne({where:{email}})
+  if(!user){
+    throw new BadRequestException('User with this email does not exist')
+  }
+  const IsPasswordValid = await bcrypt.compare(password,user.password)
+  if(!IsPasswordValid){
+    throw new UnauthorizedException('Invalid Credentials')
+  }
+  let accessToken = await createAccessToken(user?.id);
+  let refreshToken = await generateRefreshToken(user?.id);
+  let tokens = {
+    accessToken,
+    refreshToken
+  }
+  // console.log(tokens)
+
+     let org_data ={
+    id: user.userId,
+    fullname: user.fullName,
+    email: user.email,
+    IsPhoneNumber: user.phoneNumber
+  }
+
+  let userDetails = {
+    org_data,tokens
+  }
+
+      //  Send user data and tokens
+      return Util?.handleSuccessRespone( userDetails,'Login successfully.')
+ 
+ 
+}
+
+// Get All Users
   async findAll() {
 
     try {
@@ -30,6 +86,7 @@ export class UsersService {
   };
 
 
+  // Get User By Id 
   async findOne(id: number) {
 
     try {
@@ -63,6 +120,7 @@ export class UsersService {
   // };
 
 
+  // Update User by Id
   async update(id: number, updateUserDto: UpdateUserDto) {
 
     try {
@@ -82,6 +140,8 @@ export class UsersService {
     }
   };
 
+
+    // delete User by Id 
   async remove(id: number) {
 
     try{
@@ -123,28 +183,7 @@ export class UsersService {
     return this.userModel.findOne({ where: { email } });
   }
 
-
-  // async changePassword(userId: number, oldPassword: string, newPassword: string): Promise<void> {
-  //   const user = await this.findById(userId);
-
-  //   if (!user) {
-  //     throw new Error('User not found');
-  //   }
-
-  //   // Verify the old password
-  //   const isPasswordValid = await bcrypt.compare(oldPassword, user.password);
-  //   if (!isPasswordValid) {
-  //     throw new Error('Invalid old password');
-  //   }
-
-  //   // Hash the new password and update the user's password
-  //   const hashedNewPassword = await bcrypt.hash(newPassword, 10);
-  //   user.password = hashedNewPassword;
-    
-  //   await this.userModel.save(user);
-
-  // }
-  
+//  Change User Password
   async changePass (id:number, changepassDto: ChangePassDTO){
     const {oldPassword,newPassword,confirmNewPassword} = changepassDto
 
