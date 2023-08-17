@@ -6,15 +6,36 @@ import * as Util from '../../utils/index'
 import { User } from './entities/user.entity';
 import { ApiTags } from '@nestjs/swagger';
 import { ChangePassDTO } from 'src/guard/auth/changePassDTO';
+import { LoginDTO } from 'src/guard/auth/loginDTO';
 
 @Controller('users')
 export class UsersController {
   constructor(private readonly usersService: UsersService) {}
 
+
+    // Register New User
   @ApiTags('Users')
-  @Post()
-  create(@Body() createUserDto: CreateUserDto) {
-    return this.usersService.create(createUserDto);
+  @Post('registerNewUser')
+  async createDelivery(@Body()  createUserDto: CreateUserDto) {
+    try {
+      let new_user = this.usersService.create(createUserDto);
+      return new_user;
+    } catch (error) {
+      return Util?.handleTryCatchError(Util?.getTryCatchMsg(error))
+    }
+  }
+
+  // Login Users
+  @ApiTags('Users')
+  @Post('login')
+  async login(@Body() loginDto: LoginDTO){
+    const user = await this.usersService.validateUser(loginDto);
+    if (!user){
+      throw new HttpException('Invalid Credentials',HttpStatus.UNAUTHORIZED)
+    }else{
+      // throw new HttpException('Login Successfully',HttpStatus.ACCEPTED)
+      return user
+    }
   }
 
   @ApiTags('Users')

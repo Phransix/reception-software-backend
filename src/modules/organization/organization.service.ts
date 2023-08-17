@@ -1,5 +1,6 @@
-import { BadRequestException, Injectable, Param, Req, Res, UnauthorizedException } from '@nestjs/common';
-import { CreateOrganizationDto } from './dto/create-organization.dto';
+
+import { BadRequestException, ForbiddenException, Injectable, Param, Req, Res, UnauthorizedException } from '@nestjs/common';
+import { CreateOrganizationDto, ForgotPasswordDto, ResetPasswordDto, VerifyEmailDto } from './dto/create-organization.dto';
 import { UpdateOrganizationDto } from './dto/update-organization.dto';
 import { InjectModel } from '@nestjs/sequelize';
 import { Organization } from './entities/organization.entity';
@@ -11,7 +12,7 @@ import {  createAccessToken, generateRefreshToken, verifyEmailToken } from '../.
 import * as bcrypt from 'bcrypt';
 import { LoginDTO } from 'src/guard/auth/loginDTO';
 import { Role } from '../role/entities/role.entity';
-// import { ChangePassDTO } from 'src/guard/auth/changePassDTO';
+
 
 @Injectable()
 export class OrganizationService {
@@ -24,6 +25,7 @@ export class OrganizationService {
     private emailService:EmailService
     ){}
 
+    // Create An Organization
   async create(createOrganizationDto: CreateOrganizationDto) {
     let t = await this.sequelize?.transaction();
     try {
@@ -34,12 +36,13 @@ export class OrganizationService {
       // Hash the defualt password
       const hashedDefaultPassword = await bcrypt.hash(defaultPassword,saltRounds);
 
-      console.log(createOrganizationDto)
+      // console.log(createOrganizationDto)
+      // return;
       const organization = await this.organizationModel?.create({ ...createOrganizationDto}, { transaction: t })
       let role = await this?.role?.findOne({where:{name:'admin'}});
 
       if(!role)
-      return false
+      throw new ForbiddenException('Role Not Found');
    
       
       let org_data = {
@@ -58,6 +61,7 @@ export class OrganizationService {
 
       t.commit()
       console.log(user)
+      // return Util?.handleSuccessRespone(Util?.handleCreateSuccessRespone, "Organization created successfully.")
       return Util?.handleCreateSuccessRespone("Organization created successfully.")
 
     } catch (error) {
@@ -69,25 +73,31 @@ export class OrganizationService {
   };
 
 
-  async verifyEmail( token: string) {
+  // Verify Email Account
+  async verifyEmail(verifyEmailDto:VerifyEmailDto) {
     try{
-      const decodeToken = verifyEmailToken(token);
-      console.log(decodeToken);
-      // return;
-       
+
+      const decodeToken = verifyEmailToken(verifyEmailDto?.token);
+      // console.log(decodeToken);
+     
       if(!decodeToken){
         return Util?.handleFailResponse('Organization not verified')
       }
 
-      // const orgToken = await this.organizationModel.findByPk(decodeToken.organizationId);
-      const orgToken = await Organization.findOne({where: { id: decodeToken?.organization_id ,email: decodeToken?.email}});
+   
+      const orgToken = await this.organizationModel.findOne({where:{email:decodeToken?.email}})
       
+      // console.log(decodeToken?.email);
+      // return;
 
       if(!orgToken){
-        return Util?.handleFailResponse('Organization not verified')
+        return Util?.handleFailResponse('Organization not found')
       }
 
-      await Organization.update({isVerified: true},{where: {id: decodeToken?.id, email: decodeToken?.email}} )
+      if(orgToken?.isVerified === true)
+      return Util?.handleFailResponse('Organization account already verified')
+
+      await Organization.update({isVerified: true},{where: {id: orgToken?.id, email: orgToken?.email}} )
       return Util?.SuccessRespone('Your account has been successfully verified')
 
     }catch (error) {
@@ -96,17 +106,26 @@ export class OrganizationService {
     }
   };
     
+  // Login
   async validateUser(loginDto: LoginDTO){
     const {email,password} = loginDto
 
     const user = await User.findOne({where:{email}})
-    if(!user){
+    const organization = await this.organizationModel.findOne({where:{email}})
+    if(!user && !organization){
       throw new BadRequestException('User with this email does not exist')
     }
     const IsPasswordValid = await bcrypt.compare(password,user.password)
     if(!IsPasswordValid){
       throw new UnauthorizedException('Invalid Credentials')
     }
+    
+    // Check if the oraganiazation is verified
+    if(organization?.isVerified != true)
+    return Util?.handleFailResponse('Organization account not verified')
+
+ 
+
     let accessToken = await createAccessToken(user?.id);
     let refreshToken = await generateRefreshToken(user?.id);
     let tokens = {
@@ -116,10 +135,10 @@ export class OrganizationService {
     // console.log(tokens)
 
        let org_data ={
-      id: user.id,
-      organizationName: user.organization,
-      email: user.email,
-      IsPhoneNumber: user.phoneNumber
+      id: organization.organizationId,
+      organizationName: organization.organizationName,
+      email: organization.email,
+      IsPhoneNumber: organization.phoneNumber
     }
 
     let userDetails = {
@@ -128,32 +147,24 @@ export class OrganizationService {
 
         //  Send user data and tokens
         return Util?.handleSuccessRespone( userDetails,'Login successfully.')
-       
-   
   }
   
 
-
+  //  Get All
   async findAll() {
 
     try {
       const orgs = await Organization.findAll()
       return Util?.handleSuccessRespone(orgs, "Organizations Data retrieved successfully.")
-
-      // Object.assign(org, updateOrganizationDto)
-      // await org.save()
-      // return Util?.handleSuccessRespone(Util?.SuccessRespone,"Organization updated successfully.")
-
   }catch(error){
     console.log(error)
     return Util?.handleTryCatchError(Util?.getTryCatchMsg(error));
   }
-
-    
   }
 
 
 
+  // Get By Id
   async findOne(id: number) {
 
     try {
@@ -171,13 +182,14 @@ export class OrganizationService {
 
   }
 
+  // Update By Id
   async update(id: number, updateOrganizationDto: UpdateOrganizationDto) {
 
     try {
 
       const org = await Organization.findOne({ where: { id } });
       if (!org) {
-        throw new Error('Enquiry not found.');
+        throw new Error('Organization not found.');
       }
 
       Object.assign(org, updateOrganizationDto)
@@ -192,6 +204,7 @@ export class OrganizationService {
 
   }
 
+  // Delete By Id
   async remove(id: number) {
 
     try {
@@ -230,7 +243,62 @@ export class OrganizationService {
     return await this.organizationModel.findOne<Organization>({ where: { phoneNumber } })
   }
 
+  // Forgot password
+  async forgetPassword(email: ForgotPasswordDto) {
+    try {
+      let user = await this.user.findOne({ where: { ...email } });
 
+      if (!user) return Util.handleForbiddenExceptionResponses('Invaild Email');
+      // await this.helperService.sendResetVerificationEmail(
+      //   user?.fname,
+      //   user?.user_id,
+      //   user?.email,
+      // );
+      return Util.handleCreateSuccessRespone(
+        `Reset password link sent to ${user?.email}`,
+      );
+    } catch (error) {
+      return Util?.checkIfRecordNotFound(error)
+      // return Util.handleGrpcTryCatchError(Util.getTryCatchMsg(error));
+    }
+  }
+
+
+  // Change password
+  async resetPassword(token: any, data: ResetPasswordDto) {
+    const t = await this.sequelize.transaction();
+
+    try {
+
+      const defaultPassword = data?.password;
+      const saltRounds = 10;
+
+     // Hash the defualt password
+     const hashedDefaultPassword = await bcrypt.hash(defaultPassword,saltRounds);
+
+      let decode = Util.verifyToken(token);
+      const user = await this?.user.findOne({
+        where: {
+          userId: decode.user_id,
+        },
+      });
+
+      if (!user) return Util.handleForbiddenExceptionResponses('Invaid email');
+
+      let UpdateData = {
+        password: hashedDefaultPassword,
+      };
+      await this?.user.update(UpdateData, {
+        where: { id: user?.id },
+        transaction: t,
+      });
+      t.commit();
+      return Util.handleCreateSuccessRespone('Password Reset Successful');
+    } catch (error) {
+      t.rollback();
+      return Util?.checkIfRecordNotFound(error)
+    }
+  }
 
 
 }

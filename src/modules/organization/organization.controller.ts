@@ -1,40 +1,35 @@
+
 import { Controller, Get, Post, Body, Patch, Param, Delete, UseGuards, HttpException, HttpStatus} from '@nestjs/common';
 import { OrganizationService } from './organization.service';
-import { CreateOrganizationDto } from './dto/create-organization.dto';
+import { CreateOrganizationDto, ForgotPasswordDto, ResetPasswordDto, VerifyEmailDto } from './dto/create-organization.dto';
 import { UpdateOrganizationDto } from './dto/update-organization.dto';
 import { DoesUserExist } from 'src/common/guards/doesUserExist.guard';
-import { ApiBadRequestResponse, ApiOkResponse, ApiTags } from '@nestjs/swagger';
-import * as bcrypt from 'bcrypt';
+import {  ApiOperation, ApiParam, ApiTags } from '@nestjs/swagger';
 import * as Util from '../../utils/index'
+import { LoginDTO } from 'src/guard/auth/loginDTO';
 import { User } from '../users/entities/user.entity';
 import { UsersService } from '../users/users.service';
-import { LoginDTO } from 'src/guard/auth/loginDTO';
 
 
  @ApiTags('Organization')
 @Controller('organization')
 export class OrganizationController {
- 
+  
+
   constructor(
     private readonly organizationService: OrganizationService,
-    // private readonly mailerSevice: MailerService
+    // private readonly userService: UsersService
+   
   ) {}
 
-//  @ApiTags('Organization')
-//   @ApiOkResponse({
-//     description:'Registration Successfully',
-//     type: Organization
-//   })
-//   @ApiBadRequestResponse({
-//     description: 'Registration Failed',
-//     type: Organization
-//   })
 
-@ApiTags('Organization')
+
 @UseGuards(DoesUserExist)
   @Post('signUp')
   async create(@Body() createOrganizationDto: CreateOrganizationDto) {
     try {
+
+
 
       let new_Enquiry = this.organizationService.create(createOrganizationDto);
       return new_Enquiry;
@@ -45,10 +40,11 @@ export class OrganizationController {
     }
   }
 
-  @Get('token')
-  async verifyEmail(@Param('token') token: string){
+  @Post('verifyEmail')
+  async verifyEmail(@Body()token:VerifyEmailDto){
     try{
-      console.log(token)
+
+    
       
       const emailVerify = await this.organizationService.verifyEmail(token)
       return emailVerify
@@ -59,23 +55,18 @@ export class OrganizationController {
   }
   };
 
-  // @Post('login')
-  // async login(@Param('email,password') email: string, password: string){
+  @Post('login')
+  async login(@Body() loginDto: LoginDTO){
+    const user = await this.organizationService.validateUser(loginDto);
+    if (!user){
+      throw new HttpException('Invalid Credentials',HttpStatus.UNAUTHORIZED)
+    }else{
+      // throw new HttpException('Login Successfully',HttpStatus.ACCEPTED)
+      return user
+    }
+  }
 
-  //   try{
-
-  //     const user = this.User.findOne({where:{email}})
-  //     if(!user){
-  //       throw new Error('Invalide email or password')
-  //     }
-
-  //     const isPwordSame = await bcrypt.compare(password,user?.password)
-  //     if(!isPwordSame){
-  //       throw new Error('Invalide email or password')
-  //     }
-  //      return user
-
-  @ApiTags('Organization')
+  
   @Get('getAllOrganizations')
  async findAll() {
 
@@ -90,7 +81,7 @@ export class OrganizationController {
 
   };
 
-  @ApiTags('Organization')
+ 
   @Get(':id')
   async findOne(@Param('id') id: number) {
 
@@ -106,7 +97,7 @@ export class OrganizationController {
 
   };
 
-  @ApiTags('Organization')
+  
   @Patch(':id')
   async update(@Param('id') id: number, @Body() updateOrganizationDto: UpdateOrganizationDto) {
 
@@ -121,7 +112,35 @@ export class OrganizationController {
 
   }
 
-  @ApiTags('Organization')
+
+  @ApiOperation({ summary: 'Forgot Customer Password' })
+  @Post('forgot-password')
+  async forgotPassword(@Body() data: ForgotPasswordDto) {
+
+
+    try {
+      let res = await this.organizationService.forgetPassword(data);
+      return res;
+    } catch (error) {
+      console.log(error)
+      return Util?.handleTryCatchError(Util?.getTryCatchMsg(error)) 
+    }
+  }
+
+  @ApiOperation({ summary: 'Reset Customer Password' })
+  @Post('reset-password/:token')
+  @ApiParam({ name: 'token', type: 'string', required: true })
+  async resetPassword(@Param('token') token: string, @Body() data: ResetPasswordDto) {
+    try {
+   
+      let res = await this.organizationService.resetPassword(token, data);
+      return res;
+    } catch (error) {
+      return Util?.handleTryCatchError(Util?.getTryCatchMsg(error)) 
+    }
+
+  }
+  
   @Delete(':id')
  async remove(@Param('id') id: number) {
 

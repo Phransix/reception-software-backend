@@ -64,5 +64,6 @@ export class Organization extends Model<Organization>   {
 
     @HasMany(() => Enquiry)
     enquiries: Enquiry[];
+  static organizationName: any;
 
 }

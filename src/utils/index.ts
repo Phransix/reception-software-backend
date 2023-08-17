@@ -433,8 +433,8 @@ console.log(data?.rows?.length)
 
 // };
 
- export const  reseetpassToken = (customer_id)  => {
-   return jwt.sign({customer_id}, process.env.JWT_RESET_PASSWORD, {expiresIn: '20m'});
+ export const  reseetpassToken = (user_id)  => {
+   return jwt.sign({user_id}, process.env.JWT_RESET_PASSWORD, {expiresIn: '20m'});
  };
 
  export const verifyToken = (token) =>{

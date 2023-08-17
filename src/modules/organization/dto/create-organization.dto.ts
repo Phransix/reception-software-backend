@@ -48,3 +48,29 @@ export class CreateOrganizationDto {
 
 }
 
+export class VerifyEmailDto {    
+   // @IsNotEmpty()
+   // @IsEmail()
+   // @ApiProperty()
+   // email: string;
+
+   @IsNotEmpty()
+   @ApiProperty()
+   token: string;
+
+ }
+
+
+ export class ForgotPasswordDto {
+   @IsNotEmpty()
+   @ApiProperty()
+   @IsEmail()
+   email: string;
+ }
+ 
+ export class ResetPasswordDto {
+   @IsNotEmpty()
+   @ApiProperty()
+   password: string;
+ }
+ 
