@@ -58,7 +58,6 @@ export class OrganizationService {
 
       t.commit()
       console.log(user)
-      // return Util?.handleSuccessRespone(Util?.handleCreateSuccessRespone, "Organization created successfully.")
       return Util?.handleCreateSuccessRespone("Organization created successfully.")
 
     } catch (error) {
@@ -72,9 +71,6 @@ export class OrganizationService {
 
   async verifyEmail( token: string) {
     try{
-
-
-
       const decodeToken = verifyEmailToken(token);
       console.log(decodeToken);
       // return;
