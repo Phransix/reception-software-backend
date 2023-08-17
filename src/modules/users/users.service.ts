@@ -172,7 +172,7 @@ export class UsersService {
     // await this.userModel.save(user);
     Object.assign(user, changepassDto)
     await user.save()
-    return Util?.handleSuccessRespone(Util?.SuccessRespone, "Enquiry updated successfully.")
+    return Util?.handleSuccessRespone(Util?.SuccessRespone, "Paasword changed successfully.")
   }
 
 
