@@ -1,4 +1,5 @@
 import { Column, DataType, HasMany, Model, Table } from "sequelize-typescript";
+import { LoginDTO } from "src/guard/auth/loginDTO";
 import { Delivery } from "src/modules/delivery/entities/delivery.entity";
 import { Enquiry } from "src/modules/enquiries/entities/enquiry.entity";
 import { User } from "src/modules/users/entities/user.entity";
@@ -7,9 +8,15 @@ const { v4: uuidv4 } = require('uuid');
 
 @Table
 export class Organization extends Model<Organization>   {
-    // static createAccessToken(user: Organization) {
-    //   throw new Error('Method not implemented.');
-    // }
+  static validateUser(loginDto: LoginDTO) {
+    throw new Error('Method not implemented.');
+  }
+
+  User:any
+
+    static createAccessToken(user: Organization) {
+      throw new Error('Method not implemented.');
+    }
 
     @Column({
       type: DataType.INTEGER,
@@ -46,6 +53,12 @@ export class Organization extends Model<Organization>   {
     phoneNumber: string;
 
     @Column({
+     type: DataType.STRING,
+     allowNull: true
+    })
+    profilePhoto: string
+
+    @Column({
       type: DataType.BOOLEAN,
       allowNull: true,
       defaultValue: false
@@ -65,5 +78,9 @@ export class Organization extends Model<Organization>   {
     @HasMany(() => Enquiry)
     enquiries: Enquiry[];
   static organizationName: any;
+
+  
+  
+
 
 }

@@ -25,7 +25,15 @@ export class DeliveryController {
   @ApiTags('Delivery')
   @Get('getAllDeliveries')
   async findAll() {
-    return this.deliveryService.findAll();
+    try {
+      const allDeliveries = await this.deliveryService.findAll()
+      return allDeliveries
+      
+    } catch (error) {
+      console.log(error)
+      return Util.handleTryCatchError(Util?.handleTryCatchError(error))
+    }
+   
   }
 
 
@@ -65,8 +73,9 @@ export class DeliveryController {
   @Get(':id')
   async findOne(@Param('id') id: number) {
     try {
-      const delivery = await this.deliveryService.findOne(id);
+      let delivery = await this.deliveryService.findOne(id);
       return delivery;
+
     } catch (error) {
       console.log(error)
       return Util?.handleFailResponse("Delivery retrieval failed")
@@ -87,7 +96,25 @@ export class DeliveryController {
 
   @ApiTags('Delivery')
   @Delete(':id')
-  async remove(@Param('id') id: string) {
-    return this.deliveryService.remove(+id);
+  async remove(@Param('id') id: number) {
+
+    try {
+
+      const delivery = await Delivery.findOne({where:{id}})
+      if(!delivery){
+        return Util?.handleFailResponse("Delivery data not found")
+      }
+
+      Object.assign(delivery)
+      await delivery.destroy()
+      return Util?.handleSuccessRespone(Util?.SuccessRespone,"Delivery data deleted successfully.")
+
+      
+    } catch (error) {
+      console.log(error)
+      return Util?.handleTryCatchError("Delivery data not deleted")
+      
+    }
+
   }
 }

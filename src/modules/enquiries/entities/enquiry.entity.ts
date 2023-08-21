@@ -6,13 +6,13 @@ const { v4: uuidv4 } = require('uuid');
 @Table
 export class Enquiry extends Model<Enquiry>{
 
-  @Column({
-    type: DataType.INTEGER,
-    allowNull: false,
-    autoIncrement: true,
-    primaryKey: true,
-})
-id: number
+//   @Column({
+//     type: DataType.INTEGER,
+//     allowNull: false,
+//     autoIncrement: true,
+//     primaryKey: true,
+// })
+// id: number
 
   @Column({
     defaultValue: uuidv4,
@@ -72,7 +72,7 @@ id: number
        type: DataType.STRING,
        allowNull: false
      })
-     enquiry_Description: string
+     enquiryDescription: string
 
     
 

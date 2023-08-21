@@ -57,6 +57,10 @@ module.exports = {
         allowNull: true
       },
 
+      profilePhoto: {
+        type: Sequelize.STRING
+      },
+
        isVerified: {
         type: Sequelize.BOOLEAN,
          defaultValue: false

@@ -8,12 +8,11 @@ import * as bcrypt from 'bcrypt';
 
 @Table
 export class User extends Model<User> {
-  isVerified: any;
+
   static validateUser(loginDto: LoginDTO) {
     throw new Error('Method not implemented.');
   }
  
-
 
 
   @Column({
@@ -82,12 +81,26 @@ export class User extends Model<User> {
     })
     phoneNumber: string;
 
+    @Column({
+      type: DataType.STRING,
+      allowNull: true
+     })
+     profilePhoto: string;
+
+     @Column({
+      type: DataType.BOOLEAN,
+      allowNull: true,
+      defaultValue: false
+    })
+    isVerified: boolean;
+
      @Column({
       type: DataType.STRING,
         allowNull: true
     })
     password: string;
 
+<<<<<<< HEAD
     @BeforeCreate
       static async hashPassword(instance: User) {
         const saltRounds = 10;
@@ -95,4 +108,17 @@ export class User extends Model<User> {
         instance.password = hashedPassword;
       }
     
+=======
+    // @BeforeCreate
+    //   static async hashPassword(instance: User) {
+    //     const saltRounds = 10;
+    //     const hashedPassword = await bcrypt.hash(instance.password, saltRounds);
+    //     instance.password = hashedPassword;
+    //   }
+
+      
+
+
+
+>>>>>>> albert
 }

@@ -16,7 +16,7 @@ export class CreateDeliveryDto {
 
     @ApiProperty({
         description: 'The Id of the Organization',
-        example: '1'
+        example: '0ebf89e0-1606-4f8a-ad7c-39f4a3424028'
     })
     @IsNotEmpty()
     readonly organizationId: string;

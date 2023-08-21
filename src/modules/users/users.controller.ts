@@ -82,7 +82,7 @@ export class UsersController {
 
     }catch(error){
       console.log(error)
-      return Util?.handleTryCatchError(Util?.getTryCatchMsg(error));
+      return Util?.handleTryCatchError('User data Not updated');
     }
 
   };
@@ -95,14 +95,14 @@ export class UsersController {
 
       const user = await User.findOne({where:{id}});
       if(!user) {
-        throw new Error('User not Found')
-      }
+        throw new Error('User data not Found')
+      } 
 
       // return this.usersService.remove(id);
 
       Object.assign(user)
-      // return this.usersService.remove(id);
       await user.destroy()
+      return Util?.handleSuccessRespone(Util?.SuccessRespone,"User data deleted successfully.")
 
     }catch(error){
       console.log(error)

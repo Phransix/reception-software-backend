@@ -1,7 +1,13 @@
-import { IsEmail, IsNotEmpty ,Matches} from "class-validator";
+import { ApiProperty } from "@nestjs/swagger";
+import { IsEmail, IsNotEmpty ,Matches, MinLength} from "class-validator";
 
 
 export class LoginDTO {
+
+    @ApiProperty({
+        description: 'The email of the User/Customer',
+        example: 'ampong@gmail.com'
+    })
     @IsNotEmpty()
     @IsEmail()
     @Matches(/^[a-zA-Z0-9._%+-]+@.+\.com$/, {
@@ -9,6 +15,12 @@ export class LoginDTO {
     })
     email: string;
 
+
+    @ApiProperty({
+        description: 'The password of the User/Customer',
+        example: '*****'
+    })
     @IsNotEmpty()
+    @MinLength(8)
     password:string;
 }

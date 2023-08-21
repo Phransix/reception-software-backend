@@ -9,6 +9,7 @@ import { DATE } from 'sequelize';
 
 @Injectable()
 export class DeliveryService {
+  
 
   constructor(
     @InjectModel(Delivery) private readonly DeliveryModel: typeof Delivery,
@@ -17,6 +18,11 @@ export class DeliveryService {
   async create(createDeliveryDto: CreateDeliveryDto) {
     try {
       await Abstract?.createData(Delivery, createDeliveryDto);
+
+      
+      // console.log(createDeliveryDto.status)
+      
+
       return Util?.handleCreateSuccessRespone( "Delivery Created Successfully");
     } catch (error) {
       console.error(error)
