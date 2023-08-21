@@ -96,30 +96,7 @@ export class DeliveryController {
 
   @ApiTags('Delivery')
   @Delete(':id')
-<<<<<<< HEAD
-  async remove(@Param('id') id: number) {
-
-    try {
-
-      const delivery = await Delivery.findOne({where:{id}})
-      if(!delivery){
-        return Util?.handleFailResponse("Delivery data not found")
-      }
-
-      Object.assign(delivery)
-      await delivery.destroy()
-      return Util?.handleSuccessRespone(Util?.SuccessRespone,"Delivery data deleted successfully.")
-
-      
-    } catch (error) {
-      console.log(error)
-      return Util?.handleTryCatchError("Delivery data not deleted")
-      
-    }
-
-=======
   async remove(@Param('id') id: string) {
     return this.deliveryService.remove(+id);
->>>>>>> francis
   }
 }
