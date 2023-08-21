@@ -1,4 +1,3 @@
-
 import { BadRequestException, ForbiddenException, Injectable, Param, Req, Res, UnauthorizedException } from '@nestjs/common';
 import { CreateOrganizationDto, ForgotPasswordDto, ResetPasswordDto, VerifyEmailDto } from './dto/create-organization.dto';
 import { UpdateOrganizationDto } from './dto/update-organization.dto';
@@ -13,7 +12,6 @@ import * as bcrypt from 'bcrypt';
 import { LoginDTO } from 'src/guard/auth/loginDTO';
 import { Role } from '../role/entities/role.entity';
 import { AuthService } from 'src/guard/auth/auth.service';
-
 
 
 
@@ -80,6 +78,7 @@ export class OrganizationService {
   // Verify Email Account
   async verifyEmail(verifyEmailDto:VerifyEmailDto) {
     try{
+  
 
       const decodeToken = verifyEmailToken(verifyEmailDto?.token);
       // console.log(decodeToken);
@@ -247,7 +246,6 @@ export class OrganizationService {
     return await this.organizationModel.findOne<Organization>({ where: { phoneNumber } })
   }
 
-  // Forgot password
   async forgetPassword(email: ForgotPasswordDto) {
     try {
       let user = await this.user.findOne({ where: { ...email } });
@@ -268,7 +266,6 @@ export class OrganizationService {
   }
 
 
-  // Change password
   async resetPassword(token: any, data: ResetPasswordDto) {
     const t = await this.sequelize.transaction();
 
@@ -303,6 +300,42 @@ export class OrganizationService {
       return Util?.checkIfRecordNotFound(error)
     }
   }
+
+  // Change password
+  // async resetPassword(token: any, data: ResetPasswordDto) {
+  //   const t = await this.sequelize.transaction();
+
+  //   try {
+
+  //     const defaultPassword = data?.password;
+  //     const saltRounds = 10;
+
+  //    // Hash the defualt password
+  //    const hashedDefaultPassword = await bcrypt.hash(defaultPassword,saltRounds);
+
+  //     let decode = Util.verifyToken(token);
+  //     const user = await this?.user.findOne({
+  //       where: {
+  //         userId: decode.user_id,
+  //       },
+  //     });
+
+  //     if (!user) return Util.handleForbiddenExceptionResponses('Invaid email');
+
+  //     let UpdateData = {
+  //       password: hashedDefaultPassword,
+  //     };
+  //     await this?.user.update(UpdateData, {
+  //       where: { id: user?.id },
+  //       transaction: t,
+  //     });
+  //     t.commit();
+  //     return Util.handleCreateSuccessRespone('Password Reset Successful');
+  //   } catch (error) {
+  //     t.rollback();
+  //     return Util?.checkIfRecordNotFound(error)
+  //   }
+  // }
 
 
 }

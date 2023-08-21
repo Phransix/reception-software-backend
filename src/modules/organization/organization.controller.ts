@@ -9,6 +9,7 @@ import * as Util from '../../utils/index'
 import { LoginDTO } from 'src/guard/auth/loginDTO';
 import { User } from '../users/entities/user.entity';
 import { UsersService } from '../users/users.service';
+import { log } from 'console';
 
 
  @ApiTags('Organization')
@@ -57,6 +58,7 @@ export class OrganizationController {
 
   @Post('login')
   async login(@Body() loginDto: LoginDTO){
+ 
     const user = await this.organizationService.validateUser(loginDto);
     if (!user){
       throw new HttpException('Invalid Credentials',HttpStatus.UNAUTHORIZED)

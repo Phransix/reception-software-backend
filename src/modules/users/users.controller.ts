@@ -7,6 +7,7 @@ import { User } from './entities/user.entity';
 import { ApiTags } from '@nestjs/swagger';
 import { ChangePassDTO } from 'src/guard/auth/changePassDTO';
 import { LoginDTO } from 'src/guard/auth/loginDTO';
+import { log } from 'console';
 
 @Controller('users')
 export class UsersController {
@@ -29,6 +30,8 @@ export class UsersController {
   @ApiTags('Users')
   @Post('login')
   async login(@Body() loginDto: LoginDTO){
+    // console.log(loginDto);
+    // return
     const user = await this.usersService.validateUser(loginDto);
     if (!user){
       throw new HttpException('Invalid Credentials',HttpStatus.UNAUTHORIZED)
