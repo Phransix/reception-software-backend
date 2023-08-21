@@ -51,7 +51,7 @@ export class PasswordProcessor {
     constructor (private mailService: MailerService){}
     
 
-    @Process('reset_mail')
+    @Process('resetPassword_mail')
     async handleTranscode(job: Job) {
         this.logger.debug('Start transcoding...');
         let details = job.data?.details;
@@ -60,8 +60,8 @@ export class PasswordProcessor {
             await this.mailService.sendMail({
                 from: process.env.MAIL_FROM_ADDRESS,
                 to: details?.email,
-                subject: 'Reset Password',
-                template: 'Emailverification',
+                subject: 'Reset Password Mail',
+                template: 'Reset-Password',
                 context: {
                     email : details?.email,
                     org_name: details?.org_name,

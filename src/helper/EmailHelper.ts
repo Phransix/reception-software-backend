@@ -33,7 +33,36 @@ export class EmailService {
         } catch (error) {
 
         }
-
     }
+
+
+    async sendResstPasswordNotification(props) {
+        let {userId,email,org_name} =props
+        try {
+            let token = Util.reseetpassToken({ email,userId });
+            let details = {
+                email,
+                org_name,
+                link: process.env.FRONT_END_URL + '/'+ token,
+                year: new Date().getFullYear(),
+
+            }
+            return await this.emailQueue.add(
+                'reset-password',
+                {
+                    details,
+                },
+                { delay: 1000 },
+            );
+
+        } catch (error) {
+
+        }
+    }
+
+
+
+
+
 
 }
