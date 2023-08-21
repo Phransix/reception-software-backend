@@ -100,15 +100,6 @@ export class User extends Model<User> {
     })
     password: string;
 
-<<<<<<< HEAD
-    @BeforeCreate
-      static async hashPassword(instance: User) {
-        const saltRounds = 10;
-        const hashedPassword = await bcrypt.hash(instance.password, saltRounds);
-        instance.password = hashedPassword;
-      }
-    
-=======
     // @BeforeCreate
     //   static async hashPassword(instance: User) {
     //     const saltRounds = 10;
@@ -120,5 +111,4 @@ export class User extends Model<User> {
 
 
 
->>>>>>> albert
 }

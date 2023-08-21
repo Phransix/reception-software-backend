@@ -212,11 +212,7 @@ async validateUser(loginDto: LoginDTO){
     // await this.userModel.save(user);
     Object.assign(user, changepassDto)
     await user.save()
-<<<<<<< HEAD
-    return Util?.handleSuccessRespone(Util?.SuccessRespone, "Paasword changed successfully.")
-=======
     return Util?.handleSuccessRespone(Util?.SuccessRespone, "Your Password has been changed successfully.")
->>>>>>> albert
   }
 
 
