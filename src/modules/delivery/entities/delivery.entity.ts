@@ -67,7 +67,7 @@ export class Delivery extends Model <Delivery> {
     email: string
 
     @Column({
-        type: DataType.STRING,
+        type: DataType.DATE,
         allowNull: false
     })
     date_and_time: string
@@ -77,7 +77,7 @@ export class Delivery extends Model <Delivery> {
         values: ['delivered','not delivered'],
         allowNull: false,
     })
-    visitStatus: string;
+    status: string;
 
     @Column({
         type: DataType.ENUM,

@@ -16,7 +16,7 @@ export class CreateDeliveryDto {
 
     @ApiProperty({
         description: 'The Id of the Organization',
-        example: '1'
+        example: '0ebf89e0-1606-4f8a-ad7c-39f4a3424028'
     })
     @IsNotEmpty()
     readonly organizationId: string;
@@ -43,7 +43,7 @@ export class CreateDeliveryDto {
     })
     @IsString()
     @IsNotEmpty()
-    readonly phonenumber: string;
+    readonly phoneNumber: string;
 
     @ApiProperty({
         description: "The senders'/s email address",
@@ -64,7 +64,7 @@ export class CreateDeliveryDto {
     })
     @IsString()
     @IsNotEmpty()
-    readonly data_and_time: string;
+    readonly date_and_time: string;
 
     @ApiProperty({
         description: "The status of delivery",
@@ -91,5 +91,5 @@ export class CreateDeliveryDto {
         example: 'Any important detail of the delivery'
     })
     @IsString()
-    readonly Delivery_Description: string;
+    readonly deliveryDescription: string;
 }

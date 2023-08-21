@@ -43,8 +43,8 @@ async validateUser(loginDto: LoginDTO){
   if(!user){
     throw new BadRequestException('User with this email does not exist')
   }
-  const IsPasswordValid = await bcrypt.compare(password,user.password)
-  if(!IsPasswordValid){
+  const IsPasswordSame = await bcrypt.compare(password,user.password)
+  if(!IsPasswordSame){
     throw new UnauthorizedException('Invalid Credentials')
   }
   let accessToken = await createAccessToken(user?.id);
@@ -125,18 +125,18 @@ async validateUser(loginDto: LoginDTO){
 
     try {
 
-      const user = await User.findOne({ where: { id } });
+      const user = await this.userModel.findOne({ where: { id } });
       if (!user) {
         throw new Error('User not found.');
       }
 
       Object.assign(user, updateUserDto)
       await user.save()
-      return Util?.handleSuccessRespone(Util?.SuccessRespone, "Enquiry updated successfully.")
+      return Util?.handleSuccessRespone(Util?.SuccessRespone, "User updated successfully.")
 
     } catch (error) {
       console.log(error)
-      return Util?.handleTryCatchError(Util?.getTryCatchMsg(error));
+      return Util?.handleTryCatchError('User not Updated');
     }
   };
 
@@ -147,7 +147,7 @@ async validateUser(loginDto: LoginDTO){
     try{
       const user = await User.findOne({where:{id}});
       if (!user) {
-        throw new Error('User not found.'); 
+        throw new Error('User data not found.'); 
       }
 
       Object.assign(user)
@@ -169,7 +169,7 @@ async validateUser(loginDto: LoginDTO){
     return await this.userModel.findOne<User>({where: {email}})
   }
 
-  // Change Password
+
  
   async findByemail(email: string){
       return this.userModel.findOne({where:{email}})
@@ -195,7 +195,8 @@ async validateUser(loginDto: LoginDTO){
       // Verify the old password
       const isPasswordValid = await bcrypt.compare(oldPassword, user.password);
       if (!isPasswordValid) {
-        throw new Error('Invalid old password');
+        // throw new Error('Invalid old password');
+        return Util?.handleFailResponse("Incorrect old password")
       }
 
       // Testing if confirmNewPassword != newPassword
@@ -211,7 +212,7 @@ async validateUser(loginDto: LoginDTO){
     // await this.userModel.save(user);
     Object.assign(user, changepassDto)
     await user.save()
-    return Util?.handleSuccessRespone(Util?.SuccessRespone, "Enquiry updated successfully.")
+    return Util?.handleSuccessRespone(Util?.SuccessRespone, "Your Password has been changed successfully.")
   }
 
 

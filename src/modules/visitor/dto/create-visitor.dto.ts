@@ -6,7 +6,7 @@ enum Status {
     INACTIVE = 'inactive',
 }
 
-enum visit_Status {
+enum Purpose {
     PERSONAL = 'personal',
     UNOFFICIAL = 'unofficial'
 }
@@ -17,7 +17,7 @@ export class CreateVisitorDto {
         example: '1'
     })
     @IsNotEmpty()
-    readonly organization_Id: string;
+    readonly organizationId: string;
 
     @ApiProperty({
         description: 'The name of the Visitor',
@@ -34,7 +34,7 @@ export class CreateVisitorDto {
     @IsNotEmpty()
     @MinLength(10)
     @MaxLength(10)
-    readonly phonenumber: string;
+    readonly phoneNumber: string;
 
     @ApiProperty({
         description: "The purpose of the visit",
@@ -42,7 +42,7 @@ export class CreateVisitorDto {
     })
     @IsString()
     @IsNotEmpty()
-    @IsEnum(visit_Status, {
+    @IsEnum(Purpose, {
         message: 'The purpose of visit must be either personal or unofficial',
     })
     readonly purpose: string;
@@ -63,7 +63,7 @@ export class CreateVisitorDto {
     @IsEnum(Status, {
         message: 'The visitor status must be either active or inactive',
     })
-    readonly visit_Status: string;
+    readonly visitStatus: string;
 
     @ApiProperty({
         description: "The date and time of delivery",

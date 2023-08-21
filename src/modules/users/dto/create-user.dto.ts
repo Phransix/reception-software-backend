@@ -48,9 +48,19 @@ export class CreateUserDto {
     readonly phoneNumber: string;
 
     @ApiProperty({
+        description: 'The profilePhoto of the User/Customer',
+        example: '"data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAUAAAAFCAYAAACNbyblAAAAHElEQVQI12P4//8/w38GIAXDIBKE0DHxgljNBAAO9TXL0Y4OHwAAAABJRU5ErkJggg=="'
+    })
+    
+    readonly profilePhoto: string;
+     
+
+    @ApiProperty({
         description: 'The password of the User/Customer',
         example: '*****'
     })
+    @IsNotEmpty()
+    @MinLength(8)
     readonly password: string
     
 }

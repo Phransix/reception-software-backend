@@ -4,6 +4,7 @@ import { CreateDeliveryDto } from './dto/create-delivery.dto';
 import { UpdateDeliveryDto } from './dto/update-delivery.dto';
 import * as Util from '../../utils/index'
 import { ApiTags } from '@nestjs/swagger';
+import { Delivery } from './entities/delivery.entity';
 
 @Controller('delivery')
 export class DeliveryController {
@@ -23,7 +24,15 @@ export class DeliveryController {
   @ApiTags('Delivery')
   @Get('getAllDeliveries')
   async findAll() {
-    return this.deliveryService.findAll();
+    try {
+      const allDeliveries = await this.deliveryService.findAll()
+      return allDeliveries
+      
+    } catch (error) {
+      console.log(error)
+      return Util.handleTryCatchError(Util?.handleTryCatchError(error))
+    }
+   
   }
 
   @ApiTags('Delivery')
@@ -31,8 +40,9 @@ export class DeliveryController {
   async findOne(@Param('id') id: number) {
     // return this.deliveryService.findOne(+id);
     try {
-      const delivery = await this.deliveryService.findOne(id);
+      let delivery = await this.deliveryService.findOne(id);
       return delivery;
+
     } catch (error) {
       console.log(error)
       return Util?.handleTryCatchError(Util?.getTryCatchMsg(error))
@@ -54,7 +64,25 @@ export class DeliveryController {
 
   @ApiTags('Delivery')
   @Delete(':id')
-  remove(@Param('id') id: string) {
-    return this.deliveryService.remove(+id);
+  async remove(@Param('id') id: number) {
+
+    try {
+
+      const delivery = await Delivery.findOne({where:{id}})
+      if(!delivery){
+        return Util?.handleFailResponse("Delivery data not found")
+      }
+
+      Object.assign(delivery)
+      await delivery.destroy()
+      return Util?.handleSuccessRespone(Util?.SuccessRespone,"Delivery data deleted successfully.")
+
+      
+    } catch (error) {
+      console.log(error)
+      return Util?.handleTryCatchError("Delivery data not deleted")
+      
+    }
+
   }
 }

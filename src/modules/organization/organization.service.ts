@@ -12,6 +12,9 @@ import {  createAccessToken, generateRefreshToken, verifyEmailToken } from '../.
 import * as bcrypt from 'bcrypt';
 import { LoginDTO } from 'src/guard/auth/loginDTO';
 import { Role } from '../role/entities/role.entity';
+import { AuthService } from 'src/guard/auth/auth.service';
+
+
 
 
 @Injectable()
@@ -22,7 +25,9 @@ export class OrganizationService {
     @InjectModel(User) private user: typeof User,
     @InjectModel(Role) private role: typeof Role,
     private sequelize : Sequelize,
-    private emailService:EmailService
+    private emailService:EmailService,
+    private readonly authService: AuthService
+  
     ){}
 
     // Create An Organization
@@ -43,7 +48,7 @@ export class OrganizationService {
 
       if(!role)
       throw new ForbiddenException('Role Not Found');
-   
+
       
       let org_data = {
         
@@ -52,7 +57,7 @@ export class OrganizationService {
         fullName: createOrganizationDto?.fullName,
         email: organization?.email,
         phoneNumber: createOrganizationDto?.phoneNumber,
-        password: hashedDefaultPassword
+        password:hashedDefaultPassword
         
       }
       const user = await this.user?.create({ ...org_data }, { transaction: t })
@@ -61,13 +66,12 @@ export class OrganizationService {
 
       t.commit()
       console.log(user)
-      // return Util?.handleSuccessRespone(Util?.handleCreateSuccessRespone, "Organization created successfully.")
       return Util?.handleCreateSuccessRespone("Organization created successfully.")
 
     } catch (error) {
       t.rollback()
       console.log(error)
-      throw new Error(error);
+      throw new Error("Registration failed");
 
     }
   };
@@ -113,19 +117,19 @@ export class OrganizationService {
     const user = await User.findOne({where:{email}})
     const organization = await this.organizationModel.findOne({where:{email}})
     if(!user && !organization){
-      throw new BadRequestException('User with this email does not exist')
+      throw new BadRequestException('Organization with this email does not exist')
     }
-    const IsPasswordValid = await bcrypt.compare(password,user.password)
-    if(!IsPasswordValid){
+
+    const passwordMatch = await this.authService.verifypassword(password, user.password)
+    if (!passwordMatch){
       throw new UnauthorizedException('Invalid Credentials')
     }
-    
+ 
     // Check if the oraganiazation is verified
     if(organization?.isVerified != true)
     return Util?.handleFailResponse('Organization account not verified')
 
  
-
     let accessToken = await createAccessToken(user?.id);
     let refreshToken = await generateRefreshToken(user?.id);
     let tokens = {
