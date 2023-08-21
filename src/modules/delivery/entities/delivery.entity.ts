@@ -94,7 +94,7 @@ export class Delivery extends Model <Delivery> {
 
     @Column ({
         type: DataType.DATE,
-        // allowNull: true,
+        allowNull: true,
         // defaultValue: null
       })
       deletedAt: Date

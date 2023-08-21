@@ -72,7 +72,7 @@ export class DeliveryService {
       }
       // Object.assign(delivery)
       // delivery.deletedAt = new Date()
-      await delivery.destroy()
+      await delivery.save()
       return Util?.handleSuccessRespone(Util?.SuccessRespone, "Delivery Data deleted Successfully")
 
     } catch (error) {

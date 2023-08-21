@@ -95,7 +95,4 @@ export class User extends Model<User> {
         instance.password = hashedPassword;
       }
     
-    
-
-
 }

@@ -18,7 +18,7 @@ export class DeliveryController {
       let new_Delivery = await Delivery.create(createDeliveryDto);
       return new_Delivery;
     } catch (error) {
-      return Util?.handleTryCatchError(Util?.getTryCatchMsg(error))
+      return Util?.handleFailResponse("Delivery registration failed")
     }
   }
 
@@ -69,7 +69,7 @@ export class DeliveryController {
       return delivery;
     } catch (error) {
       console.log(error)
-      return Util?.handleTryCatchError(Util?.getTryCatchMsg(error))
+      return Util?.handleFailResponse("Delivery retrieval failed")
     }
   }
 
@@ -81,13 +81,13 @@ export class DeliveryController {
       return delivery_Update
     } catch (error) {
       console.log(error);
-      return Util?.handleTryCatchError(Util?.getTryCatchMsg(error))
+      return Util?.handleFailResponse("Delivery update failed")
     }
   }
 
   @ApiTags('Delivery')
   @Delete(':id')
-  remove(@Param('id') id: string) {
+  async remove(@Param('id') id: string) {
     return this.deliveryService.remove(+id);
   }
 }
