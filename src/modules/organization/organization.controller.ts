@@ -4,11 +4,13 @@ import { OrganizationService } from './organization.service';
 import { CreateOrganizationDto, ForgotPasswordDto, ResetPasswordDto, VerifyEmailDto } from './dto/create-organization.dto';
 import { UpdateOrganizationDto } from './dto/update-organization.dto';
 import { DoesUserExist } from 'src/common/guards/doesUserExist.guard';
-import {  ApiOperation, ApiParam, ApiTags } from '@nestjs/swagger';
+import { ApiBadRequestResponse, ApiOkResponse, ApiOperation, ApiParam, ApiTags } from '@nestjs/swagger';
+import * as bcrypt from 'bcrypt';
 import * as Util from '../../utils/index'
 import { LoginDTO } from 'src/guard/auth/loginDTO';
 import { User } from '../users/entities/user.entity';
 import { UsersService } from '../users/users.service';
+// import { LoginDTO } from 'src/guard/auth/loginDTO';
 
 
  @ApiTags('Organization')
@@ -29,8 +31,6 @@ export class OrganizationController {
   async create(@Body() createOrganizationDto: CreateOrganizationDto) {
     try {
 
-
-
       let new_Enquiry = this.organizationService.create(createOrganizationDto);
       return new_Enquiry;
 
@@ -44,7 +44,7 @@ export class OrganizationController {
   async verifyEmail(@Body()token:VerifyEmailDto){
     try{
 
-    
+      console.log(token)
       
       const emailVerify = await this.organizationService.verifyEmail(token)
       return emailVerify

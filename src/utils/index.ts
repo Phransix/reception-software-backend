@@ -30,6 +30,8 @@ export const handleCustonCreateResponse = (data, msg) => {
 
 
 
+
+
   export const handleErrorRespone = (msg) => {
     return {
        status_code: HttpStatus.BAD_REQUEST,
@@ -286,6 +288,9 @@ export const handleCustonCreateResponse = (data, msg) => {
     return { limit, offset };
   };
   
+  export const Checknegative = (number) => {
+    return !Object.is(Math.abs(number), + number)
+  }
 
 
 export const getPagingData = (data, page, limit,length) => {

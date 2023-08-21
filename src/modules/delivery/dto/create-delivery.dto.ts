@@ -60,7 +60,7 @@ export class CreateDeliveryDto {
     
     @ApiProperty({
         description: "The date and time of delivery",
-        example: '20-08-2023-12-24-01'
+        example: '2023-12-24'
     })
     @IsString()
     @IsNotEmpty()
@@ -68,7 +68,7 @@ export class CreateDeliveryDto {
 
     @ApiProperty({
         description: "The status of delivery",
-        example: 'Delivered or Not Delivered'
+        example: 'delivered'
     })
     @IsString()
     @IsEnum(Status, {
@@ -78,7 +78,7 @@ export class CreateDeliveryDto {
 
     @ApiProperty({
         description: "The type of delivery",
-        example: 'Food, Documents,Other'
+        example: 'other'
     })
     @IsString()
     @IsEnum(Status_type, {

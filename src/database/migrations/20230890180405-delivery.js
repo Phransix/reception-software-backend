@@ -57,7 +57,6 @@ module.exports = {
       date_and_time: {
         type: Sequelize.DATE,
         allowNull: false,
-        defaultValue: Sequelize.literal('CURRENT_TIMESTAMP'),
       },
       status: {
         type: Sequelize.ENUM('delivered', 'received'),
@@ -90,8 +89,15 @@ module.exports = {
         type: Sequelize.DATE,
         allowNull: false,
         defaultValue: Sequelize.literal('CURRENT_TIMESTAMP'),
-      }
-    })
+      },
+      deletedAt: {
+        type: Sequelize.DATE,
+        allowNull: true,
+        // defaultValue: null
+      },
+    },{
+      paranoid: true
+    });
   },
 
   down: async (queryInterface, Sequelize) => {

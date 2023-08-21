@@ -21,11 +21,16 @@ import { DeliveryModule } from './modules/delivery/delivery.module';
 import { AppService } from './app.service';
 import { AuthModule } from './modules/auth/auth.module';
 import { RoleModule } from './modules/role/role.module';
+import { PaginateModule } from 'nestjs-sequelize-paginate'
 
 
 
 @Module({
   imports: [
+
+    PaginateModule.forRoot({
+      url: 'http://localhost:3005',
+    }),
 
     BullModule.forRoot({
       redis: {

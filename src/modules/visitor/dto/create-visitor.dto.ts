@@ -1,15 +1,16 @@
 import { ApiProperty } from '@nestjs/swagger';
-import { IsBoolean, IsDateString, IsEmail, IsEnum, IsNotEmpty, IsString, MaxLength, MinLength } from 'class-validator'
+import { IsDateString, IsEnum, IsNotEmpty, IsString, MaxLength, MinLength } from 'class-validator'
 
 enum Status {
     ACTIVE = 'active',
     INACTIVE = 'inactive',
 }
 
-enum Purpose {
+enum purposeStatus {
     PERSONAL = 'personal',
-    UNOFFICIAL = 'unofficial'
+    UNOFFICIAL = 'unofficial',
 }
+
 export class CreateVisitorDto {
 
     @ApiProperty({
@@ -38,12 +39,12 @@ export class CreateVisitorDto {
 
     @ApiProperty({
         description: "The purpose of the visit",
-        example: 'Any important detail about the visit'
+        example: 'personal'
     })
     @IsString()
     @IsNotEmpty()
-    @IsEnum(Purpose, {
-        message: 'The purpose of visit must be either personal or unofficial',
+    @IsEnum(purposeStatus,{
+        message: 'state the purpose'
     })
     readonly purpose: string;
 
