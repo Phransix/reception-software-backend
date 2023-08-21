@@ -77,7 +77,7 @@ export class Delivery extends Model <Delivery> {
         values: ['delivered','not delivered'],
         allowNull: false,
     })
-    visitStatus: string;
+    status: string;
 
     @Column({
         type: DataType.ENUM,
@@ -91,5 +91,12 @@ export class Delivery extends Model <Delivery> {
         allowNull: true
     })
     deliveryDescription: string
+
+    @Column ({
+        type: DataType.DATE,
+        // allowNull: true,
+        // defaultValue: null
+      })
+      deletedAt: Date
 
 }

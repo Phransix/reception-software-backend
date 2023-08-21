@@ -12,7 +12,7 @@ export class VisitorService {
 
   constructor(
     private sequelize: Sequelize,
-    @InjectModel(Visitor) private readonly VisitorModel: typeof Visitor) { }
+    @InjectModel(Visitor) private readonly VisitorModel: typeof Visitor) {}
 
   async create(createVisitorDto: CreateVisitorDto) {
     try {
@@ -20,7 +20,7 @@ export class VisitorService {
       return Util?.handleCreateSuccessRespone("Visitor Created Successfully");
     } catch (error) {
       console.error(error)
-      return Util?.handleTryCatchError(Util?.getTryCatchMsg(error))
+      return Util?.handleFailResponse('Visitor creation failed')
     }
   }
 
@@ -31,7 +31,7 @@ export class VisitorService {
       return Util?.handleSuccessRespone(visitors,"Visitors Data retrieved successfully")
     } catch (error) {
       console.log(error)
-      return Util?.handleTryCatchError(Util?.getTryCatchMsg(error))
+      return Util?.handleFailResponse('Visitors retrieval failed')
     }
   };
 
@@ -45,7 +45,7 @@ export class VisitorService {
       // return visitor
     } catch (error) {
       console.log(error);
-      return Util?.handleTryCatchError(Util?.getTryCatchMsg(error))
+      return Util?.handleFailResponse('Visitor retrieval failed')
     }
   }
 
@@ -61,7 +61,7 @@ export class VisitorService {
       return Util?.handleSuccessRespone(Util?.SuccessRespone,"Visitor Data updated Successfully");
     } catch (error) {
       console.log(error)
-      return Util?.handleTryCatchError(Util?.getTryCatchMsg(error));
+      return Util?.handleFailResponse('Visitor update failed')
     }
   };
 
@@ -77,7 +77,7 @@ export class VisitorService {
       return Util?.handleSuccessRespone(Util?.SuccessRespone,"Visitor Deleted Successfully")
     } catch (error) {
       console.log(error)
-      return Util?.handleTryCatchError(Util?.getTryCatchMsg(error));
+      return Util?.handleFailResponse('Visitor removal failed')
     }
   }
 }

@@ -70,3 +70,46 @@ Commands:
         allowNull: false,
         unique: true,
       },
+
+      import { Controller, Get, Query, Req } from '@nestjs/common';
+import { Request } from 'express';
+
+@Controller('example')
+export class ExampleController {
+
+  @Get('data')
+  getData(
+    @Query('page') page: number,
+    @Query('size') size: number,
+    @Req() req: Request,
+  ) {
+    // Your logic here
+  }
+import { Controller, Get, Res } from '@nestjs/common';
+import { Response } from 'express';
+
+@Controller('users')
+export class UsersController {
+  @Get()
+  getUsers(@Res() res: Response) {
+    const data = {}; // Your data object goes here
+    return res.status(200).json({ message: "Retrieval of Users successful", data });
+  }
+}
+
+================
+import { Controller, Get, Res } from '@nestjs/common';
+import { Response } from 'express';
+
+@Controller('users')
+export class UsersController {
+  @Get()
+  getUsers(@Res() res: Response) {
+    const data = {}; // Your data object goes here
+    const responsePayload = { message: 'Retrieval of Users successful', data };
+    return res.status(200).json(responsePayload);
+  }
+}
+
+
+

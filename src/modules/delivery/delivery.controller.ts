@@ -1,10 +1,10 @@
-import { Controller, Get, Post, Body, Patch, Param, Delete, Res } from '@nestjs/common';
+import { Controller, Get, Post, Body, Patch, Param, Delete, Res, Query, Req, HttpException } from '@nestjs/common';
 import { DeliveryService } from './delivery.service';
 import { CreateDeliveryDto } from './dto/create-delivery.dto';
 import { UpdateDeliveryDto } from './dto/update-delivery.dto';
 import * as Util from '../../utils/index'
 import { ApiTags } from '@nestjs/swagger';
-import { PaginateQuery, PaginateQueryInterface } from 'nestjs-sequelize-paginate';
+import { Delivery } from './entities/delivery.entity';
 
 @Controller('delivery')
 export class DeliveryController {
@@ -15,7 +15,7 @@ export class DeliveryController {
   @Post('createDelivery')
   async createDelivery(@Body() createDeliveryDto: CreateDeliveryDto) {
     try {
-      let new_Delivery = this.deliveryService.create(createDeliveryDto);
+      let new_Delivery = await Delivery.create(createDeliveryDto);
       return new_Delivery;
     } catch (error) {
       return Util?.handleTryCatchError(Util?.getTryCatchMsg(error))
@@ -28,17 +28,42 @@ export class DeliveryController {
     return this.deliveryService.findAll();
   }
 
+
   // @ApiTags('Delivery')
-  // @Get()
-  // async getUsers(@Res() res: Response, @PaginateQuery('all') paginateQuery: PaginateQueryInterface){
-  //   const data = await this.userService.findAll(paginateQuery)
-  //   res.status(HttpStatus.OK).send(data)
+  // @Get('getAllDeliveries')
+  // async findAll(
+  //   @Query('page') page: number,
+  //   @Query('size') size: number,
+  //   @Query('length') length: number,
+  //   @Req() req: Request
+  //   ) {
+  //   try {
+  //     let currentPage = Util.Checknegative(page);
+  //   if (currentPage)
+  //     return Util?.handleErrorRespone("Delivery current page cannot be negative");
+
+  //   const {limit, offset } = Util.getPagination(page, size)
+
+  //   const delivery = await Delivery.findAndCountAll({
+  //     limit,
+  //     offset,
+  //     // attributes: {exclude:['createdAt','updatedAt']}
+  //   });
+  //   const response = Util.getPagingData(delivery,page,limit,length)
+  //   console.log(response)
+  //   // return this.deliveryService.findAll();
+  //   return Util?.handleSuccessRespone(delivery,"Delivery retrieved succesfully")
+
+  //   } catch (error) {
+  //     console.log(error)
+  //     return Util?.handleTryCatchError(Util?.getTryCatchMsg(error))
+  //   }
+    
   // }
 
   @ApiTags('Delivery')
   @Get(':id')
   async findOne(@Param('id') id: number) {
-    // return this.deliveryService.findOne(+id);
     try {
       const delivery = await this.deliveryService.findOne(id);
       return delivery;
@@ -51,7 +76,6 @@ export class DeliveryController {
   @ApiTags('Delivery')
   @Patch(':id')
   update(@Param('id') id: number, @Body() updateDeliveryDto: UpdateDeliveryDto) {
-    // return this.deliveryService.update(+id, updateDeliveryDto);
     try {
       const delivery_Update = this.deliveryService.update(id,updateDeliveryDto)
       return delivery_Update

@@ -5,14 +5,13 @@ import { InjectModel } from '@nestjs/sequelize';
 import { Delivery } from './entities/delivery.entity';
 import * as Abstract from '../../utils/abstract'
 import * as Util from '../../utils/index'
-import { PaginateOptions, PaginateService } from 'nestjs-sequelize-paginate';
+import { DATE } from 'sequelize';
 
 @Injectable()
 export class DeliveryService {
 
   constructor(
     @InjectModel(Delivery) private readonly DeliveryModel: typeof Delivery,
-    private readonly paginateService: PaginateService
     ){}
 
   async create(createDeliveryDto: CreateDeliveryDto) {
@@ -21,72 +20,64 @@ export class DeliveryService {
       return Util?.handleCreateSuccessRespone( "Delivery Created Successfully");
     } catch (error) {
       console.error(error)
-      return Util?.handleTryCatchError(Util?.getTryCatchMsg(error))
+      return Util?.handleFailResponse("Delivery registration failed")
     }
   }
 
-  // async findAll(options: PaginateOptions) 
   async findAll(){
-    // return `This action returns all delivery`;
     try {
-      const delivery = this.DeliveryModel.findAll()
+      const delivery = await Delivery.findAll({paranoid:false})
       return Util?.handleSuccessRespone(delivery, "Deliveries Data retrieved Successfully")
-      // // const paginate = this.paginateService.findAllPaginate({
-      // //   ...options,
-      // //   model: Delivery,
-      // //   path: '/delivery',
-      // // })
-      // return paginate
     } catch (error) {
       console.log(error)
-      return Util?.handleTryCatchError(Util?.getTryCatchMsg(error))
+      return Util?.handleFailResponse("Deliveries retrieval failed")
     }
   };
 
   async findOne(id: number) {
-    // return `This action returns a #${id} delivery`;
     try {
-      const delivery = this.DeliveryModel.findOne({ where: { id } });
+      const delivery = await Delivery.findOne({ where: { id } });
       if (!delivery) {
         throw new NotAcceptableException('The Delivery does not exist')
       }
       return Util?.handleSuccessRespone(delivery, "Delivery Data retrieved successfully")
     } catch (error) {
       console.log(error)
-      return Util?.handleTryCatchError(Util?.getTryCatchMsg(error))
+      return Util?.handleFailResponse("Delivery retrieval failed")
     }
   }
 
   async update(id: number, updateDeliveryDto: UpdateDeliveryDto) {
     // return `This action updates a #${id} delivery`;
     try {
-      const delivery = this.DeliveryModel.findOne({ where: { id } });
+      const delivery = await Delivery.findOne({ where: { id } });
       if (!delivery) {
         throw new NotAcceptableException('Delivery Data not Found')
       }
       Object.assign(delivery, updateDeliveryDto);
-      (await delivery).save()
+      await delivery.save()
       return Util?.handleSuccessRespone(Util?.SuccessRespone, 'Delivery Data successfullt updated')
     } catch (error) {
       console.log(error)
-      return Util?.handleTryCatchError(Util?.getTryCatchMsg(error));
+      return Util?.handleFailResponse("Delivery update failed")
     }
   };
 
   async remove(id: number) {
     // return `This action removes a #${id} delivery`;
     try {
-      const delivery = this.DeliveryModel.findOne({ where: { id } });
+      const delivery = await Delivery.findByPk(id);
       if (!delivery) {
         throw new NotAcceptableException("Delivery Data doen not exist")
       }
-      Object.assign(delivery)
-        (await delivery).destroy()
+      // Object.assign(delivery)
+      // delivery.deletedAt = new Date()
+      await delivery.destroy()
       return Util?.handleSuccessRespone(Util?.SuccessRespone, "Delivery Data deleted Successfully")
 
     } catch (error) {
       console.log(error)
-      return Util?.handleTryCatchError(Util?.getTryCatchMsg(error))
+      return Util?.handleFailResponse("Delivery removal failed")
     }
   }
 

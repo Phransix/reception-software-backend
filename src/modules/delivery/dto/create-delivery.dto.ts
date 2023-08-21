@@ -43,7 +43,7 @@ export class CreateDeliveryDto {
     })
     @IsString()
     @IsNotEmpty()
-    readonly phonenumber: string;
+    readonly phoneNumber: string;
 
     @ApiProperty({
         description: "The senders'/s email address",
@@ -60,15 +60,15 @@ export class CreateDeliveryDto {
     
     @ApiProperty({
         description: "The date and time of delivery",
-        example: '20-08-2023-12-24-01'
+        example: '2023-12-24'
     })
     @IsString()
     @IsNotEmpty()
-    readonly data_and_time: string;
+    readonly date_and_time: string;
 
     @ApiProperty({
         description: "The status of delivery",
-        example: 'Delivered or Not Delivered'
+        example: 'delivered'
     })
     @IsString()
     @IsEnum(Status, {
@@ -78,7 +78,7 @@ export class CreateDeliveryDto {
 
     @ApiProperty({
         description: "The type of delivery",
-        example: 'Food, Documents,Other'
+        example: 'other'
     })
     @IsString()
     @IsEnum(Status_type, {
@@ -91,5 +91,5 @@ export class CreateDeliveryDto {
         example: 'Any important detail of the delivery'
     })
     @IsString()
-    readonly Delivery_Description: string;
+    readonly deliveryDescription: string;
 }
