@@ -3,7 +3,9 @@ import { BelongsTo, Column, DataType, ForeignKey, Model, Table } from "sequelize
 import { Organization } from "src/modules/organization/entities/organization.entity";
 const { v4: uuidv4 } = require('uuid');
 
-@Table
+@Table({
+    paranoid: true,
+  })
 export class Delivery extends Model <Delivery> {
 
     @Column({

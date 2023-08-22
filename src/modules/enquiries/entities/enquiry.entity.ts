@@ -3,7 +3,9 @@ import { BelongsTo, Column, DataType, ForeignKey, Model, Table } from "sequelize
 import { Organization } from "src/modules/organization/entities/organization.entity";
 const { v4: uuidv4 } = require('uuid');
 
-@Table
+@Table({
+  paranoid: true,
+})
 export class Enquiry extends Model<Enquiry>{
 
 //   @Column({
@@ -73,6 +75,13 @@ export class Enquiry extends Model<Enquiry>{
        allowNull: false
      })
      enquiryDescription: string
+
+     @Column({
+      type : DataType.DATE,
+      allowNull: true,
+      defaultValue: null
+    })
+    deletedAt: Date
 
     
 

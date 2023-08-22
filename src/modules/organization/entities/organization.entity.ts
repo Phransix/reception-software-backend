@@ -6,8 +6,11 @@ import { User } from "src/modules/users/entities/user.entity";
 import { Visitor } from "src/modules/visitor/entities/visitor.entity";
 const { v4: uuidv4 } = require('uuid');
 
-@Table
+@Table({
+  paranoid: true,
+})
 export class Organization extends Model<Organization>   {
+
   static validateUser(loginDto: LoginDTO) {
     throw new Error('Method not implemented.');
   }
@@ -65,6 +68,12 @@ export class Organization extends Model<Organization>   {
     })
     isVerified: boolean;
 
+    @Column({
+      type : DataType.DATE,
+      allowNull: true,
+      defaultValue: null
+    })
+    deletedAt: Date
 
     @HasMany(() => User)
     users: User[];
@@ -77,6 +86,7 @@ export class Organization extends Model<Organization>   {
 
     @HasMany(() => Enquiry)
     enquiries: Enquiry[];
+    
   static organizationName: any;
 
   

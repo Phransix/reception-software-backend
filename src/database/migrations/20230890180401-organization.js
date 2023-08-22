@@ -54,16 +54,10 @@ module.exports = {
       },
       deletedAt: {
         type: Sequelize.DATE,
-        allowNull: true,
-        defaultValue: Sequelize.literal('CURRENT_TIMESTAMP'),
-      },
-      // soft_Delete: {
-      //   type: Sequelize.Date,
-      //   allowNull: true,
-      //   defaultValue: Sequelize.literal('CURRENT_TIMESTAMP'),
-      //   after: 'updatedAt'
-      // }
-
+      allowNull: true,
+     defaultValue: null
+      }, 
+    
 
     });
   },

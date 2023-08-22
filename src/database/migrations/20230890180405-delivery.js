@@ -26,22 +26,22 @@ module.exports = {
         type: Sequelize.UUID,
         allowNull: false,
         references: {
-          model:{
+          model: {
             tableName: 'Organizations',
           },
-          key:'organizationId'
+          key: 'organizationId'
         },
         onDelete: 'CASCADE'
       },
       from: {
         type: Sequelize.STRING,
         allowNull: false,
-        required:true,
+        required: true,
       },
       to: {
         type: Sequelize.STRING,
         allowNull: false,
-        required:true,
+        required: true,
       },
       phoneNumber: {
         type: Sequelize.STRING,
@@ -51,7 +51,7 @@ module.exports = {
       email: {
         type: Sequelize.STRING,
         allowNull: true,
-        unique:true
+        unique: true
         // required:true,
       },
       date_and_time: {
@@ -62,7 +62,7 @@ module.exports = {
         type: Sequelize.ENUM('delivered', 'received'),
         allowNull: false,
         defaultValue: 'delivered',
-        required:true,
+        required: true,
         validate: {
           isIn: [['delivered', 'received']]
         }
@@ -71,7 +71,7 @@ module.exports = {
         type: Sequelize.ENUM('document', 'food', 'other'),
         allowNull: false,
         defaultValue: 'other',
-        required:true,
+        required: true,
         validate: {
           isIn: [['document', 'food', 'other']]
         }
@@ -93,14 +93,9 @@ module.exports = {
       deletedAt: {
         type: Sequelize.DATE,
         allowNull: true,
-        defaultValue: null,
-        timestamps: true
+        defaultValue: null
       },
-      
-    },{
-      paranoid: true
-    }
-    );
+    })
   },
 
   down: async (queryInterface, Sequelize) => {

@@ -83,7 +83,7 @@ export class OrganizationController {
 
  
   @Get(':id')
-  async findOne(@Param('id') id: number) {
+  async findOne(@Param('id') id: string) {
 
     try {
       let orgData = this.organizationService.findOne(id)
@@ -99,7 +99,7 @@ export class OrganizationController {
 
   
   @Patch(':id')
-  async update(@Param('id') id: number, @Body() updateOrganizationDto: UpdateOrganizationDto) {
+  async update(@Param('id') id: string, @Body() updateOrganizationDto: UpdateOrganizationDto) {
 
     try {
       const orgUpdate = await this.organizationService.update(id, updateOrganizationDto)
@@ -142,7 +142,7 @@ export class OrganizationController {
   }
   
   @Delete(':id')
- async remove(@Param('id') id: number) {
+ async remove(@Param('id') id: string) {
 
     try {
       
@@ -151,9 +151,15 @@ export class OrganizationController {
 
      }catch(error){
       console.log(error)
-      return Util?.handleNotFoundResponse()
-      // return Util?.checkIfRecordNotFound
+      return Util.handleForbiddenExceptionResponses('Organization does not exist');
+      
      }
 
   }
+
+  @Post(':id/restore')
+  async restoreUser(@Param('id') id: string){
+    return this.organizationService.restoreUser(id)
+  }
+
 }
