@@ -13,6 +13,7 @@ import * as bcrypt from 'bcrypt';
 import { LoginDTO } from 'src/guard/auth/loginDTO';
 import { Role } from '../role/entities/role.entity';
 import { AuthService } from 'src/guard/auth/auth.service';
+import { ResetPasswordService } from 'src/helper/ResetPassHelper';
 
 
 
@@ -26,6 +27,7 @@ export class OrganizationService {
     @InjectModel(Role) private role: typeof Role,
     private sequelize : Sequelize,
     private emailService:EmailService,
+    private resetPasswordService: ResetPasswordService,
     private readonly authService: AuthService
   
     ){}
@@ -158,7 +160,13 @@ export class OrganizationService {
   async findAll() {
 
     try {
-      const orgs = await Organization.findAll()
+      const orgs = await Organization.findAll({
+    
+        attributes:{
+          exclude:['password','createdAt','updatedAt','deletedAt']
+        }
+      })
+
       return Util?.handleSuccessRespone(orgs, "Organizations Data retrieved successfully.")
   }catch(error){
     console.log(error)
@@ -169,10 +177,16 @@ export class OrganizationService {
 
 
   // Get By Id
-  async findOne(id: number) {
+  async findOne(id: string) {
 
     try {
-      const org = await Organization.findOne({ where: { id } });
+      const org = await Organization.findOne(
+        {
+          attributes:{
+            exclude:['password','createdAt','updatedAt','deletedAt']
+          },
+          
+          where: { id } });
       if (!org) {
         throw new Error('Organization not found.');
       }
@@ -181,13 +195,14 @@ export class OrganizationService {
 
     } catch (error) {
       console.log(error)
-      return Util?.handleTryCatchError(Util?.getTryCatchMsg(error));
+      return Util?.handleTryCatchError("Organization not found.");
+      // return Util?.checkIfRecordNotFound
     }
 
   }
 
   // Update By Id
-  async update(id: number, updateOrganizationDto: UpdateOrganizationDto) {
+  async update(id: string, updateOrganizationDto: UpdateOrganizationDto) {
 
     try {
 
@@ -209,7 +224,7 @@ export class OrganizationService {
   }
 
   // Delete By Id
-  async remove(id: number) {
+  async remove(id: string) {
 
     try {
       const org = await Organization.findOne({ where: { id } });
@@ -224,11 +239,28 @@ export class OrganizationService {
 
     } catch (error) {
       console.log(error)
-      // return Util?.handleTryCatchError(Util?.getTryCatchMsg(error));
       return Util?.checkIfRecordNotFound("Organization not found.")
     }
 
   }
+
+
+
+  // Restore Deleted Data
+  async restoreUser(id:string){
+
+    try {
+
+      const organization = await this.organizationModel.restore({where:{id}})
+      console.log(organization)
+      return Util?.handleSuccessRespone(Util?.SuccessRespone, "Organization restored successfully.")
+      
+    } catch (error) {
+      return Util.handleForbiddenExceptionResponses('Data Not Found');
+    }
+ 
+  }
+
 
   async findOneByorganizationName(organizationName: string): Promise<Organization> {
     return await this.organizationModel.findOne<Organization>({ where: { organizationName } })
@@ -252,12 +284,17 @@ export class OrganizationService {
     try {
       let user = await this.user.findOne({ where: { ...email } });
 
+
       if (!user) return Util.handleForbiddenExceptionResponses('Invaild Email');
-      // await this.helperService.sendResetVerificationEmail(
-      //   user?.fname,
-      //   user?.user_id,
+      // await this.resetPasswordService.sendResstPasswordNotification(
+      //   user?.fullName,
+      //   user?.userId,
       //   user?.email,
       // );
+
+      let send_Token = await this.resetPasswordService.sendResstPasswordNotification({...email})
+      console.log(send_Token)
+
       return Util.handleCreateSuccessRespone(
         `Reset password link sent to ${user?.email}`,
       );
@@ -283,7 +320,7 @@ export class OrganizationService {
       let decode = Util.verifyToken(token);
       const user = await this?.user.findOne({
         where: {
-          userId: decode.user_id,
+          email: decode.email,
         },
       });
 
@@ -293,7 +330,7 @@ export class OrganizationService {
         password: hashedDefaultPassword,
       };
       await this?.user.update(UpdateData, {
-        where: { id: user?.id },
+        where: { email: user?.email },
         transaction: t,
       });
       t.commit();

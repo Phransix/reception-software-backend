@@ -1,5 +1,6 @@
 
 import { Injectable,CanActivate,ExecutionContext, ForbiddenException  } from '@nestjs/common'
+// import * as Util from '../../utils/index'
 
 import { Observable } from 'rxjs'
 // import { UsersService } from 'src/modules/users/users.service';
@@ -23,7 +24,8 @@ export class DoesUserExist implements CanActivate {
 
          const existingOrganizationname = await this.organizationService.findOneByorganizationName(organizationName);
             if (existingOrganizationname) {
-            throw new ForbiddenException('This organization name already exists');
+            throw new Error ('This organization name already exists');
+            // return Util.handleForbiddenExceptionResponses('Invaid email');
             };
 
             // const existingUsername = await this.organizationService.findOneByorganizationName(fullname);
@@ -34,11 +36,13 @@ export class DoesUserExist implements CanActivate {
             const existingUserEmail = await this.organizationService.findOneByEmail(email);
             if (existingUserEmail) {
                 throw new ForbiddenException('This Email already exists');
+                // return Util.handleForbiddenExceptionResponses('Invaid email');
             }
 
             const existingUserPhoneNumber = await this.organizationService.findOneByPhoneNumber(phoneNumber);
             if (existingUserPhoneNumber) {
                 throw new ForbiddenException('This PhoneNumber already exists');
+                // return Util.handleForbiddenExceptionResponses('Invaid email');
             }
 
        return true;

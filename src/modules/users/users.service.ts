@@ -6,6 +6,8 @@ import { User } from './entities/user.entity';
 import { InjectModel } from '@nestjs/sequelize';
 import * as bcrypt from 'bcrypt';
 // import { UsersModule } from './users.module';
+import { Role } from '../role/entities/role.entity'
+import { Organization } from '../organization/entities/organization.entity';
 import { ChangePassDTO } from 'src/guard/auth/changePassDTO';
 import { createAccessToken, generateRefreshToken } from '../../utils/index';
 import { LoginDTO } from 'src/guard/auth/loginDTO';
@@ -17,6 +19,8 @@ import * as Abstract from '../../utils/abstract'
 export class UsersService {
 
   constructor (@InjectModel(User) private userModel: typeof User,
+  @InjectModel(Role) private roleModel: typeof Role,
+  @InjectModel(Organization) private orgModel: typeof Organization
   
   ){}
 
@@ -76,7 +80,24 @@ async validateUser(loginDto: LoginDTO){
   async findAll() {
 
     try {
-      const users = await User.findAll()
+      const users = await User.findAll({
+      
+      attributes:{
+        exclude:['password','createdAt','updatedAt','deletedAt']
+      },
+      
+      // include:[
+      //   {
+      //     model: this.orgModel,
+      //     attributes:{
+      //       exclude:['createdAt','updatedAt']
+      //     },
+      //     order:['roleId','DESC'],
+      //     as:'user_role'
+      //   }
+      // ]
+
+      })
       return Util?.handleSuccessRespone(users, "Users Data retrieved successfully.")
 
     } catch (error) {
@@ -90,7 +111,12 @@ async validateUser(loginDto: LoginDTO){
   async findOne(id: number) {
 
     try {
-      const user = await User.findOne({ where: { id } });
+      const user = await User.findOne({
+         
+      attributes:{
+        exclude:['password','createdAt','updatedAt','deletedAt']
+      },
+       where: { id } });
       if (!user) {
         throw new Error('User not found.');
       }
