@@ -74,11 +74,11 @@ export class DeliveryService {
     try {
       const delivery = await Delivery.findByPk(id);
       if (!delivery) {
-        throw new NotAcceptableException("Delivery Data doen not exist")
+        throw new NotAcceptableException("Delivery Data does not exist")
       }
       // Object.assign(delivery)
-      // delivery.deletedAt = new Date()
-      await delivery.save()
+      delivery.deletedAt = new Date()
+      await delivery.destroy()
       return Util?.handleSuccessRespone(Util?.SuccessRespone, "Delivery Data deleted Successfully")
 
     } catch (error) {

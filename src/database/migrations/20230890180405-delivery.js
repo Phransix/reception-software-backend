@@ -93,11 +93,14 @@ module.exports = {
       deletedAt: {
         type: Sequelize.DATE,
         allowNull: true,
-        // defaultValue: null
+        defaultValue: null,
+        timestamps: true
       },
+      
     },{
       paranoid: true
-    });
+    }
+    );
   },
 
   down: async (queryInterface, Sequelize) => {

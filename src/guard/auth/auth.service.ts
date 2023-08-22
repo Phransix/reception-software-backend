@@ -8,7 +8,6 @@ export class AuthService {
   
   constructor (private readonly passwordService: PasswordService){}
 
-
  async verifypassword(plainPassword: string, hashedPassword: string): Promise<boolean>{
   return this.passwordService.comparePasswords(plainPassword,hashedPassword)
  }
