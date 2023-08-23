@@ -87,6 +87,14 @@ export class CreateDeliveryDto {
     readonly type: string;
 
     @ApiProperty({
+        description: "The quantity of delivery",
+        example: '2'
+    })
+    @IsString()
+    @IsNotEmpty()
+    readonly itemQuantity: string
+
+    @ApiProperty({
         description: "The Description of the delivery",
         example: 'Any important detail of the delivery'
     })

@@ -90,6 +90,12 @@ export class Delivery extends Model <Delivery> {
 
     @Column({
         type: DataType.STRING,
+        allowNull: false
+    })
+    itemQuantity: string
+
+    @Column({
+        type: DataType.STRING,
         allowNull: true
     })
     deliveryDescription: string

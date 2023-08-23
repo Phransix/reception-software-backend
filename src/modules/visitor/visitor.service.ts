@@ -27,7 +27,9 @@ export class VisitorService {
 
   async findAll() {
     try {
-      const visitors = await Visitor.findAll()
+      const visitors = await Visitor.findAll({
+        attributes: {exclude:['createdAt','updatedAt']}
+      })
       return Util?.handleSuccessRespone(visitors,"Visitors Data retrieved successfully")
     } catch (error) {
       console.log(error)
@@ -37,7 +39,9 @@ export class VisitorService {
 
   async findOne(id: number) {
     try {
-      const visitor = await Visitor.findOne({where:{id}});
+      const visitor = await Visitor.findOne({where:{id},
+        attributes: {exclude:['createdAt','updatedAt']}
+      });
       if (!visitor) {
         throw new NotAcceptableException('The visitor does not exist')
       }

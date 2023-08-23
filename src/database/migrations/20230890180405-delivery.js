@@ -76,6 +76,10 @@ module.exports = {
           isIn: [['document', 'food', 'other']]
         }
       },
+      itemQuantity: {
+        type: Sequelize.STRING,
+        allowNull: false,
+      },
       deliveryDescription: {
         type: Sequelize.STRING,
         allowNull: true,

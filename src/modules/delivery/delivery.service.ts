@@ -32,7 +32,11 @@ export class DeliveryService {
 
   async findAll(){
     try {
-      const delivery = await Delivery.findAll({paranoid:false})
+      const delivery = await Delivery.findAll({
+        attributes: {
+          exclude:['createdAt','updatedAt']
+        }
+      })
       return Util?.handleSuccessRespone(delivery, "Deliveries Data retrieved Successfully")
     } catch (error) {
       console.log(error)
@@ -42,7 +46,10 @@ export class DeliveryService {
 
   async findOne(id: number) {
     try {
-      const delivery = await Delivery.findOne({ where: { id } });
+      const delivery = await Delivery.findOne({ 
+        where: { id }, 
+        attributes: {exclude:['createdAt','updatedAt']}
+       });
       if (!delivery) {
         throw new NotAcceptableException('The Delivery does not exist')
       }

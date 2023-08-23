@@ -2,8 +2,8 @@ import { ApiProperty } from '@nestjs/swagger';
 import { IsDateString, IsEnum, IsNotEmpty, IsString, MaxLength, MinLength } from 'class-validator'
 
 enum Status {
-    ACTIVE = 'active',
-    INACTIVE = 'inactive',
+    ACTIVE = 'signedIn',
+    INACTIVE = 'signedOut',
 }
 
 enum purposeStatus {
@@ -58,11 +58,11 @@ export class CreateVisitorDto {
         
     @ApiProperty({
         description: "The status of the visit",
-        example: 'active'
+        example: 'signedIn'
     })
     @IsNotEmpty()
     @IsEnum(Status, {
-        message: 'The visitor status must be either active or inactive',
+        message: 'The visitor status must be either signedIn or signedOut',
     })
     readonly visitStatus: string;
 
