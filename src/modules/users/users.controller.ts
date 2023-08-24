@@ -4,13 +4,15 @@ import { CreateUserDto } from './dto/create-user.dto';
 import { UpdateUserDto } from './dto/update-user.dto';
 import * as Util from '../../utils/index'
 import { User } from './entities/user.entity';
-import { ApiTags } from '@nestjs/swagger';
+import { ApiBearerAuth, ApiOperation, ApiQuery, ApiTags } from '@nestjs/swagger';
 import { ChangePassDTO } from 'src/guard/auth/changePassDTO';
 import { LoginDTO } from 'src/guard/auth/loginDTO';
 import { Roles } from 'src/common/decorators/roles.decorator';
 import { Role } from '../role/role.enum';
+import { Public } from 'src/common/decorators/public.decorator';
+import { AtGuard } from 'src/common/guards';
+import { GetCurrentUserId } from 'src/common/decorators/get-current-user-id.decorator';
 import { AuthGuard } from '@nestjs/passport';
-import { JwtAuthGuard } from 'src/auth/jwt.guard';
 
 @Controller('users')
 export class UsersController {
@@ -20,8 +22,13 @@ export class UsersController {
 
     // Register New User
   @ApiTags('Users')
+  // @UseGuards(AuthGuard('jwt'))
+  @ApiBearerAuth('defaultBearerAuth')
+  @ApiOperation({summary:'Create New User/Receptionist'})
+  @Public()
+  @UseGuards(AtGuard)
   @Post('registerNewUser')
-  @Roles(Role.Admin)
+  // @Roles(Role.Admin)
   async createDelivery(@Body()  createUserDto: CreateUserDto) {
     try {
       let new_user = this.usersService.create(createUserDto);
@@ -33,6 +40,7 @@ export class UsersController {
 
   // Login Users
   @ApiTags('Users')
+  @Public()
   @Post('login')
   async login(@Body() loginDto: LoginDTO){
     const user = await this.usersService.login(loginDto);
@@ -46,17 +54,15 @@ export class UsersController {
 
 
 
-  // @UseGuards(AuthGuard('local'))
-  // @Post('login')
-  // async login (@Body() loginDto: LoginDTO) {
-  //   return ('Login ')
-  // }
-
-
   @ApiTags('Users')
   @UseGuards(AuthGuard('jwt'))
+  @ApiBearerAuth('defaultBearerAuth')
+  @ApiOperation({summary:'Get All Users'})
+  @Public()
+  @UseGuards(AtGuard)
   @Get('getAllUsers')
-  async findAll() {
+  async findAllfindAll(@GetCurrentUserId()userId:string){
+      console.log(userId)
 
     try {
       const allQueries = this.usersService.findAll()
@@ -71,6 +77,11 @@ export class UsersController {
 
 
   @ApiTags('Users')
+  @UseGuards(AuthGuard('jwt'))
+  @ApiBearerAuth('defaultBearerAuth')
+  @ApiOperation({summary:'Get User By Id'})
+  @Public()
+  @UseGuards(AtGuard)
   @Get(':id')
   async findOne(@Param('id') id: number) {
 
@@ -88,6 +99,11 @@ export class UsersController {
 
 
   @ApiTags('Users')
+  @UseGuards(AuthGuard('jwt'))
+  @ApiBearerAuth('defaultBearerAuth')
+  @ApiOperation({summary:'Update User By Id'})
+  @Public()
+  @UseGuards(AtGuard)
   @Patch(':id')
   async update(@Param('id') id: number, @Body() updateUserDto: UpdateUserDto) {
 
@@ -103,7 +119,14 @@ export class UsersController {
 
   };
 
+
+  
   @ApiTags('Users')
+  @UseGuards(AuthGuard('jwt'))
+  @ApiBearerAuth('defaultBearerAuth')
+  @ApiOperation({summary:'Delete User By Id'})
+  @Public()
+  @UseGuards(AtGuard)
   @Delete(':id')
   async remove(@Param('id') id: number) {
 
@@ -128,6 +151,11 @@ export class UsersController {
   }
      
   @ApiTags('Users')
+  @UseGuards(AuthGuard('jwt'))
+  @ApiBearerAuth('defaultBearerAuth')
+  @ApiOperation({summary:'Change Password Of User By Id'})
+  @Public()
+  @UseGuards(AtGuard)
     @Patch(':id/changePassword')
     async changePassword(@Param('id') id: number,@Body() changePassDTO: ChangePassDTO) {
       try {

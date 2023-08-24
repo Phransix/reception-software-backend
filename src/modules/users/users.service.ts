@@ -12,8 +12,8 @@ import { ChangePassDTO } from 'src/guard/auth/changePassDTO';
 import { createAccessToken, generateRefreshToken } from '../../utils/index';
 import { LoginDTO } from 'src/guard/auth/loginDTO';
 import * as Abstract from '../../utils/abstract'
-import { AuthPassService } from 'src/guard/auth/authPass.service';
-
+import { JwtService } from '@nestjs/jwt';
+import { ConfigService } from '@nestjs/config';
 
 
 @Injectable()
@@ -22,6 +22,8 @@ export class UsersService {
   constructor (@InjectModel(User) private userModel: typeof User,
   @InjectModel(Role) private roleModel: typeof Role,
   @InjectModel(Organization) private orgModel: typeof Organization,
+  private jwtService: JwtService,
+  private config: ConfigService,
   
   ){}
 
@@ -56,16 +58,24 @@ async login(loginDto: LoginDTO){
   }
   let accessToken = await createAccessToken(user?.id);
   let refreshToken = await generateRefreshToken(user?.id);
-  let tokens = {
-    accessToken,
-    refreshToken
-  }
-  // console.log(tokens)
+ 
 
+  const user_role = await Role.findOne({where:{roleId:user?.roleId}})
+
+  if(!user_role)
+    // throw new Error ('User with this email does not exist')
+    return Util.handleErrorRespone ('User not found')
+  
+
+  let tokens =  await this?.getTokens(user.userId,user.email,user_role?.name)
+
+     console.log(tokens)
+    //return;
      let org_data ={
     id: user?.id,
     userId: user.userId,
     roleId: user?.roleId,
+    role_name : user_role?.name,
     organizationId: user?.organizationId,
     fullname: user.fullName,
     email: user.email,
@@ -249,5 +259,33 @@ async login(loginDto: LoginDTO){
     return Util?.handleSuccessRespone(Util?.SuccessRespone, "Your Password has been changed successfully.")
   }
 
+  async getTokens(user_id: string, email: string,role:string) {
+    const jwtPayload ={
+      sub: user_id,
+      email: email,
+      scopes: role,
+    };
+
+
+  
+
+
+    const [at, rt] = await Promise.all([
+      this.jwtService.signAsync(jwtPayload, {
+        secret: this.config.get<string>('AT_SECRET'),
+        // expiresIn: '15m',
+        expiresIn: '7d',
+      }),
+      this.jwtService.signAsync(jwtPayload, {
+        secret: this.config.get<string>('RT_SECRET'),
+        expiresIn: '7d',
+      }),
+    ]);
+
+    return {
+      access_token: at,
+      refresh_token: rt,
+    };
+  }
 
 }

@@ -4,11 +4,14 @@ import { OrganizationService } from './organization.service';
 import { CreateOrganizationDto, ForgotPasswordDto, ResetPasswordDto, VerifyEmailDto } from './dto/create-organization.dto';
 import { UpdateOrganizationDto } from './dto/update-organization.dto';
 import { DoesUserExist } from 'src/common/guards/doesUserExist.guard';
-import {  ApiOperation, ApiParam, ApiTags } from '@nestjs/swagger';
+import {  ApiBearerAuth, ApiOperation, ApiParam, ApiTags } from '@nestjs/swagger';
 import * as Util from '../../utils/index'
 import { LoginDTO } from 'src/guard/auth/loginDTO';
-import { User } from '../users/entities/user.entity';
-import { UsersService } from '../users/users.service';
+// import { User } from '../users/entities/user.entity';
+// import { UsersService } from '../users/users.service';
+// import { AuthGuard } from '@nestjs/passport';
+// import { Public } from 'src/common/decorators/public.decorator';
+// import { AtGuard } from 'src/common/guards';
 
 
  @ApiTags('Organization')
@@ -28,8 +31,6 @@ export class OrganizationController {
   @Post('signUp')
   async create(@Body() createOrganizationDto: CreateOrganizationDto) {
     try {
-
-
 
       let new_Enquiry = this.organizationService.create(createOrganizationDto);
       return new_Enquiry;
@@ -67,6 +68,7 @@ export class OrganizationController {
   }
 
   
+  @ApiTags('Organization')
   @Get('getAllOrganizations')
  async findAll() {
 
@@ -82,6 +84,7 @@ export class OrganizationController {
   };
 
  
+  @ApiTags('Organization')
   @Get(':id')
   async findOne(@Param('id') id: string) {
 
@@ -98,6 +101,7 @@ export class OrganizationController {
   };
 
   
+  @ApiTags('Organization')
   @Patch(':id')
   async update(@Param('id') id: string, @Body() updateOrganizationDto: UpdateOrganizationDto) {
 
@@ -141,6 +145,8 @@ export class OrganizationController {
 
   }
   
+
+  @ApiTags('Organization')
   @Delete(':id')
  async remove(@Param('id') id: string) {
 
@@ -157,6 +163,8 @@ export class OrganizationController {
 
   }
 
+
+  @ApiTags('Organization')
   @Post(':id/restore')
   async restoreUser(@Param('id') id: string){
     return this.organizationService.restoreUser(id)
