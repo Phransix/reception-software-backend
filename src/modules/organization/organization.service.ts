@@ -12,8 +12,9 @@ import {  createAccessToken, generateRefreshToken, verifyEmailToken } from '../.
 import * as bcrypt from 'bcrypt';
 import { LoginDTO } from 'src/guard/auth/loginDTO';
 import { Role } from '../role/entities/role.entity';
-import { AuthService } from 'src/guard/auth/auth.service';
+import { AuthPassService } from 'src/guard/auth/authPass.service';
 import { ResetPasswordService } from 'src/helper/ResetPassHelper';
+// import { AuthService } from 'src/auth/auth.service';
 
 
 
@@ -28,7 +29,7 @@ export class OrganizationService {
     private sequelize : Sequelize,
     private emailService:EmailService,
     private resetPasswordService: ResetPasswordService,
-    private readonly authService: AuthService
+    private readonly authPassService: AuthPassService
   
     ){}
 
@@ -122,7 +123,7 @@ export class OrganizationService {
       throw new BadRequestException('Organization with this email does not exist')
     }
 
-    const passwordMatch = await this.authService.verifypassword(password, user.password)
+    const passwordMatch = await this.authPassService.verifypassword(password, user.password)
     if (!passwordMatch){
       throw new UnauthorizedException('Invalid Credentials')
     }
@@ -256,7 +257,7 @@ export class OrganizationService {
       return Util?.handleSuccessRespone(Util?.SuccessRespone, "Organization restored successfully.")
       
     } catch (error) {
-      return Util.handleForbiddenExceptionResponses('Data Not Found');
+      return Util.handleForbiddenExceptionResponses('Data Not Restored');
     }
  
   }

@@ -7,25 +7,39 @@ import { BullModule } from '@nestjs/bull';
 import { MailerModule } from '@nestjs-modules/mailer';
 import { HandlebarsAdapter } from '@nestjs-modules/mailer/dist/adapters/handlebars.adapter';
 import { join } from 'path';
-// import { APP_GUARD } from '@nestjs/core';
-// import { AtGuard } from 'src/common/guards';
 import { LoggingInterceptor } from './logging.interceptor';
-import { APP_INTERCEPTOR } from '@nestjs/core';
-// import { AppController } from './app.controller';
-// import { AppService } from './app.service';
+import { APP_GUARD, APP_INTERCEPTOR } from '@nestjs/core';
 import { OrganizationModule } from './modules/organization/organization.module';
 import { UsersModule } from './modules/users/users.module';
 import { EnquiriesModule } from './modules/enquiries/enquiries.module';
 import { VisitorModule } from './modules/visitor/visitor.module';
 import { DeliveryModule } from './modules/delivery/delivery.module';
 import { AppService } from './app.service';
-import { AuthModule } from './modules/auth/auth.module';
+// import { AuthModule } from './modules/auth/auth.module';
 import { RoleModule } from './modules/role/role.module';
+import { RolesGuard } from './common/guards/roles.guard';
+import { AuthModule } from './auth/auth.module';
+import { PassportModule } from '@nestjs/passport';
+import { JwtModule } from '@nestjs/jwt'
+import { AppController } from './app.controller';
+import { AuthService } from './auth/auth.service';
+import { JwtStrategy } from './auth/jwt.strategy';
+import { UsersService } from './modules/users/users.service';
+import { Role } from './modules/role/entities/role.entity';
+import { Organization } from './modules/organization/entities/organization.entity';
+import { User } from './modules/users/entities/user.entity';
+
 
 
 
 @Module({
   imports: [
+
+    SequelizeModule.forFeature([User,Role,Organization]),
+
+    AuthModule,
+    PassportModule,
+    JwtModule.register({secret:process.env.jWT_ACCESS_SECRET, signOptions: {expiresIn:'5hrs'}}),
 
     BullModule.forRoot({
       redis: {
@@ -55,7 +69,6 @@ import { RoleModule } from './modules/role/role.module';
         transport: {
           service: 'Gmail',
           host: config.get('MAIL_HOST'),
-          // secure: false,
           port: 465,
           ignoreTLS: true,
           secure: true,
@@ -96,16 +109,19 @@ import { RoleModule } from './modules/role/role.module';
     
   ],
 
-  controllers: [],
+  controllers: [AppController],
   providers: [
 
+    AuthService,
+    JwtStrategy,
+    UsersService,
+
     AppService,
-    
-    // {
-    //   provide: APP_GUARD,
-    //   useClass: AtGuard
-      
-    // },
+
+     {
+      provide: APP_GUARD,
+      useClass: RolesGuard
+     },
 
     {
       provide: APP_INTERCEPTOR,

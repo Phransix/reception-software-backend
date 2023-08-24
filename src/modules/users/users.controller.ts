@@ -7,15 +7,21 @@ import { User } from './entities/user.entity';
 import { ApiTags } from '@nestjs/swagger';
 import { ChangePassDTO } from 'src/guard/auth/changePassDTO';
 import { LoginDTO } from 'src/guard/auth/loginDTO';
+import { Roles } from 'src/common/decorators/roles.decorator';
+import { Role } from '../role/role.enum';
+import { AuthGuard } from '@nestjs/passport';
+import { JwtAuthGuard } from 'src/auth/jwt.guard';
 
 @Controller('users')
 export class UsersController {
+  roles: Role[]
   constructor(private readonly usersService: UsersService) {}
 
 
     // Register New User
   @ApiTags('Users')
   @Post('registerNewUser')
+  @Roles(Role.Admin)
   async createDelivery(@Body()  createUserDto: CreateUserDto) {
     try {
       let new_user = this.usersService.create(createUserDto);
@@ -29,7 +35,7 @@ export class UsersController {
   @ApiTags('Users')
   @Post('login')
   async login(@Body() loginDto: LoginDTO){
-    const user = await this.usersService.validateUser(loginDto);
+    const user = await this.usersService.login(loginDto);
     if (!user){
       throw new HttpException('Invalid Credentials',HttpStatus.UNAUTHORIZED)
     }else{
@@ -38,7 +44,17 @@ export class UsersController {
     }
   }
 
+
+
+  // @UseGuards(AuthGuard('local'))
+  // @Post('login')
+  // async login (@Body() loginDto: LoginDTO) {
+  //   return ('Login ')
+  // }
+
+
   @ApiTags('Users')
+  @UseGuards(AuthGuard('jwt'))
   @Get('getAllUsers')
   async findAll() {
 

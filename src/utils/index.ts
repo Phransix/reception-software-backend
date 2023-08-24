@@ -422,7 +422,8 @@ console.log(data?.rows?.length)
 
 
   export const verifyUserToken = (token) =>{
-   const decode = jwt.verify(token,process.env.JWT_PUBLIC_KEY);
+  //  const decode = jwt.verify(token,process.env.JWT_PUBLIC_KEY)
+  const decode = jwt.verify(token,process.env.JWT_SECRET)
    return decode;
  
  };

@@ -10,8 +10,10 @@ import { ResetPasswordService } from 'src/helper/ResetPassHelper';
 import { ResetPasswordProcessor } from 'src/Processor/resetPasswordProcessor';
 import { User } from '../users/entities/user.entity';
 import { Role } from '../role/entities/role.entity';
-import { AuthService } from 'src/guard/auth/auth.service';
+// import { AuthService } from 'src/guard/auth/authPass.service';
 import { PasswordService } from 'src/guard/passwordhash.service';
+import { UsersService } from '../users/users.service';
+import { AuthPassService } from 'src/guard/auth/authPass.service';
 
 
 @Module({
@@ -26,9 +28,10 @@ import { PasswordService } from 'src/guard/passwordhash.service';
     EmailService,
     EmailProcessor,
     PasswordService,
-    AuthService,
+    AuthPassService,
     ResetPasswordProcessor,
-    ResetPasswordService
+    ResetPasswordService,
+    UsersService
   ]
 
 
