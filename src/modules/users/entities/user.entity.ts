@@ -110,7 +110,12 @@ export class User extends Model<User> {
     deletedAt: Date
 
    
-
+    @BeforeCreate
+    static async hashPassword(instance: User) {
+      const saltRounds = 10;
+      const hashedPassword = await bcrypt.hash(instance.password, saltRounds);
+      instance.password = hashedPassword;
+    }
       
 
 

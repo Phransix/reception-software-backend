@@ -12,6 +12,7 @@ import { ChangePassDTO } from 'src/guard/auth/changePassDTO';
 import { createAccessToken, generateRefreshToken } from '../../utils/index';
 import { LoginDTO } from 'src/guard/auth/loginDTO';
 import * as Abstract from '../../utils/abstract'
+import { AuthPassService } from 'src/guard/auth/authPass.service';
 
 
 
@@ -20,7 +21,7 @@ export class UsersService {
 
   constructor (@InjectModel(User) private userModel: typeof User,
   @InjectModel(Role) private roleModel: typeof Role,
-  @InjectModel(Organization) private orgModel: typeof Organization
+  @InjectModel(Organization) private orgModel: typeof Organization,
   
   ){}
 
@@ -40,16 +41,18 @@ export class UsersService {
 
 
 // Login users
-async validateUser(loginDto: LoginDTO){
+async login(loginDto: LoginDTO){
   const {email,password} = loginDto
 
   const user = await User.findOne({where:{email}})
   if(!user){
-    throw new BadRequestException('User with this email does not exist')
+    // throw new Error ('User with this email does not exist')
+    return Util.handleErrorRespone ('User with this email does not exist')
   }
+
   const IsPasswordSame = await bcrypt.compare(password,user.password)
   if(!IsPasswordSame){
-    throw new UnauthorizedException('Invalid Credentials')
+    return Util.handleErrorRespone('Invalid Credentials')
   }
   let accessToken = await createAccessToken(user?.id);
   let refreshToken = await generateRefreshToken(user?.id);
@@ -60,7 +63,10 @@ async validateUser(loginDto: LoginDTO){
   // console.log(tokens)
 
      let org_data ={
-    id: user.userId,
+    id: user?.id,
+    userId: user.userId,
+    roleId: user?.roleId,
+    organizationId: user?.organizationId,
     fullname: user.fullName,
     email: user.email,
     IsPhoneNumber: user.phoneNumber
@@ -147,6 +153,8 @@ async validateUser(loginDto: LoginDTO){
 
 
   // Update User by Id
+
+
   async update(id: number, updateUserDto: UpdateUserDto) {
 
     try {
