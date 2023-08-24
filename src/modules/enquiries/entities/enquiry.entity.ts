@@ -48,7 +48,7 @@ id: number
         type: DataType.STRING,
         allowNull: false
     })
-    name: string;
+    visitorFullname: string;
 
     @Column({
        type: DataType.STRING,

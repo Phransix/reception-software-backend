@@ -33,7 +33,7 @@ module.exports = {
         },
         onDelete: 'CASCADE'
       },
-      visitor: {
+      visitorFullname: {
         type: Sequelize.STRING,
         allowNull: false,
         required:true,

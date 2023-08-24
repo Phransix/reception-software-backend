@@ -80,7 +80,7 @@ module.exports = {
         type: Sequelize.STRING,
         allowNull: false
       },
-      deliveryDescription: {
+      itemDescription: {
         type: Sequelize.STRING,
         allowNull: true,
       },

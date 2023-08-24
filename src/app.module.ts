@@ -24,8 +24,10 @@ import { UsersService } from './modules/users/users.service';
 import { Role } from './modules/role/entities/role.entity';
 import { Organization } from './modules/organization/entities/organization.entity';
 import { User } from './modules/users/entities/user.entity';
-import { AtGuard } from './common/guards';
 import { GuestModule } from './modules/guest/guest.module';
+import { AtGuard } from './common/guards';
+import { DepartmentModule } from './modules/department/department.module';
+import { StaffModule } from './modules/staff/staff.module';
 
 
 
@@ -109,6 +111,8 @@ import { GuestModule } from './modules/guest/guest.module';
    
     RoleModule,
     GuestModule,
+    DepartmentModule,
+    StaffModule,
     
   ],
 

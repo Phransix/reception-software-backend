@@ -17,6 +17,10 @@ import { JwtService } from '@nestjs/jwt';
 // import { ConfigService } from '@nestjs/config';
 
 
+// import { AuthService } from 'src/auth/auth.service';
+
+
+
 
 @Injectable()
 export class OrganizationService {
@@ -29,7 +33,7 @@ export class OrganizationService {
     private emailService:EmailService,
     private resetPasswordService: ResetPasswordService,
     private readonly authPassService: AuthPassService,
-    private jwtService: JwtService,
+    // private jwtService: JwtService,
     // private config: ConfigService,
   
     ){}
@@ -342,69 +346,6 @@ export class OrganizationService {
       return Util?.checkIfRecordNotFound(error)
     }
   }
-
-  // Change password
-  // async resetPassword(token: any, data: ResetPasswordDto) {
-  //   const t = await this.sequelize.transaction();
-
-  //   try {
-
-  //     const defaultPassword = data?.password;
-  //     const saltRounds = 10;
-
-  //    // Hash the defualt password
-  //    const hashedDefaultPassword = await bcrypt.hash(defaultPassword,saltRounds);
-
-  //     let decode = Util.verifyToken(token);
-  //     const user = await this?.user.findOne({
-  //       where: {
-  //         userId: decode.user_id,
-  //       },
-  //     });
-
-  //     if (!user) return Util.handleForbiddenExceptionResponses('Invaid email');
-
-  //     let UpdateData = {
-  //       password: hashedDefaultPassword,
-  //     };
-  //     await this?.user.update(UpdateData, {
-  //       where: { id: user?.id },
-  //       transaction: t,
-  //     });
-  //     t.commit();
-  //     return Util.handleCreateSuccessRespone('Password Reset Successful');
-  //   } catch (error) {
-  //     t.rollback();
-  //     return Util?.checkIfRecordNotFound(error)
-  //   }
-  // }
-
-
-  // async getTokens(organization_id: string, email: string, oraganiazation_name: string){
-  //   const jwtPayload ={
-  //     sub: organization_id,
-  //     email: email,
-  //     scopes: oraganiazation_name
-  //   };
-
-  //   const [at, rt] = await Promise.all([
-  //     this.jwtService.signAsync(jwtPayload, {
-  //       secret: this.config.get<string>('AT_SECRET'),
-  //       // expiresIn: '15m,
-  //       expiresIn: '7d'
-  //     }),
-  //     this.jwtService.signAsync(jwtPayload, {
-  //       secret: this.config.get<string>('RT_SECRET'),
-  //       expiresIn: '7d',
-  //     }),
-  //   ]);
-
-  //   return { 
-  //     access_token: at,
-  //     refresh_token: rt
-  //   }
-
-  // }
 
 
 }

@@ -10,6 +10,7 @@ import * as Util from '../../utils/index'
 import { LoginDTO } from 'src/guard/auth/loginDTO';
 import { User } from '../users/entities/user.entity';
 import { UsersService } from '../users/users.service';
+import { Public } from 'src/common/decorators/public.decorator';
 // import { LoginDTO } from 'src/guard/auth/loginDTO';
 
 
@@ -27,6 +28,7 @@ export class OrganizationController {
 
 
 @UseGuards(DoesUserExist)
+@Public()
   @Post('signUp')
   async create(@Body() createOrganizationDto: CreateOrganizationDto) {
     try {
@@ -40,6 +42,7 @@ export class OrganizationController {
     }
   }
 
+  @Public()
   @Post('verifyEmail')
   async verifyEmail(@Body()token:VerifyEmailDto){
     try{
@@ -55,6 +58,7 @@ export class OrganizationController {
   }
   };
 
+  @Public()
   @Post('login')
   async login(@Body() loginDto: LoginDTO){
     const user = await this.organizationService.validateUser(loginDto);
@@ -66,7 +70,7 @@ export class OrganizationController {
     }
   }
 
-  
+  @Public()
   @ApiTags('Organization')
   @Get('getAllOrganizations')
  async findAll() {
@@ -83,6 +87,7 @@ export class OrganizationController {
   };
 
  
+  @Public()
   @ApiTags('Organization')
   @Get(':id')
   async findOne(@Param('id') id: string) {
@@ -99,7 +104,7 @@ export class OrganizationController {
 
   };
 
-  
+  @Public()
   @ApiTags('Organization')
   @Patch(':id')
   async update(@Param('id') id: string, @Body() updateOrganizationDto: UpdateOrganizationDto) {
@@ -116,6 +121,7 @@ export class OrganizationController {
   }
 
 
+  @Public()
   @ApiOperation({ summary: 'Forgot Customer Password' })
   @Post('forgot-password')
   async forgotPassword(@Body() data: ForgotPasswordDto) {
@@ -130,6 +136,7 @@ export class OrganizationController {
     }
   }
 
+  @Public()
   @ApiOperation({ summary: 'Reset Customer Password' })
   @Post('reset-password/:token')
   @ApiParam({ name: 'token', type: 'string', required: true })
@@ -145,6 +152,7 @@ export class OrganizationController {
   }
   
 
+  @Public()
   @ApiTags('Organization')
   @Delete(':id')
  async remove(@Param('id') id: string) {
@@ -163,6 +171,7 @@ export class OrganizationController {
   }
 
 
+  @Public()
   @ApiTags('Organization')
   @Post(':id/restore')
   async restoreUser(@Param('id') id: string){
