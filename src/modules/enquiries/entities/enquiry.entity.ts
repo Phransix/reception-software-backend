@@ -8,13 +8,13 @@ const { v4: uuidv4 } = require('uuid');
 })
 export class Enquiry extends Model<Enquiry>{
 
-//   @Column({
-//     type: DataType.INTEGER,
-//     allowNull: false,
-//     autoIncrement: true,
-//     primaryKey: true,
-// })
-// id: number
+  @Column({
+    type: DataType.INTEGER,
+    allowNull: false,
+    autoIncrement: true,
+    primaryKey: true,
+})
+id: number
 
   @Column({
     defaultValue: uuidv4,

@@ -1,4 +1,4 @@
-import { Injectable, NotAcceptableException } from '@nestjs/common';
+import { BadRequestException, HttpException, HttpStatus, Injectable, NotAcceptableException } from '@nestjs/common';
 import { CreateDeliveryDto } from './dto/create-delivery.dto';
 import { UpdateDeliveryDto } from './dto/update-delivery.dto';
 import { InjectModel } from '@nestjs/sequelize';
@@ -6,6 +6,7 @@ import { Delivery } from './entities/delivery.entity';
 import * as Abstract from '../../utils/abstract'
 import * as Util from '../../utils/index'
 import { DATE } from 'sequelize';
+import { deliveryConfirmDTO } from 'src/guard/auth/deliveryConfirmDTO';
 
 @Injectable()
 export class DeliveryService {
@@ -18,11 +19,6 @@ export class DeliveryService {
   async create(createDeliveryDto: CreateDeliveryDto) {
     try {
       await Abstract?.createData(Delivery, createDeliveryDto);
-
-      
-      // console.log(createDeliveryDto.status)
-      
-
       return Util?.handleCreateSuccessRespone( "Delivery Created Successfully");
     } catch (error) {
       console.error(error)
@@ -42,7 +38,7 @@ export class DeliveryService {
       console.log(error)
       return Util?.handleFailResponse("Deliveries retrieval failed")
     }
-  };
+  }
 
   async findOne(id: number) {
     try {
@@ -61,7 +57,6 @@ export class DeliveryService {
   }
 
   async update(id: number, updateDeliveryDto: UpdateDeliveryDto) {
-    // return `This action updates a #${id} delivery`;
     try {
       const delivery = await Delivery.findOne({ where: { id } });
       if (!delivery) {
@@ -69,7 +64,7 @@ export class DeliveryService {
       }
       Object.assign(delivery, updateDeliveryDto);
       await delivery.save()
-      return Util?.handleSuccessRespone(Util?.SuccessRespone, 'Delivery Data successfullt updated')
+      return Util?.handleSuccessRespone(Util?.SuccessRespone, 'Delivery Data successfully updated')
     } catch (error) {
       console.log(error)
       return Util?.handleFailResponse("Delivery update failed")
@@ -83,8 +78,6 @@ export class DeliveryService {
       if (!delivery) {
         throw new NotAcceptableException("Delivery Data does not exist")
       }
-      // Object.assign(delivery)
-      delivery.deletedAt = new Date()
       await delivery.destroy()
       return Util?.handleSuccessRespone(Util?.SuccessRespone, "Delivery Data deleted Successfully")
 
@@ -93,5 +86,21 @@ export class DeliveryService {
       return Util?.handleFailResponse("Delivery removal failed")
     }
   }
+
+  async deliveryConfirm (deliveryConfirmDTO: deliveryConfirmDTO){
+
+    const {staff} = deliveryConfirmDTO
+    
+    const delivery = await this.DeliveryModel.findOne({where:{staff}})
+    if(!delivery) {
+      throw new HttpException('Delivery Confirmation Failed',HttpStatus.NOT_FOUND)
+    }
+    
+    else {
+      await Delivery.update({status: 'delivered'},{where: {staff: staff}})
+      throw new HttpException('Delivery Confirmation Successful',HttpStatus.OK)
+    }
+  }
+
 
 }

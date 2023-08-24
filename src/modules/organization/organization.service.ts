@@ -68,7 +68,7 @@ export class OrganizationService {
       console.log(user)
       return Util?.handleCreateSuccessRespone("Organization created successfully.")
 
-    } catch (error) {
+    } catch (error ) {
       t.rollback()
       console.log(error)
       throw new Error("Registration failed");

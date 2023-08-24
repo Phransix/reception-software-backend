@@ -1,10 +1,11 @@
-import { Controller, Get, Post, Body, Patch, Param, Delete, Res, Query, Req, HttpException } from '@nestjs/common';
+import { Controller, Get, Post, Body, Patch, Param, Delete, Res, Query, Req, HttpException, HttpStatus } from '@nestjs/common';
 import { DeliveryService } from './delivery.service';
 import { CreateDeliveryDto } from './dto/create-delivery.dto';
 import { UpdateDeliveryDto } from './dto/update-delivery.dto';
 import * as Util from '../../utils/index'
 import { ApiTags } from '@nestjs/swagger';
 import { Delivery } from './entities/delivery.entity';
+import { deliveryConfirmDTO } from 'src/guard/auth/deliveryConfirmDTO';
 
 @Controller('delivery')
 export class DeliveryController {
@@ -18,7 +19,8 @@ export class DeliveryController {
       let new_Delivery = await Delivery.create(createDeliveryDto);
       return new_Delivery;
     } catch (error) {
-      return Util?.handleFailResponse("Delivery registration failed")
+      console.log(error)
+      // return Util?.handleFailResponse("Delivery registration failed")
     }
   }
 
@@ -31,7 +33,7 @@ export class DeliveryController {
       
     } catch (error) {
       console.log(error)
-      return Util.handleTryCatchError(Util?.handleTryCatchError(error))
+      return Util?.handleFailResponse("Deliveries retrieval failed")
     }
    
   }
@@ -117,4 +119,19 @@ export class DeliveryController {
     }
 
   }
+
+  // Delivery Confirmation
+  @ApiTags('Delivery')
+  @Post('deliveryConfirmation')
+  async staffConfirm (@Body() deliveryConfirmDTO: deliveryConfirmDTO){
+    const deliveryTo = this.deliveryService.deliveryConfirm(deliveryConfirmDTO)
+    if (!deliveryTo) {
+      throw new HttpException('Staff does not exist',HttpStatus.NOT_FOUND)
+    } 
+    else {
+      return deliveryTo
+      // throw new HttpException('Item Delivered to staff successfully',HttpStatus.ACCEPTED)
+    }
+  }
+
 }

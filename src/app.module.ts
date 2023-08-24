@@ -22,6 +22,7 @@ import { AppService } from './app.service';
 import { AuthModule } from './modules/auth/auth.module';
 import { RoleModule } from './modules/role/role.module';
 import { PaginateModule } from 'nestjs-sequelize-paginate'
+import { GuestModule } from './modules/guest/guest.module';
 
 
 
@@ -98,6 +99,7 @@ import { PaginateModule } from 'nestjs-sequelize-paginate'
     EnquiriesModule,
     AuthModule,
     RoleModule,
+    GuestModule,
     
   ],
 
