@@ -22,41 +22,10 @@ Commands:
   sequelize-cli seed:generate                     Generates a new seed file
   sequelize-cli seed:create                       Generates a new seed file
 
-"@types/uuid": "^8.3.4",
-
-"uuid": "^8.3.2",
-
-@Column({defaultValue: uuidv4})
-    uuid: string
 
 
-    const { v4: uuidv4 } = require('uuid');
 
-    uuid: {
-      type: Sequelize.UUID,
-      defaultValue: Sequelize.UUIDV4,
-      allowNull: false,
-      unique: true,
-    },
 
-    user_id: {
-        type: Sequelize.UUID,
-        references: {
-          model: {
-            tableName: 'Customers',
-          },
-          key: 'user_id',
-        },
-        onDelete: 'CASCADE',
-      },
 
-      currency_id: {
-        type: Sequelize.INTEGER,
-        references: {
-          model: {
-            tableName: 'SystemCurrenciesTB',
-          },
-          key: 'id',
-        },
-        onDelete: 'NO ACTION',
-      },
+
+

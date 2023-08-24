@@ -1,4 +1,3 @@
-
 import { BadRequestException, ForbiddenException, Injectable, Param, Req, Res, UnauthorizedException } from '@nestjs/common';
 import { CreateOrganizationDto, ForgotPasswordDto, ResetPasswordDto, VerifyEmailDto } from './dto/create-organization.dto';
 import { UpdateOrganizationDto } from './dto/update-organization.dto';
@@ -14,9 +13,7 @@ import { LoginDTO } from 'src/guard/auth/loginDTO';
 import { Role } from '../role/entities/role.entity';
 import { AuthPassService } from 'src/guard/auth/authPass.service';
 import { ResetPasswordService } from 'src/helper/ResetPassHelper';
-import { JwtService } from '@nestjs/jwt';
-// import { ConfigService } from '@nestjs/config';
-
+// import { AuthService } from 'src/auth/auth.service';
 
 
 
@@ -32,7 +29,7 @@ export class OrganizationService {
     private emailService:EmailService,
     private resetPasswordService: ResetPasswordService,
     private readonly authPassService: AuthPassService,
-    private jwtService: JwtService,
+    // private jwtService: JwtService,
     // private config: ConfigService,
   
     ){}
@@ -75,7 +72,7 @@ export class OrganizationService {
       console.log(user)
       return Util?.handleCreateSuccessRespone("Organization created successfully.")
 
-    } catch (error) {
+    } catch (error ) {
       t.rollback()
       console.log(error)
       throw new Error("Registration failed");
@@ -87,6 +84,7 @@ export class OrganizationService {
   // Verify Email Account
   async verifyEmail(verifyEmailDto:VerifyEmailDto) {
     try{
+  
 
       const decodeToken = verifyEmailToken(verifyEmailDto?.token);
       // console.log(decodeToken);
@@ -285,7 +283,6 @@ export class OrganizationService {
     return await this.organizationModel.findOne<Organization>({ where: { phoneNumber } })
   }
 
-  // Forgot password
   async forgetPassword(email: ForgotPasswordDto) {
     try {
       let user = await this.user.findOne({ where: { ...email } });
@@ -311,7 +308,6 @@ export class OrganizationService {
   }
 
 
-  // Change password
   async resetPassword(token: any, data: ResetPasswordDto) {
     const t = await this.sequelize.transaction();
 
@@ -346,33 +342,6 @@ export class OrganizationService {
       return Util?.checkIfRecordNotFound(error)
     }
   }
-
-
-  // async getTokens(organization_id: string, email: string, oraganiazation_name: string){
-  //   const jwtPayload ={
-  //     sub: organization_id,
-  //     email: email,
-  //     scopes: oraganiazation_name
-  //   };
-
-  //   const [at, rt] = await Promise.all([
-  //     this.jwtService.signAsync(jwtPayload, {
-  //       secret: this.config.get<string>('AT_SECRET'),
-  //       // expiresIn: '15m,
-  //       expiresIn: '7d'
-  //     }),
-  //     this.jwtService.signAsync(jwtPayload, {
-  //       secret: this.config.get<string>('RT_SECRET'),
-  //       expiresIn: '7d',
-  //     }),
-  //   ]);
-
-  //   return { 
-  //     access_token: at,
-  //     refresh_token: rt
-  //   }
-
-  // }
 
 
 }

@@ -22,7 +22,7 @@ export class CreateEnquiryDto {
     })
     @IsString()
     @IsNotEmpty()
-    readonly name: string;
+    readonly visitorFullname: string;
 
     @ApiProperty({
         description: 'The email of the Person ',

@@ -24,7 +24,10 @@ import { UsersService } from './modules/users/users.service';
 import { Role } from './modules/role/entities/role.entity';
 import { Organization } from './modules/organization/entities/organization.entity';
 import { User } from './modules/users/entities/user.entity';
+import { GuestModule } from './modules/guest/guest.module';
 import { AtGuard } from './common/guards';
+import { DepartmentModule } from './modules/department/department.module';
+import { StaffModule } from './modules/staff/staff.module';
 
 
 
@@ -32,6 +35,9 @@ import { AtGuard } from './common/guards';
 @Module({
   imports: [
 
+    // PaginateModule.forRoot({
+    //   url: 'http://localhost:3005',
+    // }),
     SequelizeModule.forFeature([User,Role,Organization]),
 
    
@@ -104,6 +110,9 @@ import { AtGuard } from './common/guards';
 
    
     RoleModule,
+    GuestModule,
+    DepartmentModule,
+    StaffModule,
     
   ],
 

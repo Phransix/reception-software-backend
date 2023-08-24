@@ -1,22 +1,21 @@
 'use strict';
-
 module.exports = {
   up: async (queryInterface, Sequelize) => {
-    await queryInterface.createTable('Enquiries', {
+    await queryInterface.createTable('Staffs', {
       id: {
         allowNull: false,
         autoIncrement: true,
         primaryKey: true,
-        type: Sequelize.INTEGER,
+        type: Sequelize.INTEGER
       },
 
-      enquiryId:{
-        type: Sequelize.UUID,
-        defaultValue: Sequelize.UUIDV4,
-        allowNull: false,
-        unique:true
+      staffId: {
+          type: Sequelize.UUID,
+          defaultValue: Sequelize.UUIDV4,
+          allowNull: false,
+          unique: true
       },
-
+    
       organizationId: {
         type: Sequelize.UUID,
         allowNull: false,
@@ -29,41 +28,57 @@ module.exports = {
         onDelete: 'CASCADE'
       },
 
-      visitorFullname: {
+      departmentId: {
+        type: Sequelize.UUID,
         allowNull: false,
-        type: Sequelize.STRING,
+        references: {
+          model:{
+            tableName: 'Departments',
+          },
+          key:'departmentId'
+        },
+        onDelete: 'CASCADE'
       },
 
+      fullName: {
+        type: Sequelize.STRING,
+        allowNull: false
+      },
       email: {
-        allowNull: true,
         type: Sequelize.STRING,
-        unique:true
-      },
-
-      phoneNumber: {
         allowNull: false,
-        type: Sequelize.STRING,
+        unique: true
+      },
+      phoneNumber: {
+        type:Sequelize.STRING,
+        allowNull: false,
         unique: true
       },
 
-      purpose: {
+      gender: {
+        type: Sequelize.ENUM('male', 'female'),
         allowNull: false,
-        type: Sequelize.ENUM('official', 'personal'),
+        validate: {
+          isIn: [['male','female']]
+        }
       },
 
-      enquiryDescription: {
+      role: {
+        type:Sequelize.STRING,
         allowNull: false,
-        type: Sequelize.STRING,
+      },
+
+      profilePhoto: {
+        type: Sequelize.STRING
       },
 
       createdAt: {
         allowNull: false,
-        type: Sequelize.DATE,
+        type: Sequelize.DATE
       },
-
       updatedAt: {
         allowNull: false,
-        type: Sequelize.DATE,
+        type: Sequelize.DATE
       },
       
       deletedAt: {
@@ -71,10 +86,11 @@ module.exports = {
       allowNull: true,
      defaultValue: null
       }, 
+   
+
     });
   },
-
   down: async (queryInterface, Sequelize) => {
-    await queryInterface.dropTable('Enquiries');
-  },
+    await queryInterface.dropTable('Staffs');
+  }
 };

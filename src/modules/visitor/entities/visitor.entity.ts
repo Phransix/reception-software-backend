@@ -71,7 +71,7 @@ export class Visitor extends Model <Visitor> {
 
     @Column({
         type: DataType.ENUM,
-        values: ['active','inactive'],
+        values: ['signedIn','signedOut'],
         allowNull: false,
     })
     visitStatus: string;

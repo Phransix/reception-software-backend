@@ -2,19 +2,25 @@
 
 module.exports = {
   up: async (queryInterface, Sequelize) => {
-    await queryInterface.createTable('Enquiries', {
+    /**
+     * Add altering commands here.
+     *
+     * Example:
+     * await queryInterface.createTable('users', { id: Sequelize.INTEGER });
+     */
+    await queryInterface.createTable('Departments', {
       id: {
         allowNull: false,
         autoIncrement: true,
         primaryKey: true,
-        type: Sequelize.INTEGER,
+        type: Sequelize.INTEGER
       },
 
-      enquiryId:{
+      departmentId: {
         type: Sequelize.UUID,
         defaultValue: Sequelize.UUIDV4,
         allowNull: false,
-        unique:true
+        unique: true
       },
 
       organizationId: {
@@ -29,43 +35,26 @@ module.exports = {
         onDelete: 'CASCADE'
       },
 
-      visitorFullname: {
+      departmentName: {
+        type: Sequelize.STRING,
         allowNull: false,
-        type: Sequelize.STRING,
-      },
-
-      email: {
-        allowNull: true,
-        type: Sequelize.STRING,
-        unique:true
-      },
-
-      phoneNumber: {
-        allowNull: false,
-        type: Sequelize.STRING,
         unique: true
       },
 
-      purpose: {
-        allowNull: false,
-        type: Sequelize.ENUM('official', 'personal'),
+      departmentRoomNum: {
+        type: Sequelize.STRING
       },
-
-      enquiryDescription: {
-        allowNull: false,
-        type: Sequelize.STRING,
-      },
-
+    
       createdAt: {
-        allowNull: false,
         type: Sequelize.DATE,
+        allowNull: false,
+        defaultValue: Sequelize.literal('CURRENT_TIMESTAMP'),
       },
-
       updatedAt: {
-        allowNull: false,
         type: Sequelize.DATE,
+        allowNull: false,
+        defaultValue: Sequelize.literal('CURRENT_TIMESTAMP'),
       },
-      
       deletedAt: {
         type: Sequelize.DATE,
       allowNull: true,
@@ -75,6 +64,7 @@ module.exports = {
   },
 
   down: async (queryInterface, Sequelize) => {
-    await queryInterface.dropTable('Enquiries');
-  },
+   
+    await queryInterface.dropTable('Departments')
+  }
 };
