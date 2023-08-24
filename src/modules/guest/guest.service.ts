@@ -90,7 +90,7 @@ export class GuestService {
     if (!guest) {
       throw new HttpException('Guest Sign In failed', HttpStatus.UNAUTHORIZED)
     } else {
-      throw new HttpException('Guest Sign In sucessful', HttpStatus.ACCEPTED)
+      throw new HttpException('Guest Sign In successful', HttpStatus.ACCEPTED)
     }
   }
 }

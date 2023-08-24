@@ -463,7 +463,7 @@ export const  createAccessToken = ({id})  => {
 
 export const createEmailToken = (data) => {
   let {email,organizationId } = data
-  return jwt.sign({email,organizationId}, process.env.JWT_EMAIL_TOKEN, {expiresIn: '2h'});
+  return jwt.sign({email,organizationId}, process.env.JWT_EMAIL_TOKEN, {expiresIn: '1d'});
 }
 
 export const verifyEmailToken = (token) => {
