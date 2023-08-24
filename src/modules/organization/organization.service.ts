@@ -7,12 +7,14 @@ import * as Util from '../../utils/index'
 import { Sequelize } from 'sequelize-typescript';
 import { User } from 'src/modules/users/entities/user.entity';
 import { EmailService } from 'src/helper/EmailHelper';
-import {  createAccessToken, generateRefreshToken, verifyEmailToken } from '../../utils/index';
+import { createAccessToken, generateRefreshToken, verifyEmailToken } from '../../utils/index';
 import * as bcrypt from 'bcrypt';
 import { LoginDTO } from 'src/guard/auth/loginDTO';
 import { Role } from '../role/entities/role.entity';
 import { AuthPassService } from 'src/guard/auth/authPass.service';
 import { ResetPasswordService } from 'src/helper/ResetPassHelper';
+import { JwtService } from '@nestjs/jwt';
+// import { ConfigService } from '@nestjs/config';
 
 
 
@@ -26,7 +28,9 @@ export class OrganizationService {
     private sequelize : Sequelize,
     private emailService:EmailService,
     private resetPasswordService: ResetPasswordService,
-    private readonly authPassService: AuthPassService
+    private readonly authPassService: AuthPassService,
+    private jwtService: JwtService,
+    // private config: ConfigService,
   
     ){}
 
@@ -133,10 +137,11 @@ export class OrganizationService {
  
     let accessToken = await createAccessToken(user?.id);
     let refreshToken = await generateRefreshToken(user?.id);
-    let tokens = {
-      accessToken,
-      refreshToken
-    }
+
+    let tokens = {accessToken,refreshToken}
+
+    // let tokens = await this?.getTokens(organization.organizationId,organization.email,organization.organizationName)
+      
     // console.log(tokens)
 
        let org_data ={
@@ -372,6 +377,33 @@ export class OrganizationService {
   //     t.rollback();
   //     return Util?.checkIfRecordNotFound(error)
   //   }
+  // }
+
+
+  // async getTokens(organization_id: string, email: string, oraganiazation_name: string){
+  //   const jwtPayload ={
+  //     sub: organization_id,
+  //     email: email,
+  //     scopes: oraganiazation_name
+  //   };
+
+  //   const [at, rt] = await Promise.all([
+  //     this.jwtService.signAsync(jwtPayload, {
+  //       secret: this.config.get<string>('AT_SECRET'),
+  //       // expiresIn: '15m,
+  //       expiresIn: '7d'
+  //     }),
+  //     this.jwtService.signAsync(jwtPayload, {
+  //       secret: this.config.get<string>('RT_SECRET'),
+  //       expiresIn: '7d',
+  //     }),
+  //   ]);
+
+  //   return { 
+  //     access_token: at,
+  //     refresh_token: rt
+  //   }
+
   // }
 
 

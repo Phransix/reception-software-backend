@@ -67,6 +67,7 @@ export class OrganizationController {
   }
 
   
+  @ApiTags('Organization')
   @Get('getAllOrganizations')
  async findAll() {
 
@@ -82,6 +83,7 @@ export class OrganizationController {
   };
 
  
+  @ApiTags('Organization')
   @Get(':id')
   async findOne(@Param('id') id: string) {
 
@@ -98,6 +100,7 @@ export class OrganizationController {
   };
 
   
+  @ApiTags('Organization')
   @Patch(':id')
   async update(@Param('id') id: string, @Body() updateOrganizationDto: UpdateOrganizationDto) {
 
@@ -141,6 +144,8 @@ export class OrganizationController {
 
   }
   
+
+  @ApiTags('Organization')
   @Delete(':id')
  async remove(@Param('id') id: string) {
 
@@ -157,6 +162,8 @@ export class OrganizationController {
 
   }
 
+
+  @ApiTags('Organization')
   @Post(':id/restore')
   async restoreUser(@Param('id') id: string){
     return this.organizationService.restoreUser(id)

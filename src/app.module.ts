@@ -15,19 +15,16 @@ import { EnquiriesModule } from './modules/enquiries/enquiries.module';
 import { VisitorModule } from './modules/visitor/visitor.module';
 import { DeliveryModule } from './modules/delivery/delivery.module';
 import { AppService } from './app.service';
-// import { AuthModule } from './modules/auth/auth.module';
 import { RoleModule } from './modules/role/role.module';
 import { RolesGuard } from './common/guards/roles.guard';
-import { AuthModule } from './auth/auth.module';
 import { PassportModule } from '@nestjs/passport';
 import { JwtModule } from '@nestjs/jwt'
 import { AppController } from './app.controller';
-import { AuthService } from './auth/auth.service';
-import { JwtStrategy } from './auth/jwt.strategy';
 import { UsersService } from './modules/users/users.service';
 import { Role } from './modules/role/entities/role.entity';
 import { Organization } from './modules/organization/entities/organization.entity';
 import { User } from './modules/users/entities/user.entity';
+import { AtGuard } from './common/guards';
 import { GuestModule } from './modules/guest/guest.module';
 
 
@@ -41,7 +38,7 @@ import { GuestModule } from './modules/guest/guest.module';
     // }),
     SequelizeModule.forFeature([User,Role,Organization]),
 
-    AuthModule,
+   
     PassportModule,
     JwtModule.register({secret:process.env.jWT_ACCESS_SECRET, signOptions: {expiresIn:'5hrs'}}),
 
@@ -108,7 +105,8 @@ import { GuestModule } from './modules/guest/guest.module';
     OrganizationModule,
     UsersModule,
     EnquiriesModule,
-    AuthModule,
+
+   
     RoleModule,
     GuestModule,
     
@@ -116,9 +114,9 @@ import { GuestModule } from './modules/guest/guest.module';
 
   controllers: [AppController],
   providers: [
-
-    AuthService,
-    JwtStrategy,
+   
+    
+   
     UsersService,
 
     AppService,
@@ -133,6 +131,11 @@ import { GuestModule } from './modules/guest/guest.module';
       useClass:LoggingInterceptor
       
     },
+    {
+      provide: APP_GUARD,
+      useClass: AtGuard,
+    },
+
   ],
 })
 export class AppModule {}
