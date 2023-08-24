@@ -1,17 +1,24 @@
-import { Controller, Get, Post, Body, Patch, Param, Delete, Res, Query, Req, HttpException, HttpStatus } from '@nestjs/common';
+import { Controller, Get, Post, Body, Patch, Param, Delete, Res, Query, Req, HttpException, HttpStatus, UseGuards } from '@nestjs/common';
 import { DeliveryService } from './delivery.service';
 import { CreateDeliveryDto } from './dto/create-delivery.dto';
 import { UpdateDeliveryDto } from './dto/update-delivery.dto';
 import * as Util from '../../utils/index'
-import { ApiTags } from '@nestjs/swagger';
+import { ApiBearerAuth, ApiTags } from '@nestjs/swagger';
 import { Delivery } from './entities/delivery.entity';
 import { deliveryConfirmDTO } from 'src/guard/auth/deliveryConfirmDTO';
+import { Public } from 'src/common/decorators/public.decorator';
+import { AtGuard } from 'src/common/guards';
+import { AuthGuard } from '@nestjs/passport';
 
 @Controller('delivery')
 export class DeliveryController {
   userService: any;
   constructor(private readonly deliveryService: DeliveryService) {}
 
+  @UseGuards(AuthGuard('jwt'))
+  @ApiBearerAuth('defaultBearerAuth')
+  @Public()
+  @UseGuards(AtGuard)
   @ApiTags('Delivery')
   @Post('createDelivery')
   async createDelivery(@Body() createDeliveryDto: CreateDeliveryDto) {
@@ -24,6 +31,10 @@ export class DeliveryController {
     }
   }
 
+  @UseGuards(AuthGuard('jwt'))
+  @ApiBearerAuth('defaultBearerAuth')
+  @Public()
+  @UseGuards(AtGuard)
   @ApiTags('Delivery')
   @Get('getAllDeliveries')
   async findAll() {
@@ -71,6 +82,10 @@ export class DeliveryController {
     
   // }
 
+  @UseGuards(AuthGuard('jwt'))
+  @ApiBearerAuth('defaultBearerAuth')
+  @Public()
+  @UseGuards(AtGuard)
   @ApiTags('Delivery')
   @Get(':id')
   async findOne(@Param('id') id: number) {
@@ -84,6 +99,10 @@ export class DeliveryController {
     }
   }
 
+  @UseGuards(AuthGuard('jwt'))
+  @ApiBearerAuth('defaultBearerAuth')
+  @Public()
+  @UseGuards(AtGuard)
   @ApiTags('Delivery')
   @Patch(':id')
   update(@Param('id') id: number, @Body() updateDeliveryDto: UpdateDeliveryDto) {
@@ -96,6 +115,10 @@ export class DeliveryController {
     }
   }
 
+  @UseGuards(AuthGuard('jwt'))
+  @ApiBearerAuth('defaultBearerAuth')
+  @Public()
+  @UseGuards(AtGuard)
   @ApiTags('Delivery')
   @Delete(':id')
   async remove(@Param('id') id: number) {
@@ -121,6 +144,10 @@ export class DeliveryController {
   }
 
   // Delivery Confirmation
+  @UseGuards(AuthGuard('jwt'))
+  @ApiBearerAuth('defaultBearerAuth')
+  @Public()
+  @UseGuards(AtGuard)
   @ApiTags('Delivery')
   @Post('deliveryConfirmation')
   async staffConfirm (@Body() deliveryConfirmDTO: deliveryConfirmDTO){

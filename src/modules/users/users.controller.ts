@@ -20,7 +20,7 @@ export class UsersController {
   constructor(private readonly usersService: UsersService) {}
 
 
-    // Register New User
+  // Register New User
   @ApiTags('Users')
   // @UseGuards(AuthGuard('jwt'))
   @ApiBearerAuth('defaultBearerAuth')
@@ -120,7 +120,6 @@ export class UsersController {
   };
 
 
-  
   @ApiTags('Users')
   @UseGuards(AuthGuard('jwt'))
   @ApiBearerAuth('defaultBearerAuth')
@@ -168,11 +167,5 @@ export class UsersController {
       }
      
     }
-
-
-
-
-
-
 
 }

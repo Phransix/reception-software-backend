@@ -1,13 +1,21 @@
-import { Controller, Get, Post, Body, Patch, Param, Delete, NotAcceptableException, Put } from '@nestjs/common';
+import { Controller, Get, Post, Body, Patch, Param, Delete, UseGuards } from '@nestjs/common';
 import { VisitorService } from './visitor.service';
 import { CreateVisitorDto } from './dto/create-visitor.dto';
 import { UpdateVisitorDto } from './dto/update-visitor.dto';
 import * as Util from '../../utils/index'
-import { ApiTags } from '@nestjs/swagger';
+import { ApiBearerAuth, ApiTags } from '@nestjs/swagger';
+import { AuthGuard } from '@nestjs/passport';
+import { Public } from 'src/common/decorators/public.decorator';
+import { AtGuard } from 'src/common/guards';
 
 @Controller('visitor')
 export class VisitorController {
   constructor(private readonly visitorService: VisitorService) {}
+
+  @UseGuards(AuthGuard('jwt'))
+  @ApiBearerAuth('defaultBearerAuth')
+  @Public()
+  @UseGuards(AtGuard)
   @ApiTags('Visitors')
   @Post('registerVisitor')
   async registerVisitor(@Body() createVisitorDto: CreateVisitorDto) {
@@ -20,12 +28,22 @@ export class VisitorController {
     }
   }
 
+
+  @UseGuards(AuthGuard('jwt'))
+  @ApiBearerAuth('defaultBearerAuth')
+  @Public()
+  @UseGuards(AtGuard)
   @ApiTags('Visitors')
   @Get('getAllVisitors')
   async findAll() {
     return await this.visitorService.findAll();
   }
 
+
+  @UseGuards(AuthGuard('jwt'))
+  @ApiBearerAuth('defaultBearerAuth')
+  @Public()
+  @UseGuards(AtGuard)
   @ApiTags('Visitors')
   @Get(':id')
   async findOne(@Param('id') id: number) {
@@ -38,6 +56,11 @@ export class VisitorController {
     }
   }
 
+
+  @UseGuards(AuthGuard('jwt'))
+  @ApiBearerAuth('defaultBearerAuth')
+  @Public()
+  @UseGuards(AtGuard)
   @ApiTags('Visitors')
   @Patch(':id')
   async update(@Param('id') id: number, @Body() updateVisitorDto: UpdateVisitorDto) {
@@ -51,6 +74,11 @@ export class VisitorController {
     }
   }
 
+
+  @UseGuards(AuthGuard('jwt'))
+  @ApiBearerAuth('defaultBearerAuth')
+  @Public()
+  @UseGuards(AtGuard)
   @ApiTags('Visitors')
   @Delete(':id')
   async remove(@Param('id') id: string) {
