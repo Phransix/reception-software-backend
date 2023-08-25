@@ -73,11 +73,11 @@ export class OrganizationController {
   //   }
   // }
 
-  @UseGuards(AuthGuard('jwt'))
-  @ApiBearerAuth('defaultBearerAuth')
+  // @UseGuards(AuthGuard('jwt'))
+  // @ApiBearerAuth('defaultBearerAuth')
   @ApiOperation({summary:'Get All Organization'})
   @Public()
-  @UseGuards(AtGuard)
+  // @UseGuards(AtGuard)
   @Get('getAllOrganizations')
  async findAll() {
 
