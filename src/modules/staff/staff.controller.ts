@@ -8,7 +8,7 @@ import { Public } from 'src/common/decorators/public.decorator';
 import { AuthGuard } from '@nestjs/passport';
 
 
-@ApiTags('Staffs')
+@ApiTags('Staff')
 @Controller('staff')
 export class StaffController {
   constructor(private readonly staffService: StaffService) {}
@@ -26,7 +26,7 @@ export class StaffController {
 
   @UseGuards(AuthGuard('jwt'))
   @ApiBearerAuth('defaultBearerAuth')
-  @ApiOperation({summary:'Get All Staffs'})
+  @ApiOperation({summary:'Get All Staff'})
   @Public()
   @UseGuards(AtGuard)
   @Get('getAllStaffs')

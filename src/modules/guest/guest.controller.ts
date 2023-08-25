@@ -2,15 +2,17 @@ import { Controller, Get, Post, Body, Patch, Param, Delete, HttpException, HttpS
 import { GuestService } from './guest.service';
 import { CreateGuestDto } from './dto/create-guest.dto';
 import { UpdateGuestDto } from './dto/update-guest.dto';
-import { ApiTags } from '@nestjs/swagger';
+import { ApiOperation, ApiTags } from '@nestjs/swagger';
 import * as Util from '../../utils/index'
 import { guestLoginDTO } from 'src/guard/auth/guestLoginDTO';
+import { Public } from 'src/common/decorators/public.decorator';
 
 @Controller('guest')
 export class GuestController {
   constructor(private readonly guestService: GuestService) {}
 
   @ApiTags('Guest')
+  @ApiOperation({summary:'Create New Guest'})
   @Post('createGuest')
   async create(@Body() createGuestDto: CreateGuestDto) {
     try {
@@ -23,12 +25,14 @@ export class GuestController {
   }
 
   @ApiTags('Guest')
+  @ApiOperation({summary:'Get All Guest'})
   @Get('getAllGuest')
   async findAll() {
     return this.guestService.findAll();
   }
 
   @ApiTags('Guest')
+  @ApiOperation({summary:'Get Guest By Id'})
   @Get(':id')
   async findOne(@Param('id') id: number) {
     try {
@@ -42,6 +46,7 @@ export class GuestController {
   }
 
   @ApiTags('Guest')
+  @ApiOperation({summary:'Update Guest By Id'})
   @Patch(':id')
   async update(@Param('id') id: number, @Body() updateGuestDto: UpdateGuestDto) {
     try {
@@ -54,6 +59,7 @@ export class GuestController {
   }
 
   @ApiTags('Guest')
+  @ApiOperation({summary:'Remove Guest By Id'})
   @Delete(':id')
   async remove(@Param('id') id: number) {
     try {
@@ -72,7 +78,9 @@ export class GuestController {
     }
   }
 
+  @Public()
   @ApiTags('Guest')
+  @ApiOperation({summary:'Guest Sign In'})
   @Post('guestSignIn')
   async signIn (@Body() guestloginDTO: guestLoginDTO){
     const guest = this.guestService.guestSignIn(guestloginDTO)

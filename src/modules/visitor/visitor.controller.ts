@@ -3,7 +3,7 @@ import { VisitorService } from './visitor.service';
 import { CreateVisitorDto } from './dto/create-visitor.dto';
 import { UpdateVisitorDto } from './dto/update-visitor.dto';
 import * as Util from '../../utils/index'
-import { ApiBearerAuth, ApiTags } from '@nestjs/swagger';
+import { ApiBearerAuth, ApiOperation, ApiTags } from '@nestjs/swagger';
 import { AuthGuard } from '@nestjs/passport';
 import { Public } from 'src/common/decorators/public.decorator';
 import { AtGuard } from 'src/common/guards';
@@ -17,6 +17,7 @@ export class VisitorController {
   @Public()
   @UseGuards(AtGuard)
   @ApiTags('Visitors')
+  @ApiOperation({summary:'Create New Visitors'})
   @Post('registerVisitor')
   async registerVisitor(@Body() createVisitorDto: CreateVisitorDto) {
     try {
@@ -34,6 +35,7 @@ export class VisitorController {
   @Public()
   @UseGuards(AtGuard)
   @ApiTags('Visitors')
+  @ApiOperation({summary:'Get All Visitors'})
   @Get('getAllVisitors')
   async findAll() {
     return await this.visitorService.findAll();
@@ -45,6 +47,7 @@ export class VisitorController {
   @Public()
   @UseGuards(AtGuard)
   @ApiTags('Visitors')
+  @ApiOperation({summary:'Get Visitor By Id'})
   @Get(':id')
   async findOne(@Param('id') id: number) {
     try {
@@ -62,6 +65,7 @@ export class VisitorController {
   @Public()
   @UseGuards(AtGuard)
   @ApiTags('Visitors')
+  @ApiOperation({summary:'Update Visitor By Id'})
   @Patch(':id')
   async update(@Param('id') id: number, @Body() updateVisitorDto: UpdateVisitorDto) {
     // return this.visitorService.update(+id, updateVisitorDto);
@@ -80,6 +84,7 @@ export class VisitorController {
   @Public()
   @UseGuards(AtGuard)
   @ApiTags('Visitors')
+  @ApiOperation({summary:'Remove Visitor By Id'})
   @Delete(':id')
   async remove(@Param('id') id: string) {
     return this.visitorService.remove(+id);

@@ -188,8 +188,6 @@ export class UsersController {
      
     }
 
-<<<<<<< HEAD
-=======
 
     @UseGuards(AuthGuard('jwt'))
   @ApiBearerAuth('defaultBearerAuth')
@@ -205,5 +203,4 @@ export class UsersController {
 
 
 
->>>>>>> albert
 }
