@@ -5,19 +5,16 @@ import * as Util from '../../utils/index'
 import { User } from './entities/user.entity';
 import { InjectModel } from '@nestjs/sequelize';
 import * as bcrypt from 'bcrypt';
-// import { UsersModule } from './users.module';
 import { Role } from '../role/entities/role.entity'
 import { Organization } from '../organization/entities/organization.entity';
 import { ChangePassDTO } from 'src/guard/auth/changePassDTO';
-import { createAccessToken, generateRefreshToken, verifyEmailToken } from '../../utils/index';
+// import { createAccessToken, generateRefreshToken, verifyEmailToken } from '../../utils/index';
 import { LoginDTO } from 'src/guard/auth/loginDTO';
 import * as Abstract from '../../utils/abstract'
 import { JwtService } from '@nestjs/jwt';
 import { ConfigService } from '@nestjs/config';
-import { AuthPassService } from 'src/guard/auth/authPass.service';
-import { VerifyEmailDto } from '../organization/dto/create-organization.dto';
 import * as argon from 'argon2';
-import { log } from 'console';
+
 
 
 @Injectable()
@@ -28,17 +25,38 @@ export class UsersService {
   @InjectModel(Organization) private orgModel: typeof Organization,
   private jwtService: JwtService,
   private config: ConfigService,
-  private readonly authPassService: AuthPassService,
+  
   
   ){}
 
+  
 
 
 
 //  Register New User
   async create(createUserDto: CreateUserDto)  {
     try {
-      await Abstract?.createData(User, createUserDto);
+
+      const hash = await argon.hash(createUserDto.password)
+      console.log(hash)
+
+      
+
+      const user = await this.userModel?.create({...createUserDto})
+
+      let user_data ={
+        roleId: user?.roleId,
+        organizationId: user?.organizationId,
+        fullName: user?.fullName,
+        email: user?.email,
+        phoneNumber: user?.phoneNumber,
+        password: hash
+      }
+
+      const users = await this.userModel?.create({...user_data})
+      console.log(users)
+
+      // await Abstract?.createData(User, createUserDto);
       return Util?.handleCreateSuccessRespone( "User Created Successfully");
     } catch (error) {
       console.error(error)
@@ -83,16 +101,17 @@ export class UsersService {
 
 
 // Login users
+
+
 async login(loginDto: LoginDTO){
   const {email,password} = loginDto
 
   
 
   const user = await User.findOne({where:{email}})
-  const org = await User.findOne({where:{email:user?.email}})
+  const org = await Organization.findOne({where:{email}})
   if(!user){
-    // throw new Error ('User with this email does not exist')
-    return Util.handleErrorRespone ('User with this email does not exist')
+    return Util.handleForbiddenExceptionResponses('Invaid email or password');
   }
 
 
@@ -103,25 +122,11 @@ async login(loginDto: LoginDTO){
   if (!passwordMatches)
     return Util.handleForbiddenExceptionResponses('Invaid email or password');
 
-  // const IsPasswordSame = await bcrypt.compare(password,user.password)
-  // console.log(password)
-  // if(!IsPasswordSame){
-  //   return Util.handleErrorRespone('Invalid Credentials')
-  // }
- 
-  // console.log(user?.isVerified);
-
 
       // Check if the oraganiazation is verified
-      // if(org?.isVerified !== true)
-      // return Util?.handleFailResponse('oraganiazation account not verified')
-  
-   
-  
-
-    // // Check if the user is verified
-    // if(user?.isVerified !== true)
-    // return Util?.handleFailResponse('User account not verified')
+     if (org?.isVerified != true)
+     return Util?.handleFailResponse('Oraganiazation account not verified')
+     console.log(org?.isVerified);
 
  
 
@@ -308,9 +313,8 @@ async login(loginDto: LoginDTO){
     }
 
       // Verify the old password
-      const isPasswordValid = await bcrypt.compare(oldPassword, user.password);
-      if (!isPasswordValid) {
-        // throw new Error('Invalid old password');
+      const match = await argon.verify(user.password, oldPassword)
+      if(!match){
         return Util?.handleFailResponse("Incorrect old password")
       }
 
@@ -321,7 +325,7 @@ async login(loginDto: LoginDTO){
 
      
        // Hash the new password and update the user's password
-    const hashedNewPassword = await bcrypt.hash(newPassword, 10);
+    const hashedNewPassword = await argon.hash(newPassword);
     user.password = hashedNewPassword;
   
     // await this.userModel.save(user);
@@ -357,6 +361,19 @@ async login(loginDto: LoginDTO){
       access_token: at,
       refresh_token: rt,
     };
+  }
+
+  async makeid(length) {
+    let result = '';
+    const characters = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789';
+    const charactersLength = characters.length;
+    let counter = 0;
+    while (counter < length) {
+      result += characters.charAt(Math.floor(Math.random() * charactersLength));
+      counter += 1;
+    }
+    return result;
+
   }
 
 }

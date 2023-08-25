@@ -22,7 +22,6 @@ import * as argon from 'argon2';
 
 
 
-
 @Injectable()
 export class OrganizationService {
   
@@ -44,18 +43,12 @@ export class OrganizationService {
     let t = await this.sequelize?.transaction();
     try {
 
-      // const defaultPassword = 'admin123';
+     
 
       let ran_password = await this.makeid(8)
       const hash = await argon.hash(ran_password);
      
-
-    //   const saltRounds = 10;
-      // Hash the defualt password
-    //  const hashedDefaultPassword = await bcrypt.hash(defaultPassword,saltRounds);
-
-      // console.log(createOrganizationDto)
-      // return;
+;
       const organization = await this.organizationModel?.create({ ...createOrganizationDto}, { transaction: t })
       let role = await this?.role?.findOne({where:{name:'admin'}});
 
@@ -85,8 +78,9 @@ export class OrganizationService {
         
       }
       const user = await this.user?.create({ ...org_data }, { transaction: t })
-      let send_Token = await this.emailService.sendMailNotification({...mail_data})
-      console.log(send_Token)
+      await this.emailService.sendMailNotification({...mail_data})
+       await this.emailService?.sendDeaultPassword({...mail_data})
+      
 
       t.commit()
       console.log(user)
@@ -336,10 +330,10 @@ export class OrganizationService {
     try {
 
       const defaultPassword = data?.password;
-      const saltRounds = 10;
+      // const saltRounds = 10;
 
      // Hash the defualt password
-     const hashedDefaultPassword = await bcrypt.hash(defaultPassword,saltRounds);
+     const hashedDefaultPassword = await argon.hash(defaultPassword);
 
       let decode = Util.verifyToken(token);
       const user = await this?.user.findOne({
@@ -366,6 +360,7 @@ export class OrganizationService {
   }
 
 
+
   async makeid(length) {
     let result = '';
     const characters = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789';
@@ -377,7 +372,6 @@ export class OrganizationService {
     }
     return result;
 
-    
   }
 
 

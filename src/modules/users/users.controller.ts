@@ -39,6 +39,7 @@ export class UsersController {
     }
   }
 
+ 
   // @ApiTags('Users')
   // @ApiOperation({summary:'Verify Organization Email '})
   // @Public()
@@ -58,6 +59,8 @@ export class UsersController {
   // };
 
   // Login Users
+  
+  
   @ApiTags('Users')
   @ApiOperation({summary:'Organization/User Login'})
   @Public()
@@ -170,8 +173,8 @@ export class UsersController {
   }
      
   @ApiTags('Users')
-  @UseGuards(AuthGuard('jwt'))
-  @ApiBearerAuth('defaultBearerAuth')
+  // @UseGuards(AuthGuard('jwt'))
+  // @ApiBearerAuth('defaultBearerAuth')
   @ApiOperation({summary:'Change Password Of User By Id'})
   @Public()
   @UseGuards(AtGuard)

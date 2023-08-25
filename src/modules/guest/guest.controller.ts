@@ -16,6 +16,7 @@ export class GuestController {
 
   @Public()
   @ApiTags('Guest')
+  @Public()
   @ApiOperation({summary:'Create New Guest'})
   @Post('createGuest')
   async create(@Body() createGuestDto: CreateGuestDto) {
@@ -27,6 +28,7 @@ export class GuestController {
       return Util?.handleFailResponse("Guest registration failed")
     }
   }
+
 
   @UseGuards(AuthGuard('jwt'))
   @ApiBearerAuth('defaultBearerAuth')
