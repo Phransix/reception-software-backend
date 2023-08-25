@@ -19,16 +19,12 @@ export class CreateUserDto {
     readonly organizationId: string;
  
     @ApiProperty({
-        description: 'The firstname of the User/Customer',
+        description: 'The fullName of the User/Customer',
         example: 'Kingsley'
     })
     @IsNotEmpty()
     readonly fullName: string;
 
-    @ApiProperty({
-        description: 'The lastname of the User/Customer',
-        example: 'Ampong'
-    })
    
     @ApiProperty({
         description: 'The email of the User/Customer',
@@ -40,17 +36,14 @@ export class CreateUserDto {
 
     @ApiProperty({
         description: 'The phonenumber of the User/Customer',
-        example: '0254698745'
+        example: '************'
     })
     @IsNotEmpty()
     @MinLength(10)
     @MaxLength(10)
     readonly phoneNumber: string;
 
-    @ApiProperty({
-        description: 'The profilePhoto of the User/Customer',
-        example: '"data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAUAAAAFCAYAAACNbyblAAAAHElEQVQI12P4//8/w38GIAXDIBKE0DHxgljNBAAO9TXL0Y4OHwAAAABJRU5ErkJggg=="'
-    })
+  
     
     readonly profilePhoto: string;
      

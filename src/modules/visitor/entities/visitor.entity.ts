@@ -4,7 +4,9 @@ import { Organization } from "src/modules/organization/entities/organization.ent
 const { v4: uuidv4 } = require('uuid');
 
 
-@Table
+@Table({
+    paranoid: true,
+  })
 export class Visitor extends Model <Visitor> {
 
     @Column({
@@ -69,7 +71,7 @@ export class Visitor extends Model <Visitor> {
 
     @Column({
         type: DataType.ENUM,
-        values: ['active','inactive'],
+        values: ['signedIn','signedOut'],
         allowNull: false,
     })
     visitStatus: string;
@@ -79,4 +81,11 @@ export class Visitor extends Model <Visitor> {
         allowNull: false,
     })
     date: string;
+
+    @Column({
+        type : DataType.DATE,
+        allowNull: true,
+        defaultValue: null
+      })
+      deletedAt: Date
 }

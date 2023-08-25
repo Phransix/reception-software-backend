@@ -29,7 +29,7 @@ module.exports = {
         onDelete: 'CASCADE'
       },
 
-      name: {
+      visitorFullname: {
         allowNull: false,
         type: Sequelize.STRING,
       },
@@ -67,9 +67,10 @@ module.exports = {
       },
       
       deletedAt: {
-        allowNull: true,
         type: Sequelize.DATE,
-      },
+      allowNull: true,
+     defaultValue: null
+      }, 
     });
   },
 

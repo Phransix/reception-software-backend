@@ -1,9 +1,10 @@
-// import { DataType } from "sequelize";
 import { BelongsTo, Column, DataType, ForeignKey, Model, Table } from "sequelize-typescript";
 import { Organization } from "src/modules/organization/entities/organization.entity";
 const { v4: uuidv4 } = require('uuid');
 
-@Table
+@Table({
+    paranoid: true,
+  })
 export class Delivery extends Model <Delivery> {
 
     @Column({
@@ -46,13 +47,13 @@ export class Delivery extends Model <Delivery> {
         type: DataType.STRING,
         allowNull: false
     })
-    from: string
+    visitorFullname: string
 
     @Column({
         type: DataType.STRING,
         allowNull: false
     })
-    to: string
+    staff: string
 
     @Column({
         type: DataType.STRING,
@@ -66,15 +67,15 @@ export class Delivery extends Model <Delivery> {
     })
     email: string
 
-    @Column({
-        type: DataType.DATE,
-        allowNull: false
-    })
-    date_and_time: string
+    // @Column({
+    //     type: DataType.DATE,
+    //     allowNull: false
+    // })
+    // date_and_time: string
 
     @Column({
         type: DataType.ENUM,
-        values: ['delivered','not delivered'],
+        values: ['delivered','awaiting_pickup'],
         allowNull: false,
     })
     status: string;
@@ -88,8 +89,21 @@ export class Delivery extends Model <Delivery> {
 
     @Column({
         type: DataType.STRING,
+        allowNull: false
+    })
+    itemQuantity: string
+
+    @Column({
+        type: DataType.STRING,
         allowNull: true
     })
-    deliveryDescription: string
+    itemDescription: string
+
+    @Column ({
+        type: DataType.DATE,
+        allowNull: true,
+        defaultValue: null
+    })
+    deletedAt: Date
 
 }

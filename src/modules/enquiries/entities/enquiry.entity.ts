@@ -3,16 +3,18 @@ import { BelongsTo, Column, DataType, ForeignKey, Model, Table } from "sequelize
 import { Organization } from "src/modules/organization/entities/organization.entity";
 const { v4: uuidv4 } = require('uuid');
 
-@Table
+@Table({
+  paranoid: true,
+})
 export class Enquiry extends Model<Enquiry>{
 
-//   @Column({
-//     type: DataType.INTEGER,
-//     allowNull: false,
-//     autoIncrement: true,
-//     primaryKey: true,
-// })
-// id: number
+  @Column({
+    type: DataType.INTEGER,
+    allowNull: false,
+    autoIncrement: true,
+    primaryKey: true,
+})
+id: number
 
   @Column({
     defaultValue: uuidv4,
@@ -46,7 +48,7 @@ export class Enquiry extends Model<Enquiry>{
         type: DataType.STRING,
         allowNull: false
     })
-    name: string;
+    visitorFullname: string;
 
     @Column({
        type: DataType.STRING,
@@ -73,6 +75,13 @@ export class Enquiry extends Model<Enquiry>{
        allowNull: false
      })
      enquiryDescription: string
+
+     @Column({
+      type : DataType.DATE,
+      allowNull: true,
+      defaultValue: null
+    })
+    deletedAt: Date
 
     
 

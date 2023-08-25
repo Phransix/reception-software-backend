@@ -9,7 +9,7 @@ enum Status_type {
 
 enum Status {
     DELIVERED = 'delivered',
-    NOT_DELIVERED = 'received'
+    NOT_DELIVERED = 'awaiting_pickup'
 }
 
 export class CreateDeliveryDto {
@@ -27,7 +27,7 @@ export class CreateDeliveryDto {
     })
     @IsString()
     @IsNotEmpty()
-    readonly from: string;
+    readonly visitorFullname: string;
 
     @ApiProperty({
         description: 'The receipient the Delivery',
@@ -35,7 +35,7 @@ export class CreateDeliveryDto {
     })
     @IsString()
     @IsNotEmpty()
-    readonly to: string;
+    readonly staff: string;
 
     @ApiProperty({
         description: "The sender/'s phone  number",
@@ -58,27 +58,27 @@ export class CreateDeliveryDto {
     readonly email: string;
 
     
-    @ApiProperty({
-        description: "The date and time of delivery",
-        example: '20-08-2023-12-24-01'
-    })
-    @IsString()
-    @IsNotEmpty()
-    readonly date_and_time: string;
+    // @ApiProperty({
+    //     description: "The date and time of delivery",
+    //     example: '2023-12-24'
+    // })
+    // @IsString()
+    // @IsNotEmpty()
+    // readonly date_and_time: string;
 
     @ApiProperty({
         description: "The status of delivery",
-        example: 'Delivered or Not Delivered'
+        example: 'awaiting_pickup'
     })
     @IsString()
     @IsEnum(Status, {
-        message: 'Choose the type of status: delivered or received'
+        message: 'Choose the type of status: delivered or awaiting_pickup'
     })
     readonly status: string;
 
     @ApiProperty({
         description: "The type of delivery",
-        example: 'Food, Documents,Other'
+        example: 'other'
     })
     @IsString()
     @IsEnum(Status_type, {
@@ -87,9 +87,17 @@ export class CreateDeliveryDto {
     readonly type: string;
 
     @ApiProperty({
+        description: "The quantity of delivery",
+        example: '2'
+    })
+    @IsString()
+    @IsNotEmpty()
+    readonly itemQuantity: string
+
+    @ApiProperty({
         description: "The Description of the delivery",
         example: 'Any important detail of the delivery'
     })
     @IsString()
-    readonly deliveryDescription: string;
+    readonly itemDescription: string;
 }

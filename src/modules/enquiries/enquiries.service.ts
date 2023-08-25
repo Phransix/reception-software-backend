@@ -34,7 +34,13 @@ export class EnquiriesService {
 
   async findAll(){
     try {
-      const enquiries = await Enquiry.findAll()
+      const enquiries = await Enquiry.findAll({
+         
+      attributes:{
+        exclude:['createdAt','updatedAt','deletedAt']
+      },
+
+      })
       return Util?.handleSuccessRespone(enquiries,"Enquiries Data retrieved successfully.")
 
     }catch(error){
@@ -45,9 +51,15 @@ export class EnquiriesService {
 
   async findOne(id: number) {
     try{
-      const enquiry = await Enquiry.findOne({where:{id}});
+      const enquiry = await Enquiry.findOne({
+         
+      attributes:{
+        exclude:['createdAt','updatedAt','deletedAt']
+      },
+      where:{id}});
+
       if (!enquiry) {
-        throw new Error('Enquiry not found.'); 
+        return Util?.handleFailResponse('Enquiry not found') 
       }
   
       return Util?.handleSuccessRespone(enquiry,"Enquiry retrieve successfully.")
@@ -64,7 +76,7 @@ export class EnquiriesService {
     
       const enquiry = await Enquiry.findOne({where:{id}});
       if (!enquiry) {
-        throw new Error('Enquiry not found.'); 
+        return Util?.handleFailResponse('Enquiry not found')
       }
 
       Object.assign(enquiry,updateEnquiryDto)
@@ -84,7 +96,7 @@ export class EnquiriesService {
     try{
       const enquiry = await Enquiry.findOne({where:{id}});
       if (!enquiry) {
-        throw new Error('Enquiry not found.'); 
+        return Util?.handleFailResponse('Enquiry not found')
       }
 
       Object.assign(enquiry)

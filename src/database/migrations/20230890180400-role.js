@@ -20,7 +20,7 @@ module.exports = {
         type: Sequelize.UUID,
         defaultValue: Sequelize.UUIDV4,
         allowNull: false,
-        unique: true,
+        unique: true
       },
 
       name: {
@@ -39,7 +39,12 @@ module.exports = {
         type: Sequelize.DATE,
         allowNull: false,
         defaultValue: Sequelize.literal('CURRENT_TIMESTAMP'),
-      }
+      },
+      deletedAt: {
+        type: Sequelize.DATE,
+      allowNull: true,
+     defaultValue: null
+      }, 
     });
   },
 

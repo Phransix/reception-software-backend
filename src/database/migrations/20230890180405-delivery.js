@@ -26,22 +26,22 @@ module.exports = {
         type: Sequelize.UUID,
         allowNull: false,
         references: {
-          model:{
+          model: {
             tableName: 'Organizations',
           },
-          key:'organizationId'
+          key: 'organizationId'
         },
         onDelete: 'CASCADE'
       },
-      from: {
+      visitorFullname: {
         type: Sequelize.STRING,
         allowNull: false,
-        required:true,
+        required: true,
       },
-      to: {
+      staff: {
         type: Sequelize.STRING,
         allowNull: false,
-        required:true,
+        required: true,
       },
       phoneNumber: {
         type: Sequelize.STRING,
@@ -51,33 +51,36 @@ module.exports = {
       email: {
         type: Sequelize.STRING,
         allowNull: true,
-        unique:true
+        unique: true
         // required:true,
       },
-      date_and_time: {
-        type: Sequelize.DATE,
-        allowNull: false,
-        defaultValue: Sequelize.literal('CURRENT_TIMESTAMP'),
-      },
+      // date_and_time: {
+      //   type: Sequelize.DATE,
+      //   allowNull: false,
+      // },
       status: {
-        type: Sequelize.ENUM('delivered', 'received'),
+        type: Sequelize.ENUM('delivered', 'awaiting_pickup'),
         allowNull: false,
-        defaultValue: 'delivered',
-        required:true,
+        defaultValue: 'awaiting_pickup',
+        required: true,
         validate: {
-          isIn: [['delivered', 'received']]
+          isIn: [['delivered', 'awaiting_pickup']]
         }
       },
       type: {
         type: Sequelize.ENUM('document', 'food', 'other'),
         allowNull: false,
         defaultValue: 'other',
-        required:true,
+        required: true,
         validate: {
           isIn: [['document', 'food', 'other']]
         }
       },
-      deliveryDescription: {
+      itemQuantity: {
+        type: Sequelize.STRING,
+        allowNull: false
+      },
+      itemDescription: {
         type: Sequelize.STRING,
         allowNull: true,
       },
@@ -90,7 +93,12 @@ module.exports = {
         type: Sequelize.DATE,
         allowNull: false,
         defaultValue: Sequelize.literal('CURRENT_TIMESTAMP'),
-      }
+      },
+      deletedAt: {
+        type: Sequelize.DATE,
+        allowNull: true,
+        defaultValue: null
+      },
     })
   },
 

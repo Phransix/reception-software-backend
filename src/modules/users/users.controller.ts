@@ -4,19 +4,32 @@ import { CreateUserDto } from './dto/create-user.dto';
 import { UpdateUserDto } from './dto/update-user.dto';
 import * as Util from '../../utils/index'
 import { User } from './entities/user.entity';
-import { ApiTags } from '@nestjs/swagger';
+import { ApiBearerAuth, ApiOperation, ApiQuery, ApiTags } from '@nestjs/swagger';
 import { ChangePassDTO } from 'src/guard/auth/changePassDTO';
 import { LoginDTO } from 'src/guard/auth/loginDTO';
-import { log } from 'console';
+import { Roles } from 'src/common/decorators/roles.decorator';
+import { Role } from '../role/role.enum';
+import { Public } from 'src/common/decorators/public.decorator';
+import { AtGuard } from 'src/common/guards';
+import { GetCurrentUserId } from 'src/common/decorators/get-current-user-id.decorator';
+import { AuthGuard } from '@nestjs/passport';
+import { VerifyEmailDto } from '../organization/dto/create-organization.dto';
 
 @Controller('users')
 export class UsersController {
+  roles: Role[]
   constructor(private readonly usersService: UsersService) {}
 
 
-    // Register New User
+  // Register New User
   @ApiTags('Users')
+  @UseGuards(AuthGuard('jwt'))
+  @ApiBearerAuth('defaultBearerAuth')
+  @ApiOperation({summary:'Create New User/Receptionist'})
+  @Public()
+  @UseGuards(AtGuard)
   @Post('registerNewUser')
+  // @Roles(Role.Admin)
   async createDelivery(@Body()  createUserDto: CreateUserDto) {
     try {
       let new_user = this.usersService.create(createUserDto);
@@ -26,13 +39,34 @@ export class UsersController {
     }
   }
 
+ 
+  // @ApiTags('Users')
+  // @ApiOperation({summary:'Verify Organization Email '})
+  // @Public()
+  // @Post('verifyEmail')
+  // async verifyEmail(@Body()token:VerifyEmailDto){
+  //   try{
+
+  //     console.log(token)
+      
+  //     const emailVerify = await this.usersService.verifyEmail(token)
+  //     return emailVerify
+
+  //   }catch(error){
+  //   console.log(error)
+  //   return Util?.handleTryCatchError(Util?.getTryCatchMsg(error)) 
+  // }
+  // };
+
   // Login Users
+  
+  
   @ApiTags('Users')
+  @ApiOperation({summary:'Organization/User Login'})
+  @Public()
   @Post('login')
   async login(@Body() loginDto: LoginDTO){
-    // console.log(loginDto);
-    // return
-    const user = await this.usersService.validateUser(loginDto);
+    const user = await this.usersService.login(loginDto);
     if (!user){
       throw new HttpException('Invalid Credentials',HttpStatus.UNAUTHORIZED)
     }else{
@@ -41,9 +75,17 @@ export class UsersController {
     }
   }
 
+
+
   @ApiTags('Users')
+  @UseGuards(AuthGuard('jwt'))
+  @ApiBearerAuth('defaultBearerAuth')
+  @ApiOperation({summary:'Get All Users'})
+  @Public()
+  @UseGuards(AtGuard)
   @Get('getAllUsers')
-  async findAll() {
+  async findAllfindAll(@GetCurrentUserId()userId:string){
+      console.log(userId)
 
     try {
       const allQueries = this.usersService.findAll()
@@ -58,6 +100,11 @@ export class UsersController {
 
 
   @ApiTags('Users')
+  @UseGuards(AuthGuard('jwt'))
+  @ApiBearerAuth('defaultBearerAuth')
+  @ApiOperation({summary:'Get User By Id'})
+  @Public()
+  @UseGuards(AtGuard)
   @Get(':id')
   async findOne(@Param('id') id: number) {
 
@@ -75,6 +122,11 @@ export class UsersController {
 
 
   @ApiTags('Users')
+  @UseGuards(AuthGuard('jwt'))
+  @ApiBearerAuth('defaultBearerAuth')
+  @ApiOperation({summary:'Update User By Id'})
+  @Public()
+  @UseGuards(AtGuard)
   @Patch(':id')
   async update(@Param('id') id: number, @Body() updateUserDto: UpdateUserDto) {
 
@@ -90,7 +142,13 @@ export class UsersController {
 
   };
 
+
   @ApiTags('Users')
+  @UseGuards(AuthGuard('jwt'))
+  @ApiBearerAuth('defaultBearerAuth')
+  @ApiOperation({summary:'Delete User By Id'})
+  @Public()
+  @UseGuards(AtGuard)
   @Delete(':id')
   async remove(@Param('id') id: number) {
 
@@ -115,6 +173,11 @@ export class UsersController {
   }
      
   @ApiTags('Users')
+  @UseGuards(AuthGuard('jwt'))
+  @ApiBearerAuth('defaultBearerAuth')
+  @ApiOperation({summary:'Change Password Of User By Id'})
+  @Public()
+  @UseGuards(AtGuard)
     @Patch(':id/changePassword')
     async changePassword(@Param('id') id: number,@Body() changePassDTO: ChangePassDTO) {
       try {
@@ -129,7 +192,16 @@ export class UsersController {
     }
 
 
-
+    @UseGuards(AuthGuard('jwt'))
+  @ApiBearerAuth('defaultBearerAuth')
+  @ApiOperation({summary:'Restore User Data By Id'})
+  @Public()
+  @UseGuards(AtGuard)
+  @ApiTags('Users')
+  @Post(':id/restore')
+  async restoreUser(@Param('id') id: string){
+    return this.usersService.restoreUser(id)
+  }
 
 
 

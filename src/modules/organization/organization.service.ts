@@ -7,11 +7,18 @@ import * as Util from '../../utils/index'
 import { Sequelize } from 'sequelize-typescript';
 import { User } from 'src/modules/users/entities/user.entity';
 import { EmailService } from 'src/helper/EmailHelper';
-import {  createAccessToken, generateRefreshToken, verifyEmailToken } from '../../utils/index';
+import { createAccessToken, generateRefreshToken, verifyEmailToken } from '../../utils/index';
 import * as bcrypt from 'bcrypt';
 import { LoginDTO } from 'src/guard/auth/loginDTO';
 import { Role } from '../role/entities/role.entity';
-import { AuthService } from 'src/guard/auth/auth.service';
+import { AuthPassService } from 'src/guard/auth/authPass.service';
+import { ResetPasswordService } from 'src/helper/ResetPassHelper';
+import { JwtService } from '@nestjs/jwt';
+// import { ConfigService } from '@nestjs/config';
+
+
+// import { AuthService } from 'src/auth/auth.service';
+import * as argon from 'argon2';
 
 
 
@@ -24,7 +31,10 @@ export class OrganizationService {
     @InjectModel(Role) private role: typeof Role,
     private sequelize : Sequelize,
     private emailService:EmailService,
-    private readonly authService: AuthService
+    private resetPasswordService: ResetPasswordService,
+    private readonly authPassService: AuthPassService,
+    // private jwtService: JwtService,
+    // private config: ConfigService,
   
     ){}
 
@@ -33,11 +43,15 @@ export class OrganizationService {
     let t = await this.sequelize?.transaction();
     try {
 
-      const defaultPassword = 'admin12345';
-       const saltRounds = 10;
+      // const defaultPassword = 'admin123';
 
+      let ran_password = await this.makeid(8)
+      const hash = await argon.hash(ran_password);
+     
+
+    //   const saltRounds = 10;
       // Hash the defualt password
-      const hashedDefaultPassword = await bcrypt.hash(defaultPassword,saltRounds);
+    //  const hashedDefaultPassword = await bcrypt.hash(defaultPassword,saltRounds);
 
       // console.log(createOrganizationDto)
       // return;
@@ -55,18 +69,29 @@ export class OrganizationService {
         fullName: createOrganizationDto?.fullName,
         email: organization?.email,
         phoneNumber: createOrganizationDto?.phoneNumber,
-        password:hashedDefaultPassword
+        password:hash
+        
+      }
+
+      let mail_data = {
+        
+        organizationId: organization?.organizationId,
+        roleId: role?.roleId,
+        fullName: createOrganizationDto?.fullName,
+        email: organization?.email,
+        phoneNumber: createOrganizationDto?.phoneNumber,
+        password:ran_password
         
       }
       const user = await this.user?.create({ ...org_data }, { transaction: t })
-      let send_Token = await this.emailService.sendMailNotification({...org_data})
+      let send_Token = await this.emailService.sendMailNotification({...mail_data})
       console.log(send_Token)
 
       t.commit()
       console.log(user)
       return Util?.handleCreateSuccessRespone("Organization created successfully.")
 
-    } catch (error) {
+    } catch (error ) {
       t.rollback()
       console.log(error)
       throw new Error("Registration failed");
@@ -110,54 +135,63 @@ export class OrganizationService {
   };
     
   // Login
-  async validateUser(loginDto: LoginDTO){
-    const {email,password} = loginDto
+  // async validateUser(loginDto: LoginDTO){
+  //   const {email,password} = loginDto
 
-    const user = await User.findOne({where:{email}})
-    const organization = await this.organizationModel.findOne({where:{email}})
-    if(!user && !organization){
-      throw new BadRequestException('Organization with this email does not exist')
-    }
+  //   const user = await User.findOne({where:{email}})
+  //   const organization = await this.organizationModel.findOne({where:{email}})
+  //   if(!user && !organization){
+  //     throw new BadRequestException('Organization with this email does not exist')
+  //   }
 
-    const passwordMatch = await this.authService.verifypassword(password, user.password)
-    if (!passwordMatch){
-      throw new UnauthorizedException('Invalid Credentials')
-    }
+  //   const passwordMatch = await this.authPassService.verifypassword(password, user.password)
+  //   if (!passwordMatch){
+  //     throw new UnauthorizedException('Invalid Credentials')
+  //   }
  
-    // Check if the oraganiazation is verified
-    if(organization?.isVerified != true)
-    return Util?.handleFailResponse('Organization account not verified')
+  //   // Check if the oraganiazation is verified
+  //   if(organization?.isVerified != true)
+  //   return Util?.handleFailResponse('Organization account not verified')
 
  
-    let accessToken = await createAccessToken(user?.id);
-    let refreshToken = await generateRefreshToken(user?.id);
-    let tokens = {
-      accessToken,
-      refreshToken
-    }
-    // console.log(tokens)
+  //   let accessToken = await createAccessToken(user?.id);
+  //   let refreshToken = await generateRefreshToken(user?.id);
 
-       let org_data ={
-      id: organization.organizationId,
-      organizationName: organization.organizationName,
-      email: organization.email,
-      IsPhoneNumber: organization.phoneNumber
-    }
+  //   let tokens = {accessToken,refreshToken}
 
-    let userDetails = {
-      org_data,tokens
-    }
+  //   // let tokens = await this?.getTokens(organization.organizationId,organization.email,organization.organizationName)
+      
+  //   // console.log(tokens)
 
-        //  Send user data and tokens
-        return Util?.handleSuccessRespone( userDetails,'Login successfully.')
-  }
+  //      let org_data ={
+  //     id: organization.organizationId,
+  //     organizationName: organization.organizationName,
+  //     email: organization.email,
+  //     IsPhoneNumber: organization.phoneNumber
+  //   }
+
+  //   let userDetails = {
+  //     org_data,tokens
+  //   }
+
+  //       //  Send user data and tokens
+  //       return Util?.handleSuccessRespone( userDetails,'Login successfully.')
+  // }
   
 
   //  Get All
+  
+  
   async findAll() {
 
     try {
-      const orgs = await Organization.findAll()
+      const orgs = await Organization.findAll({
+    
+        attributes:{
+          exclude:['password','createdAt','updatedAt','deletedAt']
+        }
+      })
+
       return Util?.handleSuccessRespone(orgs, "Organizations Data retrieved successfully.")
   }catch(error){
     console.log(error)
@@ -168,10 +202,16 @@ export class OrganizationService {
 
 
   // Get By Id
-  async findOne(id: number) {
+  async findOne(id: string) {
 
     try {
-      const org = await Organization.findOne({ where: { id } });
+      const org = await Organization.findOne(
+        {
+          attributes:{
+            exclude:['password','createdAt','updatedAt','deletedAt']
+          },
+          
+          where: { id } });
       if (!org) {
         throw new Error('Organization not found.');
       }
@@ -180,13 +220,14 @@ export class OrganizationService {
 
     } catch (error) {
       console.log(error)
-      return Util?.handleTryCatchError(Util?.getTryCatchMsg(error));
+      return Util?.handleTryCatchError("Organization not found.");
+      // return Util?.checkIfRecordNotFound
     }
 
   }
 
   // Update By Id
-  async update(id: number, updateOrganizationDto: UpdateOrganizationDto) {
+  async update(id: string, updateOrganizationDto: UpdateOrganizationDto) {
 
     try {
 
@@ -208,7 +249,7 @@ export class OrganizationService {
   }
 
   // Delete By Id
-  async remove(id: number) {
+  async remove(id: string) {
 
     try {
       const org = await Organization.findOne({ where: { id } });
@@ -223,11 +264,28 @@ export class OrganizationService {
 
     } catch (error) {
       console.log(error)
-      // return Util?.handleTryCatchError(Util?.getTryCatchMsg(error));
       return Util?.checkIfRecordNotFound("Organization not found.")
     }
 
   }
+
+
+
+  // Restore Deleted Data
+  async restoreUser(id:string){
+
+    try {
+
+      const organization = await this.organizationModel.restore({where:{id}})
+      console.log(organization)
+      return Util?.handleSuccessRespone(Util?.SuccessRespone, "Organization restored successfully.")
+      
+    } catch (error) {
+      return Util.handleForbiddenExceptionResponses('Data Not Restored');
+    }
+ 
+  }
+
 
   async findOneByorganizationName(organizationName: string): Promise<Organization> {
     return await this.organizationModel.findOne<Organization>({ where: { organizationName } })
@@ -250,12 +308,17 @@ export class OrganizationService {
     try {
       let user = await this.user.findOne({ where: { ...email } });
 
+
       if (!user) return Util.handleForbiddenExceptionResponses('Invaild Email');
-      // await this.helperService.sendResetVerificationEmail(
-      //   user?.fname,
-      //   user?.user_id,
+      // await this.resetPasswordService.sendResstPasswordNotification(
+      //   user?.fullName,
+      //   user?.userId,
       //   user?.email,
       // );
+
+      let send_Token = await this.resetPasswordService.sendResstPasswordNotification({...email})
+      console.log(send_Token)
+
       return Util.handleCreateSuccessRespone(
         `Reset password link sent to ${user?.email}`,
       );
@@ -271,6 +334,9 @@ export class OrganizationService {
 
     try {
 
+
+      
+
       const defaultPassword = data?.password;
       const saltRounds = 10;
 
@@ -280,7 +346,7 @@ export class OrganizationService {
       let decode = Util.verifyToken(token);
       const user = await this?.user.findOne({
         where: {
-          userId: decode.user_id,
+          email: decode.email,
         },
       });
 
@@ -290,7 +356,7 @@ export class OrganizationService {
         password: hashedDefaultPassword,
       };
       await this?.user.update(UpdateData, {
-        where: { id: user?.id },
+        where: { email: user?.email },
         transaction: t,
       });
       t.commit();
@@ -336,6 +402,21 @@ export class OrganizationService {
   //     return Util?.checkIfRecordNotFound(error)
   //   }
   // }
+
+
+  async makeid(length) {
+    let result = '';
+    const characters = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789';
+    const charactersLength = characters.length;
+    let counter = 0;
+    while (counter < length) {
+      result += characters.charAt(Math.floor(Math.random() * charactersLength));
+      counter += 1;
+    }
+    return result;
+
+    
+  }
 
 
 }

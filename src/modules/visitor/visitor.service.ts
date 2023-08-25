@@ -12,7 +12,7 @@ export class VisitorService {
 
   constructor(
     private sequelize: Sequelize,
-    @InjectModel(Visitor) private readonly VisitorModel: typeof Visitor) { }
+    @InjectModel(Visitor) private readonly VisitorModel: typeof Visitor) {}
 
   async create(createVisitorDto: CreateVisitorDto) {
     try {
@@ -20,24 +20,28 @@ export class VisitorService {
       return Util?.handleCreateSuccessRespone("Visitor Created Successfully");
     } catch (error) {
       console.error(error)
-      return Util?.handleTryCatchError(Util?.getTryCatchMsg(error))
+      return Util?.handleFailResponse('Visitor creation failed')
     }
   }
 
 
   async findAll() {
     try {
-      const visitors = await Visitor.findAll()
+      const visitors = await Visitor.findAll({
+        attributes: {exclude:['createdAt','updatedAt']}
+      })
       return Util?.handleSuccessRespone(visitors,"Visitors Data retrieved successfully")
     } catch (error) {
       console.log(error)
-      return Util?.handleTryCatchError(Util?.getTryCatchMsg(error))
+      return Util?.handleFailResponse('Visitors retrieval failed')
     }
   };
 
   async findOne(id: number) {
     try {
-      const visitor = await Visitor.findOne({where:{id}});
+      const visitor = await Visitor.findOne({where:{id},
+        attributes: {exclude:['createdAt','updatedAt']}
+      });
       if (!visitor) {
         throw new NotAcceptableException('The visitor does not exist')
       }
@@ -45,7 +49,7 @@ export class VisitorService {
       // return visitor
     } catch (error) {
       console.log(error);
-      return Util?.handleTryCatchError(Util?.getTryCatchMsg(error))
+      return Util?.handleFailResponse('Visitor retrieval failed')
     }
   }
 
@@ -61,7 +65,7 @@ export class VisitorService {
       return Util?.handleSuccessRespone(Util?.SuccessRespone,"Visitor Data updated Successfully");
     } catch (error) {
       console.log(error)
-      return Util?.handleTryCatchError(Util?.getTryCatchMsg(error));
+      return Util?.handleFailResponse('Visitor update failed')
     }
   };
 
@@ -77,7 +81,7 @@ export class VisitorService {
       return Util?.handleSuccessRespone(Util?.SuccessRespone,"Visitor Deleted Successfully")
     } catch (error) {
       console.log(error)
-      return Util?.handleTryCatchError(Util?.getTryCatchMsg(error));
+      return Util?.handleFailResponse('Visitor removal failed')
     }
   }
 }

@@ -6,18 +6,39 @@ import { Organization } from './entities/organization.entity';
 import { BullModule } from '@nestjs/bull';
 import { EmailService } from 'src/helper/EmailHelper';
 import { EmailProcessor } from 'src/Processor/email.processor';
+import { ResetPasswordService } from 'src/helper/ResetPassHelper';
+import { ResetPasswordProcessor } from 'src/Processor/resetPasswordProcessor';
 import { User } from '../users/entities/user.entity';
 import { Role } from '../role/entities/role.entity';
-import { AuthService } from 'src/guard/auth/auth.service';
 import { PasswordService } from 'src/guard/passwordhash.service';
+import { UsersService } from '../users/users.service';
+import { AuthPassService } from 'src/guard/auth/authPass.service';
+import { JwtModule, JwtService } from '@nestjs/jwt';
+import { AtStrategy, RtStrategy } from 'src/stratagies';
 
 
 @Module({
   imports: [
+    JwtModule.register({}),
     SequelizeModule.forFeature([Organization,User,Role,]),
-    BullModule.registerQueue({name:'emailVerification'})
+    BullModule.registerQueue({name:'emailVerification'}),
+    BullModule.registerQueue({name:'resetPassword'})
+    
   ],
   controllers: [OrganizationController],
-  providers: [OrganizationService,EmailService,EmailProcessor,PasswordService,AuthService]
+  providers: [OrganizationService,
+    EmailService,
+    EmailProcessor,
+    PasswordService,
+    AuthPassService,
+    ResetPasswordProcessor,
+    ResetPasswordService,
+    UsersService,
+    JwtService,
+    AtStrategy,
+    RtStrategy
+  ]
+
+
 })
 export class OrganizationModule {}

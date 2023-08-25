@@ -30,6 +30,8 @@ export const handleCustonCreateResponse = (data, msg) => {
 
 
 
+
+
   export const handleErrorRespone = (msg) => {
     return {
        status_code: HttpStatus.BAD_REQUEST,
@@ -286,6 +288,9 @@ export const handleCustonCreateResponse = (data, msg) => {
     return { limit, offset };
   };
   
+  export const Checknegative = (number) => {
+    return !Object.is(Math.abs(number), + number)
+  }
 
 
 export const getPagingData = (data, page, limit,length) => {
@@ -422,7 +427,8 @@ console.log(data?.rows?.length)
 
 
   export const verifyUserToken = (token) =>{
-   const decode = jwt.verify(token,process.env.JWT_PUBLIC_KEY);
+  //  const decode = jwt.verify(token,process.env.JWT_PUBLIC_KEY)
+  const decode = jwt.verify(token,process.env.JWT_SECRET)
    return decode;
  
  };
@@ -457,7 +463,7 @@ export const  createAccessToken = ({id})  => {
 
 export const createEmailToken = (data) => {
   let {email,organizationId } = data
-  return jwt.sign({email,organizationId}, process.env.JWT_EMAIL_TOKEN, {expiresIn: '2h'});
+  return jwt.sign({email,organizationId}, process.env.JWT_EMAIL_TOKEN, {expiresIn: '1d'});
 }
 
 export const verifyEmailToken = (token) => {

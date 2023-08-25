@@ -33,7 +33,7 @@ module.exports = {
         },
         onDelete: 'CASCADE'
       },
-      visitor: {
+      visitorFullname: {
         type: Sequelize.STRING,
         allowNull: false,
         required:true,
@@ -59,12 +59,12 @@ module.exports = {
         required:true,
       },
       visitStatus: {
-        type: Sequelize.ENUM('active', 'inactive'),
+        type: Sequelize.ENUM('signedIn', 'signedOut'),
         allowNull: false,
         required:true,
-        defaultValue: 'inactive',
+        defaultValue: 'signedOut',
         validate: {
-          isIn: [['active', 'inactive']] // Validates that the value is either 'active' or 'inactive'
+          isIn: [['signedIn', 'signedOut']] // Validates that the value is either 'active' or 'inactive'
         }
       },
       date: {
@@ -80,7 +80,12 @@ module.exports = {
         type: Sequelize.DATE,
         allowNull: false,
         defaultValue: Sequelize.literal('CURRENT_TIMESTAMP'),
-      }
+      },
+      deletedAt: {
+        type: Sequelize.DATE,
+      allowNull: true,
+     defaultValue: null
+      }, 
     })
   },
 
