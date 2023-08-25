@@ -1,17 +1,20 @@
-import { Controller, Get, Post, Body, Patch, Param, Delete, HttpException, HttpStatus } from '@nestjs/common';
+import { Controller, Get, Post, Body, Patch, Param, Delete, HttpException, HttpStatus, UseGuards } from '@nestjs/common';
 import { GuestService } from './guest.service';
 import { CreateGuestDto } from './dto/create-guest.dto';
 import { UpdateGuestDto } from './dto/update-guest.dto';
-import { ApiOperation, ApiTags } from '@nestjs/swagger';
+import { ApiBearerAuth, ApiOperation, ApiTags } from '@nestjs/swagger';
 import * as Util from '../../utils/index'
 import { guestLoginDTO } from 'src/guard/auth/guestLoginDTO';
 import { Public } from 'src/common/decorators/public.decorator';
+import { AuthGuard } from '@nestjs/passport';
+import { AtGuard } from 'src/common/guards';
 
 @Controller('guest')
 export class GuestController {
   constructor(private readonly guestService: GuestService) {}
 
   @ApiTags('Guest')
+  @Public()
   @ApiOperation({summary:'Create New Guest'})
   @Post('createGuest')
   async create(@Body() createGuestDto: CreateGuestDto) {
@@ -24,6 +27,11 @@ export class GuestController {
     }
   }
 
+
+  @UseGuards(AuthGuard('jwt'))
+  @ApiBearerAuth('defaultBearerAuth')
+  @Public()
+  @UseGuards(AtGuard)
   @ApiTags('Guest')
   @ApiOperation({summary:'Get All Guest'})
   @Get('getAllGuest')
@@ -31,6 +39,10 @@ export class GuestController {
     return this.guestService.findAll();
   }
 
+  @UseGuards(AuthGuard('jwt'))
+  @ApiBearerAuth('defaultBearerAuth')
+  @Public()
+  @UseGuards(AtGuard)
   @ApiTags('Guest')
   @ApiOperation({summary:'Get Guest By Id'})
   @Get(':id')
@@ -45,6 +57,10 @@ export class GuestController {
     }
   }
 
+  @UseGuards(AuthGuard('jwt'))
+  @ApiBearerAuth('defaultBearerAuth')
+  @Public()
+  @UseGuards(AtGuard)
   @ApiTags('Guest')
   @ApiOperation({summary:'Update Guest By Id'})
   @Patch(':id')
@@ -58,6 +74,10 @@ export class GuestController {
     }
   }
 
+  @UseGuards(AuthGuard('jwt'))
+  @ApiBearerAuth('defaultBearerAuth')
+  @Public()
+  @UseGuards(AtGuard)
   @ApiTags('Guest')
   @ApiOperation({summary:'Remove Guest By Id'})
   @Delete(':id')
