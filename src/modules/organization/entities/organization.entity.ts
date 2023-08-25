@@ -13,12 +13,13 @@ const { v4: uuidv4 } = require('uuid');
   paranoid: true,
 })
 export class Organization extends Model<Organization>  {
+  
 
   static validateUser(loginDto: LoginDTO) {
     throw new Error('Method not implemented.');
   }
 
-  User:any
+  
 
     static createAccessToken(user: Organization) {
       throw new Error('Method not implemented.');

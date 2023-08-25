@@ -5,19 +5,16 @@ import * as Util from '../../utils/index'
 import { User } from './entities/user.entity';
 import { InjectModel } from '@nestjs/sequelize';
 import * as bcrypt from 'bcrypt';
-// import { UsersModule } from './users.module';
 import { Role } from '../role/entities/role.entity'
 import { Organization } from '../organization/entities/organization.entity';
 import { ChangePassDTO } from 'src/guard/auth/changePassDTO';
-import { createAccessToken, generateRefreshToken, verifyEmailToken } from '../../utils/index';
+// import { createAccessToken, generateRefreshToken, verifyEmailToken } from '../../utils/index';
 import { LoginDTO } from 'src/guard/auth/loginDTO';
 import * as Abstract from '../../utils/abstract'
 import { JwtService } from '@nestjs/jwt';
 import { ConfigService } from '@nestjs/config';
-import { AuthPassService } from 'src/guard/auth/authPass.service';
-import { VerifyEmailDto } from '../organization/dto/create-organization.dto';
 import * as argon from 'argon2';
-import { log } from 'console';
+
 
 
 @Injectable()
@@ -28,7 +25,7 @@ export class UsersService {
   @InjectModel(Organization) private orgModel: typeof Organization,
   private jwtService: JwtService,
   private config: ConfigService,
-  private readonly authPassService: AuthPassService,
+  
   
   ){}
 
@@ -83,16 +80,17 @@ export class UsersService {
 
 
 // Login users
+
+
 async login(loginDto: LoginDTO){
   const {email,password} = loginDto
 
   
 
   const user = await User.findOne({where:{email}})
-  const org = await User.findOne({where:{email:user?.email}})
+  const org = await Organization.findOne({where:{email}})
   if(!user){
-    // throw new Error ('User with this email does not exist')
-    return Util.handleErrorRespone ('User with this email does not exist')
+    return Util.handleForbiddenExceptionResponses('Invaid email or password');
   }
 
 
@@ -103,25 +101,11 @@ async login(loginDto: LoginDTO){
   if (!passwordMatches)
     return Util.handleForbiddenExceptionResponses('Invaid email or password');
 
-  // const IsPasswordSame = await bcrypt.compare(password,user.password)
-  // console.log(password)
-  // if(!IsPasswordSame){
-  //   return Util.handleErrorRespone('Invalid Credentials')
-  // }
- 
-  // console.log(user?.isVerified);
-
 
       // Check if the oraganiazation is verified
-      // if(org?.isVerified !== true)
-      // return Util?.handleFailResponse('oraganiazation account not verified')
-  
-   
-  
-
-    // // Check if the user is verified
-    // if(user?.isVerified !== true)
-    // return Util?.handleFailResponse('User account not verified')
+     if (org?.isVerified != true)
+     return Util?.handleFailResponse('Oraganiazation account not verified')
+     console.log(org?.isVerified);
 
  
 
