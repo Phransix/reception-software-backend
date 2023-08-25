@@ -1,10 +1,13 @@
-import { Controller, Get, Post, Body, Patch, Param, Delete } from '@nestjs/common';
+import { Controller, Get, Post, Body, Patch, Param, Delete, UseGuards } from '@nestjs/common';
 import { EnquiriesService } from './enquiries.service';
 import { CreateEnquiryDto } from './dto/create-enquiry.dto';
 import { UpdateEnquiryDto } from './dto/update-enquiry.dto';
 import * as Util from '../../utils/index'
 import { Enquiry } from './entities/enquiry.entity';
-import { ApiTags } from '@nestjs/swagger';
+import { ApiBearerAuth, ApiOperation, ApiTags } from '@nestjs/swagger';
+import { AuthGuard } from '@nestjs/passport';
+import { Public } from 'src/common/decorators/public.decorator';
+import { AtGuard } from 'src/common/guards';
 
 
 @ApiTags('Enquiries')
@@ -12,7 +15,11 @@ import { ApiTags } from '@nestjs/swagger';
 export class EnquiriesController {
   constructor(private readonly enquiriesService: EnquiriesService) {}
 
-  @ApiTags('Enquiries')
+  @UseGuards(AuthGuard('jwt'))
+  @ApiBearerAuth('defaultBearerAuth')
+  @ApiOperation({summary:'Create New Enquiry'})
+  @Public()
+  @UseGuards(AtGuard)
   @Post('creatEnquiry')
   async create(@Body() createEnquiryDto: CreateEnquiryDto) {
     try {
@@ -25,7 +32,11 @@ export class EnquiriesController {
     }
   }
 
-  @ApiTags('Enquiries')
+  @UseGuards(AuthGuard('jwt'))
+  @ApiBearerAuth('defaultBearerAuth')
+  @ApiOperation({summary:'Get All Enquiries'})
+  @Public()
+  @UseGuards(AtGuard)
   @Get('getAllEnquiries')
   async findAll() {
     try {
@@ -38,7 +49,11 @@ export class EnquiriesController {
     }
   }
 
-  @ApiTags('Enquiries')
+  @UseGuards(AuthGuard('jwt'))
+  @ApiBearerAuth('defaultBearerAuth')
+  @ApiOperation({summary:'Get Enquiry By Id'})
+  @Public()
+  @UseGuards(AtGuard)
   @Get(':id')
   async findOne(@Param('id') id: number){
     try {
@@ -53,7 +68,11 @@ export class EnquiriesController {
   };
 
 
-  @ApiTags('Enquiries')
+  @UseGuards(AuthGuard('jwt'))
+  @ApiBearerAuth('defaultBearerAuth')
+  @ApiOperation({summary:'Update Enquiry By Id'})
+  @Public()
+  @UseGuards(AtGuard)
   @Patch(':id')
   async update(@Param('id') id: number, @Body() updateEnquiryDto: UpdateEnquiryDto) {
     try {
@@ -66,6 +85,11 @@ export class EnquiriesController {
     }
   }
 
+  @UseGuards(AuthGuard('jwt'))
+  @ApiBearerAuth('defaultBearerAuth')
+  @ApiOperation({summary:'Delete Enquiry By Id'})
+  @Public()
+  @UseGuards(AtGuard)
   @ApiTags('Enquiries')
   @Delete(':id')
   async remove(@Param('id') id: number) {
@@ -73,7 +97,8 @@ export class EnquiriesController {
 
       const enquiry = await Enquiry.findOne({where:{id}});
       if(!enquiry) {
-        throw new Error('Enquiry not Found')
+        // throw new Error('Enquiry not Found')
+        return Util?.handleFailResponse('Enquiry not found')
       }
       
       let enquiryDelete = await this.enquiriesService.remove(id)

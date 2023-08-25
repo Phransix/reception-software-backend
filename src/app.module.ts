@@ -28,6 +28,8 @@ import { GuestModule } from './modules/guest/guest.module';
 import { AtGuard } from './common/guards';
 import { DepartmentModule } from './modules/department/department.module';
 import { StaffModule } from './modules/staff/staff.module';
+import { AuthPassService } from './guard/auth/authPass.service';
+import { PasswordService } from './guard/passwordhash.service';
 
 
 
@@ -122,6 +124,8 @@ import { StaffModule } from './modules/staff/staff.module';
     
    
     UsersService,
+    AuthPassService,
+    PasswordService,
 
     AppService,
 

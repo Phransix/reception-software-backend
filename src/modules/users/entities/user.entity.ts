@@ -89,12 +89,12 @@ export class User extends Model<User> {
      })
      profilePhoto: string;
 
-     @Column({
-      type: DataType.BOOLEAN,
-      allowNull: true,
-      defaultValue: false
-    })
-    isVerified: boolean;
+    //  @Column({
+    //   type: DataType.BOOLEAN,
+    //   allowNull: true,
+    //   defaultValue: false
+    // })
+    // isVerified: boolean;
 
      @Column({
       type: DataType.STRING,
@@ -110,12 +110,12 @@ export class User extends Model<User> {
     deletedAt: Date
 
    
-    @BeforeCreate
-    static async hashPassword(instance: User) {
-      const saltRounds = 10;
-      const hashedPassword = await bcrypt.hash(instance.password, saltRounds);
-      instance.password = hashedPassword;
-    }
+    // @BeforeCreate
+    // static async hashPassword(instance: User) {
+    //   const saltRounds = 10;
+    //   const hashedPassword = await bcrypt.hash(instance.password, saltRounds);
+    //   instance.password = hashedPassword;
+    // }
       
 
 

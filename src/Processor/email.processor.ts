@@ -27,7 +27,8 @@ export class EmailProcessor{
                     email : details?.email,
                     org_name: details?.org_name,
                     link: details?.link,
-                    year: details?.year
+                    year: details?.year,
+                    password:details?.password
                 }
             }).then((r) => {
                 console.log(r, 'email is sent');

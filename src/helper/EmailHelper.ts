@@ -3,6 +3,7 @@ import { InjectQueue } from '@nestjs/bull';
 import { Queue } from 'bull';
 import *as Util from 'src/utils/index';
 import { props } from 'bluebird';
+import { log } from 'console';
 
 
 export class EmailService {
@@ -12,7 +13,9 @@ export class EmailService {
     ) { }
 
     async sendMailNotification(props) {
-        let {org_id,email,org_name} =props
+        let {org_id,email,org_name,password} =props
+      //  console.log(password);
+        
         try {
             let token = Util.createEmailToken({ email, org_id });
             let details = {
@@ -20,8 +23,10 @@ export class EmailService {
                 org_name,
                 link: process.env.FRONT_END_URL + '/'+ token,
                 year: new Date().getFullYear(),
+                password:password
 
             }
+
             return await this.emailQueue.add(
                 'verify_mail',
                 {
