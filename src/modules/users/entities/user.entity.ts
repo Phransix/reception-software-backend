@@ -109,6 +109,8 @@ export class User extends Model<User> {
     })
     deletedAt: Date
 
+
+    
    
     // @BeforeCreate
     // static async hashPassword(instance: User) {
@@ -117,7 +119,8 @@ export class User extends Model<User> {
     //   instance.password = hashedPassword;
     // }
       
+   
 
-
+ 
 
 }

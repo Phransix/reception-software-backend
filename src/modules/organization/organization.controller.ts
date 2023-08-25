@@ -10,14 +10,10 @@ import * as Util from '../../utils/index'
 import { LoginDTO } from 'src/guard/auth/loginDTO';
 import { User } from '../users/entities/user.entity';
 import { UsersService } from '../users/users.service';
-<<<<<<< HEAD
 import { log } from 'console';
-=======
 import { Public } from 'src/common/decorators/public.decorator';
 import { AuthGuard } from '@nestjs/passport';
 import { AtGuard } from 'src/common/guards';
-// import { LoginDTO } from 'src/guard/auth/loginDTO';
->>>>>>> 1e7973acd6332942c95ebe00a33a4ab5f6280ff7
 
 
  @ApiTags('Organization')
@@ -65,38 +61,12 @@ export class OrganizationController {
   }
   };
 
-<<<<<<< HEAD
-  @Post('login')
-  async login(@Body() loginDto: LoginDTO){
- 
-    const user = await this.organizationService.validateUser(loginDto);
-    if (!user){
-      throw new HttpException('Invalid Credentials',HttpStatus.UNAUTHORIZED)
-    }else{
-      // throw new HttpException('Login Successfully',HttpStatus.ACCEPTED)
-      return user
-    }
-  }
-=======
-  // @Public()
-  // @Post('login')
-  // async login(@Body() loginDto: LoginDTO){
-  //   const user = await this.organizationService.validateUser(loginDto);
-  //   if (!user){
-  //     throw new HttpException('Invalid Credentials',HttpStatus.UNAUTHORIZED)
-  //   }else{
-  //     // throw new HttpException('Login Successfully',HttpStatus.ACCEPTED)
-  //     return user
-  //   }
-  // }
->>>>>>> 1e7973acd6332942c95ebe00a33a4ab5f6280ff7
 
-  @UseGuards(AuthGuard('jwt'))
-  @ApiBearerAuth('defaultBearerAuth')
+
+ 
   @ApiOperation({summary:'Get All Organization'})
   @Public()
-  @UseGuards(AtGuard)
-  @Get('getAllOrganizations')
+
  async findAll() {
 
   try {

@@ -29,13 +29,34 @@ export class UsersService {
   
   ){}
 
+  
 
 
 
 //  Register New User
   async create(createUserDto: CreateUserDto)  {
     try {
-      await Abstract?.createData(User, createUserDto);
+
+      const hash = await argon.hash(createUserDto.password)
+      console.log(hash)
+
+      
+
+      const user = await this.userModel?.create({...createUserDto})
+
+      let user_data ={
+        roleId: user?.roleId,
+        organizationId: user?.organizationId,
+        fullName: user?.fullName,
+        email: user?.email,
+        phoneNumber: user?.phoneNumber,
+        password: hash
+      }
+
+      const users = await this.userModel?.create({...user_data})
+      console.log(users)
+
+      // await Abstract?.createData(User, createUserDto);
       return Util?.handleCreateSuccessRespone( "User Created Successfully");
     } catch (error) {
       console.error(error)
@@ -292,9 +313,8 @@ async login(loginDto: LoginDTO){
     }
 
       // Verify the old password
-      const isPasswordValid = await bcrypt.compare(oldPassword, user.password);
-      if (!isPasswordValid) {
-        // throw new Error('Invalid old password');
+      const match = await argon.verify(user.password, oldPassword)
+      if(!match){
         return Util?.handleFailResponse("Incorrect old password")
       }
 
@@ -305,7 +325,7 @@ async login(loginDto: LoginDTO){
 
      
        // Hash the new password and update the user's password
-    const hashedNewPassword = await bcrypt.hash(newPassword, 10);
+    const hashedNewPassword = await argon.hash(newPassword);
     user.password = hashedNewPassword;
   
     // await this.userModel.save(user);
@@ -341,6 +361,19 @@ async login(loginDto: LoginDTO){
       access_token: at,
       refresh_token: rt,
     };
+  }
+
+  async makeid(length) {
+    let result = '';
+    const characters = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789';
+    const charactersLength = characters.length;
+    let counter = 0;
+    while (counter < length) {
+      result += characters.charAt(Math.floor(Math.random() * charactersLength));
+      counter += 1;
+    }
+    return result;
+
   }
 
 }

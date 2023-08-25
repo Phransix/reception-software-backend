@@ -1,41 +1,34 @@
 import { MailerService } from "@nestjs-modules/mailer";
 import { Process, Processor } from "@nestjs/bull";
-import { Logger } from "@nestjs/common";
 import { Job } from "bull";
-import { log } from "console";
 
 
+import { Logger } from '@nestjs/common';
 
 
-
-
-
-@Processor('resetPassword')
-export class ResetPasswordProcessor{
-    private readonly logger = new Logger(ResetPasswordProcessor.name);
+@Processor('defaultPassword')
+export class defaultPaswordProcessor{
+    private readonly logger = new Logger(defaultPaswordProcessor.name);
     constructor (private mailService: MailerService){}
+    
 
-
-    @Process('reset_password')
-    async handleTranscode(job: Job){
-        this.logger.debug('Start trancoding...');
+    @Process('default_password')
+    async handleTranscode(job: Job) {
+        this.logger.debug('Start transcoding...');
         let details = job.data?.details;
-
+        // console.log(details?.email)
         try {
-
-            console.log(details);
-            
-
             await this.mailService.sendMail({
                 from: process.env.MAIL_FROM_ADDRESS,
                 to: details?.email,
-                subject: 'Reset Password Mail',
-                template: 'ResetPassword',
+                subject: 'Default Password',
+                template: 'defaultPassword',
                 context: {
                     email : details?.email,
                     org_name: details?.org_name,
                     link: details?.link,
-                    year: details?.year
+                    year: details?.year,
+                    password:details?.password
                 }
             }).then((r) => {
                 console.log(r, 'email is sent');
@@ -44,14 +37,14 @@ export class ResetPasswordProcessor{
                 console.log(e, 'error sending email');
                 this.logger.debug('Transcoding Failed');
             })
-            
-        } catch (error){
-            console.log(error)  
+           
+        } catch (error) {
+            console.log(error);
         }
 
     }
-
-
-
-
 }
+
+
+
+

@@ -173,8 +173,8 @@ export class UsersController {
   }
      
   @ApiTags('Users')
-  @UseGuards(AuthGuard('jwt'))
-  @ApiBearerAuth('defaultBearerAuth')
+  // @UseGuards(AuthGuard('jwt'))
+  // @ApiBearerAuth('defaultBearerAuth')
   @ApiOperation({summary:'Change Password Of User By Id'})
   @Public()
   @UseGuards(AtGuard)
