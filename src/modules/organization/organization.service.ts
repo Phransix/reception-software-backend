@@ -7,12 +7,16 @@ import * as Util from '../../utils/index'
 import { Sequelize } from 'sequelize-typescript';
 import { User } from 'src/modules/users/entities/user.entity';
 import { EmailService } from 'src/helper/EmailHelper';
-import {  verifyEmailToken } from '../../utils/index';
+import { createAccessToken, generateRefreshToken, verifyEmailToken } from '../../utils/index';
 import * as bcrypt from 'bcrypt';
 import { LoginDTO } from 'src/guard/auth/loginDTO';
 import { Role } from '../role/entities/role.entity';
 import { AuthPassService } from 'src/guard/auth/authPass.service';
 import { ResetPasswordService } from 'src/helper/ResetPassHelper';
+import { JwtService } from '@nestjs/jwt';
+// import { ConfigService } from '@nestjs/config';
+
+
 // import { AuthService } from 'src/auth/auth.service';
 import * as argon from 'argon2';
 

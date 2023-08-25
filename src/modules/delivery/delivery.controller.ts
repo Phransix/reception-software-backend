@@ -1,18 +1,26 @@
-import { Controller, Get, Post, Body, Patch, Param, Delete, Res, Query, Req, HttpException, HttpStatus } from '@nestjs/common';
+import { Controller, Get, Post, Body, Patch, Param, Delete, Res, Query, Req, HttpException, HttpStatus, UseGuards } from '@nestjs/common';
 import { DeliveryService } from './delivery.service';
 import { CreateDeliveryDto } from './dto/create-delivery.dto';
 import { UpdateDeliveryDto } from './dto/update-delivery.dto';
 import * as Util from '../../utils/index'
-import { ApiTags } from '@nestjs/swagger';
+import { ApiBearerAuth, ApiOperation, ApiTags } from '@nestjs/swagger';
 import { Delivery } from './entities/delivery.entity';
 import { deliveryConfirmDTO } from 'src/guard/auth/deliveryConfirmDTO';
+import { Public } from 'src/common/decorators/public.decorator';
+import { AtGuard } from 'src/common/guards';
+import { AuthGuard } from '@nestjs/passport';
 
 @Controller('delivery')
 export class DeliveryController {
   userService: any;
   constructor(private readonly deliveryService: DeliveryService) {}
 
+  @UseGuards(AuthGuard('jwt'))
+  @ApiBearerAuth('defaultBearerAuth')
+  @Public()
+  @UseGuards(AtGuard)
   @ApiTags('Delivery')
+  @ApiOperation({summary:'Create New Delivery'})
   @Post('createDelivery')
   async createDelivery(@Body() createDeliveryDto: CreateDeliveryDto) {
     try {
@@ -24,7 +32,12 @@ export class DeliveryController {
     }
   }
 
+  @UseGuards(AuthGuard('jwt'))
+  @ApiBearerAuth('defaultBearerAuth')
+  @Public()
+  @UseGuards(AtGuard)
   @ApiTags('Delivery')
+  @ApiOperation({summary:'Get All Deliveries'})
   @Get('getAllDeliveries')
   async findAll() {
     try {
@@ -71,7 +84,12 @@ export class DeliveryController {
     
   // }
 
+  @UseGuards(AuthGuard('jwt'))
+  @ApiBearerAuth('defaultBearerAuth')
+  @Public()
+  @UseGuards(AtGuard)
   @ApiTags('Delivery')
+  @ApiOperation({summary:'Get All Delivery By Id'})
   @Get(':id')
   async findOne(@Param('id') id: number) {
     try {
@@ -84,7 +102,12 @@ export class DeliveryController {
     }
   }
 
+  @UseGuards(AuthGuard('jwt'))
+  @ApiBearerAuth('defaultBearerAuth')
+  @Public()
+  @UseGuards(AtGuard)
   @ApiTags('Delivery')
+  @ApiOperation({summary:'Update Delivery By Id'})
   @Patch(':id')
   update(@Param('id') id: number, @Body() updateDeliveryDto: UpdateDeliveryDto) {
     try {
@@ -96,7 +119,12 @@ export class DeliveryController {
     }
   }
 
+  @UseGuards(AuthGuard('jwt'))
+  @ApiBearerAuth('defaultBearerAuth')
+  @Public()
+  @UseGuards(AtGuard)
   @ApiTags('Delivery')
+  @ApiOperation({summary:'Remove Delivery By Id'})
   @Delete(':id')
   async remove(@Param('id') id: number) {
 
@@ -121,7 +149,12 @@ export class DeliveryController {
   }
 
   // Delivery Confirmation
+  @UseGuards(AuthGuard('jwt'))
+  @ApiBearerAuth('defaultBearerAuth')
+  @Public()
+  @UseGuards(AtGuard)
   @ApiTags('Delivery')
+  @ApiOperation({summary:'Confirm Delivery By Receptionist'})
   @Post('deliveryConfirmation')
   async staffConfirm (@Body() deliveryConfirmDTO: deliveryConfirmDTO){
     const deliveryTo = this.deliveryService.deliveryConfirm(deliveryConfirmDTO)
