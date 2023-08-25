@@ -22,7 +22,7 @@ export class CreateStaffDto {
     readonly departmentId: string;
  
     @ApiProperty({
-        description: 'The Fullname of the User/Customer',
+        description: 'The Fullname of the Staff',
         example: 'Kingsley Amoah'
     })
     @IsNotEmpty()
@@ -30,7 +30,7 @@ export class CreateStaffDto {
 
    
     @ApiProperty({
-        description: 'The email of the User/Customer',
+        description: 'The email of the Staff',
         example: 'ampong@gmail.com'
     })
     @IsNotEmpty()
@@ -38,7 +38,7 @@ export class CreateStaffDto {
     readonly email: string;
 
     @ApiProperty({
-        description: 'The phonenumber of the User/Customer',
+        description: 'The phonenumber of the Staff',
         example: '************'
     })
     @IsNotEmpty()
@@ -46,17 +46,19 @@ export class CreateStaffDto {
     @MaxLength(10)
     readonly phoneNumber: string;
 
+
+    @ApiProperty({
+        description: 'The role of the Staff',
+        example: '************'
+    })
+    @IsNotEmpty()
+    readonly role: string;
+
   
     
     readonly profilePhoto: string;
      
 
-    @ApiProperty({
-        description: 'The password of the User/Customer',
-        example: '*****'
-    })
-    @IsNotEmpty()
-    @MinLength(8)
-    readonly password: string
+  
     
 }

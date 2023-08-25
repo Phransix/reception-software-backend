@@ -55,7 +55,7 @@ module.exports = {
         unique: true
       },
 
-      gender: {
+           gender: {
         type: Sequelize.ENUM('male', 'female'),
         allowNull: false,
         validate: {

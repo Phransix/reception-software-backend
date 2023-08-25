@@ -9,11 +9,15 @@ import * as bcrypt from 'bcrypt';
 import { Role } from '../role/entities/role.entity'
 import { Organization } from '../organization/entities/organization.entity';
 import { ChangePassDTO } from 'src/guard/auth/changePassDTO';
-import { createAccessToken, generateRefreshToken } from '../../utils/index';
+import { createAccessToken, generateRefreshToken, verifyEmailToken } from '../../utils/index';
 import { LoginDTO } from 'src/guard/auth/loginDTO';
 import * as Abstract from '../../utils/abstract'
 import { JwtService } from '@nestjs/jwt';
 import { ConfigService } from '@nestjs/config';
+import { AuthPassService } from 'src/guard/auth/authPass.service';
+import { VerifyEmailDto } from '../organization/dto/create-organization.dto';
+import * as argon from 'argon2';
+import { log } from 'console';
 
 
 @Injectable()
@@ -24,6 +28,7 @@ export class UsersService {
   @InjectModel(Organization) private orgModel: typeof Organization,
   private jwtService: JwtService,
   private config: ConfigService,
+  private readonly authPassService: AuthPassService,
   
   ){}
 
@@ -42,22 +47,82 @@ export class UsersService {
   }
 
 
+  // // Verify Email Account
+  // async verifyEmail(verifyEmailDto:VerifyEmailDto) {
+  //   try{
+  
+
+  //     const decodeToken = verifyEmailToken(verifyEmailDto?.token);
+  //     // console.log(decodeToken);
+     
+  //     if(!decodeToken){
+  //       return Util?.handleFailResponse('User not verified')
+  //     }
+
+   
+  //     const orgToken = await this.userModel.findOne({where:{email:decodeToken?.email}})
+      
+  //     // console.log(decodeToken?.email);
+  //     // return;
+
+  //     if(!orgToken){
+  //       return Util?.handleFailResponse('User not found')
+  //     }
+
+  //     if(orgToken?.isVerified === true)
+  //     return Util?.handleFailResponse('User account already verified')
+
+  //     await Organization.update({isVerified: true},{where: {id: orgToken?.id, email: orgToken?.email}} )
+  //     return Util?.SuccessRespone('Your account has been successfully verified')
+
+  //   }catch (error) {
+  //     console.log(error)
+  //     return Util?.handleTryCatchError(Util?.getTryCatchMsg(error));
+  //   }
+  // };
+
+
 // Login users
 async login(loginDto: LoginDTO){
   const {email,password} = loginDto
 
+  
+
   const user = await User.findOne({where:{email}})
+  const org = await User.findOne({where:{email:user?.email}})
   if(!user){
     // throw new Error ('User with this email does not exist')
     return Util.handleErrorRespone ('User with this email does not exist')
   }
 
-  const IsPasswordSame = await bcrypt.compare(password,user.password)
-  if(!IsPasswordSame){
-    return Util.handleErrorRespone('Invalid Credentials')
-  }
-  let accessToken = await createAccessToken(user?.id);
-  let refreshToken = await generateRefreshToken(user?.id);
+
+  const passwordMatches = await argon.verify(
+    user.password,
+    loginDto.password,
+  );
+  if (!passwordMatches)
+    return Util.handleForbiddenExceptionResponses('Invaid email or password');
+
+  // const IsPasswordSame = await bcrypt.compare(password,user.password)
+  // console.log(password)
+  // if(!IsPasswordSame){
+  //   return Util.handleErrorRespone('Invalid Credentials')
+  // }
+ 
+  // console.log(user?.isVerified);
+
+
+      // Check if the oraganiazation is verified
+      // if(org?.isVerified !== true)
+      // return Util?.handleFailResponse('oraganiazation account not verified')
+  
+   
+  
+
+    // // Check if the user is verified
+    // if(user?.isVerified !== true)
+    // return Util?.handleFailResponse('User account not verified')
+
  
 
   const user_role = await Role.findOne({where:{roleId:user?.roleId}})
@@ -101,17 +166,7 @@ async login(loginDto: LoginDTO){
       attributes:{
         exclude:['password','createdAt','updatedAt','deletedAt']
       },
-      
-      // include:[
-      //   {
-      //     model: this.orgModel,
-      //     attributes:{
-      //       exclude:['createdAt','updatedAt']
-      //     },
-      //     order:['roleId','DESC'],
-      //     as:'user_role'
-      //   }
-      // ]
+    
 
       })
       return Util?.handleSuccessRespone(users, "Users Data retrieved successfully.")
@@ -132,7 +187,8 @@ async login(loginDto: LoginDTO){
       attributes:{
         exclude:['password','createdAt','updatedAt','deletedAt']
       },
-       where: { id } });
+       where: { id }
+       });
       if (!user) {
         throw new Error('User not found.');
       }
@@ -171,7 +227,8 @@ async login(loginDto: LoginDTO){
 
       const user = await this.userModel.findOne({ where: { id } });
       if (!user) {
-        throw new Error('User not found.');
+        // throw new Error('User not found.');
+        return Util?.handleFailResponse(`User with this #${id} not found`)
       }
 
       Object.assign(user, updateUserDto)
@@ -205,9 +262,23 @@ async login(loginDto: LoginDTO){
 
   }
 
-  //  async findOneByuserFullname(fullname: string): Promise<User>{
-  //   return await this.userModel.findOne<User>({where: {fullname}})
-  // }
+
+  // Restore Deleted Data
+  async restoreUser(id:string){
+
+    try {
+
+      const organization = await this.userModel.restore({where:{id}})
+      console.log(organization)
+      return Util?.handleSuccessRespone(Util?.SuccessRespone, "Organization restored successfully.")
+      
+    } catch (error) {
+      return Util.handleForbiddenExceptionResponses('Data Not Restored');
+    }
+ 
+  }
+
+ 
 
    async findOneByuserEmail(email: string): Promise<User>{
     return await this.userModel.findOne<User>({where: {email}})

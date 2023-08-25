@@ -18,6 +18,7 @@ import { JwtService } from '@nestjs/jwt';
 
 
 // import { AuthService } from 'src/auth/auth.service';
+import * as argon from 'argon2';
 
 
 
@@ -43,11 +44,15 @@ export class OrganizationService {
     let t = await this.sequelize?.transaction();
     try {
 
-      const defaultPassword = 'admin12345';
-       const saltRounds = 10;
+      // const defaultPassword = 'admin123';
 
+      let ran_password = await this.makeid(8)
+      const hash = await argon.hash(ran_password);
+     
+
+    //   const saltRounds = 10;
       // Hash the defualt password
-      const hashedDefaultPassword = await bcrypt.hash(defaultPassword,saltRounds);
+    //  const hashedDefaultPassword = await bcrypt.hash(defaultPassword,saltRounds);
 
       // console.log(createOrganizationDto)
       // return;
@@ -65,11 +70,22 @@ export class OrganizationService {
         fullName: createOrganizationDto?.fullName,
         email: organization?.email,
         phoneNumber: createOrganizationDto?.phoneNumber,
-        password:hashedDefaultPassword
+        password:hash
+        
+      }
+
+      let mail_data = {
+        
+        organizationId: organization?.organizationId,
+        roleId: role?.roleId,
+        fullName: createOrganizationDto?.fullName,
+        email: organization?.email,
+        phoneNumber: createOrganizationDto?.phoneNumber,
+        password:ran_password
         
       }
       const user = await this.user?.create({ ...org_data }, { transaction: t })
-      let send_Token = await this.emailService.sendMailNotification({...org_data})
+      let send_Token = await this.emailService.sendMailNotification({...mail_data})
       console.log(send_Token)
 
       t.commit()
@@ -120,51 +136,53 @@ export class OrganizationService {
   };
     
   // Login
-  async validateUser(loginDto: LoginDTO){
-    const {email,password} = loginDto
+  // async validateUser(loginDto: LoginDTO){
+  //   const {email,password} = loginDto
 
-    const user = await User.findOne({where:{email}})
-    const organization = await this.organizationModel.findOne({where:{email}})
-    if(!user && !organization){
-      throw new BadRequestException('Organization with this email does not exist')
-    }
+  //   const user = await User.findOne({where:{email}})
+  //   const organization = await this.organizationModel.findOne({where:{email}})
+  //   if(!user && !organization){
+  //     throw new BadRequestException('Organization with this email does not exist')
+  //   }
 
-    const passwordMatch = await this.authPassService.verifypassword(password, user.password)
-    if (!passwordMatch){
-      throw new UnauthorizedException('Invalid Credentials')
-    }
+  //   const passwordMatch = await this.authPassService.verifypassword(password, user.password)
+  //   if (!passwordMatch){
+  //     throw new UnauthorizedException('Invalid Credentials')
+  //   }
  
-    // Check if the oraganiazation is verified
-    if(organization?.isVerified != true)
-    return Util?.handleFailResponse('Organization account not verified')
+  //   // Check if the oraganiazation is verified
+  //   if(organization?.isVerified != true)
+  //   return Util?.handleFailResponse('Organization account not verified')
 
  
-    let accessToken = await createAccessToken(user?.id);
-    let refreshToken = await generateRefreshToken(user?.id);
+  //   let accessToken = await createAccessToken(user?.id);
+  //   let refreshToken = await generateRefreshToken(user?.id);
 
-    let tokens = {accessToken,refreshToken}
+  //   let tokens = {accessToken,refreshToken}
 
-    // let tokens = await this?.getTokens(organization.organizationId,organization.email,organization.organizationName)
+  //   // let tokens = await this?.getTokens(organization.organizationId,organization.email,organization.organizationName)
       
-    // console.log(tokens)
+  //   // console.log(tokens)
 
-       let org_data ={
-      id: organization.organizationId,
-      organizationName: organization.organizationName,
-      email: organization.email,
-      IsPhoneNumber: organization.phoneNumber
-    }
+  //      let org_data ={
+  //     id: organization.organizationId,
+  //     organizationName: organization.organizationName,
+  //     email: organization.email,
+  //     IsPhoneNumber: organization.phoneNumber
+  //   }
 
-    let userDetails = {
-      org_data,tokens
-    }
+  //   let userDetails = {
+  //     org_data,tokens
+  //   }
 
-        //  Send user data and tokens
-        return Util?.handleSuccessRespone( userDetails,'Login successfully.')
-  }
+  //       //  Send user data and tokens
+  //       return Util?.handleSuccessRespone( userDetails,'Login successfully.')
+  // }
   
 
   //  Get All
+  
+  
   async findAll() {
 
     try {
@@ -345,6 +363,21 @@ export class OrganizationService {
       t.rollback();
       return Util?.checkIfRecordNotFound(error)
     }
+  }
+
+
+  async makeid(length) {
+    let result = '';
+    const characters = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789';
+    const charactersLength = characters.length;
+    let counter = 0;
+    while (counter < length) {
+      result += characters.charAt(Math.floor(Math.random() * charactersLength));
+      counter += 1;
+    }
+    return result;
+
+    
   }
 
 

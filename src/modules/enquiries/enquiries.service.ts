@@ -59,7 +59,7 @@ export class EnquiriesService {
       where:{id}});
 
       if (!enquiry) {
-        throw new Error('Enquiry not found.'); 
+        return Util?.handleFailResponse('Enquiry not found') 
       }
   
       return Util?.handleSuccessRespone(enquiry,"Enquiry retrieve successfully.")
@@ -76,7 +76,7 @@ export class EnquiriesService {
     
       const enquiry = await Enquiry.findOne({where:{id}});
       if (!enquiry) {
-        throw new Error('Enquiry not found.'); 
+        return Util?.handleFailResponse('Enquiry not found')
       }
 
       Object.assign(enquiry,updateEnquiryDto)
@@ -96,7 +96,7 @@ export class EnquiriesService {
     try{
       const enquiry = await Enquiry.findOne({where:{id}});
       if (!enquiry) {
-        throw new Error('Enquiry not found.'); 
+        return Util?.handleFailResponse('Enquiry not found')
       }
 
       Object.assign(enquiry)

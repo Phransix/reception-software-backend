@@ -13,6 +13,7 @@ import { Public } from 'src/common/decorators/public.decorator';
 import { AtGuard } from 'src/common/guards';
 import { GetCurrentUserId } from 'src/common/decorators/get-current-user-id.decorator';
 import { AuthGuard } from '@nestjs/passport';
+import { VerifyEmailDto } from '../organization/dto/create-organization.dto';
 
 @Controller('users')
 export class UsersController {
@@ -22,7 +23,7 @@ export class UsersController {
 
   // Register New User
   @ApiTags('Users')
-  // @UseGuards(AuthGuard('jwt'))
+  @UseGuards(AuthGuard('jwt'))
   @ApiBearerAuth('defaultBearerAuth')
   @ApiOperation({summary:'Create New User/Receptionist'})
   @Public()
@@ -38,8 +39,27 @@ export class UsersController {
     }
   }
 
+  // @ApiTags('Users')
+  // @ApiOperation({summary:'Verify Organization Email '})
+  // @Public()
+  // @Post('verifyEmail')
+  // async verifyEmail(@Body()token:VerifyEmailDto){
+  //   try{
+
+  //     console.log(token)
+      
+  //     const emailVerify = await this.usersService.verifyEmail(token)
+  //     return emailVerify
+
+  //   }catch(error){
+  //   console.log(error)
+  //   return Util?.handleTryCatchError(Util?.getTryCatchMsg(error)) 
+  // }
+  // };
+
   // Login Users
   @ApiTags('Users')
+  @ApiOperation({summary:'Organization/User Login'})
   @Public()
   @Post('login')
   async login(@Body() loginDto: LoginDTO){
@@ -168,4 +188,22 @@ export class UsersController {
      
     }
 
+<<<<<<< HEAD
+=======
+
+    @UseGuards(AuthGuard('jwt'))
+  @ApiBearerAuth('defaultBearerAuth')
+  @ApiOperation({summary:'Restore User Data By Id'})
+  @Public()
+  @UseGuards(AtGuard)
+  @ApiTags('Users')
+  @Post(':id/restore')
+  async restoreUser(@Param('id') id: string){
+    return this.usersService.restoreUser(id)
+  }
+
+
+
+
+>>>>>>> albert
 }

@@ -1,8 +1,10 @@
 import { Column, DataType, HasMany, Model, Table } from "sequelize-typescript";
 import { LoginDTO } from "src/guard/auth/loginDTO";
 import { Delivery } from "src/modules/delivery/entities/delivery.entity";
+import { Department } from "src/modules/department/entities/department.entity";
 import { Enquiry } from "src/modules/enquiries/entities/enquiry.entity";
 import { Guest } from "src/modules/guest/entities/guest.entity";
+import { Staff } from "src/modules/staff/entities/staff.entity";
 import { User } from "src/modules/users/entities/user.entity";
 import { Visitor } from "src/modules/visitor/entities/visitor.entity";
 const { v4: uuidv4 } = require('uuid');
@@ -89,7 +91,13 @@ export class Organization extends Model<Organization>  {
     enquiries: Enquiry[];
 
     @HasMany(() => Guest)
-    guests: Guest[]
+    guests: Guest[];
+
+    @HasMany(() => Department)
+    department: Department[]
+
+    @HasMany(() => Staff)
+    staff: Staff[]
 
     
   static organizationName: any;
