@@ -97,7 +97,7 @@ export class Delivery extends Model <Delivery> {
         type: DataType.STRING,
         allowNull: true
     })
-    deliveryDescription: string
+    itemDescription: string
 
     @Column ({
         type: DataType.DATE,

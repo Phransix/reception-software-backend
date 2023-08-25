@@ -99,5 +99,5 @@ export class CreateDeliveryDto {
         example: 'Any important detail of the delivery'
     })
     @IsString()
-    readonly deliveryDescription: string;
+    readonly itemDescription: string;
 }
