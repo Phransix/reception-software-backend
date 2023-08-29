@@ -48,7 +48,7 @@ export class Visitor extends Model <Visitor> {
         type: DataType.STRING,
         allowNull: false
     })
-    visitor: string
+    visitorFullname: string
 
     @Column({
         type: DataType.STRING,

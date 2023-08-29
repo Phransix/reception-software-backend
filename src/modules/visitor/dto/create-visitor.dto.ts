@@ -26,7 +26,7 @@ export class CreateVisitorDto {
     })
     @IsString()
     @IsNotEmpty()
-    readonly visitor: string;
+    readonly visitorFullname: string;
 
     @ApiProperty({
         description: 'The phonenumber of the Visitor',

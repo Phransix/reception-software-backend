@@ -30,6 +30,9 @@ import { DepartmentModule } from './modules/department/department.module';
 import { StaffModule } from './modules/staff/staff.module';
 import { AuthPassService } from './guard/auth/authPass.service';
 import { PasswordService } from './guard/passwordhash.service';
+// import { FoodModule } from './modules/food/food.module';
+// import { DocumentModule } from './modules/document/document.module';
+// import { OtherModule } from './modules/other/other.module';
 
 
 
@@ -109,13 +112,13 @@ import { PasswordService } from './guard/passwordhash.service';
     OrganizationModule,
     UsersModule,
     EnquiriesModule,
-
-   
     RoleModule,
     GuestModule,
     DepartmentModule,
     StaffModule,
-    
+    // FoodModule,
+    // DocumentModule,
+    // OtherModule,
   ],
 
   controllers: [AppController],

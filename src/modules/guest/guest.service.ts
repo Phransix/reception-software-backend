@@ -5,7 +5,7 @@ import { InjectModel } from '@nestjs/sequelize';
 import { Guest } from './entities/guest.entity';
 import * as Abstract from '../../utils/abstract'
 import * as Util from '../../utils/index'
-import { guestLoginDTO } from 'src/guard/auth/guestLoginDTO';
+import { guestOpDTO } from 'src/guard/auth/guestOpDTO';
 
 @Injectable()
 export class GuestService {
@@ -84,8 +84,8 @@ export class GuestService {
     }
   }
 
-  async guestSignIn (guestloginDTO: guestLoginDTO){
-    const {phoneNumber} = guestloginDTO
+  async guestSignIn (guestOpDTO: guestOpDTO){
+    const {phoneNumber} = guestOpDTO
     const guest = await this.GuestModel.findOne({where:{phoneNumber}})
     if (!guest) {
       throw new HttpException('Guest Sign In failed', HttpStatus.UNAUTHORIZED)
@@ -93,4 +93,16 @@ export class GuestService {
       throw new HttpException('Guest Sign In successful', HttpStatus.ACCEPTED)
     }
   }
+
+  async guestSignOut (guestOpDTO: guestOpDTO){
+    const {phoneNumber} = guestOpDTO
+    const guest = await this.GuestModel.findOne({where:{phoneNumber}})
+    if (!guest) {
+      throw new HttpException('Guest Sign Out failed', HttpStatus.UNAUTHORIZED)
+    } else {
+      throw new HttpException('Guest Sign Out successful', HttpStatus.ACCEPTED)
+    }
+  }
+
+
 }

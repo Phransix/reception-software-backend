@@ -1,0 +1,104 @@
+'use strict';
+
+/** @type {import('sequelize-cli').Migration} */
+module.exports = {
+  async up (queryInterface, Sequelize) {
+    /**
+     * Add altering commands here.
+     *
+     * Example:
+     * await queryInterface.createTable('users', { id: Sequelize.INTEGER });
+     */
+    await queryInterface.createTable("Other",{
+      id: {
+        allowNull: false,
+        autoIncrement: true,
+        primaryKey: true,
+        type: Sequelize.INTEGER,
+      },
+      otherId: {
+        type: Sequelize.UUID,
+        defaultValue: Sequelize.UUIDV4,
+        allowNull: false,
+        unique: true
+      },
+      deliveryId: {
+        type: Sequelize.UUID,
+        allowNull: false,
+        references: {
+          model:{
+            tableName: 'Deliveries',
+          },
+          key:'deliveryId'
+        },
+        onDelete: 'CASCADE'
+      },
+      organizationId: {
+        type: Sequelize.UUID,
+        allowNull: false,
+        references: {
+          model: {
+            tableName: 'Organizations',
+          },
+          key: 'organizationId'
+        },
+        onDelete: 'CASCADE'
+      },
+      from: {
+        type: Sequelize.STRING,
+        allowNull: false,
+        required: true,
+      },
+      receipientName: {
+        type: Sequelize.STRING,
+        allowNull: false,
+        required: true,
+      },
+      receipientPhoneNumber: {
+        type: Sequelize.STRING,
+        allowNull: false,
+        required:true,
+        unique:true
+      },
+      itemName: {
+        type: Sequelize.STRING,
+        allowNull: false,
+        required: true,
+      },
+      quantity: {
+        type: Sequelize.STRING,
+        allowNull: false
+      },
+
+      unit: {
+        type: Sequelize.STRING,
+        allowNull: false
+      },
+      createdAt: {
+        allowNull: false,
+        type: Sequelize.DATE
+      },
+      updatedAt: {
+        allowNull: false,
+        type: Sequelize.DATE
+      },
+      
+      deletedAt: {
+        type: Sequelize.DATE,
+      allowNull: true,
+     defaultValue: null
+      }, 
+
+    })
+  },
+
+  async down (queryInterface, Sequelize) {
+    /**
+     * Add reverting commands here.
+     *
+     * Example:
+     * await queryInterface.dropTable('users');
+     */
+    await queryInterface.dropTable("Other")
+  }
+};

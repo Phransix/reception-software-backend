@@ -100,6 +100,5 @@ export class StaffService {
     console.log(error)
     return Util?.handleFailResponse(`Staff with this #${id} not Deleted`)
   }
-    return `This action removes a #${id} staff`;
   }
 }

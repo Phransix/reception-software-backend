@@ -4,7 +4,7 @@ import { CreateGuestDto } from './dto/create-guest.dto';
 import { UpdateGuestDto } from './dto/update-guest.dto';
 import { ApiBearerAuth, ApiOperation, ApiTags } from '@nestjs/swagger';
 import * as Util from '../../utils/index'
-import { guestLoginDTO } from 'src/guard/auth/guestLoginDTO';
+import { guestOpDTO } from 'src/guard/auth/guestOpDTO';
 import { Public } from 'src/common/decorators/public.decorator';
 import { AuthGuard } from '@nestjs/passport';
 import { AtGuard } from 'src/common/guards';
@@ -106,12 +106,28 @@ export class GuestController {
   @ApiTags('Guest')
   @ApiOperation({summary:'Guest Sign In'})
   @Post('guestSignIn')
-  async signIn (@Body() guestloginDTO: guestLoginDTO){
-    const guest = this.guestService.guestSignIn(guestloginDTO)
+  async signIn (@Body() guestOpDTO: guestOpDTO){
+    const guest = this.guestService.guestSignIn(guestOpDTO)
     if (!guest) {
       throw new HttpException('Guest does not exist',HttpStatus.NOT_FOUND)
     } else {
       return guest
     }
   }
+
+  @Public()
+  @ApiTags('Guest')
+  @ApiOperation({summary:'Guest Sign Out'})
+  @Post('guestSignOut')
+  async signOut (@Body() guestOpDTO: guestOpDTO){
+    const guest = this.guestService.guestSignIn(guestOpDTO)
+    if (!guest) {
+      throw new HttpException('Guest does not exist',HttpStatus.NOT_FOUND)
+    } else {
+      return guest
+    }
+  }
+
+
+
 }

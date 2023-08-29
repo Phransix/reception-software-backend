@@ -14,6 +14,7 @@ import * as Abstract from '../../utils/abstract'
 import { JwtService } from '@nestjs/jwt';
 import { ConfigService } from '@nestjs/config';
 import * as argon from 'argon2';
+import { log } from 'console';
 
 
 
@@ -38,23 +39,19 @@ export class UsersService {
     try {
 
       const hash = await argon.hash(createUserDto.password)
-      console.log(hash)
-
-      
-
-      const user = await this.userModel?.create({...createUserDto})
-
-      let user_data ={
-        roleId: user?.roleId,
-        organizationId: user?.organizationId,
-        fullName: user?.fullName,
-        email: user?.email,
-        phoneNumber: user?.phoneNumber,
+     
+      let insertQry = {
+        roleId: createUserDto?.roleId,
+        organizationId: createUserDto?.organizationId,
+        fullName: createUserDto?.fullName,
+        email: createUserDto?.email,
+        phoneNumber: createUserDto?.phoneNumber,
         password: hash
       }
+      
+   //   return false
 
-      const users = await this.userModel?.create({...user_data})
-      console.log(users)
+      const user = await this.userModel?.create({...insertQry})
 
       // await Abstract?.createData(User, createUserDto);
       return Util?.handleCreateSuccessRespone( "User Created Successfully");
@@ -106,12 +103,11 @@ export class UsersService {
 async login(loginDto: LoginDTO){
   const {email,password} = loginDto
 
-  
-
   const user = await User.findOne({where:{email}})
   const org = await Organization.findOne({where:{email}})
   if(!user){
-    return Util.handleForbiddenExceptionResponses('Invaid email or password');
+    // return Util.handleForbiddenExceptionResponses('Invaid email or password');
+    throw new HttpException('Invalid email or password',HttpStatus.FORBIDDEN)
   }
 
 
@@ -119,24 +115,20 @@ async login(loginDto: LoginDTO){
     user.password,
     loginDto.password,
   );
-  if (!passwordMatches)
-    return Util.handleForbiddenExceptionResponses('Invaid email or password');
-
-
+  if (!passwordMatches){
+    // return Util.handleForbiddenExceptionResponses('Invaid email or password');
+    throw new HttpException('Invalid email or password',HttpStatus.FORBIDDEN)
+  }
       // Check if the oraganiazation is verified
-     if (org?.isVerified != true)
-     return Util?.handleFailResponse('Oraganiazation account not verified')
-     console.log(org?.isVerified);
-
- 
+    //  if (org?.isVerified != true)
+    //  return Util?.handleFailResponse('Oraganiazation account not verified')
+    //  console.log(org?.isVerified);
 
   const user_role = await Role.findOne({where:{roleId:user?.roleId}})
 
   if(!user_role)
     // throw new Error ('User with this email does not exist')
     return Util.handleErrorRespone ('User not found')
-  
-
   let tokens =  await this?.getTokens(user.userId,user.email,user_role?.name)
 
      console.log(tokens)
@@ -153,13 +145,11 @@ async login(loginDto: LoginDTO){
   }
 
   let userDetails = {
-    org_data,tokens
+    ...org_data,tokens
   }
 
       //  Send user data and tokens
       return Util?.handleSuccessRespone( userDetails,'Login successfully.')
- 
- 
 }
 
 // Get All Users
@@ -283,12 +273,10 @@ async login(loginDto: LoginDTO){
  
   }
 
- 
 
    async findOneByuserEmail(email: string): Promise<User>{
     return await this.userModel.findOne<User>({where: {email}})
   }
-
 
  
   async findByemail(email: string){
