@@ -4,6 +4,7 @@ import { LoginDTO } from "src/guard/auth/loginDTO";
 import { Organization } from "src/modules/organization/entities/organization.entity";
 import { Role } from "src/modules/role/entities/role.entity";
 const { v4: uuidv4 } = require('uuid');
+import * as argon from 'argon2';
 import * as bcrypt from 'bcrypt';
 
 @Table({
@@ -109,8 +110,6 @@ export class User extends Model<User> {
     })
     deletedAt: Date
 
-
-    
    
     // @BeforeCreate
     // static async hashPassword(instance: User) {
@@ -118,6 +117,13 @@ export class User extends Model<User> {
     //   const hashedPassword = await bcrypt.hash(instance.password, saltRounds);
     //   instance.password = hashedPassword;
     // }
+
+    // @BeforeCreate
+    // static async hashPassword(instance: User) {
+    //   const hashedPassword = await argon.hash(instance.password);
+    //   instance.password = hashedPassword;
+    // }
+
       
    
 

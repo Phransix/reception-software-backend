@@ -60,12 +60,6 @@ module.exports = {
       profilePhoto: {
         type: Sequelize.STRING
       },
-
-       isVerified: {
-        type: Sequelize.BOOLEAN,
-         defaultValue: false
-      },
- 
       createdAt: {
         allowNull: false,
         type: Sequelize.DATE

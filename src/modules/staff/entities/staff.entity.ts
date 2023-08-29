@@ -89,7 +89,4 @@ export class Staff extends Model<Staff>{
         allowNull: true
        })
        profilePhoto: string;
-
-
-
 }

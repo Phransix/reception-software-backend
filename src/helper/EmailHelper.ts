@@ -1,7 +1,7 @@
 import { Injectable } from '@nestjs/common';
 import { InjectQueue } from '@nestjs/bull';
 import { Queue } from 'bull';
-import *as Util from 'src/utils/index';
+import * as Util from 'src/utils/index';
 import { props } from 'bluebird';
 import { log } from 'console';
 

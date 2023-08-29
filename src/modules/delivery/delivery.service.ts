@@ -1,5 +1,5 @@
 import { BadRequestException, HttpException, HttpStatus, Injectable, NotAcceptableException } from '@nestjs/common';
-import { CreateDeliveryDto } from './dto/create-delivery.dto';
+import { CreateDeliveryDto} from './dto/create-delivery.dto';
 import { UpdateDeliveryDto } from './dto/update-delivery.dto';
 import { InjectModel } from '@nestjs/sequelize';
 import { Delivery } from './entities/delivery.entity';
@@ -7,13 +7,14 @@ import * as Abstract from '../../utils/abstract'
 import * as Util from '../../utils/index'
 import { DATE } from 'sequelize';
 import { deliveryConfirmDTO } from 'src/guard/auth/deliveryConfirmDTO';
+import { Guest } from '../guest/entities/guest.entity';
 
 @Injectable()
 export class DeliveryService {
   
 
   constructor(
-    @InjectModel(Delivery) private readonly DeliveryModel: typeof Delivery,
+    @InjectModel(Delivery) private readonly DeliveryModel: typeof Delivery
     ){}
 
   async create(createDeliveryDto: CreateDeliveryDto) {
@@ -101,6 +102,5 @@ export class DeliveryService {
       throw new HttpException('Delivery Confirmation Successful',HttpStatus.OK)
     }
   }
-
 
 }

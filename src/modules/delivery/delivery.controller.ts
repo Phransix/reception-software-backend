@@ -28,7 +28,7 @@ export class DeliveryController {
       return new_Delivery;
     } catch (error) {
       console.log(error)
-      // return Util?.handleFailResponse("Delivery registration failed")
+      return Util?.handleFailResponse("Delivery registration failed")
     }
   }
 

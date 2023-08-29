@@ -1,7 +1,7 @@
 import { ApiProperty } from "@nestjs/swagger";
 import { IsNotEmpty,MaxLength, MinLength } from "class-validator";
 
-export class guestLoginDTO {
+export class guestOpDTO {
     @ApiProperty({
         description: "The phone number of the guest",
         example: '0546987415'

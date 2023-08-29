@@ -1,5 +1,8 @@
-import { BelongsTo, Column, DataType, ForeignKey, Model, Table } from "sequelize-typescript";
+import { BelongsTo, Column, DataType, ForeignKey, HasMany, Model, Table } from "sequelize-typescript";
+// import { Document } from "src/modules/document/entities/document.entity";
+// import { Food } from "src/modules/food/entities/food.entity";
 import { Organization } from "src/modules/organization/entities/organization.entity";
+// import { Other } from "src/modules/other/entities/other.entity";
 const { v4: uuidv4 } = require('uuid');
 
 @Table({
@@ -106,4 +109,12 @@ export class Delivery extends Model <Delivery> {
     })
     deletedAt: Date
 
+    // @HasMany(() => Food)
+    // foods : Food[]
+
+    // @HasMany(() => Document)
+    // documents: Document[]
+
+    // @HasMany(() => Other)
+    // others: Other[]
 }
