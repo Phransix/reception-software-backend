@@ -14,6 +14,7 @@ import * as Abstract from '../../utils/abstract'
 import { JwtService } from '@nestjs/jwt';
 import { ConfigService } from '@nestjs/config';
 import * as argon from 'argon2';
+import { log } from 'console';
 
 
 
@@ -38,8 +39,7 @@ export class UsersService {
     try {
 
       const hash = await argon.hash(createUserDto.password)
-      console.log(hash)
-
+    
       
 
       const user = await this.userModel?.create({...createUserDto})
@@ -50,8 +50,12 @@ export class UsersService {
         fullName: user?.fullName,
         email: user?.email,
         phoneNumber: user?.phoneNumber,
-        password: hash
+        password: await hash
       }
+
+      console.log(user_data);
+      console.log(createUserDto);
+      console.log(hash)
 
       const users = await this.userModel?.create({...user_data})
       console.log(users)
