@@ -9,6 +9,7 @@ import { deliveryConfirmDTO } from 'src/guard/auth/deliveryConfirmDTO';
 import { Public } from 'src/common/decorators/public.decorator';
 import { AtGuard } from 'src/common/guards';
 import { AuthGuard } from '@nestjs/passport';
+// import {  } from '../../utils/transactions-response'
 
 @Controller('delivery')
 export class DeliveryController {
@@ -32,6 +33,25 @@ export class DeliveryController {
     }
   }
 
+  // @UseGuards(AuthGuard('jwt'))
+  // @ApiBearerAuth('defaultBearerAuth')
+  // @Public()
+  // @UseGuards(AtGuard)
+  // @ApiTags('Delivery')
+  // @ApiOperation({summary:'Get All Deliveries'})
+  // @Get('getAllDeliveries')
+  // async findAll() {
+  //   try {
+  //     const allDeliveries = await this.deliveryService.findAll()
+  //     return allDeliveries
+      
+  //   } catch (error) {
+  //     console.log(error)
+  //     return Util?.handleFailResponse("Deliveries retrieval failed")
+  //   }
+   
+  // }
+
   @UseGuards(AuthGuard('jwt'))
   @ApiBearerAuth('defaultBearerAuth')
   @Public()
@@ -39,50 +59,35 @@ export class DeliveryController {
   @ApiTags('Delivery')
   @ApiOperation({summary:'Get All Deliveries'})
   @Get('getAllDeliveries')
-  async findAll() {
+  async findAll(
+    @Query('page') page: number,
+    @Query('size') size: number,
+    @Query('length') length: number,
+    @Req() req: Request
+    ) {
     try {
-      const allDeliveries = await this.deliveryService.findAll()
-      return allDeliveries
-      
+      let currentPage = Util.Checknegative(page);
+    if (currentPage)
+      return Util?.handleErrorRespone("Delivery current page cannot be negative");
+
+    const {limit, offset } = Util.getPagination(page, size)
+
+    const delivery = await Delivery.findAndCountAll({
+      limit,
+      offset,
+      // attributes: {exclude:['createdAt','updatedAt']}
+    });
+    const response = Util.getPagingData(delivery,page,limit,length)
+    console.log(response)
+    // return this.deliveryService.findAll();
+    return Util?.handleSuccessRespone(delivery,"Delivery retrieved succesfully")
+
     } catch (error) {
       console.log(error)
-      return Util?.handleFailResponse("Deliveries retrieval failed")
+      return Util?.handleTryCatchError(Util?.getTryCatchMsg(error))
     }
-   
-  }
-
-
-  // @ApiTags('Delivery')
-  // @Get('getAllDeliveries')
-  // async findAll(
-  //   @Query('page') page: number,
-  //   @Query('size') size: number,
-  //   @Query('length') length: number,
-  //   @Req() req: Request
-  //   ) {
-  //   try {
-  //     let currentPage = Util.Checknegative(page);
-  //   if (currentPage)
-  //     return Util?.handleErrorRespone("Delivery current page cannot be negative");
-
-  //   const {limit, offset } = Util.getPagination(page, size)
-
-  //   const delivery = await Delivery.findAndCountAll({
-  //     limit,
-  //     offset,
-  //     // attributes: {exclude:['createdAt','updatedAt']}
-  //   });
-  //   const response = Util.getPagingData(delivery,page,limit,length)
-  //   console.log(response)
-  //   // return this.deliveryService.findAll();
-  //   return Util?.handleSuccessRespone(delivery,"Delivery retrieved succesfully")
-
-  //   } catch (error) {
-  //     console.log(error)
-  //     return Util?.handleTryCatchError(Util?.getTryCatchMsg(error))
-  //   }
     
-  // }
+  }
 
   @UseGuards(AuthGuard('jwt'))
   @ApiBearerAuth('defaultBearerAuth')

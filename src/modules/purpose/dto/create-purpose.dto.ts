@@ -38,7 +38,7 @@ export class CreatePurposeDto {
         example: '0ebf89e0-1606-4f8a-ad7c-39f4a3424028'
     })
     @IsNotEmpty()
-    readonly departmentd: string
+    readonly departmentId: string
 
     @ApiProperty({
         description: 'The Id of the staff',
