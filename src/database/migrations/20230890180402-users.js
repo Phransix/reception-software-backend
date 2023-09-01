@@ -15,17 +15,18 @@ module.exports = {
           allowNull: false,
           unique: true
       },
-      roleId: {
-        type: Sequelize.UUID,
-        allowNull: false,
-        references: {
-          model:{
-            tableName: 'Roles',
-          },
-          key:'roleId'
-        },
-        onDelete: 'CASCADE'
-      },
+      // roleId: {
+      //   type: Sequelize.UUID,
+      //   allowNull: false,
+      //   references: {
+      //     model:{
+      //       tableName: 'Roles',
+      //     },
+      //     key:'roleId'
+      //   },
+      //   onDelete: 'CASCADE'
+      // },
+
       organizationId: {
         type: Sequelize.UUID,
         allowNull: false,
@@ -37,6 +38,17 @@ module.exports = {
         },
         onDelete: 'CASCADE'
       },
+
+      roleName: {
+        type: Sequelize.ENUM('Admin', 'Receptionist'),
+        allowNull: false,
+        required:true,
+        defaultValue: 'Admin',
+        validate: {
+          isIn: [['Admin', 'Receptionist']] 
+        }
+      },
+
       fullName: {
         type: Sequelize.STRING,
         allowNull: false

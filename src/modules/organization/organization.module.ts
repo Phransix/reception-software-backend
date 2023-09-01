@@ -17,6 +17,8 @@ import { JwtModule, JwtService } from '@nestjs/jwt';
 import { AtStrategy, RtStrategy } from 'src/stratagies';
 import { defaultPaswordProcessor } from 'src/Processor/defaultPassword.processor';
 import { Delivery } from '../delivery/entities/delivery.entity';
+import { imageUploadProfile } from 'src/helper/usersProfile';
+import { orgImageUploadProfile } from 'src/helper/organizationsProfile';
 
 
 @Module({
@@ -38,7 +40,10 @@ import { Delivery } from '../delivery/entities/delivery.entity';
     UsersService,
     JwtService,
     AtStrategy,
-    RtStrategy
+    RtStrategy,
+    orgImageUploadProfile,
+    imageUploadProfile
+   
   ]
 
 

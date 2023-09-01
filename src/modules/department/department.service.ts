@@ -22,12 +22,12 @@ export class DepartmentService {
 
       console.log(createDepartmentDto)
       await Abstract?.createData(Department,createDepartmentDto)
-      return Util?.handleSuccessRespone(Util?.SuccessRespone,"Enquiry created successfully.")
+      return Util?.handleSuccessRespone(Util?.SuccessRespone,"Department created successfully.")
 
       
     } catch (error) {
       console.log(error)
-      return Util?.handleFailResponse('Enquiry registration failed')
+      return Util?.handleFailResponse('Department registration failed')
     }
 
   };
@@ -42,7 +42,7 @@ export class DepartmentService {
         },
       })
 
-      return Util?.handleSuccessRespone(data,"Enquiries Data retrieved successfully.")
+      return Util?.handleSuccessRespone(data,"Departments Data retrieved successfully.")
       
     } catch (error) {
       console.log(error)
@@ -62,7 +62,7 @@ export class DepartmentService {
         if(!data){
           return Util?.handleFailResponse('Department not found')
         }
-        return Util?.handleSuccessRespone(data,"Enquiry retrieve successfully.")
+        return Util?.handleSuccessRespone(data,"Department retrieve successfully.")
       
     } catch (error) {
       console.log(error)
@@ -77,12 +77,12 @@ export class DepartmentService {
       const data = await Department.findOne({where:{id}})
       if(!data){
         // throw new Error('Department not found.'); 
-        return Util?.handleFailResponse('Department not found')
+        return Util?.handleFailResponse(`Department with this #${id} not found`)
       }
       
       Object.assign(data,updateDepartmentDto)
       await data.save()
-      return Util?.handleSuccessRespone(Util?.SuccessRespone,"Department updated successfully.")
+      return Util?.handleSuccessRespone(Util?.SuccessRespone,`Department with this #${id} updated successfully`)
 
     } catch (error) {
       console.log(error)
@@ -95,17 +95,17 @@ export class DepartmentService {
     try {
       const data = await Department.findOne({where:{id}})
       if(!data){
-        return Util?.handleFailResponse('Department not found')
+        return Util?.handleFailResponse(`Staff with this #${id} not found`)
       }
 
       Object.assign(data)
       await data.destroy()
-      return Util?.handleSuccessRespone(Util?.SuccessRespone,"Department deleted successfully.")
+      return Util?.handleSuccessRespone(Util?.SuccessRespone,`Department with this #${id}  deleted successfully`)
 
       
     } catch (error) {
       console.log(error)
-      return Util?.handleTryCatchError(Util?.getTryCatchMsg(error)) 
+      return Util?.handleTryCatchError(`Department with this #${id} not deleted `) 
     }
 
   }

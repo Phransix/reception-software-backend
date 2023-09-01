@@ -27,22 +27,29 @@ export class Enquiry extends Model<Enquiry>{
 
 
   @ForeignKey(() => Organization)
-  @Column({
-    defaultValue: uuidv4,
-    type: DataType.STRING,
-    allowNull: false,
-    unique: true,
-    references: {
-      model: {
-        tableName: 'Organization',
-      },
-      key: 'organizationId',
-    },
-    onDelete: 'CASCADE',
-  })
-  organizationId: string;
-  @BelongsTo(() => Organization)
-  organization: Organization
+    @Column({
+      defaultValue: uuidv4,
+        type: DataType.STRING,
+        allowNull: false,
+        unique:true,
+        references: {
+          model: {
+            tableName: 'Organization',
+          },
+          key: 'organizationId',
+        },
+        onDelete: 'CASCADE',
+    })
+    organizationId: string;
+     @BelongsTo(() => Organization)
+     organization: Organization
+   
+   
+    @Column({
+        type: DataType.STRING,
+        allowNull: false
+    })
+    enquirerFullName: string;
 
 
   @Column({
@@ -51,37 +58,32 @@ export class Enquiry extends Model<Enquiry>{
   })
   visitorFullname: string;
 
-  @Column({
-    type: DataType.STRING,
-    allowNull: true
-  })
-  email: string;
-
-  @Column({
-    type: DataType.STRING,
-    allowNull: false
-  })
-  phoneNumber: string;
-
-  @Column({
-    allowNull: false,
-    type: DataType.ENUM,
-    values: ['Official', 'Personal']
+    @Column({
+      allowNull:false,
+      type: DataType.ENUM,
+      values: [
+          'Official',
+          'Personal',
+          'Partnership',
+          'Legal',
+          'Career',
+          'Sales',
+          'Complaints',
+          'Payments',
+          'Investments',
+          'Events'
+      ]
   })
   purpose: string;
 
 
-  @Column({
-    type: DataType.STRING,
-    allowNull: false
-  })
-  enquiryDescription: string
+     @Column({
+      type : DataType.DATE,
+      allowNull: true,
+      defaultValue: null
+    })
+    deletedAt: Date
 
-  @Column({
-    type: DataType.DATE,
-    allowNull: true,
-    defaultValue: null
-  })
-  deletedAt: Date
+    
 
 }

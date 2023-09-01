@@ -67,30 +67,54 @@ export class Staff extends Model<Staff>{
   department: Department;
 
 
-  @Column({
-    type: DataType.STRING,
-    allowNull: false,
-  })
-  fullName: string;
+      @Column({
+        allowNull:true,
+        type: DataType.ENUM,
+        values: [
+          'Mr', 
+          'Mrs',
+          'Prof',
+          'Dr'
+        ]
+    })
+    title: string;
 
-  @Column({
-    type: DataType.STRING,
-    allowNull: false
-  })
-  email: string;
 
-  @Column({
-    type: DataType.STRING,
-    allowNull: false
-  })
-  phoneNumber: string;
+      @Column({
+        type: DataType.STRING,
+        allowNull: false,
+      })
+      fullName: string;
 
-  @Column({
-    type: DataType.STRING,
-    allowNull: true
-  })
-  profilePhoto: string;
+      @Column({
+        type: DataType.STRING,
+          allowNull: false
+      })
+      email: string;
+  
+       @Column({
+        type: DataType.STRING,
+          allowNull: false
+      })
+      phoneNumber: string;
 
-  @HasMany(() => Purpose)
-  purpose: Purpose[]
+     
+      @Column({
+        allowNull:true,
+        type: DataType.ENUM,
+        values: [ 'male', 'female', ]
+    })
+    gender: string;
+
+      @Column({
+        type: DataType.STRING,
+          allowNull: false
+      })
+      role: string;
+  
+      @Column({
+        type: DataType.STRING,
+        allowNull: true
+       })
+       profilePhoto: string;
 }
