@@ -11,7 +11,7 @@ export class CreateEnquiryDto {
 
     @ApiProperty({
         description: 'The Id of the Organization',
-        example: '1'
+        example: 'a036ad92-bccf-405a-8876-6fd7f6bd1514'
     })
     @IsNotEmpty()
     readonly organizationId: string;
@@ -22,7 +22,7 @@ export class CreateEnquiryDto {
     })
     @IsString()
     @IsNotEmpty()
-    readonly visitorFullname: string;
+    readonly enquirerFullName: string;
 
     @ApiProperty({
         description: 'The email of the Person ',
@@ -53,12 +53,6 @@ export class CreateEnquiryDto {
      })
     readonly purpose: string;
 
-    @ApiProperty({
-        description: ' What is the enquiry about',
-        example: 'Job availabilty'
-    })
-    @IsNotEmpty()
-    readonly  enquiryDescription: string
 
 }
 

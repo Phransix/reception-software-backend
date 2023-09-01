@@ -15,8 +15,8 @@ import { AtGuard } from 'src/common/guards';
 export class DepartmentController {
   constructor(private readonly departmentService: DepartmentService) {}
 
-  @UseGuards(AuthGuard('jwt'))
-  @ApiBearerAuth('defaultBearerAuth')
+  // @UseGuards(AuthGuard('jwt'))
+  // @ApiBearerAuth('defaultBearerAuth')
   @ApiOperation({summary:'Create New Department'})
   @Public()
   @UseGuards(AtGuard)

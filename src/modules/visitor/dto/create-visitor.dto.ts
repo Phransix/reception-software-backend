@@ -14,8 +14,8 @@ enum purposeStatus {
 export class CreateVisitorDto {
 
     @ApiProperty({
-        description: 'The Id of the Visitor',
-        example: '1'
+        description: 'The Id of the Organization',
+        example: 'a036ad92-bccf-405a-8876-6fd7f6bd1514'
     })
     @IsNotEmpty()
     readonly organizationId: string;

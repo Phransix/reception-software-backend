@@ -67,6 +67,19 @@ export class Staff extends Model<Staff>{
 
 
       @Column({
+        allowNull:true,
+        type: DataType.ENUM,
+        values: [
+          'Mr', 
+          'Mrs',
+          'Prof',
+          'Dr'
+        ]
+    })
+    title: string;
+
+
+      @Column({
         type: DataType.STRING,
         allowNull: false,
       })
@@ -83,6 +96,20 @@ export class Staff extends Model<Staff>{
           allowNull: false
       })
       phoneNumber: string;
+
+     
+      @Column({
+        allowNull:true,
+        type: DataType.ENUM,
+        values: [ 'male', 'female', ]
+    })
+    gender: string;
+
+      @Column({
+        type: DataType.STRING,
+          allowNull: false
+      })
+      role: string;
   
       @Column({
         type: DataType.STRING,

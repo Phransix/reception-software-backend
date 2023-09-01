@@ -48,7 +48,7 @@ id: number
         type: DataType.STRING,
         allowNull: false
     })
-    visitorFullname: string;
+    enquirerFullName: string;
 
     @Column({
        type: DataType.STRING,
@@ -65,16 +65,21 @@ id: number
     @Column({
       allowNull:false,
       type: DataType.ENUM,
-      values: ['Official','Personal']
+      values: [
+          'Official',
+          'Personal',
+          'Partnership',
+          'Legal',
+          'Career',
+          'Sales',
+          'Complaints',
+          'Payments',
+          'Investments',
+          'Events'
+      ]
   })
   purpose: string;
 
-
-     @Column({
-       type: DataType.STRING,
-       allowNull: false
-     })
-     enquiryDescription: string
 
      @Column({
       type : DataType.DATE,

@@ -30,15 +30,27 @@ import { DepartmentModule } from './modules/department/department.module';
 import { StaffModule } from './modules/staff/staff.module';
 import { AuthPassService } from './guard/auth/authPass.service';
 import { PasswordService } from './guard/passwordhash.service';
-// import { FoodModule } from './modules/food/food.module';
-// import { DocumentModule } from './modules/document/document.module';
-// import { OtherModule } from './modules/other/other.module';
+import { MulterModule } from '@nestjs/platform-express';
+import { imageUploadProfile } from './helper/usersProfile';
+import { staffImageUploadProfile } from './helper/staffProfiles';
+import { orgImageUploadProfile } from './helper/organizationsProfile';
+// import { ServeStaticModule } from '@nestjs/serve-static';
+// import { Server }
+
 
 
 
 
 @Module({
   imports: [
+
+    // MulterModule.register({
+    //   dest:'./public/uploads',
+    // }),
+
+    // ServeStaticModule.forRoot({
+    //   rootPath: join(__dirname, '..', 'public'), // Serve static files from this directory
+    // }),
 
     // PaginateModule.forRoot({
     //   url: 'http://localhost:3005',
@@ -129,7 +141,9 @@ import { PasswordService } from './guard/passwordhash.service';
     UsersService,
     AuthPassService,
     PasswordService,
-
+    imageUploadProfile,
+    staffImageUploadProfile,
+    orgImageUploadProfile,
     AppService,
 
      {

@@ -16,6 +16,8 @@ import { AuthPassService } from 'src/guard/auth/authPass.service';
 import { JwtModule, JwtService } from '@nestjs/jwt';
 import { AtStrategy, RtStrategy } from 'src/stratagies';
 import { defaultPaswordProcessor } from 'src/Processor/defaultPassword.processor';
+import { imageUploadProfile } from 'src/helper/usersProfile';
+import { orgImageUploadProfile } from 'src/helper/organizationsProfile';
 
 
 @Module({
@@ -37,7 +39,10 @@ import { defaultPaswordProcessor } from 'src/Processor/defaultPassword.processor
     UsersService,
     JwtService,
     AtStrategy,
-    RtStrategy
+    RtStrategy,
+    orgImageUploadProfile,
+    imageUploadProfile
+   
   ]
 
 

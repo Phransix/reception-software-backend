@@ -1,4 +1,4 @@
-import { Controller, Get, Post, Body, Patch, Param, Delete, BadRequestException, UseGuards, Request, NotFoundException, HttpException, HttpStatus } from '@nestjs/common';
+import { Controller, Get, Post, Body, Patch, Param, Delete, BadRequestException, UseGuards, Request, NotFoundException, HttpException, HttpStatus, UseInterceptors, UploadedFile } from '@nestjs/common';
 import { UsersService } from './users.service';
 import { CreateUserDto } from './dto/create-user.dto';
 import { UpdateUserDto } from './dto/update-user.dto';
@@ -7,29 +7,40 @@ import { User } from './entities/user.entity';
 import { ApiBearerAuth, ApiOperation, ApiQuery, ApiTags } from '@nestjs/swagger';
 import { ChangePassDTO } from 'src/guard/auth/changePassDTO';
 import { LoginDTO } from 'src/guard/auth/loginDTO';
-import { Roles } from 'src/common/decorators/roles.decorator';
-import { Role } from '../role/role.enum';
+// import { Roles } from 'src/common/decorators/roles.decorator';
+// import { Role } from '../role/role.enum';
+// import { VerifyEmailDto } from '../organization/dto/create-organization.dto';
 import { Public } from 'src/common/decorators/public.decorator';
 import { AtGuard } from 'src/common/guards';
 import { GetCurrentUserId } from 'src/common/decorators/get-current-user-id.decorator';
 import { AuthGuard } from '@nestjs/passport';
-import { VerifyEmailDto } from '../organization/dto/create-organization.dto';
+import { DoesUserExist } from 'src/common/guards/doesUserExist.guard';
+import { InjectModel } from '@nestjs/sequelize';
+import { RolesGuard } from 'src/common/guards/roles.guard';
+import { hasRoles } from 'src/common/decorators/roles.decorator';
+import { UserRole } from '../role/role.enum';
+import { CreateUserImgDto } from './dto/create-userImg.dto';
+
 
 @Controller('users')
 export class UsersController {
-  roles: Role[]
-  constructor(private readonly usersService: UsersService) {}
+  // roles: Role[]
+  constructor(private readonly usersService: UsersService,
+    @InjectModel(User) private userModel: typeof User,) {}
 
 
   // Register New User
+  
   @ApiTags('Users')
-  @UseGuards(AuthGuard('jwt'))
-  @ApiBearerAuth('defaultBearerAuth')
+  // @UseGuards(AuthGuard('jwt'))
+  // @ApiBearerAuth('defaultBearerAuth')
   @ApiOperation({summary:'Create New User/Receptionist'})
-  @Public()
   @UseGuards(AtGuard)
+  // @hasRoles(UserRole.Admin)
+  // @UseGuards(RolesGuard)
+  @Public()
+  @UseGuards(DoesUserExist)
   @Post('registerNewUser')
-  // @Roles(Role.Admin)
   async createDelivery(@Body()  createUserDto: CreateUserDto) {
     try {
       let new_user = this.usersService.create(createUserDto);
@@ -95,7 +106,6 @@ export class UsersController {
       console.log(error)
       return Util?.handleTryCatchError(Util?.getTryCatchMsg(error)) 
     }
-
   };
 
 
@@ -113,7 +123,6 @@ export class UsersController {
       let userData = await this.usersService.findOne(id);
         return userData
       
-
     }catch(error){
       console.log(error)
       return Util?.getTryCatchMsg(Util?.getTryCatchMsg(error))
@@ -122,13 +131,13 @@ export class UsersController {
 
 
   @ApiTags('Users')
-  @UseGuards(AuthGuard('jwt'))
-  @ApiBearerAuth('defaultBearerAuth')
+  // @UseGuards(AuthGuard('jwt'))
+  // @ApiBearerAuth('defaultBearerAuth')
   @ApiOperation({summary:'Update User By Id'})
   @Public()
   @UseGuards(AtGuard)
   @Patch(':id')
-  async update(@Param('id') id: number, @Body() updateUserDto: UpdateUserDto) {
+  async updateOrg(@Param('id') id: string, @Body() updateUserDto: UpdateUserDto) {
 
     try {
 
@@ -139,8 +148,29 @@ export class UsersController {
       console.log(error)
       return Util?.handleTryCatchError('User data Not updated');
     }
-
   };
+
+
+  @ApiTags('Users')
+  // @UseGuards(AuthGuard('jwt'))
+  // @ApiBearerAuth('defaultBearerAuth')
+  @ApiOperation({summary:'Update User Profile Image By Id'})
+  @Public()
+  @UseGuards(AtGuard)
+  @Patch(':id/profilePhoto')
+  async updateImg(@Param('id') id: string, @Body() createUserImgDto: CreateUserImgDto) {
+
+    try {
+
+      const userUpdateImg = await this.usersService.updateImg(id, createUserImgDto)
+      return userUpdateImg
+
+    }catch(error){
+      console.log(error)
+      return Util?.handleTryCatchError('User data Not updated');
+    }
+  };
+  
 
 
   @ApiTags('Users')
@@ -159,8 +189,6 @@ export class UsersController {
         throw new Error('User data not Found')
       } 
 
-      // return this.usersService.remove(id);
-
       Object.assign(user)
       await user.destroy()
       return Util?.handleSuccessRespone(Util?.SuccessRespone,"User data deleted successfully.")
@@ -169,12 +197,11 @@ export class UsersController {
       console.log(error)
       return Util?.handleTryCatchError(Util?.getTryCatchMsg(error));
     }
-
   }
      
   @ApiTags('Users')
-  // @UseGuards(AuthGuard('jwt'))
-  // @ApiBearerAuth('defaultBearerAuth')
+  @UseGuards(AuthGuard('jwt'))
+  @ApiBearerAuth('defaultBearerAuth')
   @ApiOperation({summary:'Change Password Of User By Id'})
   @Public()
   @UseGuards(AtGuard)
@@ -187,8 +214,7 @@ export class UsersController {
       } catch (error) {
         console.log(error)
         return Util?.handleTryCatchError(Util?.getTryCatchMsg(error))
-      }
-     
+      } 
     }
 
 
@@ -202,6 +228,7 @@ export class UsersController {
   async restoreUser(@Param('id') id: string){
     return this.usersService.restoreUser(id)
   }
+
 
 
 

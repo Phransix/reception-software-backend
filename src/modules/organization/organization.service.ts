@@ -13,12 +13,9 @@ import { LoginDTO } from 'src/guard/auth/loginDTO';
 import { Role } from '../role/entities/role.entity';
 import { AuthPassService } from 'src/guard/auth/authPass.service';
 import { ResetPasswordService } from 'src/helper/ResetPassHelper';
-import { JwtService } from '@nestjs/jwt';
-// import { ConfigService } from '@nestjs/config';
-
-
-// import { AuthService } from 'src/auth/auth.service';
 import * as argon from 'argon2';
+import { orgImageUploadProfile } from 'src/helper/organizationsProfile';
+import { CreateOrganizationImgDto } from './dto/create-organizationImg.dto';
 
 
 
@@ -33,8 +30,8 @@ export class OrganizationService {
     private emailService:EmailService,
     private resetPasswordService: ResetPasswordService,
     private readonly authPassService: AuthPassService,
-    // private jwtService: JwtService,
-    // private config: ConfigService,
+    private imgHelper: orgImageUploadProfile
+   
   
     ){}
 
@@ -43,14 +40,33 @@ export class OrganizationService {
     let t = await this.sequelize?.transaction();
     try {
 
+      var image_matches = createOrganizationDto.profilePhoto?.match(
+        /^data:([A-Za-z-+\/]+);base64,(.+)$/
+      )
+      if(!image_matches){
+        return Util?.handleFailResponse('Invalid Input file')
+      }
+
+      let orgProfile = await this?.imgHelper?.uploadOrganizationImage(createOrganizationDto?.profilePhoto)
      
+
+      let insertQry = {
+      
+        organizationName: createOrganizationDto?.organizationName,
+        email: createOrganizationDto?.email,
+        phoneNumber: createOrganizationDto?.phoneNumber,
+        profilePhoto: orgProfile
+      }
+      console.log(insertQry)
+
+      // return false
 
       let ran_password = await this.makeid(8)
       const hash = await argon.hash(ran_password);
      
 ;
       const organization = await this.organizationModel?.create({ ...createOrganizationDto}, { transaction: t })
-      let role = await this?.role?.findOne({where:{name:'admin'}});
+      let role = await this?.role?.findOne({where:{name:'Admin'}});
 
       if(!role)
       throw new ForbiddenException('Role Not Found');
@@ -59,13 +75,16 @@ export class OrganizationService {
       let org_data = {
         
         organizationId: organization?.organizationId,
-        roleId: role?.roleId,
+        name: role?.name,
+        // roleName: User?.roleName,
         fullName: createOrganizationDto?.fullName,
         email: organization?.email,
         phoneNumber: createOrganizationDto?.phoneNumber,
         password:hash
         
       }
+      console.log(org_data)
+      // return false
 
       let mail_data = {
         
@@ -78,7 +97,9 @@ export class OrganizationService {
         
       }
       const user = await this.user?.create({ ...org_data }, { transaction: t })
-      await this.emailService.sendMailNotification({...mail_data})
+     let verifyToken = await this.emailService.sendMailNotification({...mail_data})
+     console.log(verifyToken)
+
        await this.emailService?.sendDeaultPassword({...mail_data})
       
 
@@ -129,6 +150,8 @@ export class OrganizationService {
     }
   };
     
+
+
   // Login
   // async validateUser(loginDto: LoginDTO){
   //   const {email,password} = loginDto
@@ -231,7 +254,21 @@ export class OrganizationService {
         throw new Error('Organization not found.');
       }
 
-      Object.assign(org, updateOrganizationDto)
+      let orgProfile = await this?.imgHelper?.uploadOrganizationImage(updateOrganizationDto?.profilePhoto)
+
+      let insertQry = {
+        
+        organizationName: updateOrganizationDto?.organizationName,
+        email: updateOrganizationDto?.email,
+        phoneNumber: updateOrganizationDto?.phoneNumber,
+        profilePhoto: orgProfile,
+        
+      }
+      console.log(insertQry)
+
+      // return false
+
+      Object.assign({org, ...insertQry })
       await org.save()
       return Util?.handleSuccessRespone(Util?.SuccessRespone, "Organization updated successfully.")
 
@@ -242,6 +279,50 @@ export class OrganizationService {
 
 
   }
+
+
+   // Update Organization Profile Photo
+   async updateImg(id: string, createOrganizationImgDto: CreateOrganizationImgDto){
+
+    try {
+      const user_data  = await this.organizationModel.findOne({where:{id}})
+      if(!user_data){
+        return Util?.handleFailResponse(`Organization with this #${id} not found`)
+      }
+
+      if (
+        createOrganizationImgDto?.profilePhoto == null ||
+        createOrganizationImgDto?.profilePhoto == undefined ||
+        createOrganizationImgDto?.profilePhoto == ""
+      ){
+        return Util?.handleFailResponse('File Can not be empty')
+      }
+
+      var image_matches = createOrganizationImgDto?.profilePhoto?.match(
+        /^data:([A-Za-z-+\/]+);base64,(.+)$/
+      )
+      if(!image_matches){
+        return Util?.handleFailResponse('Invalid Input file')
+      }
+
+      let staff_image = await this?.imgHelper?.uploadOrganizationImage(createOrganizationImgDto?.profilePhoto)
+       
+      let insertQry = {
+        profilePhoto: staff_image  
+      }
+      console.log(insertQry)
+
+      Object.assign({user_data, ...insertQry})
+      await user_data.save()
+      return Util?.handleSuccessRespone(user_data,`Organization with this #${id} and Image updated successfully`)
+ 
+    } catch (error) {
+      console.log(error)
+      return Util?.handleFailResponse(`Organization with this #${id} and Image not Updated`)
+    }
+
+  }
+
 
   // Delete By Id
   async remove(id: string) {

@@ -29,7 +29,7 @@ module.exports = {
         onDelete: 'CASCADE'
       },
 
-      visitorFullname: {
+      enquirerFullName: {
         allowNull: false,
         type: Sequelize.STRING,
       },
@@ -48,12 +48,17 @@ module.exports = {
 
       purpose: {
         allowNull: false,
-        type: Sequelize.ENUM('official', 'personal'),
-      },
-
-      enquiryDescription: {
-        allowNull: false,
-        type: Sequelize.STRING,
+        type: Sequelize.ENUM(
+          'Official', 
+          'Personal',
+          'Partnership',
+          'Legal',
+          'Career',
+          'Sales',
+          'Complaints',
+          'Payments',
+          'Investments',
+          'Events')
       },
 
       createdAt: {
