@@ -1,6 +1,7 @@
 
 import { BelongsTo, Column, DataType, ForeignKey, Table,Model, HasMany } from "sequelize-typescript";
 import { Organization } from "src/modules/organization/entities/organization.entity";
+import { Purpose } from "src/modules/purpose/entities/purpose.entity";
 import { Staff } from "src/modules/staff/entities/staff.entity";
 const { v4: uuidv4 } = require('uuid');
 
@@ -52,8 +53,10 @@ organizationId: string;
    })
    departmentRoomNum: string;
 
-
    @HasMany(() => Staff)
    staff: Staff[]
+
+   @HasMany(() => Purpose)
+   purpose: Purpose[]
 
 }

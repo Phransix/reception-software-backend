@@ -22,12 +22,19 @@ export class CreateDeliveryDto {
     readonly organizationId: string;
 
     @ApiProperty({
+        description: 'The Id of the unit',
+        example: '0ebf89e0-1606-4f8a-ad7c-39f4a3424028'
+    })
+    // @IsNotEmpty()
+    readonly unitId: string;
+
+    @ApiProperty({
         description: 'The sender of the Delivery',
         example: 'Akoto'
     })
     @IsString()
     @IsNotEmpty()
-    readonly visitorFullname: string;
+    readonly from: string;
 
     @ApiProperty({
         description: 'The receipient the Delivery',
@@ -35,7 +42,7 @@ export class CreateDeliveryDto {
     })
     @IsString()
     @IsNotEmpty()
-    readonly staff: string;
+    readonly receipientName: string;
 
     @ApiProperty({
         description: "The sender/'s phone  number",
@@ -43,15 +50,15 @@ export class CreateDeliveryDto {
     })
     @IsString()
     @IsNotEmpty()
-    readonly phoneNumber: string;
+    readonly receipientPhoneNumber: string;
 
     @ApiProperty({
         description: "The senders'/s email address",
         example: 'ansah@gmail.com'
     })
-    @IsString()
+    // @IsString()
     @IsEmail()
-    @IsNotEmpty()
+    // @IsNotEmpty()
     @Matches(/^[a-zA-Z0-9._%+-]+@.+\.com$/, {
         message: 'Invalid Format, must be a valid email with the .com',
      })
@@ -90,14 +97,29 @@ export class CreateDeliveryDto {
         description: "The quantity of delivery",
         example: '2'
     })
-    @IsString()
-    @IsNotEmpty()
+    // @IsString()
+    // @IsNotEmpty()
     readonly itemQuantity: string
+
+    @ApiProperty({
+        description: "The item name of delivery",
+        example: '2'
+    })
+    // @IsString()
+    // @IsNotEmpty()
+    readonly itemName: string
+
+    @ApiProperty({
+        description: "The title of the delivery",
+        example: 'Any important detail of the delivery'
+    })
+    // @IsString()
+    readonly documentTitle: string;
 
     @ApiProperty({
         description: "The Description of the delivery",
         example: 'Any important detail of the delivery'
     })
-    @IsString()
+    // @IsString()
     readonly itemDescription: string;
 }

@@ -8,5 +8,5 @@ export class deliveryConfirmDTO {
     })
     @IsString()
     @IsNotEmpty()
-    staff: string
+    receipientName: string
 }

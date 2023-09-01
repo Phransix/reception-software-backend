@@ -1,5 +1,6 @@
 
-import { BelongsTo, Column, DataType, ForeignKey, Model, Table } from "sequelize-typescript";
+import { BelongsTo, Column, DataType, ForeignKey, HasMany, Model, Table } from "sequelize-typescript";
+import { Guest } from "src/modules/guest/entities/guest.entity";
 import { Organization } from "src/modules/organization/entities/organization.entity";
 const { v4: uuidv4 } = require('uuid');
 
@@ -13,8 +14,8 @@ export class Enquiry extends Model<Enquiry>{
     allowNull: false,
     autoIncrement: true,
     primaryKey: true,
-})
-id: number
+  })
+  id: number
 
   @Column({
     defaultValue: uuidv4,
@@ -26,63 +27,61 @@ id: number
 
 
   @ForeignKey(() => Organization)
-    @Column({
-      defaultValue: uuidv4,
-        type: DataType.STRING,
-        allowNull: false,
-        unique:true,
-        references: {
-          model: {
-            tableName: 'Organization',
-          },
-          key: 'organizationId',
-        },
-        onDelete: 'CASCADE',
-    })
-    organizationId: string;
-     @BelongsTo(() => Organization)
-     organization: Organization
-   
-   
-    @Column({
-        type: DataType.STRING,
-        allowNull: false
-    })
-    visitorFullname: string;
+  @Column({
+    defaultValue: uuidv4,
+    type: DataType.STRING,
+    allowNull: false,
+    unique: true,
+    references: {
+      model: {
+        tableName: 'Organization',
+      },
+      key: 'organizationId',
+    },
+    onDelete: 'CASCADE',
+  })
+  organizationId: string;
+  @BelongsTo(() => Organization)
+  organization: Organization
 
-    @Column({
-       type: DataType.STRING,
-       allowNull:true
-    })
-    email:string;
 
-    @Column({
-      type: DataType.STRING,
-      allowNull: false
-    })
-    phoneNumber: string;
+  @Column({
+    type: DataType.STRING,
+    allowNull: false
+  })
+  visitorFullname: string;
 
-    @Column({
-      allowNull:false,
-      type: DataType.ENUM,
-      values: ['Official','Personal']
+  @Column({
+    type: DataType.STRING,
+    allowNull: true
+  })
+  email: string;
+
+  @Column({
+    type: DataType.STRING,
+    allowNull: false
+  })
+  phoneNumber: string;
+
+  @Column({
+    allowNull: false,
+    type: DataType.ENUM,
+    values: ['Official', 'Personal']
   })
   purpose: string;
 
 
-     @Column({
-       type: DataType.STRING,
-       allowNull: false
-     })
-     enquiryDescription: string
+  @Column({
+    type: DataType.STRING,
+    allowNull: false
+  })
+  enquiryDescription: string
 
-     @Column({
-      type : DataType.DATE,
-      allowNull: true,
-      defaultValue: null
-    })
-    deletedAt: Date
-
-    
+  @Column({
+    type: DataType.DATE,
+    allowNull: true,
+    defaultValue: null
+  })
+  deletedAt: Date
 
 }

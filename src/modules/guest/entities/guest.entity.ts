@@ -30,7 +30,7 @@ export class Guest extends Model<Guest>{
         unique: true,
         references: {
             model: {
-                tableName: 'Organization',
+                tableName: 'Organizations',
             },
             key: 'organizationId',
         },

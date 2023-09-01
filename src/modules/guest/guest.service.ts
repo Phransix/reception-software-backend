@@ -84,7 +84,7 @@ export class GuestService {
     }
   }
 
-  async guestSignIn (guestOpDTO: guestOpDTO){
+  async guestSignIn (guestOpDTO:guestOpDTO){
     const {phoneNumber} = guestOpDTO
     const guest = await this.GuestModel.findOne({where:{phoneNumber}})
     if (!guest) {
@@ -94,7 +94,7 @@ export class GuestService {
     }
   }
 
-  async guestSignOut (guestOpDTO: guestOpDTO){
+  async guestSignOut (guestOpDTO:guestOpDTO){
     const {phoneNumber} = guestOpDTO
     const guest = await this.GuestModel.findOne({where:{phoneNumber}})
     if (!guest) {

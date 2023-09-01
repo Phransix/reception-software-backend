@@ -1,15 +1,16 @@
+
 'use strict';
 
 /** @type {import('sequelize-cli').Migration} */
 module.exports = {
-  up: async (queryInterface, Sequelize) => {
+  async up (queryInterface, Sequelize) {
     /**
      * Add altering commands here.
      *
      * Example:
      * await queryInterface.createTable('users', { id: Sequelize.INTEGER });
      */
-    await queryInterface.createTable("Deliveries", {
+    await queryInterface.createTable("Deliveries",{
       id: {
         allowNull: false,
         autoIncrement: true,
@@ -22,6 +23,18 @@ module.exports = {
         allowNull: false,
         unique: true
       },
+      unitId: {
+        type: Sequelize.UUID,
+        defaultValue: Sequelize.UUIDV4,
+        allowNull: true,
+        references: {
+          model: {
+            tableName: 'Units',
+          },
+          key: 'unitId'
+        },
+        onDelete: 'CASCADE'
+      },
       organizationId: {
         type: Sequelize.UUID,
         allowNull: false,
@@ -33,17 +46,15 @@ module.exports = {
         },
         onDelete: 'CASCADE'
       },
-      visitorFullname: {
+      from: {
         type: Sequelize.STRING,
         allowNull: false,
-        required: true,
       },
-      staff: {
+      receipientName: {
         type: Sequelize.STRING,
         allowNull: false,
-        required: true,
       },
-      phoneNumber: {
+      receipientPhoneNumber: {
         type: Sequelize.STRING,
         allowNull: false,
         unique: true
@@ -52,63 +63,65 @@ module.exports = {
         type: Sequelize.STRING,
         allowNull: true,
         unique: true
-        // required:true,
-      },
-      // date_and_time: {
-      //   type: Sequelize.DATE,
-      //   allowNull: false,
-      // },
-      status: {
-        type: Sequelize.ENUM('delivered', 'awaiting_pickup'),
-        allowNull: false,
-        defaultValue: 'awaiting_pickup',
-        required: true,
-        validate: {
-          isIn: [['delivered', 'awaiting_pickup']]
-        }
       },
       type: {
         type: Sequelize.ENUM('document', 'food', 'other'),
-        allowNull: false,
+        allowNull: true,
         defaultValue: 'other',
-        required: true,
         validate: {
           isIn: [['document', 'food', 'other']]
         }
       },
+      status: {
+        type: Sequelize.ENUM('delivered', 'awaiting_pickup'),
+        allowNull: true,
+        defaultValue: 'awaiting_pickup',
+        validate: {
+          isIn: [['delivered', 'awaiting_pickup']]
+        }
+      },
+      documentTitle: {
+        type: Sequelize.STRING,
+        allowNull: true
+      },
       itemQuantity: {
         type: Sequelize.STRING,
-        allowNull: false
+        allowNull: true
+      },
+      itemName: {
+        type: Sequelize.STRING,
+        allowNull: true,
       },
       itemDescription: {
         type: Sequelize.STRING,
         allowNull: true,
       },
       createdAt: {
-        type: Sequelize.DATE,
         allowNull: false,
-        defaultValue: Sequelize.literal('CURRENT_TIMESTAMP'),
+        type: Sequelize.DATE
       },
       updatedAt: {
-        type: Sequelize.DATE,
         allowNull: false,
-        defaultValue: Sequelize.literal('CURRENT_TIMESTAMP'),
+        type: Sequelize.DATE
       },
+      
       deletedAt: {
         type: Sequelize.DATE,
-        allowNull: true,
-        defaultValue: null
-      },
+      allowNull: true,
+     defaultValue: null
+      }, 
+
     })
   },
 
-  down: async (queryInterface, Sequelize) => {
+  async down (queryInterface, Sequelize) {
     /**
      * Add reverting commands here.
      *
      * Example:
      * await queryInterface.dropTable('users');
      */
-    await queryInterface.dropTable('Deliveries');
+    await queryInterface.dropTable("Deliveries")
   }
 };
+

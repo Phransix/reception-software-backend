@@ -16,12 +16,13 @@ import { AuthPassService } from 'src/guard/auth/authPass.service';
 import { JwtModule, JwtService } from '@nestjs/jwt';
 import { AtStrategy, RtStrategy } from 'src/stratagies';
 import { defaultPaswordProcessor } from 'src/Processor/defaultPassword.processor';
+import { Delivery } from '../delivery/entities/delivery.entity';
 
 
 @Module({
   imports: [
     JwtModule.register({}),
-    SequelizeModule.forFeature([Organization,User,Role,]),
+    SequelizeModule.forFeature([Organization,User,Role]),
     BullModule.registerQueue({name:'emailVerification'},{name:'defaultPassword'},{name:'resetPassword'}),
     
   ],

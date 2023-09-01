@@ -90,15 +90,15 @@ export class DeliveryService {
 
   async deliveryConfirm (deliveryConfirmDTO: deliveryConfirmDTO){
 
-    const {staff} = deliveryConfirmDTO
+    const {receipientName} = deliveryConfirmDTO
     
-    const delivery = await this.DeliveryModel.findOne({where:{staff}})
+    const delivery = await this.DeliveryModel.findOne({where:{receipientName}})
     if(!delivery) {
       throw new HttpException('Delivery Confirmation Failed',HttpStatus.NOT_FOUND)
     }
     
     else {
-      await Delivery.update({status: 'delivered'},{where: {staff: staff}})
+      await Delivery.update({status: 'delivered'},{where: {receipientName: receipientName}})
       throw new HttpException('Delivery Confirmation Successful',HttpStatus.OK)
     }
   }
