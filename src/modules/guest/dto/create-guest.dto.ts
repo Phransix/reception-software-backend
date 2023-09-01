@@ -57,8 +57,8 @@ export class CreateGuestDto {
         example: '0546987415'
     })
     @IsNotEmpty()
-    @MaxLength(10)
-    @MinLength(10)
+    @MaxLength(9)
+    @MinLength(9)
     readonly phoneNumber: string
 
 }
