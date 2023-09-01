@@ -1,5 +1,5 @@
 import { ApiProperty } from "@nestjs/swagger";
-import { IsEnum, IsNotEmpty, IsString, MaxLength, MinLength, isNotEmpty } from "class-validator";
+import { IsEnum, IsMobilePhone, IsNotEmpty, IsString, MaxLength, MinLength, isNotEmpty } from "class-validator";
 
 enum Gender {
     MALE = 'male',
@@ -56,6 +56,7 @@ export class CreateGuestDto {
         description: "The phone number of the guest",
         example: '546987415'
     })
+    
     @IsNotEmpty()
     @MaxLength(9)
     @MinLength(9)
