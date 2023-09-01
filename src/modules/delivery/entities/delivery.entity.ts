@@ -1,8 +1,7 @@
 import { BelongsTo, Column, DataType, ForeignKey, HasMany, Model, Table } from "sequelize-typescript";
-// import { Document } from "src/modules/document/entities/document.entity";
-// import { Food } from "src/modules/food/entities/food.entity";
+import { Guest } from "src/modules/guest/entities/guest.entity";
 import { Organization } from "src/modules/organization/entities/organization.entity";
-// import { Other } from "src/modules/other/entities/other.entity";
+import { Unit } from "src/modules/unit/entities/unit.entity";
 const { v4: uuidv4 } = require('uuid');
 
 @Table({
@@ -26,6 +25,23 @@ export class Delivery extends Model <Delivery> {
       })
       deliveryId: string
 
+      @ForeignKey(() => Unit)
+      @Column({
+        defaultValue: uuidv4,
+          type: DataType.STRING,
+          allowNull: true,
+          unique:true,
+          references: {
+            model: {
+              tableName: 'Units',
+            },
+            key: 'unitId',
+          },
+          onDelete: 'CASCADE',
+      })
+      unitId: string;
+       @BelongsTo(() => Unit)
+       unit: Unit
 
       @ForeignKey(() => Organization)
       @Column({
@@ -35,7 +51,7 @@ export class Delivery extends Model <Delivery> {
           unique:true,
           references: {
             model: {
-              tableName: 'Organization',
+              tableName: 'Organizations',
             },
             key: 'organizationId',
           },
@@ -50,19 +66,19 @@ export class Delivery extends Model <Delivery> {
         type: DataType.STRING,
         allowNull: false
     })
-    visitorFullname: string
+    from: string
 
     @Column({
         type: DataType.STRING,
         allowNull: false
     })
-    staff: string
+    receipientName: string
 
     @Column({
         type: DataType.STRING,
         allowNull: false
     })
-    phoneNumber: string
+    receipientPhoneNumber: string
 
     @Column({
         type: DataType.STRING,
@@ -92,9 +108,21 @@ export class Delivery extends Model <Delivery> {
 
     @Column({
         type: DataType.STRING,
-        allowNull: false
+        allowNull: true
     })
     itemQuantity: string
+
+    @Column({
+        type: DataType.STRING,
+        allowNull: true
+    })
+    documentTitle: string
+
+    @Column({
+        type: DataType.STRING,
+        allowNull: true
+    })
+    itemName: string
 
     @Column({
         type: DataType.STRING,
@@ -109,12 +137,4 @@ export class Delivery extends Model <Delivery> {
     })
     deletedAt: Date
 
-    // @HasMany(() => Food)
-    // foods : Food[]
-
-    // @HasMany(() => Document)
-    // documents: Document[]
-
-    // @HasMany(() => Other)
-    // others: Other[]
 }

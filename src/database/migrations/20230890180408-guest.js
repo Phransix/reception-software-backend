@@ -9,82 +9,70 @@ module.exports = {
      * Example:
      * await queryInterface.createTable('users', { id: Sequelize.INTEGER });
      */
-    await queryInterface.createTable("Food",{
+    await queryInterface.createTable("Guests", {
       id: {
         allowNull: false,
         autoIncrement: true,
         primaryKey: true,
-        type: Sequelize.INTEGER,
+        type: Sequelize.INTEGER
       },
-      foodId: {
+      guestId: {
         type: Sequelize.UUID,
         defaultValue: Sequelize.UUIDV4,
         allowNull: false,
         unique: true
       },
-      deliveryId: {
-        type: Sequelize.UUID,
-        allowNull: false,
-        references: {
-          model:{
-            tableName: 'Deliveries',
-          },
-          key:'deliveryId'
-        },
-        onDelete: 'CASCADE'
-      },
       organizationId: {
         type: Sequelize.UUID,
         allowNull: false,
         references: {
-          model: {
+          model:{
             tableName: 'Organizations',
           },
-          key: 'organizationId'
+          key:'organizationId'
         },
         onDelete: 'CASCADE'
       },
-
-      from: {
+      firstName: {
         type: Sequelize.STRING,
         allowNull: false,
-        required: true,
       },
-      receipientName: {
+      lastName: {
         type: Sequelize.STRING,
         allowNull: false,
-        required: true,
       },
-      receipientPhoneNumber: {
+      gender: {
+        type: Sequelize.ENUM('male', 'female'),
+        allowNull: false,
+        validate: {
+          isIn: [['male','female']]
+        }
+      },
+      countryCode: {
         type: Sequelize.STRING,
         allowNull: false,
-        required:true,
         unique:true
       },
-      quantity: {
+      phoneNumber: {
         type: Sequelize.STRING,
-        allowNull: false
-      },
-
-      unit: {
-        type: Sequelize.STRING,
-        allowNull: false
+        allowNull: false,
+        unique:true
       },
       createdAt: {
+        type: Sequelize.DATE,
         allowNull: false,
-        type: Sequelize.DATE
+        defaultValue: Sequelize.literal('CURRENT_TIMESTAMP'),
       },
       updatedAt: {
+        type: Sequelize.DATE,
         allowNull: false,
-        type: Sequelize.DATE
+        defaultValue: Sequelize.literal('CURRENT_TIMESTAMP'),
       },
-      
       deletedAt: {
         type: Sequelize.DATE,
       allowNull: true,
      defaultValue: null
       }, 
-
     })
   },
 
@@ -95,6 +83,6 @@ module.exports = {
      * Example:
      * await queryInterface.dropTable('users');
      */
-    await queryInterface.dropTable("Food")
+    await queryInterface.dropTable('Guests')
   }
 };

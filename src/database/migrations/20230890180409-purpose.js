@@ -2,34 +2,35 @@
 
 /** @type {import('sequelize-cli').Migration} */
 module.exports = {
-  async up (queryInterface, Sequelize) {
+  up: async (queryInterface, Sequelize) => {
     /**
      * Add altering commands here.
      *
      * Example:
      * await queryInterface.createTable('users', { id: Sequelize.INTEGER });
      */
-    await queryInterface.createTable("Other",{
+    await queryInterface.createTable("Purposes", {
       id: {
         allowNull: false,
         autoIncrement: true,
         primaryKey: true,
         type: Sequelize.INTEGER,
       },
-      otherId: {
+      purposeId: {
         type: Sequelize.UUID,
         defaultValue: Sequelize.UUIDV4,
         allowNull: false,
         unique: true
       },
-      deliveryId: {
+      guestId: {
         type: Sequelize.UUID,
+        defaultValue: Sequelize.UUIDV4,
         allowNull: false,
         references: {
           model:{
-            tableName: 'Deliveries',
+            tableName: 'Guests',
           },
-          key:'deliveryId'
+          key:'guestId'
         },
         onDelete: 'CASCADE'
       },
@@ -37,68 +38,69 @@ module.exports = {
         type: Sequelize.UUID,
         allowNull: false,
         references: {
-          model: {
+          model:{
             tableName: 'Organizations',
           },
-          key: 'organizationId'
+          key:'organizationId'
         },
         onDelete: 'CASCADE'
       },
-      from: {
-        type: Sequelize.STRING,
-        allowNull: false,
-        required: true,
-      },
-      receipientName: {
-        type: Sequelize.STRING,
-        allowNull: false,
-        required: true,
-      },
-      receipientPhoneNumber: {
-        type: Sequelize.STRING,
+      purpose: {
+        type: Sequelize.ENUM('personal', 'official'),
         allowNull: false,
         required:true,
-        unique:true
+        defaultValue: 'official',
+        validate: {
+          isIn: [['personal', 'official']] 
+        }
       },
-      itemName: {
-        type: Sequelize.STRING,
-        allowNull: false,
-        required: true,
+      departmentId: {
+        type: Sequelize.UUID,
+        allowNull: true,
+        references: {
+          model:{
+            tableName: 'Departments',
+          },
+          key:'departmentId'
+        },
+        onDelete: 'CASCADE'
       },
-      quantity: {
-        type: Sequelize.STRING,
-        allowNull: false
-      },
-
-      unit: {
-        type: Sequelize.STRING,
-        allowNull: false
+      staffId: {
+        type: Sequelize.UUID,
+        allowNull: true,
+        references: {
+          model:{
+            tableName: 'Staffs',
+          },
+          key:'staffId'
+        },
+        onDelete: 'CASCADE'
       },
       createdAt: {
+        type: Sequelize.DATE,
         allowNull: false,
-        type: Sequelize.DATE
+        defaultValue: Sequelize.literal('CURRENT_TIMESTAMP'),
       },
       updatedAt: {
+        type: Sequelize.DATE,
         allowNull: false,
-        type: Sequelize.DATE
+        defaultValue: Sequelize.literal('CURRENT_TIMESTAMP'),
       },
-      
       deletedAt: {
         type: Sequelize.DATE,
       allowNull: true,
      defaultValue: null
       }, 
-
     })
   },
 
-  async down (queryInterface, Sequelize) {
+  down: async (queryInterface, Sequelize) => {
     /**
      * Add reverting commands here.
      *
      * Example:
      * await queryInterface.dropTable('users');
      */
-    await queryInterface.dropTable("Other")
+    await queryInterface.dropTable('Purposes');
   }
 };

@@ -2,14 +2,11 @@ import { Column, DataType, HasMany, Model, Table } from "sequelize-typescript";
 import { LoginDTO } from "src/guard/auth/loginDTO";
 import { Delivery } from "src/modules/delivery/entities/delivery.entity";
 import { Department } from "src/modules/department/entities/department.entity";
-// import { Document } from "src/modules/document/entities/document.entity";
 import { Enquiry } from "src/modules/enquiries/entities/enquiry.entity";
-// import { Food } from "src/modules/food/entities/food.entity";
 import { Guest } from "src/modules/guest/entities/guest.entity";
-// import { Other } from "src/modules/other/entities/other.entity";
+import { Purpose } from "src/modules/purpose/entities/purpose.entity";
 import { Staff } from "src/modules/staff/entities/staff.entity";
 import { User } from "src/modules/users/entities/user.entity";
-import { Visitor } from "src/modules/visitor/entities/visitor.entity";
 const { v4: uuidv4 } = require('uuid');
 
 @Table({
@@ -85,9 +82,6 @@ export class Organization extends Model<Organization>  {
     @HasMany(() => User)
     users: User[];
 
-    @HasMany(() => Visitor)
-    visitors: Visitor[];
-
     @HasMany(() => Delivery)
     deliveries: Delivery[];
 
@@ -97,20 +91,14 @@ export class Organization extends Model<Organization>  {
     @HasMany(() => Guest)
     guests: Guest[];
 
-    // @HasMany(() => Food)
-    // foods: Food[]
-
-    // @HasMany(() => Document)
-    // documents: Document[]
-
-    // @HasMany(() => Other)
-    // others: Other[]
-
     @HasMany(() => Department)
     department: Department[]
 
     @HasMany(() => Staff)
     staff: Staff[]
+
+    @HasMany(() => Purpose)
+    purpose: Purpose[]
 
     
   static organizationName: any;
