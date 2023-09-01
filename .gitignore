@@ -1,9 +1,7 @@
 # compiled output
 /dist
 /node_modules
-/public/organizationProfiles
-/public/staffProfiles
-/public/userProfiles
+/public
 .env
 
 # Logs
