@@ -15,7 +15,7 @@ export class StaffController {
   constructor(private readonly staffService: StaffService) {}
 
 
-// Create Staff
+// Create New Staff
   // @UseGuards(AuthGuard('jwt'))
   // @ApiBearerAuth('defaultBearerAuth')
   @ApiOperation({summary:'Create New Staff'})
@@ -28,8 +28,8 @@ export class StaffController {
 
 
 // Get All Staffs
-  @UseGuards(AuthGuard('jwt'))
-  @ApiBearerAuth('defaultBearerAuth')
+  // @UseGuards(AuthGuard('jwt'))
+  // @ApiBearerAuth('defaultBearerAuth')
   @ApiOperation({summary:'Get All Staff'})
   @Public()
   @UseGuards(AtGuard)
@@ -52,8 +52,8 @@ export class StaffController {
 
 
   // Update Staff By Id
-  @UseGuards(AuthGuard('jwt'))
-  @ApiBearerAuth('defaultBearerAuth')
+  // @UseGuards(AuthGuard('jwt'))
+  // @ApiBearerAuth('defaultBearerAuth')
   @ApiOperation({summary:'Update Staff By Id'})
   @Public()
   @UseGuards(AtGuard)
@@ -64,8 +64,8 @@ export class StaffController {
 
 
   // Update Staff Profile Photo
-  @UseGuards(AuthGuard('jwt'))
-@ApiBearerAuth('defaultBearerAuth')
+  // @UseGuards(AuthGuard('jwt'))
+// @ApiBearerAuth('defaultBearerAuth')
 @ApiOperation({summary:'Update Staff Image By Id'})
 @Public()
 @UseGuards(AtGuard)

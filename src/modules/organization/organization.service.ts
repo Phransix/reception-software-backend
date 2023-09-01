@@ -346,7 +346,6 @@ export class OrganizationService {
   }
 
 
-
   // Restore Deleted Data
   async restoreUser(id:string){
 
@@ -361,6 +360,68 @@ export class OrganizationService {
     }
  
   }
+
+    // Forget Password
+    async forgetPassword(email: ForgotPasswordDto) {
+      try {
+        let user = await this.user.findOne({ where: { ...email } });
+  
+  
+        if (!user) return Util.handleForbiddenExceptionResponses('Invaild Email');
+        // await this.resetPasswordService.sendResstPasswordNotification(
+        //   user?.fullName,
+        //   user?.userId,
+        //   user?.email,
+        // );
+  
+        let send_Token = await this.resetPasswordService.sendResstPasswordNotification({...email})
+        console.log(send_Token)
+  
+        return Util.handleCreateSuccessRespone(
+          `Reset password link sent to ${user?.email}`,
+        );
+      } catch (error) {
+        return Util?.checkIfRecordNotFound(error)
+        // return Util.handleGrpcTryCatchError(Util.getTryCatchMsg(error));
+      }
+    }
+  
+  // Reset Password
+    async resetPassword(token: any, data: ResetPasswordDto) {
+      const t = await this.sequelize.transaction();
+  
+      try {
+  
+        const defaultPassword = data?.password;
+        // const saltRounds = 10;
+  
+       // Hash the defualt password
+       const hashedDefaultPassword = await argon.hash(defaultPassword);
+  
+        let decode = Util.verifyToken(token);
+        const user = await this?.user.findOne({
+          where: {
+            email: decode.email,
+          },
+        });
+  
+        if (!user) return Util.handleForbiddenExceptionResponses('Invaid email');
+  
+        let UpdateData = {
+          password: hashedDefaultPassword,
+        };
+        await this?.user.update(UpdateData, {
+          where: { email: user?.email },
+          transaction: t,
+        });
+        t.commit();
+        return Util.handleCreateSuccessRespone('Password Reset Successful');
+      } catch (error) {
+        t.rollback();
+        return Util?.checkIfRecordNotFound(error)
+      }
+    }
+  
 
 
   async findOneByorganizationName(organizationName: string): Promise<Organization> {
@@ -380,65 +441,7 @@ export class OrganizationService {
     return await this.organizationModel.findOne<Organization>({ where: { phoneNumber } })
   }
 
-  async forgetPassword(email: ForgotPasswordDto) {
-    try {
-      let user = await this.user.findOne({ where: { ...email } });
 
-
-      if (!user) return Util.handleForbiddenExceptionResponses('Invaild Email');
-      // await this.resetPasswordService.sendResstPasswordNotification(
-      //   user?.fullName,
-      //   user?.userId,
-      //   user?.email,
-      // );
-
-      let send_Token = await this.resetPasswordService.sendResstPasswordNotification({...email})
-      console.log(send_Token)
-
-      return Util.handleCreateSuccessRespone(
-        `Reset password link sent to ${user?.email}`,
-      );
-    } catch (error) {
-      return Util?.checkIfRecordNotFound(error)
-      // return Util.handleGrpcTryCatchError(Util.getTryCatchMsg(error));
-    }
-  }
-
-
-  async resetPassword(token: any, data: ResetPasswordDto) {
-    const t = await this.sequelize.transaction();
-
-    try {
-
-      const defaultPassword = data?.password;
-      // const saltRounds = 10;
-
-     // Hash the defualt password
-     const hashedDefaultPassword = await argon.hash(defaultPassword);
-
-      let decode = Util.verifyToken(token);
-      const user = await this?.user.findOne({
-        where: {
-          email: decode.email,
-        },
-      });
-
-      if (!user) return Util.handleForbiddenExceptionResponses('Invaid email');
-
-      let UpdateData = {
-        password: hashedDefaultPassword,
-      };
-      await this?.user.update(UpdateData, {
-        where: { email: user?.email },
-        transaction: t,
-      });
-      t.commit();
-      return Util.handleCreateSuccessRespone('Password Reset Successful');
-    } catch (error) {
-      t.rollback();
-      return Util?.checkIfRecordNotFound(error)
-    }
-  }
 
 
 

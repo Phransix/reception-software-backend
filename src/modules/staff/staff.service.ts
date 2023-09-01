@@ -18,6 +18,7 @@ export class StaffService {
          private staffImgHelper: staffImageUploadProfile
   ){}
 
+  // Create New Staff
  async create(createStaffDto: CreateStaffDto) {
     try {
 
@@ -30,7 +31,6 @@ export class StaffService {
 
       let staff_image = await this?.staffImgHelper?.uploadStaffImage(createStaffDto?.profilePhoto)
        
-
       let insertQry = {
         
         organizationId:createStaffDto?.organizationId,
@@ -57,6 +57,7 @@ export class StaffService {
   };
 
 
+  // Get All Staffs
   async findAll() {
     try {
       const staffs = await Staff.findAll({
@@ -65,15 +66,16 @@ export class StaffService {
         exclude:['password','createdAt','updatedAt','deletedAt']
       },
       })
+      console.log(staffs)
       return Util?.handleSuccessRespone(staffs, "Staffs Data retrieved successfully.")
       
     } catch (error) {
       console.log(error)
       return Util?.handleTryCatchError(Util?.getTryCatchMsg(error));
     }
-   
   }
 
+  // Get Staff By The Id
   async findOne(id: string) {
     try {
       const staff = await Staff.findOne({
@@ -94,7 +96,7 @@ export class StaffService {
     
   }
 
-
+// Update Staff By The Id
   async update(id: string, updateStaffDto: UpdateStaffDto) {
     try {
       const staff_data  = await this.staffModel.findOne({where:{id}})
@@ -129,7 +131,7 @@ export class StaffService {
 
       Object.assign({staff_data, ...insertQry})
       await staff_data.save()
-      return Util?.handleSuccessRespone(staff_data,`Staff with this #${id} updated successfully`)
+      return Util?.handleCreateSuccessRespone(`Staff with this #${id} updated successfully`)
  
     } catch (error) {
       console.log(error)
@@ -137,7 +139,7 @@ export class StaffService {
     }
   }
 
-
+// Update Staff Profile Photo By The Id
   async updateImg(id: string, createStaffImgDto: CreateStaffImgDto) {
     try {
       const staff_data  = await this.staffModel.findOne({where:{id}})
@@ -169,7 +171,7 @@ export class StaffService {
 
       Object.assign({staff_data, ...insertQry})
       await staff_data.save()
-      return Util?.handleSuccessRespone(staff_data,`Staff with this #${id} and Image updated successfully`)
+      return Util?.handleCreateSuccessRespone(`Staff with this #${id} and Image updated successfully`)
  
     } catch (error) {
       console.log(error)
@@ -177,7 +179,7 @@ export class StaffService {
     }
   }
 
-
+// Delete Staff By The Id
  async remove(id: string) {
   try {
     const staff = await Staff.findOne({where:{id}})

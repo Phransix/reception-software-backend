@@ -207,7 +207,6 @@ async login(loginDto: LoginDTO){
 
 
   // Update User by Id
-
   async update(id: string, updateUserDto: UpdateUserDto) {
 
     try {
@@ -296,8 +295,7 @@ async login(loginDto: LoginDTO){
 
 
     // delete User by Id 
-  async remove(id: number) {
-
+   async remove(id: number) {
     try{
       const user = await User.findOne({where:{id}});
       if (!user) {
@@ -312,13 +310,11 @@ async login(loginDto: LoginDTO){
       console.log(error)
       return Util?.handleTryCatchError(Util?.getTryCatchMsg(error));
     }
-
   }
 
 
   // Restore Deleted Data
   async restoreUser(id:string){
-
     try {
 
       const organization = await this.userModel.restore({where:{id}})
