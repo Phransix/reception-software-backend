@@ -54,7 +54,7 @@ export class CreateGuestDto {
 
     @ApiProperty({
         description: "The phone number of the guest",
-        example: '0546987415'
+        example: '546987415'
     })
     @IsNotEmpty()
     @MaxLength(9)
