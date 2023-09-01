@@ -48,6 +48,11 @@ module.exports = {
           isIn: [['male','female']]
         }
       },
+      countryCode: {
+        type: Sequelize.STRING,
+        allowNull: false,
+        unique:true
+      },
       phoneNumber: {
         type: Sequelize.STRING,
         allowNull: false,

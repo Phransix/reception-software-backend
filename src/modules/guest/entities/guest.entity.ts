@@ -63,6 +63,12 @@ export class Guest extends Model<Guest>{
         type: DataType.STRING,
         allowNull: false
     })
+    countryCode: string
+
+    @Column({
+        type: DataType.STRING,
+        allowNull: false
+    })
     phoneNumber: string
 
     @Column({

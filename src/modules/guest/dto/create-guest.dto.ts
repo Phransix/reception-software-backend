@@ -44,6 +44,15 @@ export class CreateGuestDto {
     readonly gender : string
 
     @ApiProperty({
+        description: "The country code of the phone number",
+        example: '+233'
+    })
+    @IsNotEmpty()
+    @MaxLength(4)
+    @MinLength(4)
+    readonly countryCode: string
+
+    @ApiProperty({
         description: "The phone number of the guest",
         example: '0546987415'
     })
