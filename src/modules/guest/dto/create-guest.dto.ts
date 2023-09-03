@@ -1,5 +1,5 @@
 import { ApiProperty } from "@nestjs/swagger";
-import { IsEnum, IsNotEmpty, IsString, MaxLength, MinLength, isNotEmpty } from "class-validator";
+import { IsEnum, IsMobilePhone, IsNotEmpty, IsString, MaxLength, MinLength, isNotEmpty } from "class-validator";
 
 enum Gender {
     MALE = 'male',
@@ -7,6 +7,7 @@ enum Gender {
 }
 
 export class CreateGuestDto {
+
     @ApiProperty({
         description: 'The Id of the Organization',
         example: '0ebf89e0-1606-4f8a-ad7c-39f4a3424028'
@@ -43,13 +44,22 @@ export class CreateGuestDto {
     readonly gender : string
 
     @ApiProperty({
-        description: "The phone number of the guest",
-        example: '0546987415'
+        description: "The country code of the phone number",
+        example: '+233'
     })
     @IsNotEmpty()
-    @MaxLength(10)
-    @MinLength(10)
-    readonly phoneNumber: string
+    @MaxLength(4)
+    @MinLength(4)
+    readonly countryCode: string
 
+    @ApiProperty({
+        description: "The phone number of the guest",
+        example: '546987415'
+    })
+    
+    @IsNotEmpty()
+    @MaxLength(9)
+    @MinLength(9)
+    readonly phoneNumber: string
 
 }

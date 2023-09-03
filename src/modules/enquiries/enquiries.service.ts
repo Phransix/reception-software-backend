@@ -6,6 +6,7 @@ import { Sequelize } from 'sequelize-typescript';
 import { InjectModel } from '@nestjs/sequelize';
 import * as Util from '../../utils/index'
 import * as Abstract from '../../utils/abstract'
+import { Op } from 'sequelize';
 
 @Injectable()
 export class EnquiriesService {
@@ -91,7 +92,6 @@ export class EnquiriesService {
   };
 
 
-
   async remove(id: number) {
     try{
       const enquiry = await Enquiry.findOne({where:{id}});
@@ -107,7 +107,29 @@ export class EnquiriesService {
       console.log(error)
       return Util?.handleTryCatchError(Util?.getTryCatchMsg(error));
     }
-   
   }
+
+  async filterByCustomRange(startDate: Date, endDate:Date){
+    try {
+
+      let enquiryData = await Enquiry.findAll({
+        where:{
+          createdAt:
+          {
+            [Op.between]:[startDate,endDate]
+          }
+        },
+        attributes: {exclude:['createdAt','updatedAt','deletedAt']}
+      })
+      if(!enquiryData){
+        return Util?.handleFailResponse('The Enquiry data does not exist')
+      }
+      
+    } catch (error) {
+      console.log(error)
+      return Util?.handleErrorRespone('Enquiry data search failed')
+    }
+  }
+
 }
 

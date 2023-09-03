@@ -2,6 +2,7 @@ import { MailerService } from "@nestjs-modules/mailer";
 import { Process, Processor } from "@nestjs/bull";
 import { Logger } from "@nestjs/common";
 import { Job } from "bull";
+import { log } from "console";
 
 
 
@@ -21,6 +22,9 @@ export class ResetPasswordProcessor{
         let details = job.data?.details;
 
         try {
+
+            console.log(details);
+            
 
             await this.mailService.sendMail({
                 from: process.env.MAIL_FROM_ADDRESS,

@@ -1,18 +1,21 @@
-import { Controller, Get, Post, Body, Patch, Param, Delete, HttpException, HttpStatus, UseGuards } from '@nestjs/common';
+import { Controller, Get, Post, Body, Patch, Param, Delete, HttpException, HttpStatus, UseGuards, Query } from '@nestjs/common';
 import { GuestService } from './guest.service';
 import { CreateGuestDto } from './dto/create-guest.dto';
 import { UpdateGuestDto } from './dto/update-guest.dto';
 import { ApiBearerAuth, ApiOperation, ApiTags } from '@nestjs/swagger';
 import * as Util from '../../utils/index'
-import { guestLoginDTO } from 'src/guard/auth/guestLoginDTO';
+import { guestOpDTO} from 'src/guard/auth/guestOpDTO';
 import { Public } from 'src/common/decorators/public.decorator';
 import { AuthGuard } from '@nestjs/passport';
 import { AtGuard } from 'src/common/guards';
+import { Guest } from './entities/guest.entity';
+
 
 @Controller('guest')
 export class GuestController {
   constructor(private readonly guestService: GuestService) {}
 
+  @Public()
   @ApiTags('Guest')
   @Public()
   @ApiOperation({summary:'Create New Guest'})
@@ -33,11 +36,39 @@ export class GuestController {
   @Public()
   @UseGuards(AtGuard)
   @ApiTags('Guest')
-  @ApiOperation({summary:'Get All Guest'})
+  @ApiOperation({ summary: 'Get Guest By Pagination' })
   @Get('getAllGuest')
-  async findAll() {
-    return this.guestService.findAll();
+  async findAll(
+    @Query('page') page: number,
+    @Query('size') size: number,
+    @Query('length') length: number,
+  ) {
+    try {
+      let currentPage = Util.Checknegative(page);
+      if (currentPage)
+        return Util?.handleErrorRespone("Guest current page cannot be negative");
+
+      const { limit, offset } = Util.getPagination(page, size)
+
+      const guest = await Guest.findAndCountAll({
+        limit,
+        offset,
+        attributes: { exclude: ['createdAt', 'updatedAt', 'deletedAt'] }
+      });
+      const response = Util.getPagingData(guest, page, limit, length)
+      console.log(response)
+      // return this.deliveryService.findAll();
+      let newOne = { ...guest }
+      return Util?.handleSuccessRespone(newOne, "Guest Data retrieved succesfully")
+
+
+    } catch (error) {
+      console.log(error)
+      return Util?.handleFailResponse("Guest retrieval failed")
+    }
+
   }
+
 
   @UseGuards(AuthGuard('jwt'))
   @ApiBearerAuth('defaultBearerAuth')
@@ -98,16 +129,44 @@ export class GuestController {
     }
   }
 
+
   @Public()
   @ApiTags('Guest')
   @ApiOperation({summary:'Guest Sign In'})
   @Post('guestSignIn')
-  async signIn (@Body() guestloginDTO: guestLoginDTO){
-    const guest = this.guestService.guestSignIn(guestloginDTO)
+  async signIn (@Body() guestOpDTO: guestOpDTO){
+    const guest = this.guestService.guestSignIn(guestOpDTO)
     if (!guest) {
       throw new HttpException('Guest does not exist',HttpStatus.NOT_FOUND)
     } else {
       return guest
     }
   }
+
+  @Public()
+  @ApiTags('Guest')
+  @ApiOperation({summary:'Guest Sign Out'})
+  @Post('guestSignOut')
+  async signOut (@Body() guestOpDTO:guestOpDTO){
+    const guest = this.guestService.guestSignOut(guestOpDTO)
+    if (!guest) {
+      throw new HttpException('Guest does not exist',HttpStatus.NOT_FOUND)
+    } else {
+      return guest
+    }
+  }
+
+  // Search Guest by Firstnames
+  @UseGuards(AuthGuard('jwt'))
+  @ApiBearerAuth('defaultBearerAuth')
+  @Public()
+  @UseGuards(AtGuard)
+  @ApiTags('Guest')
+  @ApiOperation({summary:'Get Guest Name By Firstname Search'})
+  @Get()
+  async searchGuest (@Query('keyword') keyword: string){
+    return this.guestService.searchGuest(keyword);
+  }
+
+
 }

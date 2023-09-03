@@ -11,14 +11,14 @@ module.exports = {
      queryInterface.bulkInsert("Roles", [
       {
         roleId: uuidv4(),
-        name: 'admin',
+        name: 'Admin',
         status:true,
         createdAt: new Date(),
         updatedAt: new Date()
       },
       {
         roleId: uuidv4(),
-        name: 'receptionist',
+        name: 'Receptionist',
         status:true,
         createdAt: new Date(),
         updatedAt: new Date()

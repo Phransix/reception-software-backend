@@ -1,19 +1,20 @@
 import { BadRequestException, HttpException, HttpStatus, Injectable, NotAcceptableException } from '@nestjs/common';
-import { CreateDeliveryDto } from './dto/create-delivery.dto';
+import { CreateDeliveryDto} from './dto/create-delivery.dto';
 import { UpdateDeliveryDto } from './dto/update-delivery.dto';
 import { InjectModel } from '@nestjs/sequelize';
 import { Delivery } from './entities/delivery.entity';
 import * as Abstract from '../../utils/abstract'
 import * as Util from '../../utils/index'
-import { DATE } from 'sequelize';
+import { DATE, Op } from 'sequelize';
 import { deliveryConfirmDTO } from 'src/guard/auth/deliveryConfirmDTO';
+import { Guest } from '../guest/entities/guest.entity';
 
 @Injectable()
 export class DeliveryService {
   
 
   constructor(
-    @InjectModel(Delivery) private readonly DeliveryModel: typeof Delivery,
+    @InjectModel(Delivery) private readonly DeliveryModel: typeof Delivery
     ){}
 
   async create(createDeliveryDto: CreateDeliveryDto) {
@@ -30,7 +31,7 @@ export class DeliveryService {
     try {
       const delivery = await Delivery.findAll({
         attributes: {
-          exclude:['createdAt','updatedAt']
+          exclude:['createdAt','updatedAt','deletedAt']
         }
       })
       return Util?.handleSuccessRespone(delivery, "Deliveries Data retrieved Successfully")
@@ -49,7 +50,8 @@ export class DeliveryService {
       if (!delivery) {
         throw new NotAcceptableException('The Delivery does not exist')
       }
-      return Util?.handleSuccessRespone(delivery, "Delivery Data retrieved successfully")
+      // return Util?.handleSuccessRespone(delivery, "Delivery Data retrieved successfully")
+      return delivery
     } catch (error) {
       console.log(error)
       return Util?.handleFailResponse("Delivery retrieval failed")
@@ -89,18 +91,40 @@ export class DeliveryService {
 
   async deliveryConfirm (deliveryConfirmDTO: deliveryConfirmDTO){
 
-    const {staff} = deliveryConfirmDTO
+    const {receipientName} = deliveryConfirmDTO
     
-    const delivery = await this.DeliveryModel.findOne({where:{staff}})
+    const delivery = await this.DeliveryModel.findOne({where:{receipientName}})
     if(!delivery) {
       throw new HttpException('Delivery Confirmation Failed',HttpStatus.NOT_FOUND)
     }
     
     else {
-      await Delivery.update({status: 'delivered'},{where: {staff: staff}})
+      await Delivery.update({status: 'delivered'},{where: {receipientName: receipientName}})
       throw new HttpException('Delivery Confirmation Successful',HttpStatus.OK)
     }
   }
 
+  // Filter By Date Range
+  async findByDateRange(startDate: Date, endDate: Date){
+    try {
+      const deliver = await Delivery.findAll({
+        where:{
+          createdAt: 
+          {
+          [Op.between]: [startDate, endDate],
+        }
+      },
+        attributes: {exclude:['createdAt','updatedAt','deletedAt']}
+      });
+      if (!deliver) {
+        throw new NotAcceptableException('The Delivery data does not exist')
+      }
+      // return Util?.handleSuccessRespone(delivery,"Delivery data found")
+      return deliver
+    } catch (error) {
+      console.log(error)
+      return Util?.handleFailResponse("Delivery data search failed")
+    }
+  }
 
 }

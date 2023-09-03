@@ -30,7 +30,7 @@ export class Guest extends Model<Guest>{
         unique: true,
         references: {
             model: {
-                tableName: 'Organization',
+                tableName: 'Organizations',
             },
             key: 'organizationId',
         },
@@ -58,6 +58,12 @@ export class Guest extends Model<Guest>{
         allowNull: false
     })
     gender: string
+
+    @Column({
+        type: DataType.STRING,
+        allowNull: false
+    })
+    countryCode: string
 
     @Column({
         type: DataType.STRING,

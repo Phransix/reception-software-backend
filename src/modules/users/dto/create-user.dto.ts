@@ -1,22 +1,31 @@
 import { ApiProperty } from '@nestjs/swagger';
-import { IsEmail, IsNotEmpty, MaxLength, MinLength } from 'class-validator'
+import { IsEmail, IsNotEmpty, Matches, MaxLength, MinLength } from 'class-validator'
+import { Role } from 'src/modules/role/entities/role.entity';
+import { UserRole } from 'src/modules/role/role.enum';
 
 
 export class CreateUserDto {
 
-    @ApiProperty({
-        description: 'The Id of the Role',
-        example: '1'
-    })
-    @IsNotEmpty()
-    readonly roleId: string
+    // @ApiProperty({
+    //     description: 'The Id of the Role',
+    //     example: '459a791a-ae8e-4a14-85e5-a70df9d20deb'
+    // })
+    // @IsNotEmpty()
+    // readonly roleId: string
     
     @ApiProperty({
         description: 'The Id of the Organization',
-        example: '1'
+        example: 'a036ad92-bccf-405a-8876-6fd7f6bd1514'
     })
     @IsNotEmpty()
     readonly organizationId: string;
+
+    @ApiProperty({
+        description: 'The Name of the role',
+        example: 'Admin'
+    })
+    @IsNotEmpty()
+    readonly roleName: UserRole
  
     @ApiProperty({
         description: 'The fullName of the User/Customer',
@@ -32,6 +41,9 @@ export class CreateUserDto {
     })
     @IsNotEmpty()
     @IsEmail()
+    @Matches(/^[a-zA-Z0-9._%+-]+@.+\.com$/, {
+        message: 'Invalid Format, must be a valid email with the .com',
+     })
     readonly email: string;
 
     @ApiProperty({
@@ -44,7 +56,10 @@ export class CreateUserDto {
     readonly phoneNumber: string;
 
   
-    
+    @ApiProperty({
+        description: 'The profile imgae of the User/Receptionist',
+        example: 'data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAUAAAAFCAYAAACNbyblAAAAHElEQVQI12P4//8/w38GIAXDIBKE0DHxgljNBAAO9TXL0Y4OHwAAAABJRU5ErkJggg=='
+    })
     readonly profilePhoto: string;
      
 

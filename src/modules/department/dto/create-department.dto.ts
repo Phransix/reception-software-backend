@@ -8,7 +8,7 @@ export class CreateDepartmentDto {
 
     @ApiProperty({
         description: 'The Id of the Organization',
-        example: '1'
+        example: 'a036ad92-bccf-405a-8876-6fd7f6bd1514'
     })
     @IsNotEmpty()
     readonly organizationId: string;

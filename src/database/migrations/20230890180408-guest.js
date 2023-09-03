@@ -2,21 +2,21 @@
 
 /** @type {import('sequelize-cli').Migration} */
 module.exports = {
-  up: async (queryInterface, Sequelize) => {
+  async up (queryInterface, Sequelize) {
     /**
      * Add altering commands here.
      *
      * Example:
      * await queryInterface.createTable('users', { id: Sequelize.INTEGER });
      */
-    await queryInterface.createTable("Visitors", {
+    await queryInterface.createTable("Guests", {
       id: {
         allowNull: false,
         autoIncrement: true,
         primaryKey: true,
-        type: Sequelize.INTEGER,
+        type: Sequelize.INTEGER
       },
-      visitorId: {
+      guestId: {
         type: Sequelize.UUID,
         defaultValue: Sequelize.UUIDV4,
         allowNull: false,
@@ -33,43 +33,30 @@ module.exports = {
         },
         onDelete: 'CASCADE'
       },
-      visitorFullname: {
+      firstName: {
         type: Sequelize.STRING,
         allowNull: false,
-        required:true,
+      },
+      lastName: {
+        type: Sequelize.STRING,
+        allowNull: false,
+      },
+      gender: {
+        type: Sequelize.ENUM('male', 'female'),
+        allowNull: false,
+        validate: {
+          isIn: [['male','female']]
+        }
+      },
+      countryCode: {
+        type: Sequelize.STRING,
+        allowNull: false,
+        unique:true
       },
       phoneNumber: {
         type: Sequelize.STRING,
         allowNull: false,
-        required:true,
         unique:true
-      },
-      purpose: {
-        type: Sequelize.ENUM('personal', 'unofficial'),
-        allowNull: false,
-        required:true,
-        defaultValue: 'unofficial',
-        validate: {
-          isIn: [['personal', 'unofficial']] 
-        }
-      },
-      host: {
-        type: Sequelize.STRING,
-        allowNull: false,
-        required:true,
-      },
-      visitStatus: {
-        type: Sequelize.ENUM('signedIn', 'signedOut'),
-        allowNull: false,
-        required:true,
-        defaultValue: 'signedOut',
-        validate: {
-          isIn: [['signedIn', 'signedOut']] // Validates that the value is either 'active' or 'inactive'
-        }
-      },
-      date: {
-        type: Sequelize.DATE,
-        allowNull: false,
       },
       createdAt: {
         type: Sequelize.DATE,
@@ -89,13 +76,13 @@ module.exports = {
     })
   },
 
-  down: async (queryInterface, Sequelize) => {
+  async down (queryInterface, Sequelize) {
     /**
      * Add reverting commands here.
      *
      * Example:
      * await queryInterface.dropTable('users');
      */
-    await queryInterface.dropTable('Visitors');
+    await queryInterface.dropTable('Guests')
   }
 };

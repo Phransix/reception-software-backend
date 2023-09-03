@@ -15,14 +15,17 @@ import { UsersService } from '../users/users.service';
 import { AuthPassService } from 'src/guard/auth/authPass.service';
 import { JwtModule, JwtService } from '@nestjs/jwt';
 import { AtStrategy, RtStrategy } from 'src/stratagies';
+import { defaultPaswordProcessor } from 'src/Processor/defaultPassword.processor';
+import { Delivery } from '../delivery/entities/delivery.entity';
+import { imageUploadProfile } from 'src/helper/usersProfile';
+import { orgImageUploadProfile } from 'src/helper/organizationsProfile';
 
 
 @Module({
   imports: [
     JwtModule.register({}),
-    SequelizeModule.forFeature([Organization,User,Role,]),
-    BullModule.registerQueue({name:'emailVerification'}),
-    BullModule.registerQueue({name:'resetPassword'})
+    SequelizeModule.forFeature([Organization,User,Role]),
+    BullModule.registerQueue({name:'emailVerification'},{name:'defaultPassword'},{name:'resetPassword'}),
     
   ],
   controllers: [OrganizationController],
@@ -32,11 +35,15 @@ import { AtStrategy, RtStrategy } from 'src/stratagies';
     PasswordService,
     AuthPassService,
     ResetPasswordProcessor,
+    defaultPaswordProcessor,
     ResetPasswordService,
     UsersService,
     JwtService,
     AtStrategy,
-    RtStrategy
+    RtStrategy,
+    orgImageUploadProfile,
+    imageUploadProfile
+   
   ]
 
 

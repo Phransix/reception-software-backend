@@ -9,6 +9,9 @@ import { JwtModule, JwtService } from '@nestjs/jwt';
 import { AtStrategy, RtStrategy } from 'src/stratagies';
 import { AuthPassService } from 'src/guard/auth/authPass.service';
 import { PasswordService } from 'src/guard/passwordhash.service';
+import { RolesGuard } from 'src/common/guards/roles.guard';
+import { imageUploadProfile } from 'src/helper/usersProfile';
+// import { RolesGuard } from 'src/common/guards/roles.guard';
 
 
 
@@ -18,6 +21,6 @@ import { PasswordService } from 'src/guard/passwordhash.service';
     SequelizeModule.forFeature([User,Role,Organization])
   ],
   controllers: [UsersController],
-  providers: [UsersService,JwtService,AtStrategy,RtStrategy,AuthPassService,PasswordService]
+  providers: [UsersService,JwtService,AtStrategy,RtStrategy,AuthPassService,PasswordService,RolesGuard,imageUploadProfile]
 })
 export class UsersModule {}

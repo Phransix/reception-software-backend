@@ -12,7 +12,6 @@ import { APP_GUARD, APP_INTERCEPTOR } from '@nestjs/core';
 import { OrganizationModule } from './modules/organization/organization.module';
 import { UsersModule } from './modules/users/users.module';
 import { EnquiriesModule } from './modules/enquiries/enquiries.module';
-import { VisitorModule } from './modules/visitor/visitor.module';
 import { DeliveryModule } from './modules/delivery/delivery.module';
 import { AppService } from './app.service';
 import { RoleModule } from './modules/role/role.module';
@@ -30,16 +29,20 @@ import { DepartmentModule } from './modules/department/department.module';
 import { StaffModule } from './modules/staff/staff.module';
 import { AuthPassService } from './guard/auth/authPass.service';
 import { PasswordService } from './guard/passwordhash.service';
+import { UnitModule } from './modules/unit/unit.module';
+import { PurposeModule } from './modules/purpose/purpose.module';
+import { MulterModule } from '@nestjs/platform-express';
+import { imageUploadProfile } from './helper/usersProfile';
+import { staffImageUploadProfile } from './helper/staffProfiles';
+import { orgImageUploadProfile } from './helper/organizationsProfile';
+
+
 
 
 
 
 @Module({
   imports: [
-
-    // PaginateModule.forRoot({
-    //   url: 'http://localhost:3005',
-    // }),
     SequelizeModule.forFeature([User,Role,Organization]),
 
    
@@ -104,18 +107,16 @@ import { PasswordService } from './guard/passwordhash.service';
       ...DB_CONFIGS[process.env.NODE_ENV],
       autoLoadModels: true,
     }),
-    VisitorModule,
     DeliveryModule,
     OrganizationModule,
     UsersModule,
     EnquiriesModule,
-
-   
     RoleModule,
     GuestModule,
     DepartmentModule,
     StaffModule,
-    
+    UnitModule,
+    PurposeModule,
   ],
 
   controllers: [AppController],
@@ -126,7 +127,9 @@ import { PasswordService } from './guard/passwordhash.service';
     UsersService,
     AuthPassService,
     PasswordService,
-
+    imageUploadProfile,
+    staffImageUploadProfile,
+    orgImageUploadProfile,
     AppService,
 
      {
