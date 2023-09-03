@@ -54,9 +54,15 @@ export class Enquiry extends Model<Enquiry>{
 
   @Column({
     type: DataType.STRING,
-    allowNull: false
+    allowNull:false
   })
-  visitorFullname: string;
+  email:string
+
+  @Column({
+    type: DataType.STRING,
+    allowNull:false
+  })
+  phoneNumber:string
 
     @Column({
       allowNull:false,
@@ -75,6 +81,7 @@ export class Enquiry extends Model<Enquiry>{
       ]
   })
   purpose: string;
+
 
 
      @Column({

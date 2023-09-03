@@ -2,8 +2,16 @@ import { ApiProperty } from "@nestjs/swagger";
 import { IsEmail, IsEnum, IsNotEmpty, IsString, Matches, MaxLength, MinLength } from "class-validator";
 
 enum Purpose {
-    OFFICAIL = 'official',
-    PERSONAL = 'personal'
+    OFFICAIL = 'Official',
+    PERSONAL = 'Personal',
+    PARTNERSHIP= 'Partnership',
+    LEGAL = 'Legal',
+    CAREER = 'Career',
+    SALES = 'Sales',
+    COMPLAINTS = 'Complaints',
+    PAYMENTS = 'Payments',
+    INVESTMENTS = 'Investments',
+    EVENTS = 'Events'
 };
 
 
@@ -49,7 +57,7 @@ export class CreateEnquiryDto {
     })
     @IsNotEmpty()
     @IsEnum(Purpose, {
-        message: 'Purpose must be an official or personal '
+        message: 'Purpose must be an Official, Personal,Partnership,Legal,Career,Sales,Complaints,Payments,Investments,Events '
      })
     readonly purpose: string;
 

@@ -1,8 +1,14 @@
 
 
 import { ApiProperty } from '@nestjs/swagger';
-import { IsEmail, IsNotEmpty, Matches, MaxLength, MinLength } from 'class-validator'
+import { IsEmail, IsEnum, IsNotEmpty, Matches, MaxLength, MinLength } from 'class-validator'
 
+enum Title {
+    MR = 'Mr',
+    MRS = 'Mrs',
+    DR = 'Dr',
+    PROF = 'Prof'
+}
 
 export class CreateStaffDto {
 
@@ -24,7 +30,10 @@ export class CreateStaffDto {
 
     @ApiProperty({
         description: 'The Title of the Staff',
-        example: 'Prof'
+        example: 'Mr'
+    })
+    @IsEnum(Title,{
+        message: 'Title must be Mr, Mrs, Dr, Prof '
     })
     readonly title: string;
  
