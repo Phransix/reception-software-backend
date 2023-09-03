@@ -14,6 +14,7 @@ import * as argon from 'argon2';
 import { imageUploadProfile } from 'src/helper/usersProfile';
 import { CreateUserImgDto } from './dto/create-userImg.dto';
 import { query } from 'express';
+import { where } from 'sequelize';
 
 
 
@@ -56,7 +57,7 @@ export class UsersService {
         profilePhoto: user_image,
         password: hash
       }
-      console.log(insertQry)
+      // console.log(insertQry)
       
     //  return false
 
@@ -141,7 +142,7 @@ async login(loginDto: LoginDTO){
 
   let tokens =  await this?.getTokens(user.userId,user.email,user?.roleName)
 
-     console.log(tokens)
+    //  console.log(tokens)
     //return;
      let org_data ={
     id: user?.id,
@@ -235,7 +236,7 @@ async login(loginDto: LoginDTO){
         profilePhoto: user_image,
     
       }
-      console.log(insertQry)
+    
 
 
       Object.assign(user, updateUserDto)
@@ -251,6 +252,9 @@ async login(loginDto: LoginDTO){
 
   // Update User  Profile Photo
   async updateImg(id: string, createUserImgDto: CreateUserImgDto){
+
+    let rollImage = '';
+   // let InsertImg = '';
 
     try {
       const user_data  = await this.userModel.findOne({where:{id}})
@@ -274,18 +278,25 @@ async login(loginDto: LoginDTO){
       }
 
       let staff_image = await this?.imagehelper?.uploadUserImage(createUserImgDto?.profilePhoto)
+
+      rollImage = staff_image;
        
       let insertQrys = {
         profilePhoto: staff_image  
       }
-      console.log(insertQrys)
+   
+      await User?.update(insertQrys,
+        {
+          where:{id:user_data?.id}
+        }
+        )
 
-      Object.assign({user_data, ...insertQrys})
-      await user_data.save()
       return Util?.handleCreateSuccessRespone(`User with this #${id} and Image updated successfully`)
  
     } catch (error) {
-      console.log(error)
+      if (rollImage) {
+        await this.imagehelper.unlinkFile(rollImage);
+      }
       return Util?.handleFailResponse(`User with this #${id} and Image not Updated`)
     }
 

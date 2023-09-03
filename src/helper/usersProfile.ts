@@ -25,6 +25,17 @@ export class imageUploadProfile {
         // throw new Error('Failed to upload image.');
       }
     }
+
+
+  async unlinkFile(filePath: any) {
+    try {
+      fs.unlink(filePath, (err) => {
+        if (err) throw err;
+        console.log(`${filePath} was deleted`);
+      });
+    } catch (error) {}
+  }
+
   }
 
 
