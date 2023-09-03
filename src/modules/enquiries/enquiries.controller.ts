@@ -70,8 +70,8 @@ export class EnquiriesController {
     }
   }
 
-  @UseGuards(AuthGuard('jwt'))
-  @ApiBearerAuth('defaultBearerAuth')
+  // @UseGuards(AuthGuard('jwt'))
+  // @ApiBearerAuth('defaultBearerAuth')
   @ApiOperation({summary:'Get Enquiry By Id'})
   @Public()
   @UseGuards(AtGuard)
@@ -138,7 +138,7 @@ export class EnquiriesController {
   @Public()
   @UseGuards(AtGuard)
   @ApiTags('Enquiries')
-  @Get('filterByCustomRange')
+  @Get()
   async findEnquiryByDateRange(
     @Query('startDate') startDate: Date,
     @Query('endDate') endDate: Date,
@@ -147,12 +147,24 @@ export class EnquiriesController {
     try {
       const enquiryData = await this.enquiriesService.filterByCustomRange(startDate,endDate)
       return enquiryData
-      
+
     } catch (error) {
       console.log(error)
       return Util?.handleFailResponse('Enquiry data not found')
     }
-
   }
+
+
+  // Search Enquiry
+  //  @UseGuards(AuthGuard('jwt'))
+  // @ApiBearerAuth('defaultBearerAuth')
+  // @ApiOperation({summary:'Search Enquiry Data From The System'})
+  // @Public()
+  // @UseGuards(AtGuard)
+  // // @ApiTags('Enquiries')
+  // @Get()
+  // async searchEnquiry (@Query('keyword') keyword: string){
+  //   return  this?.enquiriesService?.searchEnquiry(keyword)
+  // }
 
 }

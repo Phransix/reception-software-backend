@@ -62,8 +62,8 @@ export class OrganizationController {
 
 
 // Get All Organization In the System
-  @UseGuards(AuthGuard('jwt'))
-  @ApiBearerAuth('defaultBearerAuth')
+  // @UseGuards(AuthGuard('jwt'))
+  // @ApiBearerAuth('defaultBearerAuth')
   @ApiOperation({summary:'Get All Organization'})
   @Public()
   @UseGuards(AtGuard)
@@ -81,6 +81,7 @@ export class OrganizationController {
 
  
   // Get Organization By The Id
+  @ApiTags('Organization')
   @UseGuards(AuthGuard('jwt'))
   @ApiBearerAuth('defaultBearerAuth')
   @ApiOperation({summary:'Get Organization By Id'})
@@ -120,12 +121,12 @@ export class OrganizationController {
   }
 
   // Update Organization  Profile Photo
-  @UseGuards(AuthGuard('jwt'))
-  @ApiBearerAuth('defaultBearerAuth')
+  // @UseGuards(AuthGuard('jwt'))
+  // @ApiBearerAuth('defaultBearerAuth')
   @ApiOperation({summary:'Update Organization Profile Photo By Id'})
   @Public()
   @UseGuards(AtGuard)
-  @Patch(':id')
+  @Patch(':id/profilePhoto')
   async updateImg(@Param('id') id: string, @Body()  createOrganizationImgDto: CreateOrganizationImgDto) {
 
     try {

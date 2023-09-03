@@ -157,8 +157,8 @@ export class GuestController {
   }
 
   // Search Guest by Firstnames
-  @UseGuards(AuthGuard('jwt'))
-  @ApiBearerAuth('defaultBearerAuth')
+  // @UseGuards(AuthGuard('jwt'))
+  // @ApiBearerAuth('defaultBearerAuth')
   @Public()
   @UseGuards(AtGuard)
   @ApiTags('Guest')

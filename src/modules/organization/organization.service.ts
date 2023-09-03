@@ -39,51 +39,32 @@ export class OrganizationService {
   async create(createOrganizationDto: CreateOrganizationDto) {
     let t = await this.sequelize?.transaction();
     try {
-
-      var image_matches = createOrganizationDto.profilePhoto?.match(
-        /^data:([A-Za-z-+\/]+);base64,(.+)$/
-      )
-      if(!image_matches){
-        return Util?.handleFailResponse('Invalid Input file')
-      }
-
-      let orgProfile = await this?.imgHelper?.uploadOrganizationImage(createOrganizationDto?.profilePhoto)
-     
-
       let insertQry = {
-      
         organizationName: createOrganizationDto?.organizationName,
         email: createOrganizationDto?.email,
         phoneNumber: createOrganizationDto?.phoneNumber,
-        profilePhoto: orgProfile
       }
       console.log(insertQry)
 
       // return false
-
       let ran_password = await this.makeid(8)
       const hash = await argon.hash(ran_password);
      
-;
       const organization = await this.organizationModel?.create({ ...createOrganizationDto}, { transaction: t })
       let role = await this?.role?.findOne({where:{name:'Admin'}});
 
       if(!role)
       throw new ForbiddenException('Role Not Found');
 
-      
       let org_data = {
-        
         organizationId: organization?.organizationId,
         name: role?.name,
-        // roleName: User?.roleName,
         fullName: createOrganizationDto?.fullName,
         email: organization?.email,
         phoneNumber: createOrganizationDto?.phoneNumber,
         password:hash
-        
       }
-      console.log(org_data)
+      // console.log(org_data)
       // return false
 
       let mail_data = {
@@ -246,7 +227,7 @@ export class OrganizationService {
 
   // Update By Id
   async update(id: string, updateOrganizationDto: UpdateOrganizationDto) {
-
+    let rollImage = '';
     try {
 
       const org = await Organization.findOne({ where: { id } });
@@ -255,6 +236,7 @@ export class OrganizationService {
       }
 
       let orgProfile = await this?.imgHelper?.uploadOrganizationImage(updateOrganizationDto?.profilePhoto)
+      rollImage = orgProfile
 
       let insertQry = {
         
@@ -267,13 +249,19 @@ export class OrganizationService {
       console.log(insertQry)
 
       // return false
+      await this?.organizationModel?.update(insertQry,
+        {
+          where:{id:org?.id}
+        })
 
       Object.assign({org, ...insertQry })
       await org.save()
       return Util?.handleSuccessRespone(Util?.SuccessRespone, "Organization updated successfully.")
 
     } catch (error) {
-      console.log(error)
+      if(rollImage){
+        await this?.imgHelper?.unlinkFile(rollImage)
+      }
       return Util?.handleTryCatchError(Util?.getTryCatchMsg(error));
     }
 
@@ -284,9 +272,11 @@ export class OrganizationService {
    // Update Organization Profile Photo
    async updateImg(id: string, createOrganizationImgDto: CreateOrganizationImgDto){
 
+    let rollImage = '';
+
     try {
-      const user_data  = await this.organizationModel.findOne({where:{id}})
-      if(!user_data){
+      const org_data  = await this.organizationModel.findOne({where:{id}})
+      if(!org_data){
         return Util?.handleFailResponse(`Organization with this #${id} not found`)
       }
 
@@ -305,19 +295,25 @@ export class OrganizationService {
         return Util?.handleFailResponse('Invalid Input file')
       }
 
-      let staff_image = await this?.imgHelper?.uploadOrganizationImage(createOrganizationImgDto?.profilePhoto)
-       
-      let insertQry = {
-        profilePhoto: staff_image  
-      }
-      console.log(insertQry)
+      let org_image = await this?.imgHelper?.uploadOrganizationImage(createOrganizationImgDto?.profilePhoto)
+      
+      rollImage = org_image
 
-      Object.assign({user_data, ...insertQry})
-      await user_data.save()
-      return Util?.handleSuccessRespone(user_data,`Organization with this #${id} and Image updated successfully`)
+      let insertQry = {
+        profilePhoto: org_image  
+      }
+      // console.log(insertQry)
+      await this?.organizationModel?.update(insertQry,
+        {
+          where:{id:org_data?.id}
+        })
+
+      return Util?.handleCreateSuccessRespone(`Organization with this #${id} and Image updated successfully`)
  
     } catch (error) {
-      console.log(error)
+      if(rollImage){
+        await this?.imgHelper?.unlinkFile(rollImage)
+      }
       return Util?.handleFailResponse(`Organization with this #${id} and Image not Updated`)
     }
 

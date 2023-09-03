@@ -98,6 +98,8 @@ export class StaffService {
 
 // Update Staff By The Id
   async update(id: string, updateStaffDto: UpdateStaffDto) {
+    let rollImage = '';
+
     try {
       const staff_data  = await this.staffModel.findOne({where:{id}})
       if(!staff_data){
@@ -112,10 +114,9 @@ export class StaffService {
       }
 
       let staff_image = await this?.staffImgHelper?.uploadStaffImage(updateStaffDto?.profilePhoto)
-       
+      rollImage = staff_image
 
       let insertQry = {
-        // roleId: createUserDto?.roleId,
         organizationId:updateStaffDto?.organizationId,
         departmentId: updateStaffDto?.departmentId,
         title: updateStaffDto?.title,
@@ -127,10 +128,12 @@ export class StaffService {
         profilePhoto: staff_image
         
       }
-      console.log(insertQry)
 
-      Object.assign({staff_data, ...insertQry})
-      await staff_data.save()
+      await this?.staffModel?.update(insertQry,
+        {
+          where:{id:staff_data?.id}
+        })
+
       return Util?.handleCreateSuccessRespone(`Staff with this #${id} updated successfully`)
  
     } catch (error) {
@@ -139,8 +142,10 @@ export class StaffService {
     }
   }
 
+
 // Update Staff Profile Photo By The Id
   async updateImg(id: string, createStaffImgDto: CreateStaffImgDto) {
+    let rollImage = '';
     try {
       const staff_data  = await this.staffModel.findOne({where:{id}})
       if(!staff_data){
@@ -163,18 +168,24 @@ export class StaffService {
       }
 
       let staff_image = await this?.staffImgHelper?.uploadStaffImage(createStaffImgDto?.profilePhoto)
+
+      rollImage = staff_image
        
       let insertQry = {
         profilePhoto: staff_image  
       }
-      console.log(insertQry)
+      
+       await this?.staffModel?.update(insertQry,
+        {
+          where:{id:staff_data?.id}
+        })
 
-      Object.assign({staff_data, ...insertQry})
-      await staff_data.save()
       return Util?.handleCreateSuccessRespone(`Staff with this #${id} and Image updated successfully`)
  
     } catch (error) {
-      console.log(error)
+      if(rollImage){
+        await this?.staffImgHelper?.unlinkFile(rollImage)
+      }
       return Util?.handleFailResponse(`Staff with this #${id} and Image not Updated`)
     }
   }

@@ -209,6 +209,8 @@ async login(loginDto: LoginDTO){
   // Update User by Id
   async update(id: string, updateUserDto: UpdateUserDto) {
 
+    let rollImage = '';
+        
     try {
 
       const user = await this.userModel.findOne({ where: { id } });
@@ -216,7 +218,6 @@ async login(loginDto: LoginDTO){
         // throw new Error('User not found.');
         return Util?.handleFailResponse(`User with this #${id} not found`)
       }
-
 
       var image_matches = updateUserDto.profilePhoto?.match(
         /^data:([A-Za-z-+\/]+);base64,(.+)$/
@@ -226,6 +227,7 @@ async login(loginDto: LoginDTO){
       }
 
       let user_image = await this?.imagehelper?.uploadUserImage(updateUserDto.profilePhoto)
+      rollImage = user_image;
 
       let insertQry = {
       
@@ -236,15 +238,19 @@ async login(loginDto: LoginDTO){
         profilePhoto: user_image,
     
       }
-    
+      
+      await this?.userModel?.update(insertQry,
+        {
+          where:{id:user?.id}
+        }
+        )
 
-
-      Object.assign(user, updateUserDto)
-      await user.save()
       return Util?.handleSuccessRespone(Util?.SuccessRespone, `User with this #${id} updated successfully`)
 
     } catch (error) {
-      console.log(error)
+      if (rollImage) {
+        await this.imagehelper.unlinkFile(rollImage);
+      }
       return Util?.handleTryCatchError('User not Updated');
     }
   };
@@ -277,12 +283,12 @@ async login(loginDto: LoginDTO){
         return Util?.handleFailResponse('Invalid Input file')
       }
 
-      let staff_image = await this?.imagehelper?.uploadUserImage(createUserImgDto?.profilePhoto)
+      let user_image = await this?.imagehelper?.uploadUserImage(createUserImgDto?.profilePhoto)
 
-      rollImage = staff_image;
+      rollImage = user_image;
        
       let insertQrys = {
-        profilePhoto: staff_image  
+        profilePhoto: user_image  
       }
    
       await this?.userModel?.update(insertQrys,
