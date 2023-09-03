@@ -13,6 +13,7 @@ import { ConfigService } from '@nestjs/config';
 import * as argon from 'argon2';
 import { imageUploadProfile } from 'src/helper/usersProfile';
 import { CreateUserImgDto } from './dto/create-userImg.dto';
+import { query } from 'express';
 
 
 
@@ -26,10 +27,9 @@ export class UsersService {
   private jwtService: JwtService,
   private config: ConfigService,
   private imagehelper : imageUploadProfile
-  
-  
   ){}
 
+ 
 
 //  Register New User
   async create(createUserDto: CreateUserDto)  {
@@ -163,15 +163,14 @@ async login(loginDto: LoginDTO){
 
 // Get All Users
   async findAll() {
-
     try {
+
       const users = await User.findAll({
       
       attributes:{
         exclude:['password','createdAt','updatedAt','deletedAt']
       },
     
-
       })
       return Util?.handleSuccessRespone(users, "Users Data retrieved successfully.")
 
@@ -218,14 +217,14 @@ async login(loginDto: LoginDTO){
       }
 
 
-      // var image_matches = updateUserDto.profilePhoto?.match(
-      //   /^data:([A-Za-z-+\/]+);base64,(.+)$/
-      // );
-      // if(!image_matches){
-      //   return Util?.handleFailResponse('Invalid Input file')
-      // }
+      var image_matches = updateUserDto.profilePhoto?.match(
+        /^data:([A-Za-z-+\/]+);base64,(.+)$/
+      );
+      if(!image_matches){
+        return Util?.handleFailResponse('Invalid Input file')
+      }
 
-      // let user_image = await this?.imagehelper?.uploadUserImage(updateUserDto.profilePhoto)
+      let user_image = await this?.imagehelper?.uploadUserImage(updateUserDto.profilePhoto)
 
       let insertQry = {
       
@@ -233,7 +232,7 @@ async login(loginDto: LoginDTO){
         fullName: updateUserDto?.fullName,
         email: updateUserDto?.email,
         phoneNumber: updateUserDto?.phoneNumber,
-        // profilePhoto: user_image,
+        profilePhoto: user_image,
     
       }
       console.log(insertQry)
@@ -293,7 +292,6 @@ async login(loginDto: LoginDTO){
   }
 
 
-
     // delete User by Id 
    async remove(id: number) {
     try{
@@ -327,25 +325,7 @@ async login(loginDto: LoginDTO){
  
   }
 
-
-   async findOneByuserEmail(email: string): Promise<User>{
-    return await this.userModel.findOne<User>({where: {email}})
-  }
-
- 
-  async findByemail(email: string){
-      return this.userModel.findOne({where:{email}})
-  }
-
-  async findById(id:number){
-    return this.userModel.findOne({where:{id}})
-  }
-
-  async findByEmail(email: string): Promise<User | undefined> {
-    return this.userModel.findOne({ where: { email } });
-  }
-
-//  Change User Password
+  //  Change User Password
   async changePass (id:number, changepassDto: ChangePassDTO){
     const {oldPassword,newPassword,confirmNewPassword} = changepassDto
 
@@ -375,6 +355,26 @@ async login(loginDto: LoginDTO){
     await user.save()
     return Util?.handleSuccessRespone(Util?.SuccessRespone, "Your Password has been changed successfully.")
   }
+
+
+
+   async findOneByuserEmail(email: string): Promise<User>{
+    return await this.userModel.findOne<User>({where: {email}})
+  }
+
+ 
+  async findByemail(email: string){
+      return this.userModel.findOne({where:{email}})
+  }
+
+  async findById(id:number){
+    return this.userModel.findOne({where:{id}})
+  }
+
+  async findByEmail(email: string): Promise<User | undefined> {
+    return this.userModel.findOne({ where: { email } });
+  }
+
 
 
 

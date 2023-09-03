@@ -22,6 +22,7 @@ import { UserRole } from '../role/role.enum';
 import { CreateUserImgDto } from './dto/create-userImg.dto';
 
 
+@ApiTags('Users')
 @Controller('users')
 export class UsersController {
   // roles: Role[]
@@ -89,8 +90,8 @@ export class UsersController {
 
 
   @ApiTags('Users')
-  @UseGuards(AuthGuard('jwt'))
-  @ApiBearerAuth('defaultBearerAuth')
+  // @UseGuards(AuthGuard('jwt'))
+  // @ApiBearerAuth('defaultBearerAuth')
   @ApiOperation({summary:'Get All Users'})
   @Public()
   @UseGuards(AtGuard)
@@ -109,8 +110,8 @@ export class UsersController {
   };
 
 
-  @ApiTags('Users')
-  @UseGuards(AuthGuard('jwt'))
+  // @ApiTags('Users')
+  // @UseGuards(AuthGuard('jwt'))
   @ApiBearerAuth('defaultBearerAuth')
   @ApiOperation({summary:'Get User By Id'})
   @Public()
@@ -167,15 +168,15 @@ export class UsersController {
 
     }catch(error){
       console.log(error)
-      return Util?.handleTryCatchError('User data Not updated');
+      return Util?.handleTryCatchError('User Profile Photo Not updated');
     }
   };
   
 
 
   @ApiTags('Users')
-  @UseGuards(AuthGuard('jwt'))
-  @ApiBearerAuth('defaultBearerAuth')
+  // @UseGuards(AuthGuard('jwt'))
+  // @ApiBearerAuth('defaultBearerAuth')
   @ApiOperation({summary:'Delete User By Id'})
   @Public()
   @UseGuards(AtGuard)
@@ -200,8 +201,8 @@ export class UsersController {
   }
      
   @ApiTags('Users')
-  @UseGuards(AuthGuard('jwt'))
-  @ApiBearerAuth('defaultBearerAuth')
+  // @UseGuards(AuthGuard('jwt'))
+  // @ApiBearerAuth('defaultBearerAuth')
   @ApiOperation({summary:'Change Password Of User By Id'})
   @Public()
   @UseGuards(AtGuard)
@@ -218,8 +219,8 @@ export class UsersController {
     }
 
 
-    @UseGuards(AuthGuard('jwt'))
-  @ApiBearerAuth('defaultBearerAuth')
+  //   @UseGuards(AuthGuard('jwt'))
+  // @ApiBearerAuth('defaultBearerAuth')
   @ApiOperation({summary:'Restore User Data By Id'})
   @Public()
   @UseGuards(AtGuard)
