@@ -285,7 +285,7 @@ async login(loginDto: LoginDTO){
         profilePhoto: staff_image  
       }
    
-      await User?.update(insertQrys,
+      await this?.userModel?.update(insertQrys,
         {
           where:{id:user_data?.id}
         }
