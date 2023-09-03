@@ -2,12 +2,18 @@ import { BelongsTo, Column, DataType, ForeignKey, HasMany, Model, Table } from "
 import { Guest } from "src/modules/guest/entities/guest.entity";
 import { Organization } from "src/modules/organization/entities/organization.entity";
 import { Unit } from "src/modules/unit/entities/unit.entity";
+import { CreateDeliveryDto } from "../dto/create-delivery.dto";
 const { v4: uuidv4 } = require('uuid');
+
+
 
 @Table({
     paranoid: true,
   })
 export class Delivery extends Model <Delivery> {
+  static findByDateRange(startDate: Date, endDate: Date) {
+    throw new Error('Method not implemented.');
+  }
 
     @Column({
         type: DataType.INTEGER,
@@ -136,5 +142,6 @@ export class Delivery extends Model <Delivery> {
         defaultValue: null
     })
     deletedAt: Date
+    
 
 }

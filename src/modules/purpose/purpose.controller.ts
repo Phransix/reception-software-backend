@@ -1,4 +1,4 @@
-import { Controller, Get, Post, Body, Patch, Param, Delete, UseGuards } from '@nestjs/common';
+import { Controller, Get, Post, Body, Patch, Param, Delete, UseGuards, Query, Req } from '@nestjs/common';
 import { PurposeService } from './purpose.service';
 import { CreatePurposeDto } from './dto/create-purpose.dto';
 import { UpdatePurposeDto } from './dto/update-purpose.dto';
@@ -6,6 +6,8 @@ import { ApiBearerAuth, ApiOperation, ApiTags } from '@nestjs/swagger';
 import { Public } from 'src/common/decorators/public.decorator';
 import * as Util from '../../utils/index'
 import { AuthGuard } from '@nestjs/passport';
+import { Purpose } from './entities/purpose.entity';
+import { AtGuard } from 'src/common/guards/at.guard';
 
 @Controller('purpose')
 export class PurposeController {
@@ -27,16 +29,45 @@ export class PurposeController {
     }
   }
 
-  @Public()
-  @ApiTags('Purpose')
-  @Public()
+
   @UseGuards(AuthGuard('jwt'))
   @ApiBearerAuth('defaultBearerAuth')
-  @ApiOperation({summary:'Get All Purposes'})
-  @Get('getAllPurpose')
-  async findAll() {
-    return this.purposeService.findAll();
+  @Public()
+  @UseGuards(AtGuard)
+  @ApiTags('Purpose')
+  @ApiOperation({ summary: 'Get Purpose By Pagination' })
+  @Get('getAllPurposes')
+  async findAll(
+    @Query('page') page: number,
+    @Query('size') size: number,
+    @Query('length') length: number,
+  ) {
+    try {
+      let currentPage = Util.Checknegative(page);
+      if (currentPage)
+        return Util?.handleErrorRespone("Purpose current page cannot be negative");
+
+      const { limit, offset } = Util.getPagination(page, size)
+
+      const purpose = await Purpose.findAndCountAll({
+        limit,
+        offset,
+        attributes: { exclude: ['createdAt', 'updatedAt', 'deletedAt'] }
+      });
+      const response = Util.getPagingData(purpose, page, limit, length)
+      console.log(response)
+      // return this.deliveryService.findAll();
+      let newOne = { ...purpose }
+      return Util?.handleSuccessRespone(newOne, "Purpose retrieved succesfully")
+
+
+    } catch (error) {
+      console.log(error)
+      return Util?.handleFailResponse("Purpose retrieval failed")
+    }
+
   }
+
 
   @Public()
   @ApiTags('Purpose')
