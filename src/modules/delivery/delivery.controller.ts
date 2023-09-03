@@ -14,14 +14,14 @@ import { AuthGuard } from '@nestjs/passport';
 @Controller('delivery')
 export class DeliveryController {
   userService: any;
-  constructor(private readonly deliveryService: DeliveryService) {}
+  constructor(private readonly deliveryService: DeliveryService) { }
 
   @UseGuards(AuthGuard('jwt'))
   @ApiBearerAuth('defaultBearerAuth')
   @Public()
   @UseGuards(AtGuard)
   @ApiTags('Delivery')
-  @ApiOperation({summary:'Create New Delivery'})
+  @ApiOperation({ summary: 'Create New Delivery' })
   @Post('createDelivery')
   async createDelivery(@Body() createDeliveryDto: CreateDeliveryDto) {
     try {
@@ -33,60 +33,43 @@ export class DeliveryController {
     }
   }
 
-  // @UseGuards(AuthGuard('jwt'))
-  // @ApiBearerAuth('defaultBearerAuth')
-  // @Public()
-  // @UseGuards(AtGuard)
-  // @ApiTags('Delivery')
-  // @ApiOperation({summary:'Get All Deliveries'})
-  // @Get('getAllDeliveries')
-  // async findAll() {
-  //   try {
-  //     const allDeliveries = await this.deliveryService.findAll()
-  //     return allDeliveries
-      
-  //   } catch (error) {
-  //     console.log(error)
-  //     return Util?.handleFailResponse("Deliveries retrieval failed")
-  //   }
-   
-  // }
 
   @UseGuards(AuthGuard('jwt'))
   @ApiBearerAuth('defaultBearerAuth')
   @Public()
   @UseGuards(AtGuard)
   @ApiTags('Delivery')
-  @ApiOperation({summary:'Get All Deliveries'})
+  @ApiOperation({ summary: 'Get Delivery By Pagination' })
   @Get('getAllDeliveries')
   async findAll(
     @Query('page') page: number,
     @Query('size') size: number,
     @Query('length') length: number,
-    @Req() req: Request
-    ) {
+  ) {
     try {
       let currentPage = Util.Checknegative(page);
-    if (currentPage)
-      return Util?.handleErrorRespone("Delivery current page cannot be negative");
+      if (currentPage)
+        return Util?.handleErrorRespone("Delivery current page cannot be negative");
 
-    const {limit, offset } = Util.getPagination(page, size)
+      const { limit, offset } = Util.getPagination(page, size)
 
-    const delivery = await Delivery.findAndCountAll({
-      limit,
-      offset,
-      // attributes: {exclude:['createdAt','updatedAt']}
-    });
-    const response = Util.getPagingData(delivery,page,limit,length)
-    console.log(response)
-    // return this.deliveryService.findAll();
-    return Util?.handleSuccessRespone(delivery,"Delivery retrieved succesfully")
+      const delivery = await Delivery.findAndCountAll({
+        limit,
+        offset,
+        attributes: { exclude: ['createdAt', 'updatedAt', 'deletedAt'] }
+      });
+      const response = Util.getPagingData(delivery, page, limit, length)
+      console.log(response)
+      // return this.deliveryService.findAll();
+      let newOne = { ...delivery }
+      return Util?.handleSuccessRespone(newOne, "Delivery retrieved succesfully")
+
 
     } catch (error) {
       console.log(error)
-      return Util?.handleTryCatchError(Util?.getTryCatchMsg(error))
+      return Util?.handleFailResponse("Delivery retrieval failed")
     }
-    
+
   }
 
   @UseGuards(AuthGuard('jwt'))
@@ -94,7 +77,7 @@ export class DeliveryController {
   @Public()
   @UseGuards(AtGuard)
   @ApiTags('Delivery')
-  @ApiOperation({summary:'Get All Delivery By Id'})
+  @ApiOperation({ summary: 'Get All Delivery By Id' })
   @Get(':id')
   async findOne(@Param('id') id: number) {
     try {
@@ -112,11 +95,11 @@ export class DeliveryController {
   @Public()
   @UseGuards(AtGuard)
   @ApiTags('Delivery')
-  @ApiOperation({summary:'Update Delivery By Id'})
+  @ApiOperation({ summary: 'Update Delivery By Id' })
   @Patch(':id')
   update(@Param('id') id: number, @Body() updateDeliveryDto: UpdateDeliveryDto) {
     try {
-      const delivery_Update = this.deliveryService.update(id,updateDeliveryDto)
+      const delivery_Update = this.deliveryService.update(id, updateDeliveryDto)
       return delivery_Update
     } catch (error) {
       console.log(error);
@@ -129,47 +112,69 @@ export class DeliveryController {
   @Public()
   @UseGuards(AtGuard)
   @ApiTags('Delivery')
-  @ApiOperation({summary:'Remove Delivery By Id'})
+  @ApiOperation({ summary: 'Remove Delivery By Id' })
   @Delete(':id')
   async remove(@Param('id') id: number) {
 
     try {
 
-      const delivery = await Delivery.findOne({where:{id}})
-      if(!delivery){
+      const delivery = await Delivery.findOne({ where: { id } })
+      if (!delivery) {
         return Util?.handleFailResponse("Delivery data not found")
       }
 
       Object.assign(delivery)
       await delivery.destroy()
-      return Util?.handleSuccessRespone(Util?.SuccessRespone,"Delivery data deleted successfully.")
+      return Util?.handleSuccessRespone(Util?.SuccessRespone, "Delivery data deleted successfully.")
 
-      
+
     } catch (error) {
       console.log(error)
       return Util?.handleTryCatchError("Delivery data not deleted")
-      
+
     }
 
   }
 
-  // Delivery Confirmation
-  @UseGuards(AuthGuard('jwt'))
-  @ApiBearerAuth('defaultBearerAuth')
-  @Public()
-  @UseGuards(AtGuard)
-  @ApiTags('Delivery')
-  @ApiOperation({summary:'Confirm Delivery By Receptionist'})
-  @Post('deliveryConfirmation')
-  async staffConfirm (@Body() deliveryConfirmDTO: deliveryConfirmDTO){
-    const deliveryTo = this.deliveryService.deliveryConfirm(deliveryConfirmDTO)
-    if (!deliveryTo) {
-      throw new HttpException('Staff does not exist',HttpStatus.NOT_FOUND)
-    } 
-    else {
-      return deliveryTo
-      // throw new HttpException('Item Delivered to staff successfully',HttpStatus.ACCEPTED)
-    }
+// Delivery Confirmation
+@UseGuards(AuthGuard('jwt'))
+@ApiBearerAuth('defaultBearerAuth')
+@Public()
+@UseGuards(AtGuard)
+@ApiTags('Delivery')
+@ApiOperation({ summary: 'Confirm Delivery By Receptionist' })
+@Post('deliveryConfirmation')
+async staffConfirm(@Body() deliveryConfirmDTO: deliveryConfirmDTO) {
+  const deliveryTo = this.deliveryService.deliveryConfirm(deliveryConfirmDTO)
+  if (!deliveryTo) {
+    throw new HttpException('Staff does not exist', HttpStatus.NOT_FOUND)
   }
+  else {
+    return deliveryTo
+    // throw new HttpException('Item Delivered to staff successfully',HttpStatus.ACCEPTED)
+  }
+}
+
+// Filter by Date Range
+@UseGuards(AuthGuard('jwt'))
+@ApiBearerAuth('defaultBearerAuth')
+@Public()
+@UseGuards(AtGuard)
+@ApiTags('Delivery')
+@ApiOperation({ summary: 'Filter Delivery by Custom Date Range' })
+@Get()
+async findDeliveryByDateRange(
+  @Query('startDate') startDate: Date,
+  @Query('endDate') endDate: Date,
+) {
+  try {
+    const deliver = await this.deliveryService.findByDateRange(startDate, endDate)
+    return deliver
+  } catch (error) {
+    console.log(error)
+    return Util?.handleFailResponse("Delivery data not found")
+  }
+}
+
 
 }

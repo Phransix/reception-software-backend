@@ -1,4 +1,4 @@
-import { BadRequestException,HttpException,HttpStatus,Injectable, NotAcceptableException } from '@nestjs/common';
+import { BadRequestException, HttpException, HttpStatus, Injectable, NotAcceptableException } from '@nestjs/common';
 import { CreateGuestDto } from './dto/create-guest.dto';
 import { UpdateGuestDto } from './dto/update-guest.dto';
 import { InjectModel } from '@nestjs/sequelize';
@@ -6,18 +6,19 @@ import { Guest } from './entities/guest.entity';
 import * as Abstract from '../../utils/abstract'
 import * as Util from '../../utils/index'
 import { guestOpDTO } from 'src/guard/auth/guestOpDTO';
+import { Op } from 'sequelize';
 
 @Injectable()
 export class GuestService {
-  
-  constructor (
+
+  constructor(
     @InjectModel(Guest) private readonly GuestModel: typeof Guest
-  ){}
+  ) { }
 
   // Creating a guest
   async create(createGuestDto: CreateGuestDto) {
     try {
-      await Abstract?.createData(Guest,createGuestDto);
+      await Abstract?.createData(Guest, createGuestDto);
       return Util?.handleCreateSuccessRespone("Guest Created Successfully")
     } catch (error) {
       console.log(error)
@@ -29,7 +30,7 @@ export class GuestService {
     try {
       const guest = await Guest.findAll({
         attributes: {
-          exclude:['createdAt','updatedAt']
+          exclude: ['createdAt', 'updatedAt']
         }
       })
       return Util?.handleSuccessRespone(guest, "Guest Data retrieval Successful")
@@ -41,13 +42,14 @@ export class GuestService {
 
   async findOne(id: number) {
     try {
-      const guest = await Guest.findOne({where: { id },
-        attributes: {exclude:['createdAt','updatedAt']}
+      const guest = await Guest.findOne({
+        where: { id },
+        attributes: { exclude: ['createdAt', 'updatedAt'] }
       });
       if (!guest) {
         throw new NotAcceptableException('The guest does not exist')
       }
-      return Util?.handleSuccessRespone(guest,'Guest data retrieved successfully')
+      return Util?.handleSuccessRespone(guest, 'Guest data retrieved successfully')
     } catch (error) {
       console.log(error)
       return Util?.handleFailResponse('Guest Data retrieval failed')
@@ -56,11 +58,11 @@ export class GuestService {
 
   async update(id: number, updateGuestDto: UpdateGuestDto) {
     try {
-      const guest = await Guest.findOne({where:{ id }});
+      const guest = await Guest.findOne({ where: { id } });
       if (!guest) {
         throw new NotAcceptableException('Guest data not found')
       }
-      Object.assign(guest,updateGuestDto)
+      Object.assign(guest, updateGuestDto)
       await guest.save()
       return Util?.handleSuccessRespone(guest, 'Guest data updated successfully')
     } catch (error) {
@@ -103,6 +105,26 @@ export class GuestService {
       throw new HttpException('Guest Sign Out failed', HttpStatus.UNAUTHORIZED)
     } else {
       throw new HttpException('Guest Sign Out successful', HttpStatus.ACCEPTED)
+    }
+  }
+
+  // Search guest by names
+  async searchGuest(keyword: string) {
+    try {
+      const guest = await this.GuestModel.findAll({
+        where: {
+          firstName: {
+            [Op.like]: `%${keyword}%`,
+          },
+        },
+      });
+      if (!guest) {
+        throw new HttpException('Guest not found', HttpStatus.NOT_FOUND)
+      }
+      return guest
+    } catch (error) {
+      console.log(error)
+      return Util?.handleFailResponse("Guest not found")
     }
   }
 
