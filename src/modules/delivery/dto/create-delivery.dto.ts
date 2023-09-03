@@ -13,6 +13,9 @@ enum Status {
 }
 
 export class CreateDeliveryDto {
+    static createdAt(createdAt: any, arg1: string) {
+      throw new Error('Method not implemented.');
+    }
 
     @ApiProperty({
         description: 'The Id of the Organization',

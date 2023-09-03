@@ -1,4 +1,4 @@
-import { Controller, Get, Post, Body, Patch, Param, Delete, HttpException, HttpStatus, UseGuards } from '@nestjs/common';
+import { Controller, Get, Post, Body, Patch, Param, Delete, HttpException, HttpStatus, UseGuards, Query } from '@nestjs/common';
 import { GuestService } from './guest.service';
 import { CreateGuestDto } from './dto/create-guest.dto';
 import { UpdateGuestDto } from './dto/update-guest.dto';
@@ -8,6 +8,7 @@ import { guestOpDTO} from 'src/guard/auth/guestOpDTO';
 import { Public } from 'src/common/decorators/public.decorator';
 import { AuthGuard } from '@nestjs/passport';
 import { AtGuard } from 'src/common/guards';
+import { Guest } from './entities/guest.entity';
 
 
 @Controller('guest')
@@ -35,10 +36,37 @@ export class GuestController {
   @Public()
   @UseGuards(AtGuard)
   @ApiTags('Guest')
-  @ApiOperation({summary:'Get All Guest'})
+  @ApiOperation({ summary: 'Get Guest By Pagination' })
   @Get('getAllGuest')
-  async findAll() {
-    return this.guestService.findAll();
+  async findAll(
+    @Query('page') page: number,
+    @Query('size') size: number,
+    @Query('length') length: number,
+  ) {
+    try {
+      let currentPage = Util.Checknegative(page);
+      if (currentPage)
+        return Util?.handleErrorRespone("Guest current page cannot be negative");
+
+      const { limit, offset } = Util.getPagination(page, size)
+
+      const guest = await Guest.findAndCountAll({
+        limit,
+        offset,
+        attributes: { exclude: ['createdAt', 'updatedAt', 'deletedAt'] }
+      });
+      const response = Util.getPagingData(guest, page, limit, length)
+      console.log(response)
+      // return this.deliveryService.findAll();
+      let newOne = { ...guest }
+      return Util?.handleSuccessRespone(newOne, "Guest Data retrieved succesfully")
+
+
+    } catch (error) {
+      console.log(error)
+      return Util?.handleFailResponse("Guest retrieval failed")
+    }
+
   }
 
 
@@ -127,5 +155,18 @@ export class GuestController {
       return guest
     }
   }
+
+  // Search Guest by Firstnames
+  @UseGuards(AuthGuard('jwt'))
+  @ApiBearerAuth('defaultBearerAuth')
+  @Public()
+  @UseGuards(AtGuard)
+  @ApiTags('Guest')
+  @ApiOperation({summary:'Get Guest Name By Firstname Search'})
+  @Get()
+  async searchGuest (@Query('keyword') keyword: string){
+    return this.guestService.searchGuest(keyword);
+  }
+
 
 }
