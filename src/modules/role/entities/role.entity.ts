@@ -42,8 +42,7 @@ export class Role extends Model<Role>{
       })
       deletedAt: Date
 
-    @HasMany(() => User)
-    users: User[];
+   
 }
 
 

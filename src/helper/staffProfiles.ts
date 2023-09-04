@@ -5,11 +5,11 @@ import {v4 as uuidv4} from 'uuid'
 var Buffer = require('buffer/').Buffer
 
 @Injectable() 
-export class orgImageUploadProfile {
+export class staffImageUploadProfile {
 
-    async uploadOrganizationImage(base64: string){
-      const organizationId = uuidv4();
-      const path = `public/organizationProfiles/${organizationId}.webp`;
+    async uploadStaffImage(base64: string){
+      const staffId= uuidv4();
+      const path = `public/staffProfiles/${staffId}.webp`;
       const base64Data = new Buffer.from(
         base64.replace(/^data:image\/\w+;base64,/, ''),
         'base64',
@@ -17,12 +17,14 @@ export class orgImageUploadProfile {
   
       try {
         fs.writeFileSync(path, base64Data, { encoding: 'base64' });
+
         return path;
       } catch (e) {
+        // console.log(e);
+        
         // throw new Error('Failed to upload image.');
       }
     }
-
 
     async unlinkFile(filePath: any) {
       try {
@@ -35,4 +37,6 @@ export class orgImageUploadProfile {
 
   }
 
+
+  
 

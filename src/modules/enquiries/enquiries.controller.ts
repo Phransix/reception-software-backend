@@ -1,4 +1,4 @@
-import { Controller, Get, Post, Body, Patch, Param, Delete, UseGuards } from '@nestjs/common';
+import { Controller, Get, Post, Body, Patch, Param, Delete, UseGuards, Query } from '@nestjs/common';
 import { EnquiriesService } from './enquiries.service';
 import { CreateEnquiryDto } from './dto/create-enquiry.dto';
 import { UpdateEnquiryDto } from './dto/update-enquiry.dto';
@@ -15,8 +15,8 @@ import { AtGuard } from 'src/common/guards';
 export class EnquiriesController {
   constructor(private readonly enquiriesService: EnquiriesService) {}
 
-  @UseGuards(AuthGuard('jwt'))
-  @ApiBearerAuth('defaultBearerAuth')
+  // @UseGuards(AuthGuard('jwt'))
+  // @ApiBearerAuth('defaultBearerAuth')
   @ApiOperation({summary:'Create New Enquiry'})
   @Public()
   @UseGuards(AtGuard)
@@ -32,16 +32,37 @@ export class EnquiriesController {
     }
   }
 
-  @UseGuards(AuthGuard('jwt'))
-  @ApiBearerAuth('defaultBearerAuth')
-  @ApiOperation({summary:'Get All Enquiries'})
+  // @UseGuards(AuthGuard('jwt'))
+  // @ApiBearerAuth('defaultBearerAuth')
+  @ApiOperation({summary:'Get All Enquiries By Pagination'})
   @Public()
   @UseGuards(AtGuard)
   @Get('getAllEnquiries')
-  async findAll() {
+  async findAll(
+    @Query('page') page: number,
+    @Query('size') size: number,
+    @Query('length') length: number,
+  ) {
     try {
-      const allQueries = this.enquiriesService.findAll()
-      return allQueries;
+
+      let currentPage = Util.Checknegative(page);
+      if (currentPage){
+        return Util?.handleErrorRespone("Guest current page cannot be negative");
+      }
+
+      const { limit, offset } = Util.getPagination(page, size)
+
+      const allQueries = await Enquiry?.findAndCountAll({
+        limit,
+        offset,
+        attributes: { exclude: ['createdAt', 'updatedAt', 'deletedAt'] }
+      })
+
+      let result = Util?.getPagingData(allQueries,page,limit,length)
+      console.log(result)
+
+      const dataResult = {...allQueries}
+      return Util?.handleSuccessRespone( dataResult,'Enquiries Data retrieved successfully.')
 
     }catch(error){
       console.log(error)
@@ -49,8 +70,8 @@ export class EnquiriesController {
     }
   }
 
-  @UseGuards(AuthGuard('jwt'))
-  @ApiBearerAuth('defaultBearerAuth')
+  // @UseGuards(AuthGuard('jwt'))
+  // @ApiBearerAuth('defaultBearerAuth')
   @ApiOperation({summary:'Get Enquiry By Id'})
   @Public()
   @UseGuards(AtGuard)
@@ -108,6 +129,42 @@ export class EnquiriesController {
       console.log(error)
       return Util?.handleTryCatchError(Util?.getTryCatchMsg(error)) 
      }
-
   }
+
+  // Filter By Custom Range
+  // @UseGuards(AuthGuard('jwt'))
+  // @ApiBearerAuth('defaultBearerAuth')
+  @ApiOperation({summary:'Filter Enquiry Data by Custom Date Range'})
+  @Public()
+  @UseGuards(AtGuard)
+  @ApiTags('Enquiries')
+  @Get()
+  async findEnquiryByDateRange(
+    @Query('startDate') startDate: Date,
+    @Query('endDate') endDate: Date,
+
+  ){
+    try {
+      const enquiryData = await this.enquiriesService.filterByCustomRange(startDate,endDate)
+      return enquiryData
+
+    } catch (error) {
+      console.log(error)
+      return Util?.handleFailResponse('Enquiry data not found')
+    }
+  }
+
+
+  // Search Enquiry
+  //  @UseGuards(AuthGuard('jwt'))
+  // @ApiBearerAuth('defaultBearerAuth')
+  // @ApiOperation({summary:'Search Enquiry Data From The System'})
+  // @Public()
+  // @UseGuards(AtGuard)
+  // // @ApiTags('Enquiries')
+  // @Get()
+  // async searchEnquiry (@Query('keyword') keyword: string){
+  //   return  this?.enquiriesService?.searchEnquiry(keyword)
+  // }
+
 }

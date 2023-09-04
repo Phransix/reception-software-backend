@@ -13,12 +13,9 @@ import { LoginDTO } from 'src/guard/auth/loginDTO';
 import { Role } from '../role/entities/role.entity';
 import { AuthPassService } from 'src/guard/auth/authPass.service';
 import { ResetPasswordService } from 'src/helper/ResetPassHelper';
-import { JwtService } from '@nestjs/jwt';
-// import { ConfigService } from '@nestjs/config';
-
-
-// import { AuthService } from 'src/auth/auth.service';
 import * as argon from 'argon2';
+import { orgImageUploadProfile } from 'src/helper/organizationsProfile';
+import { CreateOrganizationImgDto } from './dto/create-organizationImg.dto';
 
 
 
@@ -33,8 +30,8 @@ export class OrganizationService {
     private emailService:EmailService,
     private resetPasswordService: ResetPasswordService,
     private readonly authPassService: AuthPassService,
-    // private jwtService: JwtService,
-    // private config: ConfigService,
+    private imgHelper: orgImageUploadProfile
+   
   
     ){}
 
@@ -42,30 +39,33 @@ export class OrganizationService {
   async create(createOrganizationDto: CreateOrganizationDto) {
     let t = await this.sequelize?.transaction();
     try {
+      let insertQry = {
+        organizationName: createOrganizationDto?.organizationName,
+        email: createOrganizationDto?.email,
+        phoneNumber: createOrganizationDto?.phoneNumber,
+      }
+      console.log(insertQry)
 
-     
-
+      // return false
       let ran_password = await this.makeid(8)
       const hash = await argon.hash(ran_password);
      
-;
       const organization = await this.organizationModel?.create({ ...createOrganizationDto}, { transaction: t })
-      let role = await this?.role?.findOne({where:{name:'admin'}});
+      let role = await this?.role?.findOne({where:{name:'Admin'}});
 
       if(!role)
       throw new ForbiddenException('Role Not Found');
 
-      
       let org_data = {
-        
         organizationId: organization?.organizationId,
-        roleId: role?.roleId,
+        name: role?.name,
         fullName: createOrganizationDto?.fullName,
         email: organization?.email,
         phoneNumber: createOrganizationDto?.phoneNumber,
         password:hash
-        
       }
+      // console.log(org_data)
+      // return false
 
       let mail_data = {
         
@@ -78,7 +78,9 @@ export class OrganizationService {
         
       }
       const user = await this.user?.create({ ...org_data }, { transaction: t })
-      await this.emailService.sendMailNotification({...mail_data})
+     let verifyToken = await this.emailService.sendMailNotification({...mail_data})
+     console.log(verifyToken)
+
        await this.emailService?.sendDeaultPassword({...mail_data})
       
 
@@ -129,6 +131,8 @@ export class OrganizationService {
     }
   };
     
+
+
   // Login
   // async validateUser(loginDto: LoginDTO){
   //   const {email,password} = loginDto
@@ -223,7 +227,7 @@ export class OrganizationService {
 
   // Update By Id
   async update(id: string, updateOrganizationDto: UpdateOrganizationDto) {
-
+    let rollImage = '';
     try {
 
       const org = await Organization.findOne({ where: { id } });
@@ -231,17 +235,90 @@ export class OrganizationService {
         throw new Error('Organization not found.');
       }
 
-      Object.assign(org, updateOrganizationDto)
+      let orgProfile = await this?.imgHelper?.uploadOrganizationImage(updateOrganizationDto?.profilePhoto)
+      rollImage = orgProfile
+
+      let insertQry = {
+        
+        organizationName: updateOrganizationDto?.organizationName,
+        email: updateOrganizationDto?.email,
+        phoneNumber: updateOrganizationDto?.phoneNumber,
+        profilePhoto: orgProfile,
+        
+      }
+      console.log(insertQry)
+
+      // return false
+      await this?.organizationModel?.update(insertQry,
+        {
+          where:{id:org?.id}
+        })
+
+      Object.assign({org, ...insertQry })
       await org.save()
       return Util?.handleSuccessRespone(Util?.SuccessRespone, "Organization updated successfully.")
 
     } catch (error) {
-      console.log(error)
+      if(rollImage){
+        await this?.imgHelper?.unlinkFile(rollImage)
+      }
       return Util?.handleTryCatchError(Util?.getTryCatchMsg(error));
     }
 
 
   }
+
+
+   // Update Organization Profile Photo
+   async updateImg(id: string, createOrganizationImgDto: CreateOrganizationImgDto){
+
+    let rollImage = '';
+
+    try {
+      const org_data  = await this.organizationModel.findOne({where:{id}})
+      if(!org_data){
+        return Util?.handleFailResponse(`Organization with this #${id} not found`)
+      }
+
+      if (
+        createOrganizationImgDto?.profilePhoto == null ||
+        createOrganizationImgDto?.profilePhoto == undefined ||
+        createOrganizationImgDto?.profilePhoto == ""
+      ){
+        return Util?.handleFailResponse('File Can not be empty')
+      }
+
+      var image_matches = createOrganizationImgDto?.profilePhoto?.match(
+        /^data:([A-Za-z-+\/]+);base64,(.+)$/
+      )
+      if(!image_matches){
+        return Util?.handleFailResponse('Invalid Input file')
+      }
+
+      let org_image = await this?.imgHelper?.uploadOrganizationImage(createOrganizationImgDto?.profilePhoto)
+      
+      rollImage = org_image
+
+      let insertQry = {
+        profilePhoto: org_image  
+      }
+      // console.log(insertQry)
+      await this?.organizationModel?.update(insertQry,
+        {
+          where:{id:org_data?.id}
+        })
+
+      return Util?.handleCreateSuccessRespone(`Organization with this #${id} and Image updated successfully`)
+ 
+    } catch (error) {
+      if(rollImage){
+        await this?.imgHelper?.unlinkFile(rollImage)
+      }
+      return Util?.handleFailResponse(`Organization with this #${id} and Image not Updated`)
+    }
+
+  }
+
 
   // Delete By Id
   async remove(id: string) {
@@ -265,7 +342,6 @@ export class OrganizationService {
   }
 
 
-
   // Restore Deleted Data
   async restoreUser(id:string){
 
@@ -280,6 +356,68 @@ export class OrganizationService {
     }
  
   }
+
+    // Forget Password
+    async forgetPassword(email: ForgotPasswordDto) {
+      try {
+        let user = await this.user.findOne({ where: { ...email } });
+  
+  
+        if (!user) return Util.handleForbiddenExceptionResponses('Invaild Email');
+        // await this.resetPasswordService.sendResstPasswordNotification(
+        //   user?.fullName,
+        //   user?.userId,
+        //   user?.email,
+        // );
+  
+        let send_Token = await this.resetPasswordService.sendResstPasswordNotification({...email})
+        console.log(send_Token)
+  
+        return Util.handleCreateSuccessRespone(
+          `Reset password link sent to ${user?.email}`,
+        );
+      } catch (error) {
+        return Util?.checkIfRecordNotFound(error)
+        // return Util.handleGrpcTryCatchError(Util.getTryCatchMsg(error));
+      }
+    }
+  
+  // Reset Password
+    async resetPassword(token: any, data: ResetPasswordDto) {
+      const t = await this.sequelize.transaction();
+  
+      try {
+  
+        const defaultPassword = data?.password;
+        // const saltRounds = 10;
+  
+       // Hash the defualt password
+       const hashedDefaultPassword = await argon.hash(defaultPassword);
+  
+        let decode = Util.verifyToken(token);
+        const user = await this?.user.findOne({
+          where: {
+            email: decode.email,
+          },
+        });
+  
+        if (!user) return Util.handleForbiddenExceptionResponses('Invaid email');
+  
+        let UpdateData = {
+          password: hashedDefaultPassword,
+        };
+        await this?.user.update(UpdateData, {
+          where: { email: user?.email },
+          transaction: t,
+        });
+        t.commit();
+        return Util.handleCreateSuccessRespone('Password Reset Successful');
+      } catch (error) {
+        t.rollback();
+        return Util?.checkIfRecordNotFound(error)
+      }
+    }
+  
 
 
   async findOneByorganizationName(organizationName: string): Promise<Organization> {
@@ -299,65 +437,7 @@ export class OrganizationService {
     return await this.organizationModel.findOne<Organization>({ where: { phoneNumber } })
   }
 
-  async forgetPassword(email: ForgotPasswordDto) {
-    try {
-      let user = await this.user.findOne({ where: { ...email } });
 
-
-      if (!user) return Util.handleForbiddenExceptionResponses('Invaild Email');
-      // await this.resetPasswordService.sendResstPasswordNotification(
-      //   user?.fullName,
-      //   user?.userId,
-      //   user?.email,
-      // );
-
-      let send_Token = await this.resetPasswordService.sendResstPasswordNotification({...email})
-      console.log(send_Token)
-
-      return Util.handleCreateSuccessRespone(
-        `Reset password link sent to ${user?.email}`,
-      );
-    } catch (error) {
-      return Util?.checkIfRecordNotFound(error)
-      // return Util.handleGrpcTryCatchError(Util.getTryCatchMsg(error));
-    }
-  }
-
-
-  async resetPassword(token: any, data: ResetPasswordDto) {
-    const t = await this.sequelize.transaction();
-
-    try {
-
-      const defaultPassword = data?.password;
-      // const saltRounds = 10;
-
-     // Hash the defualt password
-     const hashedDefaultPassword = await argon.hash(defaultPassword);
-
-      let decode = Util.verifyToken(token);
-      const user = await this?.user.findOne({
-        where: {
-          email: decode.email,
-        },
-      });
-
-      if (!user) return Util.handleForbiddenExceptionResponses('Invaid email');
-
-      let UpdateData = {
-        password: hashedDefaultPassword,
-      };
-      await this?.user.update(UpdateData, {
-        where: { email: user?.email },
-        transaction: t,
-      });
-      t.commit();
-      return Util.handleCreateSuccessRespone('Password Reset Successful');
-    } catch (error) {
-      t.rollback();
-      return Util?.checkIfRecordNotFound(error)
-    }
-  }
 
 
 

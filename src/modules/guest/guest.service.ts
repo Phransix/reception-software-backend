@@ -86,20 +86,22 @@ export class GuestService {
     }
   }
 
-  async guestSignIn(guestOpDTO: guestOpDTO) {
-    const { phoneNumber } = guestOpDTO
-    const guest = await this.GuestModel.findOne({ where: { phoneNumber } })
-    if (!guest) {
+  async guestSignIn (guestOpDTO:guestOpDTO){
+    const {phoneNumber,countryCode} = guestOpDTO
+    const guestNo = await this.GuestModel.findOne({where:{phoneNumber}})
+    const cCode = await this.GuestModel.findOne({where:{countryCode}})
+    if (!guestNo && !cCode) {
       throw new HttpException('Guest Sign In failed', HttpStatus.UNAUTHORIZED)
     } else {
       throw new HttpException('Guest Sign In successful', HttpStatus.ACCEPTED)
     }
   }
 
-  async guestSignOut(guestOpDTO: guestOpDTO) {
-    const { phoneNumber } = guestOpDTO
-    const guest = await this.GuestModel.findOne({ where: { phoneNumber } })
-    if (!guest) {
+  async guestSignOut (guestOpDTO:guestOpDTO){
+    const {phoneNumber,countryCode} = guestOpDTO
+    const guest = await this.GuestModel.findOne({where:{phoneNumber}})
+    const cCode = await this.GuestModel.findOne({where:{countryCode}})
+    if (!guest && !cCode) {
       throw new HttpException('Guest Sign Out failed', HttpStatus.UNAUTHORIZED)
     } else {
       throw new HttpException('Guest Sign Out successful', HttpStatus.ACCEPTED)

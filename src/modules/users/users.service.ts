@@ -4,52 +4,62 @@ import { UpdateUserDto } from './dto/update-user.dto';
 import * as Util from '../../utils/index'
 import { User } from './entities/user.entity';
 import { InjectModel } from '@nestjs/sequelize';
-import * as bcrypt from 'bcrypt';
 import { Role } from '../role/entities/role.entity'
 import { Organization } from '../organization/entities/organization.entity';
 import { ChangePassDTO } from 'src/guard/auth/changePassDTO';
-// import { createAccessToken, generateRefreshToken, verifyEmailToken } from '../../utils/index';
 import { LoginDTO } from 'src/guard/auth/loginDTO';
-import * as Abstract from '../../utils/abstract'
 import { JwtService } from '@nestjs/jwt';
 import { ConfigService } from '@nestjs/config';
 import * as argon from 'argon2';
-import { log } from 'console';
+import { imageUploadProfile } from 'src/helper/usersProfile';
+import { CreateUserImgDto } from './dto/create-userImg.dto';
+import { query } from 'express';
+import { where } from 'sequelize';
+
 
 
 
 @Injectable()
 export class UsersService {
-
+ 
   constructor (@InjectModel(User) private userModel: typeof User,
   @InjectModel(Role) private roleModel: typeof Role,
   @InjectModel(Organization) private orgModel: typeof Organization,
   private jwtService: JwtService,
   private config: ConfigService,
-  
-  
+  private imagehelper : imageUploadProfile
   ){}
 
-  
-
-
+ 
 
 //  Register New User
   async create(createUserDto: CreateUserDto)  {
     try {
 
+      var image_matches = createUserDto.profilePhoto?.match(
+        /^data:([A-Za-z-+\/]+);base64,(.+)$/
+      );
+      if(!image_matches){
+        return Util?.handleFailResponse('Invalid Input file')
+      }
+
+      let user_image = await this?.imagehelper?.uploadUserImage(createUserDto.profilePhoto)
+
       const hash = await argon.hash(createUserDto.password)
      
       let insertQry = {
-        roleId: createUserDto?.roleId,
+        // roleId: createUserDto?.roleId,
+        roleName:createUserDto?.roleName,
         organizationId: createUserDto?.organizationId,
         fullName: createUserDto?.fullName,
         email: createUserDto?.email,
         phoneNumber: createUserDto?.phoneNumber,
+        profilePhoto: user_image,
         password: hash
       }
+      // console.log(insertQry)
       
-   //   return false
+    //  return false
 
       const user = await this.userModel?.create({...insertQry})
 
@@ -120,25 +130,25 @@ async login(loginDto: LoginDTO){
     throw new HttpException('Invalid email or password',HttpStatus.FORBIDDEN)
   }
       // Check if the oraganiazation is verified
-    //  if (org?.isVerified != true)
-    //  return Util?.handleFailResponse('Oraganiazation account not verified')
-    //  console.log(org?.isVerified);
+     if (org?.isVerified != true)
+     return Util?.handleFailResponse('Oraganiazation account not verified')
+     console.log(org?.isVerified);
 
-  const user_role = await Role.findOne({where:{roleId:user?.roleId}})
+  // const user_role = await Role.findOne({where:{roleName:user?.roleName}})
 
-  if(!user_role)
-    // throw new Error ('User with this email does not exist')
-    return Util.handleErrorRespone ('User not found')
-  let tokens =  await this?.getTokens(user.userId,user.email,user_role?.name)
+  // if(!user_role)
+  //   // throw new Error ('User with this email does not exist')
+  //   return Util.handleErrorRespone ('User not found')
 
-     console.log(tokens)
+  let tokens =  await this?.getTokens(user.userId,user.email,user?.roleName)
+
+    //  console.log(tokens)
     //return;
      let org_data ={
     id: user?.id,
     userId: user.userId,
-    roleId: user?.roleId,
-    role_name : user_role?.name,
     organizationId: user?.organizationId,
+    roleName: user?.roleName,
     fullname: user.fullName,
     email: user.email,
     IsPhoneNumber: user.phoneNumber
@@ -154,15 +164,14 @@ async login(loginDto: LoginDTO){
 
 // Get All Users
   async findAll() {
-
     try {
+
       const users = await User.findAll({
       
       attributes:{
         exclude:['password','createdAt','updatedAt','deletedAt']
       },
     
-
       })
       return Util?.handleSuccessRespone(users, "Users Data retrieved successfully.")
 
@@ -196,28 +205,12 @@ async login(loginDto: LoginDTO){
     }
   };
 
-  // async findByEmail(email: string) {
-
-  //   try {
-  //     const user = await User.findOne({ where: { email } });
-  //     if (!user) {
-  //       throw new Error('User not found.');
-  //     }
-
-  //     return Util?.handleSuccessRespone(user, "Enquiry retrieve successfully.")
-
-  //   } catch (error) {
-  //     console.log(error)
-  //     return Util?.handleTryCatchError(Util?.getTryCatchMsg(error));
-  //   }
-  // };
-
 
   // Update User by Id
+  async update(id: string, updateUserDto: UpdateUserDto) {
 
-
-  async update(id: number, updateUserDto: UpdateUserDto) {
-
+    let rollImage = '';
+        
     try {
 
       const user = await this.userModel.findOne({ where: { id } });
@@ -226,20 +219,98 @@ async login(loginDto: LoginDTO){
         return Util?.handleFailResponse(`User with this #${id} not found`)
       }
 
-      Object.assign(user, updateUserDto)
-      await user.save()
-      return Util?.handleSuccessRespone(Util?.SuccessRespone, "User updated successfully.")
+      var image_matches = updateUserDto.profilePhoto?.match(
+        /^data:([A-Za-z-+\/]+);base64,(.+)$/
+      );
+      if(!image_matches){
+        return Util?.handleFailResponse('Invalid Input file')
+      }
+
+      let user_image = await this?.imagehelper?.uploadUserImage(updateUserDto.profilePhoto)
+      rollImage = user_image;
+
+      let insertQry = {
+      
+        roleName:updateUserDto?.roleName,
+        fullName: updateUserDto?.fullName,
+        email: updateUserDto?.email,
+        phoneNumber: updateUserDto?.phoneNumber,
+        profilePhoto: user_image,
+    
+      }
+      
+      await this?.userModel?.update(insertQry,
+        {
+          where:{id:user?.id}
+        }
+        )
+
+      return Util?.handleSuccessRespone(Util?.SuccessRespone, `User with this #${id} updated successfully`)
 
     } catch (error) {
-      console.log(error)
+      if (rollImage) {
+        await this.imagehelper.unlinkFile(rollImage);
+      }
       return Util?.handleTryCatchError('User not Updated');
     }
   };
 
 
-    // delete User by Id 
-  async remove(id: number) {
+  // Update User  Profile Photo
+  async updateImg(id: string, createUserImgDto: CreateUserImgDto){
 
+    let rollImage = '';
+   // let InsertImg = '';
+
+    try {
+      const user_data  = await this.userModel.findOne({where:{id}})
+      if(!user_data){
+        return Util?.handleFailResponse(`User with this #${id} not found`)
+      }
+
+      if (
+        createUserImgDto?.profilePhoto == null ||
+        createUserImgDto?.profilePhoto == undefined ||
+        createUserImgDto?.profilePhoto == ""
+      ){
+        return Util?.handleFailResponse('File Can not be empty')
+      }
+
+      var image_matches = createUserImgDto?.profilePhoto?.match(
+        /^data:([A-Za-z-+\/]+);base64,(.+)$/
+      )
+      if(!image_matches){
+        return Util?.handleFailResponse('Invalid Input file')
+      }
+
+      let user_image = await this?.imagehelper?.uploadUserImage(createUserImgDto?.profilePhoto)
+
+      rollImage = user_image;
+       
+      let insertQrys = {
+        profilePhoto: user_image  
+      }
+   
+      await this?.userModel?.update(insertQrys,
+        {
+          where:{id:user_data?.id}
+        }
+        )
+
+      return Util?.handleCreateSuccessRespone(`User with this #${id} and Image updated successfully`)
+ 
+    } catch (error) {
+      if (rollImage) {
+        await this.imagehelper.unlinkFile(rollImage);
+      }
+      return Util?.handleFailResponse(`User with this #${id} and Image not Updated`)
+    }
+
+  }
+
+
+    // delete User by Id 
+   async remove(id: number) {
     try{
       const user = await User.findOne({where:{id}});
       if (!user) {
@@ -254,13 +325,11 @@ async login(loginDto: LoginDTO){
       console.log(error)
       return Util?.handleTryCatchError(Util?.getTryCatchMsg(error));
     }
-
   }
 
 
   // Restore Deleted Data
   async restoreUser(id:string){
-
     try {
 
       const organization = await this.userModel.restore({where:{id}})
@@ -273,25 +342,7 @@ async login(loginDto: LoginDTO){
  
   }
 
-
-   async findOneByuserEmail(email: string): Promise<User>{
-    return await this.userModel.findOne<User>({where: {email}})
-  }
-
- 
-  async findByemail(email: string){
-      return this.userModel.findOne({where:{email}})
-  }
-
-  async findById(id:number){
-    return this.userModel.findOne({where:{id}})
-  }
-
-  async findByEmail(email: string): Promise<User | undefined> {
-    return this.userModel.findOne({ where: { email } });
-  }
-
-//  Change User Password
+  //  Change User Password
   async changePass (id:number, changepassDto: ChangePassDTO){
     const {oldPassword,newPassword,confirmNewPassword} = changepassDto
 
@@ -322,6 +373,48 @@ async login(loginDto: LoginDTO){
     return Util?.handleSuccessRespone(Util?.SuccessRespone, "Your Password has been changed successfully.")
   }
 
+
+
+   async findOneByuserEmail(email: string): Promise<User>{
+    return await this.userModel.findOne<User>({where: {email}})
+  }
+
+ 
+  async findByemail(email: string){
+      return this.userModel.findOne({where:{email}})
+  }
+
+  async findById(id:number){
+    return this.userModel.findOne({where:{id}})
+  }
+
+  async findByEmail(email: string): Promise<User | undefined> {
+    return this.userModel.findOne({ where: { email } });
+  }
+
+
+
+
+    
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
   async getTokens(user_id: string, email: string,role:string) {
     const jwtPayload ={
       sub: user_id,
@@ -332,11 +425,12 @@ async login(loginDto: LoginDTO){
 
   
 
+  
 
     const [at, rt] = await Promise.all([
       this.jwtService.signAsync(jwtPayload, {
         secret: this.config.get<string>('AT_SECRET'),
-        // expiresIn: '15m',
+        // expiresIn: '5m',
         expiresIn: '7d',
       }),
       this.jwtService.signAsync(jwtPayload, {
@@ -363,5 +457,19 @@ async login(loginDto: LoginDTO){
     return result;
 
   }
+
+
+  async findOneByEmail(email: string): Promise<User> {
+    return await this.userModel.findOne<User>({ where: { email } })
+  }
+
+  async findOneByPhoneNumber(phoneNumber: string): Promise<User> {
+    return await this.userModel.findOne<User>({ where: { phoneNumber } })
+  }
+
+
+
+  
+
 
 }

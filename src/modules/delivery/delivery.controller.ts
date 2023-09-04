@@ -177,5 +177,20 @@ async findDeliveryByDateRange(
   }
 }
 
+// Search Enquiry
+async searchEnquiry(keyword: string){
+  try {
+
+    // let enquiry = {
+    //   enquir
+    // }
+
+    
+  } catch (error) {
+    console.log(error)
+    return Util?.handleFailResponse('Enquiry not found')
+  }
+}
+
 
 }

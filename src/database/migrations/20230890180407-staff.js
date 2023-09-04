@@ -40,6 +40,15 @@ module.exports = {
         onDelete: 'CASCADE'
       },
 
+      title: {
+        allowNull: true,
+        type: Sequelize.ENUM(
+          'Mr', 
+          'Mrs',
+          'Prof',
+          'Dr')
+      },
+
       fullName: {
         type: Sequelize.STRING,
         allowNull: false

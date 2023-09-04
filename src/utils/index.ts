@@ -485,7 +485,6 @@ export const generateId =(pattern,length) => {
 
 
 
-
 // export const destroyToken = (token) => {
 //   return jwt.(token);
 // }
