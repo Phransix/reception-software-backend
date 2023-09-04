@@ -7,6 +7,7 @@ import { Staff } from './entities/staff.entity';
 import * as Util from '../../utils/index'
 import { staffImageUploadProfile } from 'src/helper/staffProfiles';
 import * as Abstract from '../../utils/abstract'
+import { Op } from 'sequelize';
 
 
 
@@ -52,7 +53,7 @@ export class StaffService {
       
     } catch (error) {
       console.log(error)
-      return Util?.handleTryCatchError(Util?.getTryCatchMsg(error));
+      return Util?.handleFailResponse('Staff Registration Failed.');
     }
   };
 
@@ -71,7 +72,7 @@ export class StaffService {
       
     } catch (error) {
       console.log(error)
-      return Util?.handleTryCatchError(Util?.getTryCatchMsg(error));
+      return Util?.handleFailResponse('Failed, Staffs Data Not Found');
     }
   }
 
@@ -91,7 +92,8 @@ export class StaffService {
       
     } catch (error) {
       console.log(error)
-      return Util?.handleTryCatchError(Util?.getTryCatchMsg(error));
+      // return Util?.handleTryCatchError(Util?.getTryCatchMsg(error));
+      return Util?.handleFailResponse('Failed ,Staff Not Found ');
     }
     
   }
@@ -208,4 +210,32 @@ export class StaffService {
     return Util?.handleFailResponse(`Staff with this #${id} not Deleted`)
   }
   }
+
+   // Search Enquiry Data
+   async searchStaff(keyword: string) {
+    try {
+      const staffData = await this?.staffModel.findAll({
+
+        attributes: {
+          exclude: ['createdAt', 'updatedAt', 'deletedAt']
+        },
+
+        where: {
+          fullName : { [Op.like]: `%${keyword}%`, },
+        }, 
+
+      });
+
+      if (!staffData || staffData.length === 0) {
+        return Util?.handleFailResponse('No matching Staff data found.');
+      }
+
+      return Util?.handleSuccessRespone(staffData, "Staffs Data retrieved successfully.")
+
+    } catch (error) {
+      console.log(error)
+      return Util?.handleFailResponse('The Staff data does not exist')
+    }
+  }
+
 }

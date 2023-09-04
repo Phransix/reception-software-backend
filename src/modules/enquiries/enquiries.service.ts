@@ -150,15 +150,6 @@ export class EnquiriesService {
           enquirerFullName : { [Op.like]: `%${keyword}%`, },
         }, 
 
-        // where: {
-        //   [Op.or]: [
-        //     { enquirerFullName: { [Op.iLike]: `%${query}%` } }, // Case-insensitive search for fullname
-        //     { email: { [Op.iLike]: `%${query}%` } }, // Case-insensitive search for email
-        //     { phoneNumber: { [Op.iLike]: `%${query}%` } },
-        //     { purpose: { [Op.iLike]: `%${query}%` } }, // Case-insensitive search for purpose
-        //   ],
-        // },
-
       });
 
       if (!enquiryData || enquiryData.length === 0) {
