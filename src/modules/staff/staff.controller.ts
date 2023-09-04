@@ -142,7 +142,7 @@ updateImg(@Param('id') id: string, @Body()createStaffImgDto: CreateStaffImgDto) 
     required: false
   })
   @UseGuards(AtGuard)
-  @Get()
+  @Get('staff/search')
   async searchStaff (@Query('keyword') keyword: string){
 
     try {
