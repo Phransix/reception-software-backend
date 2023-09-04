@@ -2,7 +2,7 @@ import { Controller, Get, Post, Body, Patch, Param, Delete, HttpException, HttpS
 import { GuestService } from './guest.service';
 import { CreateGuestDto } from './dto/create-guest.dto';
 import { UpdateGuestDto } from './dto/update-guest.dto';
-import { ApiBearerAuth, ApiOperation, ApiTags } from '@nestjs/swagger';
+import { ApiBearerAuth, ApiOperation, ApiQuery, ApiTags } from '@nestjs/swagger';
 import * as Util from '../../utils/index'
 import { guestOpDTO} from 'src/guard/auth/guestOpDTO';
 import { Public } from 'src/common/decorators/public.decorator';
@@ -15,7 +15,6 @@ import { Guest } from './entities/guest.entity';
 export class GuestController {
   constructor(private readonly guestService: GuestService) {}
 
-  @Public()
   @ApiTags('Guest')
   @Public()
   @ApiOperation({summary:'Create New Guest'})
@@ -34,6 +33,21 @@ export class GuestController {
   @UseGuards(AuthGuard('jwt'))
   @ApiBearerAuth('defaultBearerAuth')
   @Public()
+  @ApiQuery({
+    name: "page",
+    type: Number,
+    required: false
+  })
+  @ApiQuery({
+    name: "size",
+    type: Number,
+    required: false
+  })
+  @ApiQuery({
+    name: "length",
+    type: Number,
+    required: false
+  })
   @UseGuards(AtGuard)
   @ApiTags('Guest')
   @ApiOperation({ summary: 'Get Guest By Pagination' })
@@ -159,14 +173,58 @@ export class GuestController {
   // Search Guest by Firstnames
   @UseGuards(AuthGuard('jwt'))
   @ApiBearerAuth('defaultBearerAuth')
+  @ApiQuery({
+    name: 'keyword',
+    type: String,
+    required: false
+  })
   @Public()
   @UseGuards(AtGuard)
   @ApiTags('Guest')
   @ApiOperation({summary:'Get Guest Name By Firstname Search'})
   @Get()
   async searchGuest (@Query('keyword') keyword: string){
-    return this.guestService.searchGuest(keyword);
+    try {
+      return this.guestService.searchGuest(keyword.charAt(0).toUpperCase());
+    } catch (error) {
+      console.log(error)
+      return Util?.handleFailResponse("Search should not be null")
+    }
+    
   }
+
+  // Filter guest by custom range
+@UseGuards(AuthGuard('jwt'))
+@ApiBearerAuth('defaultBearerAuth')
+@ApiQuery({
+  name: 'startDate',
+  type: Date,
+  required: false
+})
+
+@ApiQuery({
+  name: 'endDate',
+  type: Date,
+  required: false
+})
+@Public()
+@UseGuards(AtGuard)
+@ApiTags('Guest')
+@ApiOperation({ summary: 'Filter Guest by Custom Date Range' })
+@Get('guest/filterGuest')
+async findGuestByDateRange (
+    @Query('startDate') startDate: Date,
+    @Query('endDate') endDate: Date
+  ){
+try {
+  const guestSearch = await this.guestService.customGuestSearch(startDate,endDate)
+  return guestSearch
+} catch (error) {
+  console.log(error)
+  return Util?.handleFailResponse("Guest Not found")
+}
+  }
+
 
 
 }

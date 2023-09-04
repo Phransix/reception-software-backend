@@ -128,4 +128,26 @@ export class GuestService {
     }
   }
 
+  // Filter by Custom Date Range
+  async customGuestSearch(startDate: Date, endDate: Date){
+    try {
+      const guestSearch = await Guest.findAll({
+        where:{
+          createdAt: 
+          {
+            [Op.between]: [startDate, endDate],
+          }
+        },
+        attributes: {exclude: ['createdAt','updated', 'deletedAt']}
+      });
+      if (!guestSearch || guestSearch.length === 0){
+        return Util?.handleFailResponse("No matching Enquiry data found.")
+      }
+      return guestSearch
+    } catch (error) {
+      console.log(error)
+      return Util?.handleFailResponse("Guest Search failed")
+    }
+  }
+
 }

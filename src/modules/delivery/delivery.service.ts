@@ -50,8 +50,7 @@ export class DeliveryService {
       if (!delivery) {
         throw new NotAcceptableException('The Delivery does not exist')
       }
-      // return Util?.handleSuccessRespone(delivery, "Delivery Data retrieved successfully")
-      return delivery
+      return Util?.handleSuccessRespone(delivery, "Delivery Data retrieved successfully")
     } catch (error) {
       console.log(error)
       return Util?.handleFailResponse("Delivery retrieval failed")
@@ -116,10 +115,10 @@ export class DeliveryService {
       },
         attributes: {exclude:['createdAt','updatedAt','deletedAt']}
       });
-      if (!deliver) {
-        throw new NotAcceptableException('The Delivery data does not exist')
+
+      if (!deliver || deliver.length === 0) {
+        return Util?.handleFailResponse('No matching Enquiry data found.');
       }
-      // return Util?.handleSuccessRespone(delivery,"Delivery data found")
       return deliver
     } catch (error) {
       console.log(error)

@@ -3,7 +3,7 @@ import { DeliveryService } from './delivery.service';
 import { CreateDeliveryDto } from './dto/create-delivery.dto';
 import { UpdateDeliveryDto } from './dto/update-delivery.dto';
 import * as Util from '../../utils/index'
-import { ApiBearerAuth, ApiOperation, ApiTags } from '@nestjs/swagger';
+import { ApiBearerAuth, ApiOperation, ApiQuery, ApiTags } from '@nestjs/swagger';
 import { Delivery } from './entities/delivery.entity';
 import { deliveryConfirmDTO } from 'src/guard/auth/deliveryConfirmDTO';
 import { Public } from 'src/common/decorators/public.decorator';
@@ -35,17 +35,32 @@ export class DeliveryController {
   }
 
 
-  @UseGuards(AuthGuard('jwt'))
-  @ApiBearerAuth('defaultBearerAuth')
+  // @UseGuards(AuthGuard('jwt'))
+  // @ApiBearerAuth('defaultBearerAuth')
   @Public()
+  @ApiQuery({
+    name: "page",
+    type: Number,
+    required: false
+  })
+  @ApiQuery({
+    name: "size",
+    type: Number,
+    required: false
+  })
+  @ApiQuery({
+    name: "length",
+    type: Number,
+    required: false
+  })
   @UseGuards(AtGuard)
   @ApiTags('Delivery')
   @ApiOperation({ summary: 'Get Delivery By Pagination' })
   @Get('getAllDeliveries')
   async findAll(
-    @Query('page') page: number,
-    @Query('size') size: number,
-    @Query('length') length: number,
+    @Query('page') page?: number,
+    @Query('size') size?: number,
+    @Query('length') length?: number
   ) {
     try {
       let currentPage = Util.Checknegative(page);
@@ -159,6 +174,17 @@ async staffConfirm(@Body() deliveryConfirmDTO: deliveryConfirmDTO) {
 // Filter by Date Range
 @UseGuards(AuthGuard('jwt'))
 @ApiBearerAuth('defaultBearerAuth')
+@ApiQuery({
+  name: 'startDate',
+  type: Date,
+  required: false
+})
+
+@ApiQuery({
+  name: 'endDate',
+  type: Date,
+  required: false
+})
 @Public()
 @UseGuards(AtGuard)
 @ApiTags('Delivery')
@@ -174,21 +200,6 @@ async findDeliveryByDateRange(
   } catch (error) {
     console.log(error)
     return Util?.handleFailResponse("Delivery data not found")
-  }
-}
-
-// Search Enquiry
-async searchEnquiry(keyword: string){
-  try {
-
-    // let enquiry = {
-    //   enquir
-    // }
-
-    
-  } catch (error) {
-    console.log(error)
-    return Util?.handleFailResponse('Enquiry not found')
   }
 }
 
