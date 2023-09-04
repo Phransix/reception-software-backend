@@ -100,7 +100,6 @@ export class OrganizationService {
   // Verify Email Account
   async verifyEmail(verifyEmailDto:VerifyEmailDto) {
     try{
-  
 
       const decodeToken = verifyEmailToken(verifyEmailDto?.token);
       // console.log(decodeToken);
@@ -127,59 +126,13 @@ export class OrganizationService {
 
     }catch (error) {
       console.log(error)
-      return Util?.handleTryCatchError(Util?.getTryCatchMsg(error));
+      // return Util?.handleTryCatchError(Util?.getTryCatchMsg(error));
+      return Util?.handleFailResponse('Accounts verification failed');
     }
   };
     
 
-
-  // Login
-  // async validateUser(loginDto: LoginDTO){
-  //   const {email,password} = loginDto
-
-  //   const user = await User.findOne({where:{email}})
-  //   const organization = await this.organizationModel.findOne({where:{email}})
-  //   if(!user && !organization){
-  //     throw new BadRequestException('Organization with this email does not exist')
-  //   }
-
-  //   const passwordMatch = await this.authPassService.verifypassword(password, user.password)
-  //   if (!passwordMatch){
-  //     throw new UnauthorizedException('Invalid Credentials')
-  //   }
- 
-  //   // Check if the oraganiazation is verified
-  //   if(organization?.isVerified != true)
-  //   return Util?.handleFailResponse('Organization account not verified')
-
- 
-  //   let accessToken = await createAccessToken(user?.id);
-  //   let refreshToken = await generateRefreshToken(user?.id);
-
-  //   let tokens = {accessToken,refreshToken}
-
-  //   // let tokens = await this?.getTokens(organization.organizationId,organization.email,organization.organizationName)
-      
-  //   // console.log(tokens)
-
-  //      let org_data ={
-  //     id: organization.organizationId,
-  //     organizationName: organization.organizationName,
-  //     email: organization.email,
-  //     IsPhoneNumber: organization.phoneNumber
-  //   }
-
-  //   let userDetails = {
-  //     org_data,tokens
-  //   }
-
-  //       //  Send user data and tokens
-  //       return Util?.handleSuccessRespone( userDetails,'Login successfully.')
-  // }
-  
-
-  //  Get All
-  
+  // Get All
   
   async findAll() {
 
@@ -194,7 +147,8 @@ export class OrganizationService {
       return Util?.handleSuccessRespone(orgs, "Organizations Data retrieved successfully.")
   }catch(error){
     console.log(error)
-    return Util?.handleTryCatchError(Util?.getTryCatchMsg(error));
+    // return Util?.handleTryCatchError(Util?.getTryCatchMsg(error));
+    return Util?.handleFailResponse('Failed, Organizations Data Not Found');
   }
   }
 
@@ -219,7 +173,7 @@ export class OrganizationService {
 
     } catch (error) {
       console.log(error)
-      return Util?.handleTryCatchError("Organization not found.");
+      return Util?.handleFailResponse('Failed, Organization Data Not Found');
       // return Util?.checkIfRecordNotFound
     }
 
@@ -262,7 +216,7 @@ export class OrganizationService {
       if(rollImage){
         await this?.imgHelper?.unlinkFile(rollImage)
       }
-      return Util?.handleTryCatchError(Util?.getTryCatchMsg(error));
+      return Util?.handleFailResponse('Failed, Organizations Data Not Updated');
     }
 
 
@@ -336,7 +290,7 @@ export class OrganizationService {
 
     } catch (error) {
       console.log(error)
-      return Util?.checkIfRecordNotFound("Organization not found.")
+      return Util?.handleFailResponse('Failed, Organizations Data Not Deleted');
     }
 
   }
@@ -377,8 +331,7 @@ export class OrganizationService {
           `Reset password link sent to ${user?.email}`,
         );
       } catch (error) {
-        return Util?.checkIfRecordNotFound(error)
-        // return Util.handleGrpcTryCatchError(Util.getTryCatchMsg(error));
+        return Util?.handleFailResponse('Failed to send email');
       }
     }
   
@@ -414,7 +367,7 @@ export class OrganizationService {
         return Util.handleCreateSuccessRespone('Password Reset Successful');
       } catch (error) {
         t.rollback();
-        return Util?.checkIfRecordNotFound(error)
+        return Util?.handleFailResponse('Failed to reset password');
       }
     }
   

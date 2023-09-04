@@ -1,12 +1,13 @@
-import { Controller, Get, Post, Body, Patch, Param, Delete, UseGuards } from '@nestjs/common';
+import { Controller, Get, Post, Body, Patch, Param, Delete, UseGuards, Query } from '@nestjs/common';
 import { DepartmentService } from './department.service';
 import { CreateDepartmentDto } from './dto/create-department.dto';
 import { UpdateDepartmentDto } from './dto/update-department.dto';
-import { ApiBearerAuth, ApiOperation, ApiTags } from '@nestjs/swagger';
+import { ApiBearerAuth, ApiOperation, ApiQuery, ApiTags } from '@nestjs/swagger';
 import * as Util from '../../utils/index'
 import { Public } from 'src/common/decorators/public.decorator';
 import { AuthGuard } from '@nestjs/passport';
 import { AtGuard } from 'src/common/guards';
+import { Department } from './entities/department.entity';
 
 
 
@@ -15,8 +16,10 @@ import { AtGuard } from 'src/common/guards';
 export class DepartmentController {
   constructor(private readonly departmentService: DepartmentService) {}
 
-  // @UseGuards(AuthGuard('jwt'))
-  // @ApiBearerAuth('defaultBearerAuth')
+
+  // Create New Department
+  @UseGuards(AuthGuard('jwt'))
+  @ApiBearerAuth('defaultBearerAuth')
   @ApiOperation({summary:'Create New Department'})
   @Public()
   @UseGuards(AtGuard)
@@ -33,19 +36,56 @@ export class DepartmentController {
   
   }
 
-
+// Get All Departments
   @UseGuards(AuthGuard('jwt'))
   @ApiBearerAuth('defaultBearerAuth')
   @ApiOperation({summary:'Get All Departments'})
   @Public()
+  @ApiQuery({
+    name:'page',
+    type:'number',
+    required:false
+  })
+  @ApiQuery({
+    name:'size',
+    type:'number',
+    required:false
+  })
+  @ApiQuery({
+    name:'length',
+    type:'number',
+    required:false
+  })
   @UseGuards(AtGuard)
   @Get('getAllDepartments')
-  async findAll() {
+  async findAll(
+    @Query('page') page: number,
+    @Query('size') size: number,
+    @Query('length') length: number,
+  ) {
 
     try {
 
-      const allDepts = this.departmentService.findAll();
-      return allDepts
+      let currentPage = Util.Checknegative(page);
+      if (currentPage){
+        return Util?.handleErrorRespone("Departments current page cannot be negative");
+      }
+
+      const { limit, offset } = Util.getPagination(page, size)
+
+      const allDepts = await Department.findAndCountAll({
+        limit,
+        offset,
+        attributes: { exclude: ['createdAt', 'updatedAt', 'deletedAt'] }
+      });
+
+
+      let result = Util?.getPagingData(allDepts,page,limit,length)
+      console.log(result)
+
+      const dataResult = {...allDepts}
+      return Util?.handleSuccessRespone( dataResult,'Departments Data retrieved successfully.')
+
       
     } catch (error) {
       console.log(error)
@@ -55,7 +95,7 @@ export class DepartmentController {
     
   }
 
-
+// Get One Department
   @UseGuards(AuthGuard('jwt'))
   @ApiBearerAuth('defaultBearerAuth')
   @ApiOperation({summary:'Get Department By Id'})
@@ -75,6 +115,7 @@ export class DepartmentController {
   }
 
 
+  // Udate Department
   @UseGuards(AuthGuard('jwt'))
   @ApiBearerAuth('defaultBearerAuth')
   @ApiOperation({summary:'Update Department By Id'})
@@ -85,7 +126,7 @@ export class DepartmentController {
     return this.departmentService.update(id, updateDepartmentDto);
   }
 
-
+// Delete Department
   @UseGuards(AuthGuard('jwt'))
   @ApiBearerAuth('defaultBearerAuth')
   @ApiOperation({summary:'Delete Department By Id'})
@@ -95,4 +136,29 @@ export class DepartmentController {
   remove(@Param('id') id: string) {
     return this.departmentService.remove(id);
   }
+
+   // Search Department
+   @UseGuards(AuthGuard('jwt'))
+  @ApiBearerAuth('defaultBearerAuth')
+  @ApiOperation({summary:'Search Department Data From The System'})
+  @Public()
+  @ApiQuery({
+    name: 'keyword',
+    type: 'string',
+    required: false
+  })
+  @UseGuards(AtGuard)
+  @Get()
+  async searchDepartment (@Query('keyword') keyword: string){
+    try {
+
+      return  this?.departmentService?.searchDepartment(keyword.charAt(0).toUpperCase())
+      
+    } catch (error) {
+      console.log(error)
+      return Util?.handleFailResponse('No matching Department data found.');
+    }
+    
+  }
+
 }

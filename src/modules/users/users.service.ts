@@ -67,51 +67,17 @@ export class UsersService {
       return Util?.handleCreateSuccessRespone( "User Created Successfully");
     } catch (error) {
       console.error(error)
-      return Util?.handleTryCatchError(Util?.getTryCatchMsg(error))
+      // return Util?.handleTryCatchError(Util?.getTryCatchMsg(error))
+      return Util?.handleFailResponse('Failed ,User Not Created ');
     }
   }
 
-
-  // // Verify Email Account
-  // async verifyEmail(verifyEmailDto:VerifyEmailDto) {
-  //   try{
   
-
-  //     const decodeToken = verifyEmailToken(verifyEmailDto?.token);
-  //     // console.log(decodeToken);
-     
-  //     if(!decodeToken){
-  //       return Util?.handleFailResponse('User not verified')
-  //     }
-
-   
-  //     const orgToken = await this.userModel.findOne({where:{email:decodeToken?.email}})
-      
-  //     // console.log(decodeToken?.email);
-  //     // return;
-
-  //     if(!orgToken){
-  //       return Util?.handleFailResponse('User not found')
-  //     }
-
-  //     if(orgToken?.isVerified === true)
-  //     return Util?.handleFailResponse('User account already verified')
-
-  //     await Organization.update({isVerified: true},{where: {id: orgToken?.id, email: orgToken?.email}} )
-  //     return Util?.SuccessRespone('Your account has been successfully verified')
-
-  //   }catch (error) {
-  //     console.log(error)
-  //     return Util?.handleTryCatchError(Util?.getTryCatchMsg(error));
-  //   }
-  // };
-
-
 // Login users
-
-
 async login(loginDto: LoginDTO){
   const {email,password} = loginDto
+
+  try {
 
   const user = await User.findOne({where:{email}})
   const org = await Organization.findOne({where:{email}})
@@ -160,6 +126,13 @@ async login(loginDto: LoginDTO){
 
       //  Send user data and tokens
       return Util?.handleSuccessRespone( userDetails,'Login successfully.')
+
+    } catch (error) {
+      console.error(error)
+      // return Util?.handleTryCatchError(Util?.getTryCatchMsg(error))
+      return Util?.handleFailResponse('User Login Failed ');
+    }
+
 }
 
 // Get All Users
@@ -177,7 +150,8 @@ async login(loginDto: LoginDTO){
 
     } catch (error) {
       console.log(error)
-      return Util?.handleTryCatchError(Util?.getTryCatchMsg(error));
+      // return Util?.handleTryCatchError(Util?.getTryCatchMsg(error));
+      return Util?.handleFailResponse('Failed ,User data not retrieved ');
     }
   };
 
@@ -201,7 +175,7 @@ async login(loginDto: LoginDTO){
 
     } catch (error) {
       console.log(error)
-      return Util?.handleNotFoundResponse()
+      return Util?.handleFailResponse('Failed ,User not found ');
     }
   };
 
@@ -251,7 +225,7 @@ async login(loginDto: LoginDTO){
       if (rollImage) {
         await this.imagehelper.unlinkFile(rollImage);
       }
-      return Util?.handleTryCatchError('User not Updated');
+      return Util?.handleFailResponse(`User with this #${id} not Updated`)
     }
   };
 
@@ -323,7 +297,7 @@ async login(loginDto: LoginDTO){
 
     }catch(error){
       console.log(error)
-      return Util?.handleTryCatchError(Util?.getTryCatchMsg(error));
+      return Util?.handleFailResponse(`Failed, User with this #${id} not Deleted`)
     }
   }
 
@@ -345,7 +319,8 @@ async login(loginDto: LoginDTO){
   //  Change User Password
   async changePass (id:number, changepassDto: ChangePassDTO){
     const {oldPassword,newPassword,confirmNewPassword} = changepassDto
-
+        try {
+        
     const user = await User.findOne({where:{id}})
     if(!user){
       throw new BadRequestException('User with this ${id} does not exist')
@@ -361,7 +336,6 @@ async login(loginDto: LoginDTO){
       if (confirmNewPassword != newPassword) {
         return Util?.handleFailResponse("Passwords do not match")
       }
-
      
        // Hash the new password and update the user's password
     const hashedNewPassword = await argon.hash(newPassword);
@@ -371,6 +345,12 @@ async login(loginDto: LoginDTO){
     Object.assign(user, changepassDto)
     await user.save()
     return Util?.handleSuccessRespone(Util?.SuccessRespone, "Your Password has been changed successfully.")
+
+  } catch (error) {
+    console.log(error)
+    return Util?.handleFailResponse(`Failed, User with this #${id}  password not changed`)
+  }
+
   }
 
 
@@ -396,14 +376,6 @@ async login(loginDto: LoginDTO){
 
 
     
-
-
-
-
-
-
-
-
 
 
 

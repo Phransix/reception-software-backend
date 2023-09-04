@@ -6,6 +6,7 @@ import { Sequelize } from 'sequelize-typescript';
 import { InjectModel } from '@nestjs/sequelize';
 import * as Util from '../../utils/index'
 import * as Abstract from '../../utils/abstract'
+import { Op } from 'sequelize';
 
 @Injectable()
 export class DepartmentService {
@@ -95,7 +96,7 @@ export class DepartmentService {
     try {
       const data = await Department.findOne({where:{id}})
       if(!data){
-        return Util?.handleFailResponse(`Staff with this #${id} not found`)
+        return Util?.handleFailResponse(`Department with this #${id} not found`)
       }
 
       Object.assign(data)
@@ -107,6 +108,33 @@ export class DepartmentService {
       console.log(error)
       return Util?.handleTryCatchError(`Department with this #${id} not deleted `) 
     }
-
   }
+
+   // Search Department Data
+   async searchDepartment(keyword: string) {
+    try {
+      const deptData = await this?.departmentModel.findAll({
+
+        attributes: {
+          exclude: ['createdAt', 'updatedAt', 'deletedAt']
+        },
+
+        where: {
+          departmentName : { [Op.like]: `%${keyword}%`, },
+        }, 
+
+      });
+
+      if (!deptData || deptData.length === 0) {
+        return Util?.handleFailResponse('No matching Department data found.');
+      }
+
+      return Util?.handleSuccessRespone(deptData, "Departments Data retrieved successfully.")
+
+    } catch (error) {
+      console.log(error)
+      return Util?.handleFailResponse('The Department data does not exist')
+    }
+  }
+
 }

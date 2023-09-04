@@ -1,4 +1,4 @@
-import { Controller, Get, Post, Body, Patch, Param, Delete, BadRequestException, UseGuards, Request, NotFoundException, HttpException, HttpStatus, UseInterceptors, UploadedFile } from '@nestjs/common';
+import { Controller, Get, Post, Body, Patch, Param, Delete, BadRequestException, UseGuards, Request, NotFoundException, HttpException, HttpStatus, UseInterceptors, UploadedFile, Query } from '@nestjs/common';
 import { UsersService } from './users.service';
 import { CreateUserDto } from './dto/create-user.dto';
 import { UpdateUserDto } from './dto/update-user.dto';
@@ -7,9 +7,6 @@ import { User } from './entities/user.entity';
 import { ApiBearerAuth, ApiOperation, ApiQuery, ApiTags } from '@nestjs/swagger';
 import { ChangePassDTO } from 'src/guard/auth/changePassDTO';
 import { LoginDTO } from 'src/guard/auth/loginDTO';
-// import { Roles } from 'src/common/decorators/roles.decorator';
-// import { Role } from '../role/role.enum';
-// import { VerifyEmailDto } from '../organization/dto/create-organization.dto';
 import { Public } from 'src/common/decorators/public.decorator';
 import { AtGuard } from 'src/common/guards';
 import { GetCurrentUserId } from 'src/common/decorators/get-current-user-id.decorator';
@@ -33,8 +30,8 @@ export class UsersController {
   // Register New User
   
   @ApiTags('Users')
-  // @UseGuards(AuthGuard('jwt'))
-  // @ApiBearerAuth('defaultBearerAuth')
+  @UseGuards(AuthGuard('jwt'))
+  @ApiBearerAuth('defaultBearerAuth')
   @ApiOperation({summary:'Create New User/Receptionist'})
   @UseGuards(AtGuard)
   // @hasRoles(UserRole.Admin)
@@ -51,28 +48,7 @@ export class UsersController {
     }
   }
 
- 
-  // @ApiTags('Users')
-  // @ApiOperation({summary:'Verify Organization Email '})
-  // @Public()
-  // @Post('verifyEmail')
-  // async verifyEmail(@Body()token:VerifyEmailDto){
-  //   try{
-
-  //     console.log(token)
-      
-  //     const emailVerify = await this.usersService.verifyEmail(token)
-  //     return emailVerify
-
-  //   }catch(error){
-  //   console.log(error)
-  //   return Util?.handleTryCatchError(Util?.getTryCatchMsg(error)) 
-  // }
-  // };
-
   // Login Users
-  
-  
   @ApiTags('Users')
   @ApiOperation({summary:'Organization/User Login'})
   @Public()
@@ -88,20 +64,56 @@ export class UsersController {
   }
 
 
-
+// Get All Users
   @ApiTags('Users')
-  // @UseGuards(AuthGuard('jwt'))
-  // @ApiBearerAuth('defaultBearerAuth')
+  @UseGuards(AuthGuard('jwt'))
+  @ApiBearerAuth('defaultBearerAuth')
   @ApiOperation({summary:'Get All Users'})
   @Public()
+  @ApiQuery({
+    name:'page',
+    type:'number',
+    required:false
+  })
+  @ApiQuery({
+    name:'size',
+    type:'number',
+    required:false
+  })
+  @ApiQuery({
+    name:'length',
+    type:'number',
+    required:false
+  })
   @UseGuards(AtGuard)
   @Get('getAllUsers')
-  async findAllfindAll(@GetCurrentUserId()userId:string){
+  async findAllfindAll(@GetCurrentUserId()userId:string,
+    @Query('page') page: number,
+    @Query('size') size: number,
+    @Query('length') length: number,
+  ){
       console.log(userId)
 
     try {
-      const allQueries = this.usersService.findAll()
-      return allQueries;
+      let currentPage = Util.Checknegative(page);
+      if (currentPage){
+        return Util?.handleErrorRespone("Users current page cannot be negative");
+      }
+
+      const { limit, offset } = Util.getPagination(page, size)
+
+      const allQueries = await User?.findAndCountAll({
+        limit,
+        offset,
+        attributes: { exclude: ['createdAt', 'updatedAt', 'deletedAt'] }
+      })
+
+      let result = Util?.getPagingData(allQueries,page,limit,length)
+      console.log(result)
+
+      const dataResult = {...allQueries}
+      return Util?.handleSuccessRespone( dataResult,'Users Data retrieved successfully.')
+
 
     }catch(error){
       console.log(error)
@@ -110,8 +122,8 @@ export class UsersController {
   };
 
 
-  // @ApiTags('Users')
-  // @UseGuards(AuthGuard('jwt'))
+  // Get User By The Id
+  @UseGuards(AuthGuard('jwt'))
   @ApiBearerAuth('defaultBearerAuth')
   @ApiOperation({summary:'Get User By Id'})
   @Public()
@@ -131,9 +143,10 @@ export class UsersController {
   };
 
 
+  // Update User By The Id
   @ApiTags('Users')
-  // @UseGuards(AuthGuard('jwt'))
-  // @ApiBearerAuth('defaultBearerAuth')
+  @UseGuards(AuthGuard('jwt'))
+  @ApiBearerAuth('defaultBearerAuth')
   @ApiOperation({summary:'Update User By Id'})
   @Public()
   @UseGuards(AtGuard)
@@ -152,9 +165,10 @@ export class UsersController {
   };
 
 
+  // Update User Profile Photo With The Id
   @ApiTags('Users')
-  // @UseGuards(AuthGuard('jwt'))
-  // @ApiBearerAuth('defaultBearerAuth')
+  @UseGuards(AuthGuard('jwt'))
+  @ApiBearerAuth('defaultBearerAuth')
   @ApiOperation({summary:'Update User Profile Image By Id'})
   @Public()
   @UseGuards(AtGuard)
@@ -173,10 +187,10 @@ export class UsersController {
   };
   
 
-
+// Delete/Remove User By The Id
   @ApiTags('Users')
-  // @UseGuards(AuthGuard('jwt'))
-  // @ApiBearerAuth('defaultBearerAuth')
+  @UseGuards(AuthGuard('jwt'))
+  @ApiBearerAuth('defaultBearerAuth')
   @ApiOperation({summary:'Delete User By Id'})
   @Public()
   @UseGuards(AtGuard)
@@ -200,9 +214,10 @@ export class UsersController {
     }
   }
      
+  // Change User Password By The Id
   @ApiTags('Users')
-  // @UseGuards(AuthGuard('jwt'))
-  // @ApiBearerAuth('defaultBearerAuth')
+  @UseGuards(AuthGuard('jwt'))
+  @ApiBearerAuth('defaultBearerAuth')
   @ApiOperation({summary:'Change Password Of User By Id'})
   @Public()
   @UseGuards(AtGuard)
@@ -219,8 +234,9 @@ export class UsersController {
     }
 
 
-  //   @UseGuards(AuthGuard('jwt'))
-  // @ApiBearerAuth('defaultBearerAuth')
+    // Restore Deleted User Date By Id
+    @UseGuards(AuthGuard('jwt'))
+  @ApiBearerAuth('defaultBearerAuth')
   @ApiOperation({summary:'Restore User Data By Id'})
   @Public()
   @UseGuards(AtGuard)
