@@ -172,8 +172,8 @@ async staffConfirm(@Body() deliveryConfirmDTO: deliveryConfirmDTO) {
 }
 
 // Filter by Date Range
-@UseGuards(AuthGuard('jwt'))
-@ApiBearerAuth('defaultBearerAuth')
+// @UseGuards(AuthGuard('jwt'))
+// @ApiBearerAuth('defaultBearerAuth')
 @ApiQuery({
   name: 'startDate',
   type: Date,
@@ -189,7 +189,7 @@ async staffConfirm(@Body() deliveryConfirmDTO: deliveryConfirmDTO) {
 @UseGuards(AtGuard)
 @ApiTags('Delivery')
 @ApiOperation({ summary: 'Filter Delivery by Custom Date Range' })
-@Get()
+@Get('delivery/filterDelivery')
 async findDeliveryByDateRange(
   @Query('startDate') startDate: Date,
   @Query('endDate') endDate: Date,

@@ -182,7 +182,7 @@ export class GuestController {
   @UseGuards(AtGuard)
   @ApiTags('Guest')
   @ApiOperation({summary:'Get Guest Name By Firstname Search'})
-  @Get()
+  @Get('guest/search')
   async searchGuest (@Query('keyword') keyword: string){
     try {
       return this.guestService.searchGuest(keyword.charAt(0).toUpperCase());
