@@ -48,11 +48,11 @@ export class DeliveryController {
     type: Number,
     required: false
   })
-  @ApiQuery({
-    name: "length",
-    type: Number,
-    required: false
-  })
+  // @ApiQuery({
+  //   name: "length",
+  //   type: Number,
+  //   required: false
+  // })
   @UseGuards(AtGuard)
   @ApiTags('Delivery')
   @ApiOperation({ summary: 'Get Delivery By Pagination' })
@@ -60,7 +60,7 @@ export class DeliveryController {
   async findAll(
     @Query('page') page?: number,
     @Query('size') size?: number,
-    @Query('length') length?: number
+    // @Query('length') length?: number
   ) {
     try {
       let currentPage = Util.Checknegative(page);
@@ -74,7 +74,7 @@ export class DeliveryController {
         offset,
         attributes: { exclude: ['createdAt', 'updatedAt', 'deletedAt'] }
       });
-      const response = Util.getPagingData(delivery, page, limit, length)
+      const response = Util.getPagingData(delivery, page, limit)
       console.log(response)
       // return this.deliveryService.findAll();
       let newOne = { ...delivery }

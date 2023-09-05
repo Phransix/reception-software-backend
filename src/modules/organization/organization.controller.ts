@@ -89,7 +89,7 @@ export class OrganizationController {
   async findAll(
     @Query('page') page: number,
     @Query('size') size: number,
-    @Query('length') length: number,
+    // @Query('length') length: number,
   ) {
     try {
 
@@ -106,7 +106,7 @@ export class OrganizationController {
         attributes: { exclude: ['createdAt', 'updatedAt', 'deletedAt'] }
       })
 
-      let result = Util?.getPagingData(allQueries, page, limit, length)
+      let result = Util?.getPagingData(allQueries, page, limit)
       console.log(result)
 
       const dataResult = { ...allQueries }

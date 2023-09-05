@@ -107,7 +107,7 @@ export class UsersController {
         attributes: { exclude: ['createdAt', 'updatedAt', 'deletedAt'] }
       })
 
-      let result = Util?.getPagingData(allQueries, page, limit, length)
+      let result = Util?.getPagingData(allQueries, page, limit, )
       console.log(result)
 
       const dataResult = { ...allQueries }

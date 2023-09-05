@@ -283,7 +283,7 @@ export const handleCustonCreateResponse = (data, msg) => {
   }
   
   export const getPagination = (page, size) => {
-    const limit = size ? +size : 10;
+    const limit = size ? +size : 2;
     const offset = page ? page * limit : 0;
     return { limit, offset };
   };
@@ -293,23 +293,17 @@ export const handleCustonCreateResponse = (data, msg) => {
   }
 
 
-export const getPagingData = (data, page, limit,length) => {
-  let { rows: items } = data;
+export const getPagingData = (data, page, limit) => {
+  let { count: totalItems,rows: items } = data;
   const currentPage = page ? +page : 1;
-  let totalItems = length;
   const totalPages = Math.ceil(totalItems / limit);
   items = items || [];
 
-console.log(data?.rows?.length)
   return {
-    status_code: HttpStatus?.OK,
-    message: "success",
-    data: items,
+    items,
     currentPage,
     totalItems,
-    totalPages,
-    // service_id: "PRODUCT_CATEGORY_SERVICE"
-   
+    totalPages
   };
 };
 
