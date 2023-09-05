@@ -27,7 +27,7 @@ export class DeliveryController {
   async createDelivery(@Body() createDeliveryDto: CreateDeliveryDto) {
     try {
       let new_Delivery = await Delivery.create(createDeliveryDto);
-      return new_Delivery;
+      return Util?.handleCreateSuccessRespone("Delivery created successfully")
     } catch (error) {
       console.log(error)
       return Util?.handleFailResponse("Delivery registration failed")
@@ -35,9 +35,10 @@ export class DeliveryController {
   }
 
 
-  // @UseGuards(AuthGuard('jwt'))
-  // @ApiBearerAuth('defaultBearerAuth')
+  @UseGuards(AuthGuard('jwt'))
+  @ApiBearerAuth('defaultBearerAuth')
   @Public()
+  @UseGuards(AtGuard)
   @ApiQuery({
     name: "page",
     type: Number,
@@ -63,8 +64,8 @@ export class DeliveryController {
     // @Query('length') length?: number
   ) {
     try {
-      let currentPage = Util.Checknegative(page);
-      if (currentPage)
+      let currentPages = Util.Checknegative(page);
+      if (currentPages)
         return Util?.handleErrorRespone("Delivery current page cannot be negative");
 
       const { limit, offset } = Util.getPagination(page, size)
@@ -77,15 +78,12 @@ export class DeliveryController {
       const response = Util.getPagingData(delivery, page, limit)
       console.log(response)
       // return this.deliveryService.findAll();
-      let newOne = { ...delivery }
+      let newOne = { ...delivery}
       return Util?.handleSuccessRespone(newOne, "Delivery retrieved succesfully")
-
-
     } catch (error) {
       console.log(error)
       return Util?.handleFailResponse("Delivery retrieval failed")
     }
-
   }
 
   @UseGuards(AuthGuard('jwt'))
@@ -172,8 +170,8 @@ async staffConfirm(@Body() deliveryConfirmDTO: deliveryConfirmDTO) {
 }
 
 // Filter by Date Range
-// @UseGuards(AuthGuard('jwt'))
-// @ApiBearerAuth('defaultBearerAuth')
+@UseGuards(AuthGuard('jwt'))
+@ApiBearerAuth('defaultBearerAuth')
 @ApiQuery({
   name: 'startDate',
   type: Date,

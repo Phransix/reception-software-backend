@@ -1,17 +1,9 @@
 import { ApiProperty } from '@nestjs/swagger';
 import { IsEmail, IsNotEmpty, Matches, MaxLength, MinLength } from 'class-validator'
-import { Role } from 'src/modules/role/entities/role.entity';
-import { UserRole } from 'src/modules/role/role.enum';
+import { Role } from 'src/modules/role/role.enum';
 
 
 export class CreateUserDto {
-
-    // @ApiProperty({
-    //     description: 'The Id of the Role',
-    //     example: '459a791a-ae8e-4a14-85e5-a70df9d20deb'
-    // })
-    // @IsNotEmpty()
-    // readonly roleId: string
     
     @ApiProperty({
         description: 'The Id of the Organization',
@@ -25,7 +17,7 @@ export class CreateUserDto {
         example: 'Admin'
     })
     @IsNotEmpty()
-    readonly roleName: UserRole
+    readonly roleName: string
  
     @ApiProperty({
         description: 'The fullName of the User/Customer',

@@ -181,40 +181,6 @@ export class OrganizationController {
     }
   }
 
-
-  // Forgot Password
-  @Public()
-  @ApiOperation({ summary: 'Forgot Customer Password' })
-  @Post('forgot-password')
-  async forgotPassword(@Body() data: ForgotPasswordDto) {
-    try {
-      let res = await this.organizationService.forgetPassword(data);
-      return res;
-    } catch (error) {
-      console.log(error)
-      return Util?.handleFailResponse('Failed to send email');
-    }
-  }
-
-
-  // Reset Password
-  @Public()
-  @ApiOperation({ summary: 'Reset Customer Password' })
-  @Post('reset-password/:token')
-  @ApiParam({ name: 'token', type: 'string', required: true })
-  async resetPassword(@Param('token') token: string, @Body() data: ResetPasswordDto) {
-    try {
-
-      let res = await this.organizationService.resetPassword(token, data);
-      return res;
-    } catch (error) {
-      // return Util?.handleTryCatchError(Util?.getTryCatchMsg(error))
-      return Util?.handleFailResponse('Failed to reset Password');
-    }
-
-  }
-
-
   // Delete Organization
   @UseGuards(AuthGuard('jwt'))
   @ApiBearerAuth('defaultBearerAuth')

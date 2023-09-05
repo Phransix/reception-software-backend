@@ -1,5 +1,5 @@
-import { BadRequestException, ForbiddenException, Injectable, Param, Req, Res, UnauthorizedException } from '@nestjs/common';
-import { CreateOrganizationDto, ForgotPasswordDto, ResetPasswordDto, VerifyEmailDto } from './dto/create-organization.dto';
+import { ForbiddenException, Injectable, Param, Req, Res, UnauthorizedException } from '@nestjs/common';
+import { CreateOrganizationDto, VerifyEmailDto } from './dto/create-organization.dto';
 import { UpdateOrganizationDto } from './dto/update-organization.dto';
 import { InjectModel } from '@nestjs/sequelize';
 import { Organization } from './entities/organization.entity';
@@ -7,16 +7,13 @@ import * as Util from '../../utils/index'
 import { Sequelize } from 'sequelize-typescript';
 import { User } from 'src/modules/users/entities/user.entity';
 import { EmailService } from 'src/helper/EmailHelper';
-import { createAccessToken, generateRefreshToken, verifyEmailToken } from '../../utils/index';
-import * as bcrypt from 'bcrypt';
-import { LoginDTO } from 'src/guard/auth/loginDTO';
+import { verifyEmailToken } from '../../utils/index';
 import { Role } from '../role/entities/role.entity';
 import { AuthPassService } from 'src/guard/auth/authPass.service';
-import { ResetPasswordService } from 'src/helper/ResetPassHelper';
 import * as argon from 'argon2';
 import { orgImageUploadProfile } from 'src/helper/organizationsProfile';
 import { CreateOrganizationImgDto } from './dto/create-organizationImg.dto';
-
+const fs = require('fs')
 
 
 @Injectable()
@@ -28,7 +25,6 @@ export class OrganizationService {
     @InjectModel(Role) private role: typeof Role,
     private sequelize : Sequelize,
     private emailService:EmailService,
-    private resetPasswordService: ResetPasswordService,
     private readonly authPassService: AuthPassService,
     private imgHelper: orgImageUploadProfile
    
@@ -186,37 +182,52 @@ export class OrganizationService {
 
       const org = await Organization.findOne({ where: { id } });
       if (!org) {
-        throw new Error('Organization not found.');
+        return Util?.handleFailResponse(`Organization with this #${id} not found`)
+      }
+
+      var image_matches = updateOrganizationDto?.profilePhoto?.match(
+        /^data:([A-Za-z-+\/]+);base64,(.+)$/
+      )
+      if (!image_matches) {
+        return Util?.handleFailResponse('Invalid Input file')
       }
 
       let orgProfile = await this?.imgHelper?.uploadOrganizationImage(updateOrganizationDto?.profilePhoto)
       rollImage = orgProfile
 
+          // Delete the old profile photo if it exists in the directorate
+          let front_path = org?.profilePhoto
+          if (front_path != null){
+            fs.access(front_path, fs.F_OK, async (err) => {
+              if (err) {
+                console.error(err)
+                return
+              }
+              await this.imgHelper.unlinkFile(front_path); 
+            })
+          }
+
       let insertQry = {
-        
         organizationName: updateOrganizationDto?.organizationName,
         email: updateOrganizationDto?.email,
         phoneNumber: updateOrganizationDto?.phoneNumber,
         profilePhoto: orgProfile,
         
       }
-      console.log(insertQry)
+      // console.log(insertQry)
 
       // return false
       await this?.organizationModel?.update(insertQry,
         {
           where:{id:org?.id}
         })
-
-      Object.assign({org, ...insertQry })
-      await org.save()
-      return Util?.handleSuccessRespone(Util?.SuccessRespone, "Organization updated successfully.")
+          return Util?.handleCreateSuccessRespone(`Organization with this #${id} updated successfully`)
 
     } catch (error) {
       if(rollImage){
         await this?.imgHelper?.unlinkFile(rollImage)
       }
-      return Util?.handleFailResponse('Failed, Organizations Data Not Updated');
+      return Util?.handleFailResponse(`Organization with this #${id} not Updated `);
     }
 
 
@@ -252,6 +263,18 @@ export class OrganizationService {
       let org_image = await this?.imgHelper?.uploadOrganizationImage(createOrganizationImgDto?.profilePhoto)
       
       rollImage = org_image
+
+         // Delete the old profile photo if it exists in the directorate
+         let front_path = org_data?.profilePhoto
+         if (front_path != null){
+           fs.access(front_path, fs.F_OK, async (err) => {
+             if (err) {
+               console.error(err)
+               return
+             }
+             await this.imgHelper.unlinkFile(front_path); 
+           })
+         }
 
       let insertQry = {
         profilePhoto: org_image  
@@ -310,66 +333,6 @@ export class OrganizationService {
     }
  
   }
-
-    // Forget Password
-    async forgetPassword(email: ForgotPasswordDto) {
-      try {
-        let user = await this.user.findOne({ where: { ...email } });
-  
-  
-        if (!user) return Util.handleForbiddenExceptionResponses('Invaild Email');
-        // await this.resetPasswordService.sendResstPasswordNotification(
-        //   user?.fullName,
-        //   user?.userId,
-        //   user?.email,
-        // );
-  
-        let send_Token = await this.resetPasswordService.sendResstPasswordNotification({...email})
-        console.log(send_Token)
-  
-        return Util.handleCreateSuccessRespone(
-          `Reset password link sent to ${user?.email}`,
-        );
-      } catch (error) {
-        return Util?.handleFailResponse('Failed to send email');
-      }
-    }
-  
-  // Reset Password
-    async resetPassword(token: any, data: ResetPasswordDto) {
-      const t = await this.sequelize.transaction();
-  
-      try {
-  
-        const defaultPassword = data?.password;
-        // const saltRounds = 10;
-  
-       // Hash the defualt password
-       const hashedDefaultPassword = await argon.hash(defaultPassword);
-  
-        let decode = Util.verifyToken(token);
-        const user = await this?.user.findOne({
-          where: {
-            email: decode.email,
-          },
-        });
-  
-        if (!user) return Util.handleForbiddenExceptionResponses('Invaid email');
-  
-        let UpdateData = {
-          password: hashedDefaultPassword,
-        };
-        await this?.user.update(UpdateData, {
-          where: { email: user?.email },
-          transaction: t,
-        });
-        t.commit();
-        return Util.handleCreateSuccessRespone('Password Reset Successful');
-      } catch (error) {
-        t.rollback();
-        return Util?.handleFailResponse('Failed to reset password');
-      }
-    }
   
 
 

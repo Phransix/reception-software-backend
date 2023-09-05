@@ -35,6 +35,7 @@ import { MulterModule } from '@nestjs/platform-express';
 import { imageUploadProfile } from './helper/usersProfile';
 import { staffImageUploadProfile } from './helper/staffProfiles';
 import { orgImageUploadProfile } from './helper/organizationsProfile';
+import { ResetPasswordService } from './helper/ResetPassHelper';
 
 
 
@@ -44,6 +45,7 @@ import { orgImageUploadProfile } from './helper/organizationsProfile';
 @Module({
   imports: [
     SequelizeModule.forFeature([User,Role,Organization]),
+    BullModule.registerQueue({name:'resetPassword'}),
 
    
     PassportModule,
@@ -131,6 +133,7 @@ import { orgImageUploadProfile } from './helper/organizationsProfile';
     staffImageUploadProfile,
     orgImageUploadProfile,
     AppService,
+    ResetPasswordService,
 
      {
       provide: APP_GUARD,

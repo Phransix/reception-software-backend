@@ -13,8 +13,12 @@ import { ConfigService } from '@nestjs/config';
 import * as argon from 'argon2';
 import { imageUploadProfile } from 'src/helper/usersProfile';
 import { CreateUserImgDto } from './dto/create-userImg.dto';
+const fs = require('fs')
+import { Sequelize } from 'sequelize-typescript'
 import { query } from 'express';
 import { where } from 'sequelize';
+import { ForgotPasswordDto, ResetPasswordDto } from '../organization/dto/create-organization.dto';
+import { ResetPasswordService } from 'src/helper/ResetPassHelper';
 
 
 
@@ -27,7 +31,9 @@ export class UsersService {
   @InjectModel(Organization) private orgModel: typeof Organization,
   private jwtService: JwtService,
   private config: ConfigService,
-  private imagehelper : imageUploadProfile
+  private sequelize : Sequelize,
+  private imagehelper : imageUploadProfile,
+  private resetPasswordService: ResetPasswordService,
   ){}
 
  
@@ -203,6 +209,18 @@ async login(loginDto: LoginDTO){
       let user_image = await this?.imagehelper?.uploadUserImage(updateUserDto.profilePhoto)
       rollImage = user_image;
 
+         // Delete the old profile photo if it exists in the directorate
+         let front_path = user?.profilePhoto
+         if (front_path != null){
+           fs.access(front_path, fs.F_OK, async (err) => {
+             if (err) {
+               console.error(err)
+               return
+             }
+             await this.imagehelper.unlinkFile(front_path); 
+           })
+         }
+
       let insertQry = {
       
         roleName:updateUserDto?.roleName,
@@ -230,7 +248,105 @@ async login(loginDto: LoginDTO){
   };
 
 
-  // Update User  Profile Photo
+  //  Change User Password
+  async changePass (id:number, changepassDto: ChangePassDTO){
+    const {oldPassword,newPassword,confirmNewPassword} = changepassDto
+        try {
+        
+    const user = await User.findOne({where:{id}})
+    if(!user){
+      throw new BadRequestException('User with this ${id} does not exist')
+    }
+
+      // Verify the old password
+      const match = await argon.verify(user.password, oldPassword)
+      if(!match){
+        return Util?.handleFailResponse("Incorrect old password")
+      }
+
+      // Testing if confirmNewPassword != newPassword
+      if (confirmNewPassword != newPassword) {
+        return Util?.handleFailResponse("Passwords do not match")
+      }
+     
+       // Hash the new password and update the user's password
+    const hashedNewPassword = await argon.hash(newPassword);
+    user.password = hashedNewPassword;
+  
+    // await this.userModel.save(user);
+    Object.assign(user, changepassDto)
+    await user.save()
+    return Util?.handleSuccessRespone(Util?.SuccessRespone, "Your Password has been changed successfully.")
+
+  } catch (error) {
+    console.log(error)
+    return Util?.handleFailResponse(`Failed, User with this #${id}  password not changed`)
+  }
+
+  }
+
+     // Forget Password
+     async forgetPassword(email: ForgotPasswordDto) {
+      try {
+        let user = await this.userModel.findOne({ where: { ...email } });
+  
+  
+        if (!user) return Util.handleForbiddenExceptionResponses('Invaild Email');
+        // await this.resetPasswordService.sendResstPasswordNotification(
+        //   user?.fullName,
+        //   user?.userId,
+        //   user?.email,
+        // );
+  
+        let send_Token = await this.resetPasswordService.sendResstPasswordNotification({...email})
+        console.log(send_Token)
+  
+        return Util.handleCreateSuccessRespone(
+          `Reset password link sent to ${user?.email}`,
+        );
+      } catch (error) {
+        return Util?.handleFailResponse('Failed to send email');
+      }
+    }
+  
+  // Reset Password
+    async resetPassword(token: any, data: ResetPasswordDto) {
+      const t = await this.sequelize.transaction();
+  
+      try {
+  
+        const defaultPassword = data?.password;
+        // const saltRounds = 10;
+  
+       // Hash the defualt password
+       const hashedDefaultPassword = await argon.hash(defaultPassword);
+  
+        let decode = Util.verifyToken(token);
+        const user = await this?.userModel.findOne({
+          where: {
+            email: decode.email,
+          },
+        });
+  
+        if (!user) return Util.handleForbiddenExceptionResponses('Invaid email');
+  
+        let UpdateData = {
+          password: hashedDefaultPassword,
+        };
+        await this?.userModel.update(UpdateData, {
+          where: { email: user?.email },
+          transaction: t,
+        });
+        t.commit();
+        return Util.handleCreateSuccessRespone('Password Reset Successful');
+      } catch (error) {
+        t.rollback();
+        return Util?.handleFailResponse('Failed to reset password');
+      }
+    }
+
+
+      // Update User  Profile Photo
   async updateImg(id: string, createUserImgDto: CreateUserImgDto){
 
     let rollImage = '';
@@ -260,6 +376,18 @@ async login(loginDto: LoginDTO){
       let user_image = await this?.imagehelper?.uploadUserImage(createUserImgDto?.profilePhoto)
 
       rollImage = user_image;
+
+        // Delete the old profile photo if it exists in the directorate
+        let front_path = user_data?.profilePhoto
+        if (front_path != null){
+          fs.access(front_path, fs.F_OK, async (err) => {
+            if (err) {
+              console.error(err)
+              return
+            }
+            await this.imagehelper.unlinkFile(front_path); 
+          })
+        }
        
       let insertQrys = {
         profilePhoto: user_image  
@@ -316,44 +444,6 @@ async login(loginDto: LoginDTO){
  
   }
 
-  //  Change User Password
-  async changePass (id:number, changepassDto: ChangePassDTO){
-    const {oldPassword,newPassword,confirmNewPassword} = changepassDto
-        try {
-        
-    const user = await User.findOne({where:{id}})
-    if(!user){
-      throw new BadRequestException('User with this ${id} does not exist')
-    }
-
-      // Verify the old password
-      const match = await argon.verify(user.password, oldPassword)
-      if(!match){
-        return Util?.handleFailResponse("Incorrect old password")
-      }
-
-      // Testing if confirmNewPassword != newPassword
-      if (confirmNewPassword != newPassword) {
-        return Util?.handleFailResponse("Passwords do not match")
-      }
-     
-       // Hash the new password and update the user's password
-    const hashedNewPassword = await argon.hash(newPassword);
-    user.password = hashedNewPassword;
-  
-    // await this.userModel.save(user);
-    Object.assign(user, changepassDto)
-    await user.save()
-    return Util?.handleSuccessRespone(Util?.SuccessRespone, "Your Password has been changed successfully.")
-
-  } catch (error) {
-    console.log(error)
-    return Util?.handleFailResponse(`Failed, User with this #${id}  password not changed`)
-  }
-
-  }
-
-
 
    async findOneByuserEmail(email: string): Promise<User>{
     return await this.userModel.findOne<User>({where: {email}})
@@ -402,8 +492,8 @@ async login(loginDto: LoginDTO){
     const [at, rt] = await Promise.all([
       this.jwtService.signAsync(jwtPayload, {
         secret: this.config.get<string>('AT_SECRET'),
-        // expiresIn: '5m',
-        expiresIn: '7d',
+        expiresIn: '5m',
+        // expiresIn: '7d',
       }),
       this.jwtService.signAsync(jwtPayload, {
         secret: this.config.get<string>('RT_SECRET'),

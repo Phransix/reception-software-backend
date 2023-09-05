@@ -148,7 +148,7 @@ export class DepartmentController {
     required: false
   })
   @UseGuards(AtGuard)
-  @Get()
+  @Get('department/search')
   async searchDepartment (@Query('keyword') keyword: string){
     try {
 
