@@ -30,8 +30,8 @@ export class StaffController {
 
 
 // Get All Staffs
-  @UseGuards(AuthGuard('jwt'))
-  @ApiBearerAuth('defaultBearerAuth')
+  // @UseGuards(AuthGuard('jwt'))
+  // @ApiBearerAuth('defaultBearerAuth')
   @ApiOperation({summary:'Get All Staff'})
   @Public()
   @ApiQuery({

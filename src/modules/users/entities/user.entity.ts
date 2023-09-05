@@ -3,7 +3,7 @@ import {  BelongsTo, Column, DataType, ForeignKey,Model, Table } from "sequelize
 import { LoginDTO } from "src/guard/auth/loginDTO";
 import { Organization } from "src/modules/organization/entities/organization.entity";
 const { v4: uuidv4 } = require('uuid');
-import { UserRole } from "src/modules/role/role.enum";
+import { Role } from "src/modules/role/role.enum";
 
 @Table({
   paranoid: true,
@@ -62,28 +62,12 @@ export class User extends Model<User> {
      @BelongsTo(() => Organization)
      organization: Organization
 
-   
-  //   @Column({
-  //     type: DataType.ENUM,
-  //     values: ['Admin','Receptionist'],
-  //     defaultValue: 'Admin',
-  //     allowNull: false,
-  // })
-  // roleNames: string;
-
   @Column({
     type:DataType.ENUM,
-    // enum: UserRole,
     values: ['Admin','Receptionist'],
-    defaultValue: UserRole.Admin
+    defaultValue: Role.Admin
   })
-  roleName: UserRole;
-
-  // @Column({type: 'enum', enum: UserRole, default: UserRole.Admin})
-  // roleName: UserRole;
-
-
-  
+  roleName: string;
 
     @Column({
         type: DataType.STRING,

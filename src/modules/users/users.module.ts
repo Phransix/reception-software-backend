@@ -11,6 +11,8 @@ import { AuthPassService } from 'src/guard/auth/authPass.service';
 import { PasswordService } from 'src/guard/passwordhash.service';
 import { RolesGuard } from 'src/common/guards/roles.guard';
 import { imageUploadProfile } from 'src/helper/usersProfile';
+import { ResetPasswordService } from 'src/helper/ResetPassHelper';
+import { BullModule } from '@nestjs/bull';
 // import { RolesGuard } from 'src/common/guards/roles.guard';
 
 
@@ -18,9 +20,10 @@ import { imageUploadProfile } from 'src/helper/usersProfile';
 @Module({
   imports: [
     JwtModule.register({}),
-    SequelizeModule.forFeature([User,Role,Organization])
+    SequelizeModule.forFeature([User,Role,Organization]),
+    BullModule.registerQueue({name:'resetPassword'}),
   ],
   controllers: [UsersController],
-  providers: [UsersService,JwtService,AtStrategy,RtStrategy,AuthPassService,PasswordService,RolesGuard,imageUploadProfile]
+  providers: [UsersService,JwtService,AtStrategy,RtStrategy,AuthPassService,PasswordService,RolesGuard,imageUploadProfile,ResetPasswordService]
 })
 export class UsersModule {}
