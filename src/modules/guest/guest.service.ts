@@ -128,8 +128,9 @@ export class GuestService {
     }
   }
 
-  // Filter by Custom Date Range
+  // Search by Custom Date Range
   async customGuestSearch(startDate: Date, endDate: Date){
+    // let newDate = Util?.formatDateToDDMMYYYY()
     try {
       const guestSearch = await Guest.findAll({
         where:{
@@ -149,5 +150,31 @@ export class GuestService {
       return Util?.handleFailResponse("Guest Search failed")
     }
   }
+
+
+    // Filter Guest by Gender
+    async genderFilter (keyword: string){
+      try {
+        let filter = {}
+
+        if(keyword != null){
+          filter = {gender : keyword}
+        }
+
+        const filterCheck = await this.GuestModel.findAll({
+          where: {
+            ...filter
+          },
+        });
+        if (!filterCheck) {
+          throw new HttpException('Gender not found', HttpStatus.NOT_FOUND)
+        }
+        return filterCheck
+      } catch (error) {
+        console.log(error)
+        return Util?.handleFailResponse('Gender filtering failed')
+      }
+    }
+
 
 }
