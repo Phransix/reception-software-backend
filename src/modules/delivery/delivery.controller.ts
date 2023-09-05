@@ -35,8 +35,8 @@ export class DeliveryController {
   }
 
 
-  @UseGuards(AuthGuard('jwt'))
-  @ApiBearerAuth('defaultBearerAuth')
+  // @UseGuards(AuthGuard('jwt'))
+  // @ApiBearerAuth('defaultBearerAuth')
   @Public()
   @UseGuards(AtGuard)
   @ApiQuery({
@@ -75,10 +75,11 @@ export class DeliveryController {
         offset,
         attributes: { exclude: ['createdAt', 'updatedAt', 'deletedAt'] }
       });
-      const response = Util.getPagingData(delivery, page, limit)
+
+      const response = Util.getPagingData(delivery, page,limit)
       console.log(response)
       // return this.deliveryService.findAll();
-      let newOne = { ...delivery}
+      let newOne = { ...response}
       return Util?.handleSuccessRespone(newOne, "Delivery retrieved succesfully")
     } catch (error) {
       console.log(error)
