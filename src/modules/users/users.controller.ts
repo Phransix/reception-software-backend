@@ -90,7 +90,7 @@ export class UsersController {
   async findAllfindAll(@GetCurrentUserId() userId: string,
     @Query('page') page: number,
     @Query('size') size: number,
-    @Query('length') length: number,
+    @Query('length') length: number
   ) {
     console.log(userId)
     try {
