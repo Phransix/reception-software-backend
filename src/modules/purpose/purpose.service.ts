@@ -6,6 +6,7 @@ import { Purpose } from './entities/purpose.entity';
 import * as Abstract from '../../utils/abstract'
 import * as Util from '../../utils/index'
 import { Op } from 'sequelize';
+import { log } from 'console';
 
 @Injectable()
 export class PurposeService {
@@ -85,20 +86,26 @@ export class PurposeService {
   // Filter by Official and Personal Visits
   async guestPurpose (keyword: string){
     try {
-      const resultCheck = await this.PurposeModel.findAll({
+    let filter = {}
+
+    if(keyword != null){
+     filter = {purpose : keyword}
+    }
+    // console.log(filter);
+    
+    
+      const filterCheck = await this.PurposeModel.findAll({
         where: {
-          purpose: {
-            [Op.like]: `%${keyword}%`,
-          },
+         ...filter
         },
       });
-      if (!resultCheck) {
+      if (!filterCheck) {
         throw new HttpException('Purpose not found', HttpStatus.NOT_FOUND)
       }
-      return resultCheck
+      return filterCheck
     } catch (error) {
       console.log(error)
-      return Util?.handleFailResponse('Purpose search failed')
+      return Util?.handleFailResponse('Purpose filtering failed')
     }
   }
 }

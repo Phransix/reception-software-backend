@@ -1,6 +1,6 @@
 import { Controller, Get, Post, Body, Patch, Param, Delete, HttpException, HttpStatus, UseGuards, Query } from '@nestjs/common';
 import { GuestService } from './guest.service';
-import { CreateGuestDto } from './dto/create-guest.dto';
+import { CreateGuestDto, Gender } from './dto/create-guest.dto';
 import { UpdateGuestDto } from './dto/update-guest.dto';
 import { ApiBearerAuth, ApiOperation, ApiQuery, ApiTags } from '@nestjs/swagger';
 import * as Util from '../../utils/index'
@@ -187,7 +187,7 @@ export class GuestController {
     
   }
 
-  // Filter guest by custom range
+  // Search guest by custom range
 @UseGuards(AuthGuard('jwt'))
 @ApiBearerAuth('defaultBearerAuth')
 @ApiQuery({
@@ -218,6 +218,31 @@ try {
   return Util?.handleFailResponse("Guest Not found")
 }
   }
+
+  // Filter Guest by Gender
+  @UseGuards(AuthGuard('jwt'))
+  @ApiBearerAuth('defaultBearerAuth')
+  @Get('guest/filterGender')
+  @ApiQuery({ 
+    name: 'keyword',
+    enum: Gender,
+    required: false
+  })
+  @Public()
+  @UseGuards(AtGuard)
+  @ApiTags('Guest')
+  @ApiOperation({summary:'Filter Guest Gender'})
+  async guestGender (
+    @Query('keyword') keyword: string
+  ) {
+    try {
+      return this.guestService.genderFilter(keyword)
+    } catch (error) {
+      console.log(error)
+      return Util?.handleFailResponse("Gender Filter should not be null")
+    }
+  }
+
 
 
 

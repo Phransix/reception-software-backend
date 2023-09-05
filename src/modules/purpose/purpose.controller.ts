@@ -1,6 +1,6 @@
 import { Controller, Get, Post, Body, Patch, Param, Delete, UseGuards, Query, Req } from '@nestjs/common';
 import { PurposeService } from './purpose.service';
-import { CreatePurposeDto } from './dto/create-purpose.dto';
+import { CreatePurposeDto, visitPurpose } from './dto/create-purpose.dto';
 import { UpdatePurposeDto } from './dto/update-purpose.dto';
 import { ApiBearerAuth, ApiOperation, ApiQuery, ApiTags } from '@nestjs/swagger';
 import { Public } from 'src/common/decorators/public.decorator';
@@ -8,6 +8,7 @@ import * as Util from '../../utils/index'
 import { AuthGuard } from '@nestjs/passport';
 import { Purpose } from './entities/purpose.entity';
 import { AtGuard } from 'src/common/guards/at.guard';
+import { ENUM } from 'sequelize';
 
 @Controller('purpose')
 export class PurposeController {
@@ -135,23 +136,24 @@ export class PurposeController {
   // Search and filter by purpose
   @UseGuards(AuthGuard('jwt'))
   @ApiBearerAuth('defaultBearerAuth')
-  @ApiQuery({
+  @ApiQuery({ 
     name: 'keyword',
-    type: String,
+    enum: visitPurpose,
     required: false
   })
   @Public()
   @UseGuards(AtGuard)
   @ApiTags('Purpose')
+  @ApiOperation({summary:'Filter Purpose'})
   @Get('purpose/purposeFilter')
-  async purposeSearch(
+  async purposeFilter(
     @Query('keyword') keyword: string
     ){
     try {
-      return this.purposeService.guestPurpose(keyword.toLowerCase());
+      return this.purposeService.guestPurpose(keyword);
     } catch (error) {
       console.log(error)
-      return Util?.handleFailResponse('Search should not be null')
+      return Util?.handleFailResponse('Purpose Filter should not be null')
     }
   }
 }

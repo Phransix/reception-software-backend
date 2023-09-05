@@ -1,7 +1,7 @@
 import { ApiProperty } from "@nestjs/swagger";
 import { IsEnum, IsNotEmpty, IsString } from "class-validator";
 
-enum Purpose {
+export enum visitPurpose {
     PERSONAL = 'personal',
     OFFICIAL = 'official',
 }
@@ -28,7 +28,7 @@ export class CreatePurposeDto {
     })
     @IsString()
     @IsNotEmpty()
-    @IsEnum(Purpose,{
+    @IsEnum(visitPurpose,{
         message: 'state the purpose'
     })
     readonly purpose: string;

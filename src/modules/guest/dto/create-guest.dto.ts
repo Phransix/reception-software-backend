@@ -1,12 +1,15 @@
 import { ApiProperty } from "@nestjs/swagger";
 import { IsEnum, IsMobilePhone, IsNotEmpty, IsString, MaxLength, MinLength, isNotEmpty } from "class-validator";
 
-enum Gender {
+export enum Gender {
     MALE = 'male',
     FEMALE = 'female'
 }
 
 export class CreateGuestDto {
+    static createdAt(createdAt: any) {
+      throw new Error('Method not implemented.');
+    }
 
     @ApiProperty({
         description: 'The Id of the Organization',
