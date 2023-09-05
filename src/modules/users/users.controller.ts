@@ -16,6 +16,8 @@ import { InjectModel } from '@nestjs/sequelize';
 import { CreateUserImgDto } from './dto/create-userImg.dto';
 import { ForgotPasswordDto, ResetPasswordDto } from '../organization/dto/create-organization.dto';
 import { Roles } from 'src/common/decorators/roles.decorator';
+import { Role } from '../role/role.enum';
+import { RolesGuard } from 'src/common/guards/roles.guard';
 
 
 @ApiTags('Users')
@@ -27,7 +29,8 @@ export class UsersController {
 
   // Register New User
   @ApiTags('Users')
-  @UseGuards(AuthGuard('jwt'))
+  @Roles(Role.Admin)
+  @UseGuards(AuthGuard('jwt'),RolesGuard)
   @ApiBearerAuth('defaultBearerAuth')
   @ApiOperation({ summary: 'Create New User/Receptionist' })
   @UseGuards(AtGuard)
