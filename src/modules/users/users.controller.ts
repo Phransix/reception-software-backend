@@ -13,29 +13,24 @@ import { GetCurrentUserId } from 'src/common/decorators/get-current-user-id.deco
 import { AuthGuard } from '@nestjs/passport';
 import { DoesUserExist } from 'src/common/guards/doesUserExist.guard';
 import { InjectModel } from '@nestjs/sequelize';
-import { RolesGuard } from 'src/common/guards/roles.guard';
-// import { hasRoles } from 'src/common/decorators/roles.decorator';
-// import { Role } from '../role/role.enum';
 import { CreateUserImgDto } from './dto/create-userImg.dto';
 import { ForgotPasswordDto, ResetPasswordDto } from '../organization/dto/create-organization.dto';
-// import { Roles } from 'src/common/decorators/roles.decorator';
+import { Roles } from 'src/common/decorators/roles.decorator';
 
 
 @ApiTags('Users')
 @Controller('users')
 export class UsersController {
-  // roles: Role[]
   constructor(private readonly usersService: UsersService,
     @InjectModel(User) private userModel: typeof User,) { }
 
 
   // Register New User
   @ApiTags('Users')
-  @UseGuards(AuthGuard('jwt'), RolesGuard)
+  @UseGuards(AuthGuard('jwt'))
   @ApiBearerAuth('defaultBearerAuth')
   @ApiOperation({ summary: 'Create New User/Receptionist' })
   @UseGuards(AtGuard)
-  // @Roles(Role.Admin)
   @Public()
   @UseGuards(DoesUserExist)
   @Post('registerNewUser')
@@ -80,19 +75,15 @@ export class UsersController {
     type: 'number',
     required: false
   })
-  @ApiQuery({
-    name: 'length',
-    type: 'number',
-    required: false
-  })
+
   @UseGuards(AtGuard)
   @Get('getAllUsers')
   async findAllfindAll(@GetCurrentUserId() userId: string,
     @Query('page') page: number,
     @Query('size') size: number,
-    @Query('length') length: number
   ) {
     console.log(userId)
+
     try {
       let currentPage = Util.Checknegative(page);
       if (currentPage) {
@@ -107,11 +98,12 @@ export class UsersController {
         attributes: { exclude: ['createdAt', 'updatedAt', 'deletedAt'] }
       })
 
-      let result = Util?.getPagingData(allQueries,page,limit)
+      let result = Util?.getPagingData(allQueries, page, limit)
       console.log(result)
 
-      const dataResult = { ...allQueries }
+      const dataResult = { ...result }
       return Util?.handleSuccessRespone(dataResult, 'Users Data retrieved successfully.')
+
 
     } catch (error) {
       console.log(error)

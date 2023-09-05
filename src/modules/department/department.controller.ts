@@ -51,17 +51,11 @@ export class DepartmentController {
     type:'number',
     required:false
   })
-  @ApiQuery({
-    name:'length',
-    type:'number',
-    required:false
-  })
   @UseGuards(AtGuard)
   @Get('getAllDepartments')
   async findAll(
     @Query('page') page: number,
     @Query('size') size: number,
-    // @Query('length') length: number,
   ) {
 
     try {
@@ -83,7 +77,7 @@ export class DepartmentController {
       let result = Util?.getPagingData(allDepts,page,limit)
       console.log(result)
 
-      const dataResult = {...allDepts}
+      const dataResult = {...result}
       return Util?.handleSuccessRespone( dataResult,'Departments Data retrieved successfully.')
 
       
