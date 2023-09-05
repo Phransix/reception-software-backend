@@ -88,7 +88,7 @@ export class PurposeService {
       const resultCheck = await this.PurposeModel.findAll({
         where: {
           purpose: {
-            [Op.like]: `%${keyword}%`
+            [Op.like]: `%${keyword}%`,
           },
         },
       });

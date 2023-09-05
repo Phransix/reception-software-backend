@@ -43,11 +43,6 @@ export class GuestController {
     type: Number,
     required: false
   })
-  @ApiQuery({
-    name: "length",
-    type: Number,
-    required: false
-  })
   @UseGuards(AtGuard)
   @ApiTags('Guest')
   @ApiOperation({ summary: 'Get Guest By Pagination' })
@@ -55,7 +50,6 @@ export class GuestController {
   async findAll(
     @Query('page') page: number,
     @Query('size') size: number,
-    // @Query('length') length: number,
   ) {
     try {
       let currentPage = Util.Checknegative(page);
@@ -72,7 +66,7 @@ export class GuestController {
       const response = Util.getPagingData(guest, page, limit)
       console.log(response)
       // return this.deliveryService.findAll();
-      let newOne = { ...guest }
+      let newOne = { ...response }
       return Util?.handleSuccessRespone(newOne, "Guest Data retrieved succesfully")
 
 

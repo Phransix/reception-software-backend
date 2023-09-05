@@ -33,6 +33,16 @@ export class PurposeController {
   @UseGuards(AuthGuard('jwt'))
   @ApiBearerAuth('defaultBearerAuth')
   @Public()
+  @ApiQuery({
+    name: "page",
+    type: Number,
+    required: false
+  })
+  @ApiQuery({
+    name: "size",
+    type: Number,
+    required: false
+  })
   @UseGuards(AtGuard)
   @ApiTags('Purpose')
   @ApiOperation({ summary: 'Get Purpose By Pagination' })
