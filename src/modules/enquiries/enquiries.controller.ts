@@ -8,7 +8,6 @@ import { ApiBearerAuth, ApiOperation, ApiQuery, ApiTags } from '@nestjs/swagger'
 import { AuthGuard } from '@nestjs/passport';
 import { Public } from 'src/common/decorators/public.decorator';
 import { AtGuard } from 'src/common/guards';
-import { type } from 'os';
 
 
 @ApiTags('Enquiries')

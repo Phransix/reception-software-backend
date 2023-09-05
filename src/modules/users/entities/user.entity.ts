@@ -62,12 +62,12 @@ export class User extends Model<User> {
      @BelongsTo(() => Organization)
      organization: Organization
 
-  @Column({
-    type:DataType.ENUM,
-    values: ['Admin','Receptionist'],
-    defaultValue: Role.Admin
-  })
-  roleName: string;
+
+  @Column({ type: 'enum', 
+  values: Object.values(Role), 
+  defaultValue: Role.Admin 
+})
+  roleName: Role;
 
     @Column({
         type: DataType.STRING,
