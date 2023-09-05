@@ -13,6 +13,7 @@ import { RolesGuard } from 'src/common/guards/roles.guard';
 import { imageUploadProfile } from 'src/helper/usersProfile';
 import { ResetPasswordService } from 'src/helper/ResetPassHelper';
 import { BullModule } from '@nestjs/bull';
+import { APP_GUARD } from '@nestjs/core';
 // import { RolesGuard } from 'src/common/guards/roles.guard';
 
 
@@ -24,6 +25,20 @@ import { BullModule } from '@nestjs/bull';
     BullModule.registerQueue({name:'resetPassword'}),
   ],
   controllers: [UsersController],
-  providers: [UsersService,JwtService,AtStrategy,RtStrategy,AuthPassService,PasswordService,RolesGuard,imageUploadProfile,ResetPasswordService]
+  providers: [
+    UsersService,
+    JwtService,
+    AtStrategy,
+    RtStrategy,
+    AuthPassService,
+    PasswordService,
+    RolesGuard,
+    imageUploadProfile,
+    ResetPasswordService, 
+     {
+    provide: APP_GUARD,
+    useClass: RolesGuard
+   },
+  ]
 })
 export class UsersModule {}

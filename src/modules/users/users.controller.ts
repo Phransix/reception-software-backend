@@ -18,7 +18,7 @@ import { RolesGuard } from 'src/common/guards/roles.guard';
 // import { Role } from '../role/role.enum';
 import { CreateUserImgDto } from './dto/create-userImg.dto';
 import { ForgotPasswordDto, ResetPasswordDto } from '../organization/dto/create-organization.dto';
-import { Roles } from 'src/common/decorators/roles.decorator';
+// import { Roles } from 'src/common/decorators/roles.decorator';
 
 
 @ApiTags('Users')
@@ -35,7 +35,7 @@ export class UsersController {
   @ApiBearerAuth('defaultBearerAuth')
   @ApiOperation({ summary: 'Create New User/Receptionist' })
   @UseGuards(AtGuard)
-  @Roles('Admin')
+  // @Roles(Role.Admin)
   @Public()
   @UseGuards(DoesUserExist)
   @Post('registerNewUser')
@@ -93,7 +93,6 @@ export class UsersController {
     @Query('length') length: number,
   ) {
     console.log(userId)
-
     try {
       let currentPage = Util.Checknegative(page);
       if (currentPage) {
@@ -113,7 +112,6 @@ export class UsersController {
 
       const dataResult = { ...allQueries }
       return Util?.handleSuccessRespone(dataResult, 'Users Data retrieved successfully.')
-
 
     } catch (error) {
       console.log(error)

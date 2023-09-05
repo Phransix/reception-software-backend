@@ -44,28 +44,53 @@
 
 
 
-import { CanActivate, ExecutionContext, Injectable } from "@nestjs/common";
-import { Reflector } from "@nestjs/core";
-import { Observable } from "rxjs";
+// import { CanActivate, ExecutionContext, Injectable } from "@nestjs/common";
+// import { Reflector } from "@nestjs/core";
+// import { Observable } from "rxjs";
 
 
+
+// @Injectable()
+// export class RolesGuard implements CanActivate{
+//   constructor (private reflector: Reflector){}
+
+//   matchRoles(roles: string[], userRole: string){
+//     return roles.some((role) => role = userRole);
+//   }
+
+//   canActivate(context: ExecutionContext): boolean | Promise<boolean> | Observable<boolean> {
+//     const roles = this?.reflector.get<string[]>('rols',context.getHandler())
+//     if(!roles){
+//       return true
+//     }
+//     const request = context.switchToHttp().getRequest();
+//     const user = request.user;
+//     return this?.matchRoles(roles,user.role)
+//   }
+
+// }
+
+
+
+import { Injectable, CanActivate, ExecutionContext } from '@nestjs/common';
+import { Reflector } from '@nestjs/core';
+import { ROLES_KEY } from '../decorators/roles.decorator';
+import { Observable } from 'rxjs';
+import { Role } from 'src/modules/role/role.enum';
 
 @Injectable()
-export class RolesGuard implements CanActivate{
-  constructor (private reflector: Reflector){}
+export class RolesGuard implements CanActivate {
+  constructor(private reflector: Reflector) {}
 
-  matchRoles(roles: string[], userRole: string){
-    return roles.some((role) => role = userRole);
-  }
-
-  canActivate(context: ExecutionContext): boolean | Promise<boolean> | Observable<boolean> {
-    const roles = this?.reflector.get<string[]>('rols',context.getHandler())
-    if(!roles){
-      return true
+  canActivate(context: ExecutionContext): boolean | Promise<boolean> | Observable<boolean>{
+    const requiredRoles = this.reflector.getAllAndOverride<Role[]>(ROLES_KEY, [
+      context.getHandler(),
+      context.getClass(),
+    ]);
+    if (!requiredRoles) {
+      return true;
     }
-    const request = context.switchToHttp().getRequest();
-    const user = request.user;
-    return this?.matchRoles(roles,user.role)
+    const { user } = context.switchToHttp().getRequest();
+    return requiredRoles.some((role) => user.roles?.includes(role));
   }
-
 }
