@@ -144,7 +144,9 @@ export class PurposeController {
   @UseGuards(AtGuard)
   @ApiTags('Purpose')
   @Get('purpose/purposeFilter')
-  async purposeSearch(@Query('keyword') keyword: string){
+  async purposeSearch(
+    @Query('keyword') keyword: string
+    ){
     try {
       return this.purposeService.guestPurpose(keyword.toLowerCase());
     } catch (error) {
