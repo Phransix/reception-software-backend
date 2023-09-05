@@ -35,8 +35,8 @@ export class DeliveryController {
   }
 
 
-  // @UseGuards(AuthGuard('jwt'))
-  // @ApiBearerAuth('defaultBearerAuth')
+  @UseGuards(AuthGuard('jwt'))
+  @ApiBearerAuth('defaultBearerAuth')
   @Public()
   @UseGuards(AtGuard)
   @ApiQuery({
@@ -49,11 +49,6 @@ export class DeliveryController {
     type: Number,
     required: false
   })
-  // @ApiQuery({
-  //   name: "length",
-  //   type: Number,
-  //   required: false
-  // })
   @UseGuards(AtGuard)
   @ApiTags('Delivery')
   @ApiOperation({ summary: 'Get Delivery By Pagination' })
@@ -61,7 +56,6 @@ export class DeliveryController {
   async findAll(
     @Query('page') page?: number,
     @Query('size') size?: number,
-    // @Query('length') length?: number
   ) {
     try {
       let currentPages = Util.Checknegative(page);
@@ -78,7 +72,6 @@ export class DeliveryController {
 
       const response = Util.getPagingData(delivery, page,limit)
       console.log(response)
-      // return this.deliveryService.findAll();
       let newOne = { ...response}
       return Util?.handleSuccessRespone(newOne, "Delivery retrieved succesfully")
     } catch (error) {
