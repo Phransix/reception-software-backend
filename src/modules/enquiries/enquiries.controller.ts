@@ -51,17 +51,11 @@ export class EnquiriesController {
     type: 'number',
     required: false
   })
-  @ApiQuery({
-    name: 'length',
-    type: 'number',
-    required: false
-  })
   @UseGuards(AtGuard)
   @Get('getAllEnquiries')
   async findAll(
     @Query('page') page: number,
     @Query('size') size: number,
-    // @Query('length') length: number,
   ) {
     try {
 
@@ -82,7 +76,7 @@ export class EnquiriesController {
       let result = Util?.getPagingData(allQueries, page, limit)
       console.log(result)
 
-      const dataResult = { ...allQueries }
+      const dataResult = { ...result }
       return Util?.handleSuccessRespone(dataResult, 'Enquiries Data retrieved successfully.')
 
     } catch (error) {

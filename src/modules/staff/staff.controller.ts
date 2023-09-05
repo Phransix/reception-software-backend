@@ -44,17 +44,11 @@ export class StaffController {
     type:'number',
     required:false
   })
-  @ApiQuery({
-    name:'length',
-    type:'number',
-    required:false
-  })
   @UseGuards(AtGuard)
   @Get('getAllStaffs')
   async findAll(
     @Query('page') page: number,
     @Query('size') size: number,
-    // @Query('length') length: number,
   ) {
     try {
 
@@ -74,7 +68,7 @@ export class StaffController {
       let result = Util?.getPagingData(allQueries,page,limit)
       console.log(result)
 
-      const dataResult = {...allQueries}
+      const dataResult = {...result}
       return Util?.handleSuccessRespone( dataResult,'Staffs Data retrieved successfully.')
 
     }catch(error){
