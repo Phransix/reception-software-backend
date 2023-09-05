@@ -5,6 +5,7 @@ import { InjectModel } from '@nestjs/sequelize';
 import { Purpose } from './entities/purpose.entity';
 import * as Abstract from '../../utils/abstract'
 import * as Util from '../../utils/index'
+import { Op } from 'sequelize';
 
 @Injectable()
 export class PurposeService {
@@ -79,5 +80,23 @@ export class PurposeService {
       console.log(error)
       return Util?.handleFailResponse("Purpose Data removal failed")
      }
+  }
+
+  // Filter by Official and Personal Visits
+  async guestPurpose (keyword: string){
+    try {
+      const resultCheck = await this.PurposeModel.findAll({
+        where: {
+          purpose: {
+            [Op.like]: `%${keyword}%`
+          },
+        },
+      });
+      if (!resultCheck) {
+        
+      }
+    } catch (error) {
+      console.log(error)
+    }
   }
 }
