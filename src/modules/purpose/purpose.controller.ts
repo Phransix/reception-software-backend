@@ -2,7 +2,7 @@ import { Controller, Get, Post, Body, Patch, Param, Delete, UseGuards, Query, Re
 import { PurposeService } from './purpose.service';
 import { CreatePurposeDto } from './dto/create-purpose.dto';
 import { UpdatePurposeDto } from './dto/update-purpose.dto';
-import { ApiBearerAuth, ApiOperation, ApiTags } from '@nestjs/swagger';
+import { ApiBearerAuth, ApiOperation, ApiQuery, ApiTags } from '@nestjs/swagger';
 import { Public } from 'src/common/decorators/public.decorator';
 import * as Util from '../../utils/index'
 import { AuthGuard } from '@nestjs/passport';
@@ -40,7 +40,6 @@ export class PurposeController {
   async findAll(
     @Query('page') page: number,
     @Query('size') size: number,
-    // @Query('length') length: number,
   ) {
     try {
       let currentPage = Util.Checknegative(page);
@@ -56,8 +55,7 @@ export class PurposeController {
       });
       const response = Util.getPagingData(purpose, page, limit)
       console.log(response)
-      // return this.deliveryService.findAll();
-      let newOne = { ...purpose }
+      let newOne = { ...response }
       return Util?.handleSuccessRespone(newOne, "Purpose retrieved succesfully")
 
 
@@ -121,6 +119,27 @@ export class PurposeController {
     } catch (error) {
       console.log(error)
       return Util?.handleTryCatchError("Purpose data not removed")
+    }
+  }
+
+  // Search and filter by purpose
+  @UseGuards(AuthGuard('jwt'))
+  @ApiBearerAuth('defaultBearerAuth')
+  @ApiQuery({
+    name: 'keyword',
+    type: String,
+    required: false
+  })
+  @Public()
+  @UseGuards(AtGuard)
+  @ApiTags('Purpose')
+  @Get('purpose/purposeFilter')
+  async purposeSearch(@Query('keyword') keyword: string){
+    try {
+      return this.purposeService.guestPurpose(keyword.toLowerCase());
+    } catch (error) {
+      console.log(error)
+      return Util?.handleFailResponse('Search should not be null')
     }
   }
 }

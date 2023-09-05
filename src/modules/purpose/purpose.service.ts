@@ -1,4 +1,4 @@
-import { Injectable, NotAcceptableException } from '@nestjs/common';
+import { HttpException, HttpStatus, Injectable, NotAcceptableException } from '@nestjs/common';
 import { CreatePurposeDto } from './dto/create-purpose.dto';
 import { UpdatePurposeDto } from './dto/update-purpose.dto';
 import { InjectModel } from '@nestjs/sequelize';
@@ -93,10 +93,12 @@ export class PurposeService {
         },
       });
       if (!resultCheck) {
-        
+        throw new HttpException('Purpose not found', HttpStatus.NOT_FOUND)
       }
+      return resultCheck
     } catch (error) {
       console.log(error)
+      return Util?.handleFailResponse('Purpose search failed')
     }
   }
 }
