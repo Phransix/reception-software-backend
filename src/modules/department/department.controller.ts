@@ -61,7 +61,7 @@ export class DepartmentController {
   async findAll(
     @Query('page') page: number,
     @Query('size') size: number,
-    @Query('length') length: number,
+    // @Query('length') length: number,
   ) {
 
     try {
@@ -80,7 +80,7 @@ export class DepartmentController {
       });
 
 
-      let result = Util?.getPagingData(allDepts,page,limit,length)
+      let result = Util?.getPagingData(allDepts,page,limit)
       console.log(result)
 
       const dataResult = {...allDepts}

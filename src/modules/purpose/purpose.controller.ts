@@ -40,7 +40,7 @@ export class PurposeController {
   async findAll(
     @Query('page') page: number,
     @Query('size') size: number,
-    @Query('length') length: number,
+    // @Query('length') length: number,
   ) {
     try {
       let currentPage = Util.Checknegative(page);
@@ -54,7 +54,7 @@ export class PurposeController {
         offset,
         attributes: { exclude: ['createdAt', 'updatedAt', 'deletedAt'] }
       });
-      const response = Util.getPagingData(purpose, page, limit, length)
+      const response = Util.getPagingData(purpose, page, limit)
       console.log(response)
       // return this.deliveryService.findAll();
       let newOne = { ...purpose }

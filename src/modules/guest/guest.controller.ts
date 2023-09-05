@@ -55,7 +55,7 @@ export class GuestController {
   async findAll(
     @Query('page') page: number,
     @Query('size') size: number,
-    @Query('length') length: number,
+    // @Query('length') length: number,
   ) {
     try {
       let currentPage = Util.Checknegative(page);
@@ -69,7 +69,7 @@ export class GuestController {
         offset,
         attributes: { exclude: ['createdAt', 'updatedAt', 'deletedAt'] }
       });
-      const response = Util.getPagingData(guest, page, limit, length)
+      const response = Util.getPagingData(guest, page, limit)
       console.log(response)
       // return this.deliveryService.findAll();
       let newOne = { ...guest }

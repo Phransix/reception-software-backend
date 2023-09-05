@@ -293,25 +293,15 @@ export const handleCustonCreateResponse = (data, msg) => {
   }
 
 
-export const getPagingData = (data, page, limit,length) => {
-  let { rows: items } = data;
-  const currentPage = page ? +page : 1;
-  let totalItems = length;
+export const getPagingData = (data, page, limit) => {
+  let { count: totalItems, rows: items } = data;
+  const currentPage = page ? +page : 0;
   const totalPages = Math.ceil(totalItems / limit);
   items = items || [];
-
-console.log(data?.rows?.length)
-  return {
-    status_code: HttpStatus?.OK,
-    message: "success",
-    data: items,
-    currentPage,
-    totalItems,
-    totalPages,
-    // service_id: "PRODUCT_CATEGORY_SERVICE"
+  return { totalItems, items, totalPages, currentPage };
    
   };
-};
+
 
 export const formatDateToDDMMYYYY = (date: Date): string => {
   const day = String(date.getDate()).padStart(2, '0');
