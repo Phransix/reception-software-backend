@@ -48,11 +48,11 @@ export class DeliveryController {
     type: Number,
     required: false
   })
-  @ApiQuery({
-    name: "length",
-    type: Number,
-    required: false
-  })
+  // @ApiQuery({
+  //   name: "length",
+  //   type: Number,
+  //   required: false
+  // })
   @UseGuards(AtGuard)
   @ApiTags('Delivery')
   @ApiOperation({ summary: 'Get Delivery By Pagination' })

@@ -294,14 +294,18 @@ export const handleCustonCreateResponse = (data, msg) => {
 
 
 export const getPagingData = (data, page, limit) => {
-  let { count: totalItems, rows: items } = data;
-  const currentPage = page ? +page : 0;
+  let { count: totalItems,rows: items } = data;
+  const currentPage = page ? +page : 1;
   const totalPages = Math.ceil(totalItems / limit);
   items = items || [];
-  return { totalItems, items, totalPages, currentPage };
-   
-  };
 
+  return {
+    items,
+    currentPage,
+    totalItems,
+    totalPages
+  };
+};
 
 export const formatDateToDDMMYYYY = (date: Date): string => {
   const day = String(date.getDate()).padStart(2, '0');
