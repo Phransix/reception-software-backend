@@ -4,110 +4,111 @@ import { UpdateEnquiryDto } from './dto/update-enquiry.dto';
 import { Enquiry } from './entities/enquiry.entity';
 import { Sequelize } from 'sequelize-typescript';
 import { InjectModel } from '@nestjs/sequelize';
-import * as Util from '../../utils/index'
-import * as Abstract from '../../utils/abstract'
+import * as Util from '../../utils/index';
+import * as Abstract from '../../utils/abstract';
 import { Op } from 'sequelize';
 
 @Injectable()
 export class EnquiriesService {
-
   constructor(
     private sequelize: Sequelize,
-    @InjectModel(Enquiry) private readonly enquiryModel: typeof Enquiry
-  ) { }
-
+    @InjectModel(Enquiry) private readonly enquiryModel: typeof Enquiry,
+  ) {}
 
   // Create Enquiry
   async create(createEnquiryDto: CreateEnquiryDto) {
     try {
-      console.log(createEnquiryDto)
+      console.log(createEnquiryDto);
       await Abstract?.createData(Enquiry, createEnquiryDto);
-      return Util?.handleSuccessRespone(Util?.SuccessRespone, "Enquiry created successfully.")
-
+      return Util?.handleSuccessRespone(
+        Util?.SuccessRespone,
+        'Enquiry created successfully.',
+      );
     } catch (error) {
-      console.log(error)
+      console.log(error);
       // return Util
-      return Util?.handleFailResponse('Enquiry registration failed')
+      return Util?.handleFailResponse('Enquiry registration failed');
     }
-  };
+  }
 
-
-// Get All Enquiries 
+  // Get All Enquiries
   async findAll() {
     try {
       const enquiries = await Enquiry.findAll({
-
         attributes: {
-          exclude: ['createdAt', 'updatedAt', 'deletedAt']
+          exclude: ['createdAt', 'updatedAt', 'deletedAt'],
         },
-
-      })
-      return Util?.handleSuccessRespone(enquiries, "Enquiries Data retrieved successfully.")
-
+      });
+      return Util?.handleSuccessRespone(
+        enquiries,
+        'Enquiries Data retrieved successfully.',
+      );
     } catch (error) {
-      console.log(error)
+      console.log(error);
       return Util?.handleTryCatchError(Util?.getTryCatchMsg(error));
     }
-  };
+  }
 
   // Get Enquiry by The Id
   async findOne(enquiryId: string) {
     try {
       const enquiry = await Enquiry.findOne({
-
         attributes: {
-          exclude: ['createdAt', 'updatedAt', 'deletedAt']
+          exclude: ['createdAt', 'updatedAt', 'deletedAt'],
         },
-        where: { enquiryId }
+        where: { enquiryId },
       });
 
       if (!enquiry) {
-        return Util?.handleFailResponse('Enquiry not found')
+        return Util?.handleFailResponse('Enquiry not found');
       }
 
-      return Util?.handleSuccessRespone(enquiry, "Enquiry retrieve successfully.")
-
+      return Util?.handleSuccessRespone(
+        enquiry,
+        'Enquiry retrieve successfully.',
+      );
     } catch (error) {
-      console.log(error)
-      return Util?.handleErrorRespone('Failed, Enquiry data not found')
+      console.log(error);
+      return Util?.handleErrorRespone('Failed, Enquiry data not found');
     }
   }
 
   // Update Enquiy
   async update(enquiryId: string, updateEnquiryDto: UpdateEnquiryDto) {
     try {
-
       const enquiry = await Enquiry.findOne({ where: { enquiryId } });
       if (!enquiry) {
-        return Util?.handleFailResponse('Enquiry not found')
+        return Util?.handleFailResponse('Enquiry not found');
       }
 
-      Object.assign(enquiry, updateEnquiryDto)
-      await enquiry.save()
-      return Util?.handleSuccessRespone(Util?.SuccessRespone, "Enquiry updated successfully.")
-
+      Object.assign(enquiry, updateEnquiryDto);
+      await enquiry.save();
+      return Util?.handleSuccessRespone(
+        Util?.SuccessRespone,
+        'Enquiry updated successfully.',
+      );
     } catch (error) {
-      console.log(error)
-      return Util?.handleErrorRespone('Enquiry data Updare Failed')
+      console.log(error);
+      return Util?.handleErrorRespone('Enquiry data Updare Failed');
     }
-
-  };
-
+  }
 
   // Delete Enquiry
   async remove(enquiryId: string) {
     try {
       const enquiry = await Enquiry.findOne({ where: { enquiryId } });
       if (!enquiry) {
-        return Util?.handleFailResponse('Enquiry not found')
+        return Util?.handleFailResponse('Enquiry not found');
       }
 
-      Object.assign(enquiry)
-      await enquiry.destroy()
-      return Util?.handleSuccessRespone(Util?.SuccessRespone, "Enquiry deleted successfully.")
-
+      Object.assign(enquiry);
+      await enquiry.destroy();
+      return Util?.handleSuccessRespone(
+        Util?.SuccessRespone,
+        'Enquiry deleted successfully.',
+      );
     } catch (error) {
-      console.log(error)
+      console.log(error);
       return Util?.handleTryCatchError(Util?.getTryCatchMsg(error));
     }
   }
@@ -115,82 +116,83 @@ export class EnquiriesService {
   // Filter Enquiry Data By Costom Range
   async filterByCustomRange(startDate: Date, endDate: Date) {
     try {
-
       let enquiryData = await Enquiry.findAll({
         where: {
-          createdAt:
-          {
-            [Op.between]: [startDate, endDate]
-          }
+          createdAt: {
+            [Op.between]: [startDate, endDate],
+          },
         },
-        attributes: { exclude: ['createdAt', 'updatedAt', 'deletedAt'] }
-      })
+        attributes: { exclude: ['createdAt', 'updatedAt', 'deletedAt'] },
+      });
       if (!enquiryData || enquiryData.length === 0) {
         return Util?.handleFailResponse('No matching Enquiry data found.');
       }
 
-      return Util?.handleSuccessRespone(enquiryData, "Enquiries Data retrieved successfully.")
-
+      return Util?.handleSuccessRespone(
+        enquiryData,
+        'Enquiries Data retrieved successfully.',
+      );
     } catch (error) {
-      console.log(error)
-      return Util?.handleErrorRespone('Enquiry data search failed')
+      console.log(error);
+      return Util?.handleErrorRespone('Enquiry data search failed');
     }
   }
 
-
   // Filter Enquiries By Purpose
-  async purposefilter (keyword: string){
+  async purposefilter(keyword: string) {
     try {
-      let filter ={}
+      let filter = {};
 
-      if (keyword != null ){
-        filter = {purpose : keyword}
+      if (keyword != null) {
+        filter = { purpose: keyword };
       }
       const filterCheck = await this?.enquiryModel.findAll({
         where: {
-          ...filter
-        }
-      })
-      if(!filterCheck){
-        return Util?.handleFailResponse('No matching Enquiry Purpose data found.');
+          ...filter,
+        },
+      });
+      if (!filterCheck) {
+        return Util?.handleFailResponse(
+          'No matching Enquiry Purpose data found.',
+        );
       }
 
-      return Util?.handleSuccessRespone(filterCheck, "Enquiries Purpose Data Filtered Successfully.")
-
+      return Util?.handleSuccessRespone(
+        filterCheck,
+        'Enquiries Purpose Data Filtered Successfully.',
+      );
     } catch (error) {
-      console.log(error)
-      return Util?.handleFailResponse('Filtering By Purpose failed')
+      console.log(error);
+      return Util?.handleFailResponse('Filtering By Purpose failed');
     }
   }
-
 
   // Search Enquiry Data
   async searchEnquiry(keyword: string) {
     try {
       const enquiryData = await this?.enquiryModel.findAll({
-
         attributes: {
-          exclude: ['createdAt', 'updatedAt', 'deletedAt']
+          exclude: ['createdAt', 'updatedAt', 'deletedAt'],
         },
 
         where: {
-          enquirerFullName : { [Op.like]: `%${keyword}%`, },
-        }, 
-
+          enquirerFullName: { [Op.like]: `%${keyword}%` },
+        },
       });
 
       if (!enquiryData || enquiryData.length === 0) {
         return Util?.handleFailResponse('No matching Enquiry data found.');
       }
 
-      return Util?.handleSuccessRespone(enquiryData, "Enquiries Data retrieved successfully.")
-
+      return Util?.handleSuccessRespone(
+        enquiryData,
+        'Enquiries Data retrieved successfully.',
+      );
     } catch (error) {
-      console.log(error)
-      return Util?.handleFailResponse('The Enquiry data does not exist')
+      console.log(error);
+      return Util?.handleFailResponse('The Enquiry data does not exist');
     }
   }
-
 
   // async searchEnquiry(keyword: string) {
   //   try {
@@ -215,8 +217,4 @@ export class EnquiriesService {
   //     return Util?.handleFailResponse('An error occurred while searching for Enquiry data.');
   //   }
   // }
-
-
-
 }
-
