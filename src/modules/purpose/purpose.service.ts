@@ -39,9 +39,9 @@ export class PurposeService {
     }
   }
 
-  async findOne(id: number) {
+  async findOne(purposeId: string) {
     try {
-      const purpose = await Purpose.findOne({where: { id },
+      const purpose = await Purpose.findOne({where: { purposeId },
         attributes: {exclude:['createdAt','updatedAt']}
       });
       if (!purpose) {
@@ -54,9 +54,9 @@ export class PurposeService {
     }
   }
 
-  async update(id: number, updatePurposeDto: UpdatePurposeDto) {
+  async update(purposeId: string, updatePurposeDto: UpdatePurposeDto) {
     try {
-      const purpose = await Purpose.findOne({where:{id}})
+      const purpose = await Purpose.findOne({where:{purposeId}})
       if (!purpose) {
         throw new NotAcceptableException("Purpose Data does not exist")
       }
@@ -69,9 +69,9 @@ export class PurposeService {
     }
   }
 
-  async remove(id: number) {
+  async remove(purposeId: string) {
      try {
-      const purpose = await Purpose.findByPk(id)
+      const purpose = await Purpose.findByPk(purposeId)
       if (!purpose) {
         throw new NotAcceptableException("Purpose Data does not exist")
       }

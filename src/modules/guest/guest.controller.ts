@@ -83,11 +83,11 @@ export class GuestController {
   @Public()
   @UseGuards(AtGuard)
   @ApiTags('Guest')
-  @ApiOperation({summary:'Get Guest By Id'})
-  @Get(':id')
-  async findOne(@Param('id') id: number) {
+  @ApiOperation({summary:'Get Guest By guestId'})
+  @Get(':guestId')
+  async findOne(@Param('guestId') guestId: string) {
     try {
-      let guest = await this.guestService.findOne(id);
+      let guest = await this.guestService.findOne(guestId);
       return guest;
 
     } catch (error) {
@@ -101,11 +101,11 @@ export class GuestController {
   @Public()
   @UseGuards(AtGuard)
   @ApiTags('Guest')
-  @ApiOperation({summary:'Update Guest By Id'})
-  @Patch(':id')
-  async update(@Param('id') id: number, @Body() updateGuestDto: UpdateGuestDto) {
+  @ApiOperation({summary:'Update Guest By guestId'})
+  @Patch(':guestId')
+  async update(@Param('guestId') guestId: string, @Body() updateGuestDto: UpdateGuestDto) {
     try {
-      const guest = this.guestService.update(id,updateGuestDto)
+      const guest = this.guestService.update(guestId,updateGuestDto)
       return guest
     } catch (error) {
       console.log(error);
@@ -118,12 +118,12 @@ export class GuestController {
   @Public()
   @UseGuards(AtGuard)
   @ApiTags('Guest')
-  @ApiOperation({summary:'Remove Guest By Id'})
-  @Delete(':id')
-  async remove(@Param('id') id: number) {
+  @ApiOperation({summary:'Remove Guest By guestId'})
+  @Delete(':guestId')
+  async remove(@Param('guestId') guestId: string) {
     try {
 
-      const guest = this.guestService.findOne(id)
+      const guest = this.guestService.findOne(guestId)
       if(!guest){
         return Util?.handleFailResponse("Guest data not found")
       }

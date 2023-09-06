@@ -42,10 +42,10 @@ export class GuestService {
     }
   }
 
-  async findOne(id: number) {
+  async findOne(guestId: string) {
     try {
       const guest = await Guest.findOne({
-        where: { id },
+        where: { guestId },
         attributes: { exclude: ['createdAt', 'updatedAt'] }
       });
       if (!guest) {
@@ -58,9 +58,9 @@ export class GuestService {
     }
   }
 
-  async update(id: number, updateGuestDto: UpdateGuestDto) {
+  async update(guestId: string, updateGuestDto: UpdateGuestDto) {
     try {
-      const guest = await Guest.findOne({ where: { id } });
+      const guest = await Guest.findOne({ where: { guestId } });
       if (!guest) {
         throw new NotAcceptableException('Guest data not found')
       }
@@ -73,9 +73,9 @@ export class GuestService {
     }
   }
 
-  async remove(id: number) {
+  async remove(guestId: string) {
     try {
-      const guest = await Guest.findByPk(id);
+      const guest = await Guest.findByPk(guestId);
       if (!guest) {
         throw new NotAcceptableException("Guest Data does not exist")
       }
@@ -137,7 +137,7 @@ export class GuestService {
         where:{
           createdAt: 
           {
-            [Op.between]: [moment(startDate).format(),moment(endDate).format()],
+            [Op.between]: [startDate,endDate],
           }
         },
         attributes: {exclude: ['createdAt','updated', 'deletedAt']}
