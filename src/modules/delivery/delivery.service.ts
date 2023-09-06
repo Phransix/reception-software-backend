@@ -41,10 +41,10 @@ export class DeliveryService {
     }
   }
 
-  async findOne(id: number) {
+  async findOne(deliveryId: string) {
     try {
       const delivery = await Delivery.findOne({ 
-        where: { id }, 
+        where: { deliveryId }, 
         attributes: {exclude:['createdAt','updatedAt']}
        });
       if (!delivery) {
@@ -57,9 +57,9 @@ export class DeliveryService {
     }
   }
 
-  async update(id: number, updateDeliveryDto: UpdateDeliveryDto) {
+  async update(deliveryId: string, updateDeliveryDto: UpdateDeliveryDto) {
     try {
-      const delivery = await Delivery.findOne({ where: { id } });
+      const delivery = await Delivery.findOne({ where: { deliveryId } });
       if (!delivery) {
         throw new NotAcceptableException('Delivery Data not Found')
       }
@@ -72,10 +72,10 @@ export class DeliveryService {
     }
   };
 
-  async remove(id: number) {
+  async remove(deliveryId: string) {
     // return `This action removes a #${id} delivery`;
     try {
-      const delivery = await Delivery.findByPk(id);
+      const delivery = await Delivery.findByPk(deliveryId);
       if (!delivery) {
         throw new NotAcceptableException("Delivery Data does not exist")
       }

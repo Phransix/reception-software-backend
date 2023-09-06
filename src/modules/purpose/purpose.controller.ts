@@ -84,10 +84,10 @@ export class PurposeController {
   @UseGuards(AuthGuard('jwt'))
   @ApiBearerAuth('defaultBearerAuth')
   @ApiOperation({summary:'Get Purpose By Id'})
-  @Get(':id')
-  async findOne(@Param('id') id: number) {
+  @Get(':purposeId')
+  async findOne(@Param('purposeId') purposeId: string) {
     try {
-      const purpose = await this.purposeService.findOne(id);
+      const purpose = await this.purposeService.findOne(purposeId);
       return purpose;
     } catch (error) {
       console.log(error)
@@ -101,10 +101,10 @@ export class PurposeController {
   @UseGuards(AuthGuard('jwt'))
   @ApiBearerAuth('defaultBearerAuth')
   @ApiOperation({summary:'Update Purpose By Id'})
-  @Patch(':id')
-  async update(@Param('id') id: number, @Body() updatePurposeDto: UpdatePurposeDto) {
+  @Patch(':purposeId')
+  async update(@Param('purposeId') purposeId: string, @Body() updatePurposeDto: UpdatePurposeDto) {
     try {
-      const purpose = this.purposeService.update(id,updatePurposeDto)
+      const purpose = this.purposeService.update(purposeId,updatePurposeDto)
       return purpose
     } catch (error) {
       console.log(error)
@@ -118,10 +118,10 @@ export class PurposeController {
   @UseGuards(AuthGuard('jwt'))
   @ApiBearerAuth('defaultBearerAuth')
   @ApiOperation({summary:'Remove Purpose By Id'})
-  @Delete(':id')
-  async remove(@Param('id') id: number) {
+  @Delete(':purposeId')
+  async remove(@Param('purposeId') purposeId: string) {
     try {
-      const purpose = await this.purposeService.findOne(id);
+      const purpose = await this.purposeService.findOne(purposeId);
       if (!purpose) {
         return Util?.handleFailResponse("Purpose data not found")
       }

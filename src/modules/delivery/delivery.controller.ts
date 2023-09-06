@@ -86,10 +86,10 @@ export class DeliveryController {
   @UseGuards(AtGuard)
   @ApiTags('Delivery')
   @ApiOperation({ summary: 'Get All Delivery By Id' })
-  @Get(':id')
-  async findOne(@Param('id') id: number) {
+  @Get(':deliveryId')
+  async findOne(@Param('deliveryId') deliveryId: string) {
     try {
-      let delivery = await this.deliveryService.findOne(id);
+      let delivery = await this.deliveryService.findOne(deliveryId);
       return delivery;
 
     } catch (error) {
@@ -104,10 +104,10 @@ export class DeliveryController {
   @UseGuards(AtGuard)
   @ApiTags('Delivery')
   @ApiOperation({ summary: 'Update Delivery By Id' })
-  @Patch(':id')
-  update(@Param('id') id: number, @Body() updateDeliveryDto: UpdateDeliveryDto) {
+  @Patch(':deliveryId')
+  update(@Param('deliveryId') deliveryId: string, @Body() updateDeliveryDto: UpdateDeliveryDto) {
     try {
-      const delivery_Update = this.deliveryService.update(id, updateDeliveryDto)
+      const delivery_Update = this.deliveryService.update(deliveryId, updateDeliveryDto)
       return delivery_Update
     } catch (error) {
       console.log(error);
@@ -121,12 +121,12 @@ export class DeliveryController {
   @UseGuards(AtGuard)
   @ApiTags('Delivery')
   @ApiOperation({ summary: 'Remove Delivery By Id' })
-  @Delete(':id')
-  async remove(@Param('id') id: number) {
+  @Delete(':deliveryId')
+  async remove(@Param('deliveryId') deliveryId: string) {
 
     try {
 
-      const delivery = await Delivery.findOne({ where: { id } })
+      const delivery = await Delivery.findOne({ where: { deliveryId } })
       if (!delivery) {
         return Util?.handleFailResponse("Delivery data not found")
       }
