@@ -1,7 +1,7 @@
 import { ApiProperty } from "@nestjs/swagger";
 import { IsEmail, IsEnum, IsNotEmpty, IsString, Matches, MaxLength, MinLength } from "class-validator";
 
-enum Purpose {
+export enum Purpose {
     OFFICAIL = 'Official',
     PERSONAL = 'Personal',
     PARTNERSHIP= 'Partnership',
