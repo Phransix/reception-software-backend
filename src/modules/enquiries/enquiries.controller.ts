@@ -87,13 +87,13 @@ export class EnquiriesController {
   // Get One Enquiry By Id
   @UseGuards(AuthGuard('jwt'))
   @ApiBearerAuth('defaultBearerAuth')
-  @ApiOperation({ summary: 'Get Enquiry By Id' })
+  @ApiOperation({ summary: 'Get Enquiry By enquiryId' })
   @Public()
   @UseGuards(AtGuard)
-  @Get(':id')
-  async findOne(@Param('id') id: number) {
+  @Get(':enquiryId')
+  async findOne(@Param('enquiryId') enquiryId: string) {
     try {
-      let enquiryData = await this.enquiriesService.findOne(id)
+      let enquiryData = await this.enquiriesService.findOne(enquiryId)
       return enquiryData
 
     } catch (error) {
@@ -106,13 +106,13 @@ export class EnquiriesController {
   // Update Enquiry
   @UseGuards(AuthGuard('jwt'))
   @ApiBearerAuth('defaultBearerAuth')
-  @ApiOperation({ summary: 'Update Enquiry By Id' })
+  @ApiOperation({ summary: 'Update Enquiry By enquiryId' })
   @Public()
   @UseGuards(AtGuard)
-  @Patch(':id')
-  async update(@Param('id') id: number, @Body() updateEnquiryDto: UpdateEnquiryDto) {
+  @Patch(':enquiryId')
+  async update(@Param('enquiryId') enquiryId: string, @Body() updateEnquiryDto: UpdateEnquiryDto) {
     try {
-      const enquiryUpdate = await this.enquiriesService.update(id, updateEnquiryDto)
+      const enquiryUpdate = await this.enquiriesService.update(enquiryId, updateEnquiryDto)
       return enquiryUpdate
 
     } catch (error) {
@@ -124,21 +124,21 @@ export class EnquiriesController {
   // DElete Enquiry
   @UseGuards(AuthGuard('jwt'))
   @ApiBearerAuth('defaultBearerAuth')
-  @ApiOperation({ summary: 'Delete Enquiry By Id' })
+  @ApiOperation({ summary: 'Delete Enquiry By enquiryId' })
   @Public()
   @UseGuards(AtGuard)
   @ApiTags('Enquiries')
-  @Delete(':id')
-  async remove(@Param('id') id: number) {
+  @Delete(':enquiryId')
+  async remove(@Param('enquiryId') enquiryId: string) {
     try {
 
-      const enquiry = await Enquiry.findOne({ where: { id } });
+      const enquiry = await Enquiry.findOne({ where: { enquiryId } });
       if (!enquiry) {
         // throw new Error('Enquiry not Found')
         return Util?.handleFailResponse('Enquiry not found')
       }
 
-      let enquiryDelete = await this.enquiriesService.remove(id)
+      let enquiryDelete = await this.enquiriesService.remove(enquiryId)
       return enquiryDelete
 
     } catch (error) {
@@ -199,7 +199,7 @@ export class EnquiriesController {
         return await this?.enquiriesService?.purposefilter(keyword)
       } catch (error) {
         console.log(error)
-        return Util?.handleFailResponse('Filtering By Purpose failed')
+          return Util?.handleFailResponse('Filtering By Purpose failed')
       }
      
     }

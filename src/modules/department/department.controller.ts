@@ -57,9 +57,7 @@ export class DepartmentController {
     @Query('page') page: number,
     @Query('size') size: number,
   ) {
-
     try {
-
       let currentPage = Util.Checknegative(page);
       if (currentPage){
         return Util?.handleErrorRespone("Departments current page cannot be negative");
@@ -92,13 +90,13 @@ export class DepartmentController {
 // Get One Department
   @UseGuards(AuthGuard('jwt'))
   @ApiBearerAuth('defaultBearerAuth')
-  @ApiOperation({summary:'Get Department By Id'})
+  @ApiOperation({summary:'Get Department By departmentId'})
   @Public()
   @UseGuards(AtGuard)
-  @Get(':id')
-  async findOne(@Param('id') id: string) {
+  @Get(':departmentId')
+  async findOne(@Param('departmentId') departmentId: string) {
     try {
-      let deptData = await this.departmentService.findOne(id)
+      let deptData = await this.departmentService.findOne(departmentId)
       return deptData 
       
     } catch (error) {
@@ -112,23 +110,23 @@ export class DepartmentController {
   // Udate Department
   @UseGuards(AuthGuard('jwt'))
   @ApiBearerAuth('defaultBearerAuth')
-  @ApiOperation({summary:'Update Department By Id'})
+  @ApiOperation({summary:'Update Department By departmentId'})
   @Public()
   @UseGuards(AtGuard)
-  @Patch(':id')
-  update(@Param('id') id: string, @Body() updateDepartmentDto: UpdateDepartmentDto) {
-    return this.departmentService.update(id, updateDepartmentDto);
+  @Patch(':departmentId')
+  update(@Param('departmentId') departmentId: string, @Body() updateDepartmentDto: UpdateDepartmentDto) {
+    return this.departmentService.update(departmentId, updateDepartmentDto);
   }
 
 // Delete Department
   @UseGuards(AuthGuard('jwt'))
   @ApiBearerAuth('defaultBearerAuth')
-  @ApiOperation({summary:'Delete Department By Id'})
+  @ApiOperation({summary:'Delete Department By departmentId'})
   @Public()
   @UseGuards(AtGuard)
-  @Delete(':id')
-  remove(@Param('id') id: string) {
-    return this.departmentService.remove(id);
+  @Delete(':departmentId')
+  remove(@Param('departmentId') departmentId: string) {
+    return this.departmentService.remove(departmentId);
   }
 
    // Search Department

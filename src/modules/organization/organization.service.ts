@@ -87,7 +87,7 @@ export class OrganizationService {
     } catch (error ) {
       t.rollback()
       console.log(error)
-      throw new Error("Registration failed");
+      return Util?.handleFailResponse(' Organization Registration Failed');
 
     }
   };
@@ -151,7 +151,7 @@ export class OrganizationService {
 
 
   // Get By Id
-  async findOne(id: string) {
+  async findOne(organizationId: string) {
 
     try {
       const org = await Organization.findOne(
@@ -160,7 +160,7 @@ export class OrganizationService {
             exclude:['password','createdAt','updatedAt','deletedAt']
           },
           
-          where: { id } });
+          where: { organizationId } });
       if (!org) {
         throw new Error('Organization not found.');
       }
@@ -176,13 +176,13 @@ export class OrganizationService {
   }
 
   // Update By Id
-  async update(id: string, updateOrganizationDto: UpdateOrganizationDto) {
+  async update(organizationId: string, updateOrganizationDto: UpdateOrganizationDto) {
     let rollImage = '';
     try {
 
-      const org = await Organization.findOne({ where: { id } });
+      const org = await Organization.findOne({ where: { organizationId } });
       if (!org) {
-        return Util?.handleFailResponse(`Organization with this #${id} not found`)
+        return Util?.handleFailResponse(`Organization with this #${organizationId} not found`)
       }
 
       var image_matches = updateOrganizationDto?.profilePhoto?.match(
@@ -219,15 +219,15 @@ export class OrganizationService {
       // return false
       await this?.organizationModel?.update(insertQry,
         {
-          where:{id:org?.id}
+          where:{organizationId:org?.organizationId}
         })
-          return Util?.handleCreateSuccessRespone(`Organization with this #${id} updated successfully`)
+          return Util?.handleCreateSuccessRespone(`Organization with this #${organizationId} updated successfully`)
 
     } catch (error) {
       if(rollImage){
         await this?.imgHelper?.unlinkFile(rollImage)
       }
-      return Util?.handleFailResponse(`Organization with this #${id} not Updated `);
+      return Util?.handleFailResponse(`Organization with this #${organizationId} not Updated `);
     }
 
 
@@ -235,14 +235,14 @@ export class OrganizationService {
 
 
    // Update Organization Profile Photo
-   async updateImg(id: string, createOrganizationImgDto: CreateOrganizationImgDto){
+   async updateImg(organizationId: string, createOrganizationImgDto: CreateOrganizationImgDto){
 
     let rollImage = '';
 
     try {
-      const org_data  = await this.organizationModel.findOne({where:{id}})
+      const org_data  = await this.organizationModel.findOne({where:{organizationId}})
       if(!org_data){
-        return Util?.handleFailResponse(`Organization with this #${id} not found`)
+        return Util?.handleFailResponse(`Organization with this #${organizationId} not found`)
       }
 
       if (
@@ -285,23 +285,23 @@ export class OrganizationService {
           where:{id:org_data?.id}
         })
 
-      return Util?.handleCreateSuccessRespone(`Organization with this #${id} and Image updated successfully`)
+      return Util?.handleCreateSuccessRespone(`Organization with this #${organizationId} and Image updated successfully`)
  
     } catch (error) {
       if(rollImage){
         await this?.imgHelper?.unlinkFile(rollImage)
       }
-      return Util?.handleFailResponse(`Organization with this #${id} and Image not Updated`)
+      return Util?.handleFailResponse(`Organization with this #${organizationId} and Image not Updated`)
     }
 
   }
 
 
   // Delete By Id
-  async remove(id: string) {
+  async remove(organizationId: string) {
 
     try {
-      const org = await Organization.findOne({ where: { id } });
+      const org = await Organization.findOne({ where: { organizationId } });
       if (!org) 
         // throw new Error('Organization not found.');
         return Util?.checkIfRecordNotFound("Organization not found.")
@@ -320,11 +320,11 @@ export class OrganizationService {
 
 
   // Restore Deleted Data
-  async restoreUser(id:string){
+  async restoreUser(organizationId:string){
 
     try {
 
-      const organization = await this.organizationModel.restore({where:{id}})
+      const organization = await this.organizationModel.restore({where:{organizationId}})
       console.log(organization)
       return Util?.handleSuccessRespone(Util?.SuccessRespone, "Organization restored successfully.")
       

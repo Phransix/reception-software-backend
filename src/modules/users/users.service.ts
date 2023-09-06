@@ -163,7 +163,7 @@ async login(loginDto: LoginDTO){
 
 
   // Get User By Id 
-  async findOne(id: number) {
+  async findOne(userId: string) {
 
     try {
       const user = await User.findOne({
@@ -171,7 +171,7 @@ async login(loginDto: LoginDTO){
       attributes:{
         exclude:['password','createdAt','updatedAt','deletedAt']
       },
-       where: { id }
+       where: { userId }
        });
       if (!user) {
         throw new Error('User not found.');
@@ -187,16 +187,16 @@ async login(loginDto: LoginDTO){
 
 
   // Update User by Id
-  async update(id: string, updateUserDto: UpdateUserDto) {
+  async update(userId: string, updateUserDto: UpdateUserDto) {
 
     let rollImage = '';
         
     try {
 
-      const user = await this.userModel.findOne({ where: { id } });
+      const user = await this.userModel.findOne({ where: { userId } });
       if (!user) {
         // throw new Error('User not found.');
-        return Util?.handleFailResponse(`User with this #${id} not found`)
+        return Util?.handleFailResponse(`User with this #${userId} not found`)
       }
 
       var image_matches = updateUserDto.profilePhoto?.match(
@@ -237,23 +237,23 @@ async login(loginDto: LoginDTO){
         }
         )
 
-      return Util?.handleSuccessRespone(Util?.SuccessRespone, `User with this #${id} updated successfully`)
+      return Util?.handleSuccessRespone(Util?.SuccessRespone, `User with this #${userId} updated successfully`)
 
     } catch (error) {
       if (rollImage) {
         await this.imagehelper.unlinkFile(rollImage);
       }
-      return Util?.handleFailResponse(`User with this #${id} not Updated`)
+      return Util?.handleFailResponse(`User with this #${userId} not Updated`)
     }
   };
 
 
   //  Change User Password
-  async changePass (id:number, changepassDto: ChangePassDTO){
+  async changePass (userId:string, changepassDto: ChangePassDTO){
     const {oldPassword,newPassword,confirmNewPassword} = changepassDto
         try {
         
-    const user = await User.findOne({where:{id}})
+    const user = await User.findOne({where:{userId}})
     if(!user){
       throw new BadRequestException('User with this ${id} does not exist')
     }
@@ -276,11 +276,11 @@ async login(loginDto: LoginDTO){
     // await this.userModel.save(user);
     Object.assign(user, changepassDto)
     await user.save()
-    return Util?.handleSuccessRespone(Util?.SuccessRespone, "Your Password has been changed successfully.")
+    return Util?.handleSuccessRespone(Util?.SuccessRespone, `User with this #${userId}  password changed succcessful`)
 
   } catch (error) {
     console.log(error)
-    return Util?.handleFailResponse(`Failed, User with this #${id}  password not changed`)
+    return Util?.handleFailResponse(`Failed, User with this #${userId}  password not changed`)
   }
 
   }
@@ -347,15 +347,15 @@ async login(loginDto: LoginDTO){
 
 
       // Update User  Profile Photo
-  async updateImg(id: string, createUserImgDto: CreateUserImgDto){
+  async updateImg(userId: string, createUserImgDto: CreateUserImgDto){
 
     let rollImage = '';
    // let InsertImg = '';
 
     try {
-      const user_data  = await this.userModel.findOne({where:{id}})
+      const user_data  = await this.userModel.findOne({where:{userId}})
       if(!user_data){
-        return Util?.handleFailResponse(`User with this #${id} not found`)
+        return Util?.handleFailResponse(`User with this #${userId} not found`)
       }
 
       if (
@@ -399,22 +399,22 @@ async login(loginDto: LoginDTO){
         }
         )
 
-      return Util?.handleCreateSuccessRespone(`User with this #${id} and Image updated successfully`)
+      return Util?.handleCreateSuccessRespone(`User with this #${userId} and Image updated successfully`)
  
     } catch (error) {
       if (rollImage) {
         await this.imagehelper.unlinkFile(rollImage);
       }
-      return Util?.handleFailResponse(`User with this #${id} and Image not Updated`)
+      return Util?.handleFailResponse(`User with this #${userId} and Image not Updated`)
     }
 
   }
 
 
     // delete User by Id 
-   async remove(id: number) {
+   async remove(userId: string) {
     try{
-      const user = await User.findOne({where:{id}});
+      const user = await User.findOne({where:{userId}});
       if (!user) {
         throw new Error('User data not found.'); 
       }
@@ -425,16 +425,16 @@ async login(loginDto: LoginDTO){
 
     }catch(error){
       console.log(error)
-      return Util?.handleFailResponse(`Failed, User with this #${id} not Deleted`)
+      return Util?.handleFailResponse(`Failed, User with this #${userId} not Deleted`)
     }
   }
 
 
   // Restore Deleted Data
-  async restoreUser(id:string){
+  async restoreUser(userId:string){
     try {
 
-      const organization = await this.userModel.restore({where:{id}})
+      const organization = await this.userModel.restore({where:{userId}})
       console.log(organization)
       return Util?.handleSuccessRespone(Util?.SuccessRespone, "Organization restored successfully.")
       

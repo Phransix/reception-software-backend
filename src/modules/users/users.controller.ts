@@ -118,15 +118,15 @@ export class UsersController {
   // Get User By The Id
   @UseGuards(AuthGuard('jwt'))
   @ApiBearerAuth('defaultBearerAuth')
-  @ApiOperation({ summary: 'Get User By Id' })
+  @ApiOperation({ summary: 'Get User By userId' })
   @Public()
   @UseGuards(AtGuard)
-  @Get(':id')
-  async findOne(@Param('id') id: number) {
+  @Get(':userId')
+  async findOne(@Param('userId') userId: string) {
 
     try {
 
-      let userData = await this.usersService.findOne(id);
+      let userData = await this.usersService.findOne(userId);
       return userData
 
     } catch (error) {
@@ -140,15 +140,15 @@ export class UsersController {
   @ApiTags('Users')
   @UseGuards(AuthGuard('jwt'))
   @ApiBearerAuth('defaultBearerAuth')
-  @ApiOperation({ summary: 'Update User By Id' })
+  @ApiOperation({ summary: 'Update User By userId' })
   @Public()
   @UseGuards(AtGuard)
-  @Patch(':id')
-  async updateOrg(@Param('id') id: string, @Body() updateUserDto: UpdateUserDto) {
+  @Patch(':userId')
+  async updateOrg(@Param('userId') userId: string, @Body() updateUserDto: UpdateUserDto) {
 
     try {
 
-      const userUpdate = await this.usersService.update(id, updateUserDto)
+      const userUpdate = await this.usersService.update(userId, updateUserDto)
       return userUpdate
 
     } catch (error) {
@@ -162,15 +162,15 @@ export class UsersController {
   @ApiTags('Users')
   @UseGuards(AuthGuard('jwt'))
   @ApiBearerAuth('defaultBearerAuth')
-  @ApiOperation({ summary: 'Update User Profile Image By Id' })
+  @ApiOperation({ summary: 'Update User Profile Image By userId' })
   @Public()
   @UseGuards(AtGuard)
-  @Patch(':id/profilePhoto')
-  async updateImg(@Param('id') id: string, @Body() createUserImgDto: CreateUserImgDto) {
+  @Patch(':userId/profilePhoto')
+  async updateImg(@Param('id') userId: string, @Body() createUserImgDto: CreateUserImgDto) {
 
     try {
 
-      const userUpdateImg = await this.usersService.updateImg(id, createUserImgDto)
+      const userUpdateImg = await this.usersService.updateImg(userId, createUserImgDto)
       return userUpdateImg
 
     } catch (error) {
@@ -184,13 +184,13 @@ export class UsersController {
   @ApiTags('Users')
   @UseGuards(AuthGuard('jwt'))
   @ApiBearerAuth('defaultBearerAuth')
-  @ApiOperation({ summary: 'Change Password Of User By Id' })
+  @ApiOperation({ summary: 'Change Password Of User By userId' })
   @Public()
   @UseGuards(AtGuard)
-  @Patch(':id/changePassword')
-  async changePassword(@Param('id') id: number, @Body() changePassDTO: ChangePassDTO) {
+  @Patch(':userId/changePassword')
+  async changePassword(@Param('userId') userId: string, @Body() changePassDTO: ChangePassDTO) {
     try {
-      const userPass = await this.usersService.changePass(id, changePassDTO)
+      const userPass = await this.usersService.changePass(userId, changePassDTO)
       return userPass
       // console.log(userPass)
     } catch (error) {
@@ -237,15 +237,15 @@ export class UsersController {
   @ApiTags('Users')
   @UseGuards(AuthGuard('jwt'))
   @ApiBearerAuth('defaultBearerAuth')
-  @ApiOperation({ summary: 'Delete User By Id' })
+  @ApiOperation({ summary: 'Delete User By userId' })
   @Public()
   @UseGuards(AtGuard)
-  @Delete(':id')
-  async remove(@Param('id') id: number) {
+  @Delete(':userId')
+  async remove(@Param('userId') userId: string) {
 
     try {
 
-      const user = await User.findOne({ where: { id } });
+      const user = await User.findOne({ where: { userId } });
       if (!user) {
         throw new Error('User data not Found')
       }
@@ -265,13 +265,13 @@ export class UsersController {
   @ApiTags('Users')
   @UseGuards(AuthGuard('jwt'))
   @ApiBearerAuth('defaultBearerAuth')
-  @ApiOperation({ summary: 'Restore User Data By Id' })
+  @ApiOperation({ summary: 'Restore User Data By userId' })
   @Public()
   @UseGuards(AtGuard)
   @ApiTags('Users')
-  @Post(':id/restore')
-  async restoreUser(@Param('id') id: string) {
-    return this.usersService.restoreUser(id)
+  @Post(':userId/restore')
+  async restoreUser(@Param('userId') userId: string) {
+    return this.usersService.restoreUser(userId)
   }
 
 

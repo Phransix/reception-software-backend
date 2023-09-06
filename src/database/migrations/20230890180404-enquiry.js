@@ -62,14 +62,27 @@ module.exports = {
       },
 
       createdAt: {
+        type: Sequelize.DATEONLY, 
         allowNull: false,
+        // defaultValue: Sequelize.fn('TO_CHAR', Sequelize.fn('NOW()', Sequelize.literal), 'DD-MM-YYYY'),
+        defaultValue: Sequelize.literal("date_trunc('day', CURRENT_DATE)::DATE"),
+      },
+      updatedAt: {
         type: Sequelize.DATE,
+        allowNull: false,
+        defaultValue: Sequelize.fn('now'),
       },
 
-      updatedAt: {
-        allowNull: false,
-        type: Sequelize.DATE,
-      },
+      // createdAt: {
+      //   type: Sequelize.DATE,
+      //   allowNull: false,
+      //   defaultValue: Sequelize.literal
+      // },
+
+      // updatedAt: {
+      //   allowNull: false,
+      //   type: Sequelize.DATE,
+      // },
       
       deletedAt: {
         type: Sequelize.DATE,

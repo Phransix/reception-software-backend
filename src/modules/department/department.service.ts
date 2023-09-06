@@ -17,6 +17,7 @@ export class DepartmentService {
 
   ){}
 
+  // Create New Department
   async create(createDepartmentDto: CreateDepartmentDto) {
    
     try {
@@ -34,7 +35,7 @@ export class DepartmentService {
   };
 
 
-
+// Get All Departments
   async findAll() {
     try {
       const data = await Department.findAll({
@@ -52,13 +53,15 @@ export class DepartmentService {
     
   }
 
- async findOne(id: string) {
+
+  // Get One Department By The departmentId
+ async findOne(departmentId: string) {
     try {
       const data = await Department.findOne({
         attributes:{
           exclude:['createdAt','updatedAt','deletedAt']
         },
-        where:{id}});
+        where:{departmentId}});
     
         if(!data){
           return Util?.handleFailResponse('Department not found')
@@ -73,17 +76,19 @@ export class DepartmentService {
   
   }
 
-  async update(id: string, updateDepartmentDto: UpdateDepartmentDto) {
+
+  // Update Department By The departmentId
+  async update(departmentId: string, updateDepartmentDto: UpdateDepartmentDto) {
     try {
-      const data = await Department.findOne({where:{id}})
+      const data = await Department.findOne({where:{departmentId}})
       if(!data){
         // throw new Error('Department not found.'); 
-        return Util?.handleFailResponse(`Department with this #${id} not found`)
+        return Util?.handleFailResponse(`Department with this #${departmentId} not found`)
       }
       
       Object.assign(data,updateDepartmentDto)
       await data.save()
-      return Util?.handleSuccessRespone(Util?.SuccessRespone,`Department with this #${id} updated successfully`)
+      return Util?.handleSuccessRespone(Util?.SuccessRespone,`Department with this #${departmentId} updated successfully`)
 
     } catch (error) {
       console.log(error)
@@ -92,25 +97,27 @@ export class DepartmentService {
    
   }
 
- async remove(id: string) {
+
+  // Delete Department By The DepartmentId
+ async remove(departmentId: string) {
     try {
-      const data = await Department.findOne({where:{id}})
+      const data = await Department.findOne({where:{departmentId}})
       if(!data){
-        return Util?.handleFailResponse(`Department with this #${id} not found`)
+        return Util?.handleFailResponse(`Department with this #${departmentId} not found`)
       }
 
       Object.assign(data)
       await data.destroy()
-      return Util?.handleSuccessRespone(Util?.SuccessRespone,`Department with this #${id}  deleted successfully`)
+      return Util?.handleSuccessRespone(Util?.SuccessRespone,`Department with this #${departmentId}  deleted successfully`)
 
       
     } catch (error) {
       console.log(error)
-      return Util?.handleTryCatchError(`Department with this #${id} not deleted `) 
+      return Util?.handleTryCatchError(`Department with this #${departmentId} not deleted `) 
     }
   }
 
-   // Search Department Data
+   // Search Department By  Name
    async searchDepartment(keyword: string) {
     try {
       const deptData = await this?.departmentModel.findAll({

@@ -78,17 +78,17 @@ export class StaffService {
   }
 
   // Get Staff By The Id
-  async findOne(id: string) {
+  async findOne(staffId: string) {
     try {
       const staff = await Staff.findOne({
         attributes: {
           exclude: ['password', 'createdAt', 'updatedAt', 'deletedAt']
         },
-        where: { id }
+        where: { staffId }
       })
 
       if (!staff) {
-        return Util?.handleFailResponse(`Staff with this #${id} not found`)
+        return Util?.handleFailResponse(`Staff with this #${staffId} not found`)
       }
 
     } catch (error) {
@@ -100,13 +100,13 @@ export class StaffService {
   }
 
   // Update Staff By The Id
-  async update(id: string, updateStaffDto: UpdateStaffDto) {
+  async update(staffId: string, updateStaffDto: UpdateStaffDto) {
     let rollImage = '';
 
     try {
-      const staff_data = await this.staffModel.findOne({ where: { id } })
+      const staff_data = await this.staffModel.findOne({ where: { staffId } })
       if (!staff_data) {
-        return Util?.handleFailResponse(`Staff with this #${id} not found`)
+        return Util?.handleFailResponse(`Staff with this #${staffId} not found`)
       }
 
       var image_matches = updateStaffDto?.profilePhoto?.match(
@@ -150,24 +150,24 @@ export class StaffService {
           where: { id: staff_data?.id }
         })
 
-      return Util?.handleCreateSuccessRespone(`Staff with this #${id} updated successfully`)
+      return Util?.handleCreateSuccessRespone(`Staff with this #${staffId} updated successfully`)
 
     } catch (error) {
        if (rollImage) {
         await this?.staffImgHelper?.unlinkFile(rollImage)
       }
-      return Util?.handleFailResponse(`Staff with this #${id} not Updated`)
+      return Util?.handleFailResponse(`Staff with this #${staffId} not Updated`)
     }
   }
 
 
   // Update Staff Profile Photo By The Id
-  async updateImg(id: string, createStaffImgDto: CreateStaffImgDto) {
+  async updateImg(staffId: string, createStaffImgDto: CreateStaffImgDto) {
     let rollImage = '';
     try {
-      const staff_data = await this.staffModel.findOne({ where: { id } })
+      const staff_data = await this.staffModel.findOne({ where: { staffId } })
       if (!staff_data) {
-        return Util?.handleFailResponse(`Staff with this #${id} not found`)
+        return Util?.handleFailResponse(`Staff with this #${staffId} not found`)
       }
 
       if (
@@ -212,32 +212,32 @@ export class StaffService {
           where: { id: staff_data?.id }
         })
 
-      return Util?.handleCreateSuccessRespone(`Staff with this #${id} and Image updated successfully`)
+      return Util?.handleCreateSuccessRespone(`Staff with this #${staffId} and Image updated successfully`)
 
     } catch (error) {
       if (rollImage) {
         await this?.staffImgHelper?.unlinkFile(rollImage)
       }
-      return Util?.handleFailResponse(`Staff with this #${id} and Image not Updated`)
+      return Util?.handleFailResponse(`Staff with this #${staffId} and Image not Updated`)
     }
   }
 
   // Delete Staff By The Id
-  async remove(id: string) {
+  async remove(staffId: string) {
     try {
-      const staff = await Staff.findOne({ where: { id } })
+      const staff = await Staff.findOne({ where: { staffId } })
       if (!staff) {
-        return Util?.handleFailResponse(`Staff with this #${id} not found`)
+        return Util?.handleFailResponse(`Staff with this #${staffId} not found`)
       }
 
       Object.assign(staff)
       await staff.destroy()
-      return Util?.handleSuccessRespone(Util?.SuccessRespone, `Staff with this #${id}  deleted successfully`)
+      return Util?.handleSuccessRespone(Util?.SuccessRespone, `Staff with this #${staffId}  deleted successfully`)
 
 
     } catch (error) {
       console.log(error)
-      return Util?.handleFailResponse(`Staff with this #${id} not Deleted`)
+      return Util?.handleFailResponse(`Staff with this #${staffId} not Deleted`)
     }
   }
 
