@@ -3,6 +3,7 @@ import { Guest } from "src/modules/guest/entities/guest.entity";
 import { Organization } from "src/modules/organization/entities/organization.entity";
 import { Unit } from "src/modules/unit/entities/unit.entity";
 import { CreateDeliveryDto } from "../dto/create-delivery.dto";
+import moment from "moment";
 const { v4: uuidv4 } = require('uuid');
 
 
@@ -135,6 +136,15 @@ export class Delivery extends Model <Delivery> {
         allowNull: true
     })
     itemDescription: string
+
+    @Column ({
+      type: DataType.DATEONLY,
+      allowNull: true,
+      set(_val){
+        this.setDataValue('createdAt',moment().format('DD/MM/YYYY'))
+      }
+  })
+  createdAt: Date
 
     @Column ({
         type: DataType.DATE,
