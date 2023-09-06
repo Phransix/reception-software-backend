@@ -81,48 +81,48 @@ export class StaffController {
   // Get Staff By Id
   @UseGuards(AuthGuard('jwt'))
   @ApiBearerAuth('defaultBearerAuth')
-  @ApiOperation({summary:'Get Staff By Id'})
+  @ApiOperation({summary:'Get Staff By staffId'})
   @Public()
   @UseGuards(AtGuard)
-  @Get(':id')
-  findOne(@Param('id') id: string) {
-    return this.staffService.findOne(id);
+  @Get(':staffId')
+  findOne(@Param('staffId') staffId: string) {
+    return this.staffService.findOne(staffId);
   }
 
 
   // Update Staff By Id
   @UseGuards(AuthGuard('jwt'))
   @ApiBearerAuth('defaultBearerAuth')
-  @ApiOperation({summary:'Update Staff By Id'})
+  @ApiOperation({summary:'Update Staff By staffId'})
   @Public()
   @UseGuards(AtGuard)
-  @Patch(':id')
-  update(@Param('id') id: string, @Body() updateStaffDto: UpdateStaffDto) {
-    return this.staffService.update(id, updateStaffDto);
+  @Patch(':staffId')
+  update(@Param('staffId') staffId: string, @Body() updateStaffDto: UpdateStaffDto) {
+    return this.staffService.update(staffId, updateStaffDto);
   }
 
 
   // Update Staff Profile Photo
   @UseGuards(AuthGuard('jwt'))
 @ApiBearerAuth('defaultBearerAuth')
-@ApiOperation({summary:'Update Staff Image By Id'})
+@ApiOperation({summary:'Update Staff Image By staffId'})
 @Public()
 @UseGuards(AtGuard)
-@Patch(':id/profilePhoto')
-updateImg(@Param('id') id: string, @Body()createStaffImgDto: CreateStaffImgDto) {
-  return this.staffService.updateImg(id, createStaffImgDto);
+@Patch(':staffId/profilePhoto')
+updateImg(@Param('staffId') staffId: string, @Body()createStaffImgDto: CreateStaffImgDto) {
+  return this.staffService.updateImg(staffId, createStaffImgDto);
 }
 
 
 // Delete Staff By The Id
   @UseGuards(AuthGuard('jwt'))
   @ApiBearerAuth('defaultBearerAuth')
-  @ApiOperation({summary:'Delete Staff By Id'})
+  @ApiOperation({summary:'Delete Staff By staffId'})
   @Public()
   @UseGuards(AtGuard)
-  @Delete(':id')
-  remove(@Param('id') id: string) {
-    return this.staffService.remove(id);
+  @Delete(':staffId')
+  remove(@Param('staffId') staffId: string) {
+    return this.staffService.remove(staffId);
   }
 
    // Search Staff

@@ -51,14 +51,14 @@ export class EnquiriesService {
   };
 
   // Get Enquiry by The Id
-  async findOne(id: number) {
+  async findOne(enquiryId: string) {
     try {
       const enquiry = await Enquiry.findOne({
 
         attributes: {
           exclude: ['createdAt', 'updatedAt', 'deletedAt']
         },
-        where: { id }
+        where: { enquiryId }
       });
 
       if (!enquiry) {
@@ -69,15 +69,15 @@ export class EnquiriesService {
 
     } catch (error) {
       console.log(error)
-      return Util?.handleTryCatchError(Util?.getTryCatchMsg(error));
+      return Util?.handleErrorRespone('Failed, Enquiry data not found')
     }
   }
 
   // Update Enquiy
-  async update(id: number, updateEnquiryDto: UpdateEnquiryDto) {
+  async update(enquiryId: string, updateEnquiryDto: UpdateEnquiryDto) {
     try {
 
-      const enquiry = await Enquiry.findOne({ where: { id } });
+      const enquiry = await Enquiry.findOne({ where: { enquiryId } });
       if (!enquiry) {
         return Util?.handleFailResponse('Enquiry not found')
       }
@@ -88,16 +88,16 @@ export class EnquiriesService {
 
     } catch (error) {
       console.log(error)
-      return Util?.handleTryCatchError(Util?.getTryCatchMsg(error));
+      return Util?.handleErrorRespone('Enquiry data Updare Failed')
     }
 
   };
 
 
   // Delete Enquiry
-  async remove(id: number) {
+  async remove(enquiryId: string) {
     try {
-      const enquiry = await Enquiry.findOne({ where: { id } });
+      const enquiry = await Enquiry.findOne({ where: { enquiryId } });
       if (!enquiry) {
         return Util?.handleFailResponse('Enquiry not found')
       }

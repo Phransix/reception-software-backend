@@ -46,15 +46,6 @@ export class CreateOrganizationDto {
    @MinLength(10)
    readonly phoneNumber: string;
 
-//    @ApiProperty({
-//       description: 'The profilePhoto of the User/Customer',
-//       example: '"data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAUAAAAFCAYAAACNbyblAAAAHElEQVQI12P4//8/w38GIAXDIBKE0DHxgljNBAAO9TXL0Y4OHwAAAABJRU5ErkJggg=="'
-//   })
-
-@ApiProperty({
-   description: 'The profile Photo of the Organization',
-   example: 'data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAUAAAAFCAYAAACNbyblAAAAHElEQVQI12P4//8/w38GIAXDIBKE0DHxgljNBAAO9TXL0Y4OHwAAAABJRU5ErkJggg=='
-})
   
   readonly profilePhoto: string;
 

@@ -1,16 +1,11 @@
 
 import { Controller, Get, Post, Body, Patch, Param, Delete, UseGuards, Query, } from '@nestjs/common';
 import { OrganizationService } from './organization.service';
-import { CreateOrganizationDto, ForgotPasswordDto, ResetPasswordDto, VerifyEmailDto } from './dto/create-organization.dto';
+import { CreateOrganizationDto,VerifyEmailDto } from './dto/create-organization.dto';
 import { UpdateOrganizationDto } from './dto/update-organization.dto';
 import { DoesOrgExist } from 'src/common/guards/doesOrgExist.guard';
-import { ApiBearerAuth, ApiOperation, ApiParam, ApiQuery, ApiTags } from '@nestjs/swagger';
+import { ApiBearerAuth, ApiOperation, ApiQuery, ApiTags } from '@nestjs/swagger';
 import * as Util from '../../utils/index'
-// import * as bcrypt from 'bcrypt';
-// import { LoginDTO } from 'src/guard/auth/loginDTO';
-// import { User } from '../users/entities/user.entity';
-// import { UsersService } from '../users/users.service';
-// import { log } from 'console';
 import { Public } from 'src/common/decorators/public.decorator';
 import { AuthGuard } from '@nestjs/passport';
 import { AtGuard } from 'src/common/guards';
@@ -119,13 +114,13 @@ export class OrganizationController {
   @ApiTags('Organization')
   @UseGuards(AuthGuard('jwt'))
   @ApiBearerAuth('defaultBearerAuth')
-  @ApiOperation({ summary: 'Get Organization By Id' })
+  @ApiOperation({ summary: 'Get Organization By organizationId' })
   @Public()
   @UseGuards(AtGuard)
-  @Get(':id')
-  async findOne(@Param('id') id: string) {
+  @Get(':organizationId')
+  async findOne(@Param('organizationId') organizationId: string) {
     try {
-      let orgData = this.organizationService.findOne(id)
+      let orgData = this.organizationService.findOne(organizationId)
       return orgData
 
     } catch (error) {
@@ -139,14 +134,14 @@ export class OrganizationController {
   // Update Organization By The Id
   @UseGuards(AuthGuard('jwt'))
   @ApiBearerAuth('defaultBearerAuth')
-  @ApiOperation({ summary: 'Update Organization By Id' })
+  @ApiOperation({ summary: 'Update Organization By organizationId' })
   @Public()
   @UseGuards(AtGuard)
-  @Patch(':id')
-  async update(@Param('id') id: string, @Body() updateOrganizationDto: UpdateOrganizationDto) {
+  @Patch(':organizationId')
+  async update(@Param('organizationId') organizationId: string, @Body() updateOrganizationDto: UpdateOrganizationDto) {
 
     try {
-      const orgUpdate = await this.organizationService.update(id, updateOrganizationDto)
+      const orgUpdate = await this.organizationService.update(organizationId, updateOrganizationDto)
       return orgUpdate
 
     } catch (error) {
@@ -159,14 +154,14 @@ export class OrganizationController {
   // Update Organization  Profile Photo
   @UseGuards(AuthGuard('jwt'))
   @ApiBearerAuth('defaultBearerAuth')
-  @ApiOperation({ summary: 'Update Organization Profile Photo By Id' })
+  @ApiOperation({ summary: 'Update Organization Profile Photo By organizationId' })
   @Public()
   @UseGuards(AtGuard)
-  @Patch(':id/profilePhoto')
-  async updateImg(@Param('id') id: string, @Body() createOrganizationImgDto: CreateOrganizationImgDto) {
+  @Patch(':organizationId/profilePhoto')
+  async updateImg(@Param('organizationId') organizationId: string, @Body() createOrganizationImgDto: CreateOrganizationImgDto) {
 
     try {
-      const orgUpdate = await this.organizationService.updateImg(id, createOrganizationImgDto)
+      const orgUpdate = await this.organizationService.updateImg(organizationId, createOrganizationImgDto)
       return orgUpdate
 
     } catch (error) {
@@ -178,16 +173,16 @@ export class OrganizationController {
   // Delete Organization
   @UseGuards(AuthGuard('jwt'))
   @ApiBearerAuth('defaultBearerAuth')
-  @ApiOperation({ summary: 'Delete Organization By Id' })
+  @ApiOperation({ summary: 'Delete Organization By organizationId' })
   @Public()
   @UseGuards(AtGuard)
   @ApiTags('Organization')
-  @Delete(':id')
-  async remove(@Param('id') id: string) {
+  @Delete(':organizationId')
+  async remove(@Param('organizationId') organizationId: string) {
 
     try {
 
-      let orgDelete = await this.organizationService.remove(id)
+      let orgDelete = await this.organizationService.remove(organizationId)
       return orgDelete
 
     } catch (error) {
@@ -201,13 +196,13 @@ export class OrganizationController {
   // Restore Deleted Data
   @UseGuards(AuthGuard('jwt'))
   @ApiBearerAuth('defaultBearerAuth')
-  @ApiOperation({ summary: 'Restore Organization By Id' })
+  @ApiOperation({ summary: 'Restore Organization By organizationId' })
   @Public()
   @UseGuards(AtGuard)
   @ApiTags('Organization')
-  @Post(':id/restore')
-  async restoreUser(@Param('id') id: string) {
-    return this.organizationService.restoreUser(id)
+  @Post(':organizationId/restore')
+  async restoreUser(@Param('organizationId') organizationId: string) {
+    return this.organizationService.restoreUser(organizationId)
   }
 
 }
