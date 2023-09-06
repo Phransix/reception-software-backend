@@ -77,4 +77,8 @@ export class Guest extends Model<Guest>{
         defaultValue: null
     })
     deletedAt: Date
+
+
 }
+
+

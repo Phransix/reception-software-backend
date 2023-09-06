@@ -7,6 +7,7 @@ import * as Abstract from '../../utils/abstract'
 import * as Util from '../../utils/index'
 import { guestOpDTO } from 'src/guard/auth/guestOpDTO';
 import { Op } from 'sequelize';
+import moment from 'moment';
 
 @Injectable()
 export class GuestService {
@@ -130,13 +131,12 @@ export class GuestService {
 
   // Search by Custom Date Range
   async customGuestSearch(startDate: Date, endDate: Date){
-    // let newDate = Util?.formatDateToDDMMYYYY()
     try {
       const guestSearch = await Guest.findAll({
         where:{
           createdAt: 
           {
-            [Op.between]: [startDate, endDate],
+            [Op.between]: [moment(startDate).format(),moment(endDate).format()],
           }
         },
         attributes: {exclude: ['createdAt','updated', 'deletedAt']}
@@ -178,3 +178,4 @@ export class GuestService {
 
 
 }
+

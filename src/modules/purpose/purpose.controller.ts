@@ -156,4 +156,6 @@ export class PurposeController {
       return Util?.handleFailResponse('Purpose Filter should not be null')
     }
   }
+
+  
 }

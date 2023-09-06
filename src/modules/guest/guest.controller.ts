@@ -204,7 +204,7 @@ export class GuestController {
 @Public()
 @UseGuards(AtGuard)
 @ApiTags('Guest')
-@ApiOperation({ summary: 'Filter Guest by Custom Date Range' })
+@ApiOperation({ summary: 'Search Guest by Custom Date Range' })
 @Get('guest/filterGuest')
 async findGuestByDateRange (
     @Query('startDate') startDate: Date,
@@ -222,7 +222,6 @@ try {
   // Filter Guest by Gender
   @UseGuards(AuthGuard('jwt'))
   @ApiBearerAuth('defaultBearerAuth')
-  @Get('guest/filterGender')
   @ApiQuery({ 
     name: 'keyword',
     enum: Gender,
@@ -232,6 +231,7 @@ try {
   @UseGuards(AtGuard)
   @ApiTags('Guest')
   @ApiOperation({summary:'Filter Guest Gender'})
+  @Get('guest/filterGender')
   async guestGender (
     @Query('keyword') keyword: string
   ) {
@@ -242,8 +242,6 @@ try {
       return Util?.handleFailResponse("Gender Filter should not be null")
     }
   }
-
-
 
 
 }

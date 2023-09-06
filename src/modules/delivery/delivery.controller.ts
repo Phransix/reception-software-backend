@@ -1,6 +1,6 @@
 import { Controller, Get, Post, Body, Patch, Param, Delete, Res, Query, Req, HttpException, HttpStatus, UseGuards } from '@nestjs/common';
 import { DeliveryService } from './delivery.service';
-import { CreateDeliveryDto } from './dto/create-delivery.dto';
+import { CreateDeliveryDto, Delivery_type } from './dto/create-delivery.dto';
 import { UpdateDeliveryDto } from './dto/update-delivery.dto';
 import * as Util from '../../utils/index'
 import { ApiBearerAuth, ApiOperation, ApiQuery, ApiTags } from '@nestjs/swagger';
@@ -180,7 +180,7 @@ async staffConfirm(@Body() deliveryConfirmDTO: deliveryConfirmDTO) {
 @Public()
 @UseGuards(AtGuard)
 @ApiTags('Delivery')
-@ApiOperation({ summary: 'Filter Delivery by Custom Date Range' })
+@ApiOperation({ summary: 'Search Delivery by Custom Date Range' })
 @Get('delivery/filterDelivery')
 async findDeliveryByDateRange(
   @Query('startDate') startDate: Date,
@@ -195,5 +195,29 @@ async findDeliveryByDateRange(
   }
 }
 
+// Filter delivery by type
+@UseGuards(AuthGuard('jwt'))
+@ApiBearerAuth('defaultBearerAuth')
+@ApiQuery({
+  name: 'keyword',
+  enum: Delivery_type,
+  required: false
+})
+@Public()
+@UseGuards(AtGuard)
+@ApiTags('Delivery')
+@ApiOperation({summary: 'Filter Delivery By Type'})
+@Get('delivery/filterType')
+async deliveryTypeFilter (
+  @Query('keyword') keyword: string
+) {
+  try {
+    return this.deliveryService.deliveryType(keyword)
+  } catch (error) {
+    console.log(error)
+    return Util?.handleFailResponse("Type Could not be filtered")
+  }
+
+}
 
 }

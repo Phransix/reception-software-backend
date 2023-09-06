@@ -1,7 +1,7 @@
 import { ApiProperty } from "@nestjs/swagger";
 import { IsEnum, IsNotEmpty, IsString, Matches, IsEmail} from "class-validator";
 
-enum Status_type {
+export enum Delivery_type {
     FOOD = 'food',
     DOCUMENT = 'document',
     OTHER = 'other'
@@ -91,7 +91,7 @@ export class CreateDeliveryDto {
         example: 'other'
     })
     @IsString()
-    @IsEnum(Status_type, {
+    @IsEnum(Delivery_type, {
         message: 'Choose the type of delivery: food,document,other'
     })
     readonly type: string;
