@@ -126,4 +126,28 @@ export class DeliveryService {
     }
   }
 
+  // Filter delivery by type
+  async deliveryType(keyword: string){
+    try {
+      let filter = {}
+
+      if (keyword != null){
+        filter = {type : keyword}
+      }
+
+      const filterCheck = await this.DeliveryModel.findAll({
+        where: {
+          ...filter
+        },
+      });
+      if (!filterCheck) {
+        throw new HttpException('Type not found', HttpStatus.NOT_FOUND)
+      }
+      return filterCheck
+    } catch (error) {
+      console.log(error)
+      return Util?.handleFailResponse('Type filtering failed')
+    }
+  }
+
 }
