@@ -137,6 +137,33 @@ export class EnquiriesService {
     }
   }
 
+
+  // Filter Enquiries By Purpose
+  async purposefilter (keyword: string){
+    try {
+      let filter ={}
+
+      if (keyword != null ){
+        filter = {purpose : keyword}
+      }
+      const filterCheck = await this?.enquiryModel.findAll({
+        where: {
+          ...filter
+        }
+      })
+      if(!filterCheck){
+        return Util?.handleFailResponse('No matching Enquiry Purpose data found.');
+      }
+
+      return Util?.handleSuccessRespone(filterCheck, "Enquiries Purpose Data Filtered Successfully.")
+
+    } catch (error) {
+      console.log(error)
+      return Util?.handleFailResponse('Filtering By Purpose failed')
+    }
+  }
+
+
   // Search Enquiry Data
   async searchEnquiry(keyword: string) {
     try {

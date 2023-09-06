@@ -1,6 +1,6 @@
 import { Controller, Get, Post, Body, Patch, Param, Delete, UseGuards, Query } from '@nestjs/common';
 import { EnquiriesService } from './enquiries.service';
-import { CreateEnquiryDto } from './dto/create-enquiry.dto';
+import { CreateEnquiryDto, Purpose } from './dto/create-enquiry.dto';
 import { UpdateEnquiryDto } from './dto/update-enquiry.dto';
 import * as Util from '../../utils/index'
 import { Enquiry } from './entities/enquiry.entity';
@@ -179,6 +179,30 @@ export class EnquiriesController {
       return Util?.handleFailResponse('Enquiry data not found')
     }
   }
+
+    // Filter Enquiries By Purpose
+    @UseGuards(AuthGuard('jwt'))
+    @ApiBearerAuth('defaultBearerAuth')
+    @Get('enquiry/filterPuropse')
+    @ApiQuery({
+      name: 'keyword',
+      enum: Purpose,
+      required: false
+    })
+    @Public()
+    @UseGuards(AtGuard)
+    @ApiOperation({summary:'Filter Enquiry By The Purpose'})
+    async purposefilter (
+      @Query('keyword') keyword: string
+    ){
+      try {
+        return await this?.enquiriesService?.purposefilter(keyword)
+      } catch (error) {
+        console.log(error)
+        return Util?.handleFailResponse('Filtering By Purpose failed')
+      }
+     
+    }
 
 
   // Search Enquiry
