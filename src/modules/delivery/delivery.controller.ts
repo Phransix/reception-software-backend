@@ -85,7 +85,7 @@ export class DeliveryController {
   @Public()
   @UseGuards(AtGuard)
   @ApiTags('Delivery')
-  @ApiOperation({ summary: 'Get All Delivery By Id' })
+  @ApiOperation({ summary: 'Get All Delivery By deliveryId' })
   @Get(':deliveryId')
   async findOne(@Param('deliveryId') deliveryId: string) {
     try {
@@ -103,7 +103,7 @@ export class DeliveryController {
   @Public()
   @UseGuards(AtGuard)
   @ApiTags('Delivery')
-  @ApiOperation({ summary: 'Update Delivery By Id' })
+  @ApiOperation({ summary: 'Update Delivery By deliveryId' })
   @Patch(':deliveryId')
   update(@Param('deliveryId') deliveryId: string, @Body() updateDeliveryDto: UpdateDeliveryDto) {
     try {
@@ -120,7 +120,7 @@ export class DeliveryController {
   @Public()
   @UseGuards(AtGuard)
   @ApiTags('Delivery')
-  @ApiOperation({ summary: 'Remove Delivery By Id' })
+  @ApiOperation({ summary: 'Remove Delivery By deliveryId' })
   @Delete(':deliveryId')
   async remove(@Param('deliveryId') deliveryId: string) {
 

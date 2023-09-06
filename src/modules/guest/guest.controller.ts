@@ -83,7 +83,7 @@ export class GuestController {
   @Public()
   @UseGuards(AtGuard)
   @ApiTags('Guest')
-  @ApiOperation({summary:'Get Guest By Id'})
+  @ApiOperation({summary:'Get Guest By guestId'})
   @Get(':guestId')
   async findOne(@Param('guestId') guestId: string) {
     try {
@@ -101,7 +101,7 @@ export class GuestController {
   @Public()
   @UseGuards(AtGuard)
   @ApiTags('Guest')
-  @ApiOperation({summary:'Update Guest By Id'})
+  @ApiOperation({summary:'Update Guest By guestId'})
   @Patch(':guestId')
   async update(@Param('guestId') guestId: string, @Body() updateGuestDto: UpdateGuestDto) {
     try {
@@ -118,7 +118,7 @@ export class GuestController {
   @Public()
   @UseGuards(AtGuard)
   @ApiTags('Guest')
-  @ApiOperation({summary:'Remove Guest By Id'})
+  @ApiOperation({summary:'Remove Guest By guestId'})
   @Delete(':guestId')
   async remove(@Param('guestId') guestId: string) {
     try {

@@ -83,7 +83,7 @@ export class PurposeController {
   @Public()
   @UseGuards(AuthGuard('jwt'))
   @ApiBearerAuth('defaultBearerAuth')
-  @ApiOperation({summary:'Get Purpose By Id'})
+  @ApiOperation({summary:'Get Purpose By purposeId'})
   @Get(':purposeId')
   async findOne(@Param('purposeId') purposeId: string) {
     try {
@@ -100,7 +100,7 @@ export class PurposeController {
   @Public()
   @UseGuards(AuthGuard('jwt'))
   @ApiBearerAuth('defaultBearerAuth')
-  @ApiOperation({summary:'Update Purpose By Id'})
+  @ApiOperation({summary:'Update Purpose By purposeId'})
   @Patch(':purposeId')
   async update(@Param('purposeId') purposeId: string, @Body() updatePurposeDto: UpdatePurposeDto) {
     try {
@@ -117,7 +117,7 @@ export class PurposeController {
   @Public()
   @UseGuards(AuthGuard('jwt'))
   @ApiBearerAuth('defaultBearerAuth')
-  @ApiOperation({summary:'Remove Purpose By Id'})
+  @ApiOperation({summary:'Remove Purpose By purposeId'})
   @Delete(':purposeId')
   async remove(@Param('purposeId') purposeId: string) {
     try {
