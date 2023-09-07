@@ -177,6 +177,9 @@ export class GuestService {
       }
     }
 
+    async findOneByPhoneNumber(phoneNumber: string): Promise<Guest> {
+      return await this.GuestModel.findOne<Guest>({ where: { phoneNumber } })
+    }
 
 }
 
