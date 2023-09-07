@@ -21,11 +21,26 @@ export class CreateStaffDto {
     readonly organizationId: string;
 
     @ApiProperty({
+        description: 'The organizationName of the Staff',
+        example: 'Kemiqals And Sons '
+    })
+    @IsNotEmpty()
+    readonly organizationName: string;
+
+    @ApiProperty({
         description: 'The Id of the Department',
         example: 'a036ad92-bccf-405a-8876-6fd7f6bd1514'
     })
     @IsNotEmpty()
     readonly departmentId: string;
+
+
+    @ApiProperty({
+        description: 'The departmentName of the Staff',
+        example: 'IT Department'
+    })
+    @IsNotEmpty()
+    readonly departmentName: string;
 
 
     @ApiProperty({

@@ -1,5 +1,5 @@
 
-import { Controller, Get, Post, Body, Patch, Param, Delete, UseGuards, Query, } from '@nestjs/common';
+import { Controller, Get, Post, Body, Patch, Param, Delete, UseGuards, Query, HttpStatus, HttpException, } from '@nestjs/common';
 import { OrganizationService } from './organization.service';
 import { CreateOrganizationDto,VerifyEmailDto } from './dto/create-organization.dto';
 import { UpdateOrganizationDto } from './dto/update-organization.dto';
@@ -11,6 +11,7 @@ import { AuthGuard } from '@nestjs/passport';
 import { AtGuard } from 'src/common/guards';
 import { CreateOrganizationImgDto } from './dto/create-organizationImg.dto';
 import { Organization } from './entities/organization.entity';
+import { LoginDTO } from 'src/guard/auth/loginDTO';
 
 
 @ApiTags('Organization')
@@ -58,6 +59,19 @@ export class OrganizationController {
     }
   };
 
+    // Login Organization
+    @ApiTags('Users')
+    @ApiOperation({ summary: 'Organization/User Login' })
+    @Public()
+    @Post('login')
+    async login(@Body() loginDto: LoginDTO) {
+      const org = await this.organizationService.login(loginDto);
+      if (!org) {
+        throw new HttpException('Invalid Credentials', HttpStatus.UNAUTHORIZED);
+      } else {
+        return org;
+      }
+    }
 
   // Get All Organization In the System
   @UseGuards(AuthGuard('jwt'))
@@ -204,5 +218,10 @@ export class OrganizationController {
   async restoreUser(@Param('organizationId') organizationId: string) {
     return this.organizationService.restoreUser(organizationId)
   }
+
+
+
+  
+
 
 }

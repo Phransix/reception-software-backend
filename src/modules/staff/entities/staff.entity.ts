@@ -47,6 +47,12 @@ export class Staff extends Model<Staff>{
   @BelongsTo(() => Organization)
   organization: Organization;
 
+  @Column({
+    type: DataType.STRING,
+    allowNull: false,
+  })
+  organizationName: string;
+
 
   @ForeignKey(() => Department)
   @Column({
@@ -65,6 +71,12 @@ export class Staff extends Model<Staff>{
   departmentId: string;
   @BelongsTo(() => Department)
   department: Department;
+
+  @Column({
+    type: DataType.STRING,
+    allowNull: false,
+  })
+  departmentName: string;
 
 
       @Column({

@@ -28,6 +28,11 @@ module.exports = {
         onDelete: 'CASCADE'
       },
 
+      organizationName: {
+        type: Sequelize.STRING,
+        allowNull: false
+      },
+
       departmentId: {
         type: Sequelize.UUID,
         allowNull: false,
@@ -38,6 +43,12 @@ module.exports = {
           key:'departmentId'
         },
         onDelete: 'CASCADE'
+      },
+
+
+      departmentName: {
+        type: Sequelize.STRING,
+        allowNull: false
       },
 
       title: {

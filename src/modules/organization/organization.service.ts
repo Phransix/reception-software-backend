@@ -1,9 +1,21 @@
-import { ForbiddenException, Injectable, Param, Req, Res, UnauthorizedException } from '@nestjs/common';
-import { CreateOrganizationDto, VerifyEmailDto } from './dto/create-organization.dto';
+import {
+  ForbiddenException,
+  HttpException,
+  HttpStatus,
+  Injectable,
+  Param,
+  Req,
+  Res,
+  UnauthorizedException,
+} from '@nestjs/common';
+import {
+  CreateOrganizationDto,
+  VerifyEmailDto,
+} from './dto/create-organization.dto';
 import { UpdateOrganizationDto } from './dto/update-organization.dto';
 import { InjectModel } from '@nestjs/sequelize';
 import { Organization } from './entities/organization.entity';
-import * as Util from '../../utils/index'
+import * as Util from '../../utils/index';
 import { Sequelize } from 'sequelize-typescript';
 import { User } from 'src/modules/users/entities/user.entity';
 import { EmailService } from 'src/helper/EmailHelper';
@@ -13,25 +25,26 @@ import { AuthPassService } from 'src/guard/auth/authPass.service';
 import * as argon from 'argon2';
 import { orgImageUploadProfile } from 'src/helper/organizationsProfile';
 import { CreateOrganizationImgDto } from './dto/create-organizationImg.dto';
-const fs = require('fs')
-
+import { LoginDTO } from 'src/guard/auth/loginDTO';
+const fs = require('fs');
+import { JwtService } from '@nestjs/jwt';
+import { ConfigService } from '@nestjs/config';
 
 @Injectable()
 export class OrganizationService {
-  
   constructor(
     @InjectModel(Organization) private organizationModel: typeof Organization,
     @InjectModel(User) private user: typeof User,
     @InjectModel(Role) private role: typeof Role,
-    private sequelize : Sequelize,
-    private emailService:EmailService,
+    private sequelize: Sequelize,
+    private emailService: EmailService,
     private readonly authPassService: AuthPassService,
-    private imgHelper: orgImageUploadProfile
-   
-  
-    ){}
+    private imgHelper: orgImageUploadProfile,
+    private jwtService: JwtService,
+    private config: ConfigService,
+  ) {}
 
-    // Create An Organization
+  // Create An Organization
   async create(createOrganizationDto: CreateOrganizationDto) {
     let t = await this.sequelize?.transaction();
     try {
@@ -39,18 +52,20 @@ export class OrganizationService {
         organizationName: createOrganizationDto?.organizationName,
         email: createOrganizationDto?.email,
         phoneNumber: createOrganizationDto?.phoneNumber,
-      }
-      console.log(insertQry)
+      };
+      console.log(insertQry);
 
       // return false
-      let ran_password = await this.makeid(8)
+      let ran_password = await this.makeid(8);
       const hash = await argon.hash(ran_password);
-     
-      const organization = await this.organizationModel?.create({ ...createOrganizationDto}, { transaction: t })
-      let role = await this?.role?.findOne({where:{name:'Admin'}});
 
-      if(!role)
-      throw new ForbiddenException('Role Not Found');
+      const organization = await this.organizationModel?.create(
+        { ...createOrganizationDto },
+        { transaction: t },
+      );
+      let role = await this?.role?.findOne({ where: { name: 'Admin' } });
+
+      if (!role) throw new ForbiddenException('Role Not Found');
 
       let org_data = {
         organizationId: organization?.organizationId,
@@ -58,308 +73,382 @@ export class OrganizationService {
         fullName: createOrganizationDto?.fullName,
         email: organization?.email,
         phoneNumber: createOrganizationDto?.phoneNumber,
-        password:hash
-      }
+        password: hash,
+      };
       // console.log(org_data)
       // return false
 
       let mail_data = {
-        
         organizationId: organization?.organizationId,
         roleId: role?.roleId,
         fullName: createOrganizationDto?.fullName,
         email: organization?.email,
         phoneNumber: createOrganizationDto?.phoneNumber,
-        password:ran_password
-        
-      }
-      const user = await this.user?.create({ ...org_data }, { transaction: t })
-     let verifyToken = await this.emailService.sendMailNotification({...mail_data})
-     console.log(verifyToken)
+        password: ran_password,
+      };
+      const user = await this.user?.create({ ...org_data }, { transaction: t });
+      let verifyToken = await this.emailService.sendMailNotification({
+        ...mail_data,
+      });
+      console.log(verifyToken);
 
-       await this.emailService?.sendDeaultPassword({...mail_data})
-      
+      await this.emailService?.sendDeaultPassword({ ...mail_data });
 
-      t.commit()
-      console.log(user)
-      return Util?.handleCreateSuccessRespone("Organization created successfully.")
-
-    } catch (error ) {
-      t.rollback()
-      console.log(error)
+      t.commit();
+      console.log(user);
+      return Util?.handleCreateSuccessRespone(
+        'Organization created successfully.',
+      );
+    } catch (error) {
+      t.rollback();
+      console.log(error);
       return Util?.handleFailResponse(' Organization Registration Failed');
-
     }
-  };
-
+  }
 
   // Verify Email Account
-  async verifyEmail(verifyEmailDto:VerifyEmailDto) {
-    try{
-
+  async verifyEmail(verifyEmailDto: VerifyEmailDto) {
+    try {
       const decodeToken = verifyEmailToken(verifyEmailDto?.token);
       // console.log(decodeToken);
-     
-      if(!decodeToken){
-        return Util?.handleFailResponse('Organization not verified')
+
+      if (!decodeToken) {
+        return Util?.handleFailResponse('Organization not verified');
       }
 
-   
-      const orgToken = await this.organizationModel.findOne({where:{email:decodeToken?.email}})
-      
+      const orgToken = await this.organizationModel.findOne({
+        where: { email: decodeToken?.email },
+      });
+
       // console.log(decodeToken?.email);
       // return;
 
-      if(!orgToken){
-        return Util?.handleFailResponse('Organization not found')
+      if (!orgToken) {
+        return Util?.handleFailResponse('Organization not found');
       }
 
-      if(orgToken?.isVerified === true)
-      return Util?.handleFailResponse('Organization account already verified')
+      if (orgToken?.isVerified === true)
+        return Util?.handleFailResponse(
+          'Organization account already verified',
+        );
 
-      await Organization.update({isVerified: true},{where: {id: orgToken?.id, email: orgToken?.email}} )
-      return Util?.SuccessRespone('Your account has been successfully verified')
-
-    }catch (error) {
-      console.log(error)
+      await Organization.update(
+        { isVerified: true },
+        { where: { id: orgToken?.id, email: orgToken?.email } },
+      );
+      return Util?.SuccessRespone(
+        'Your account has been successfully verified',
+      );
+    } catch (error) {
+      console.log(error);
       // return Util?.handleTryCatchError(Util?.getTryCatchMsg(error));
       return Util?.handleFailResponse('Accounts verification failed');
     }
-  };
-    
+  }
 
-  // Get All
-  
-  async findAll() {
+  // Login Organization Tablet
+  async login(loginDto: LoginDTO) {
+    const { email, password } = loginDto;
 
     try {
+      const user = await User.findOne({ where: { email } });
+      const org = await Organization.findOne({ where: { email } });
+      if (!user) {
+        // return Util.handleForbiddenExceptionResponses('Invaid email or password');
+        throw new HttpException(
+          'Invalid email or password',
+          HttpStatus.FORBIDDEN,
+        );
+      }
+
+      // Check if the password of the Matches
+      const passwordMatches = await argon.verify(
+        user.password,
+        loginDto.password,
+      );
+      if (!passwordMatches) {
+        throw new HttpException(
+          'Invalid email or password',
+          HttpStatus.FORBIDDEN,
+        );
+      }
+      // Check if the oraganiazation is verified
+      if (org?.isVerified != true)
+        return Util?.handleFailResponse('Oraganiazation account not verified');
+      console.log(org?.isVerified);
+
+      let tokens = await this?.getTokens(
+        org?.organizationId,
+        org?.email,
+        org?.organizationName,
+      );
+
+      //  console.log(tokens)
+      //return;
+      let org_data = {
+        organizationId: org?.organizationId,
+        organizationName: org?.organizationName,
+        fullname: user.fullName,
+        email: org?.email,
+        IsPhoneNumber: org?.phoneNumber,
+      };
+
+      let orgDetails = {
+        ...org_data,
+        tokens,
+      };
+
+      //  Send user data and tokens
+      return Util?.handleSuccessRespone(orgDetails, 'Login successfully.');
+    } catch (error) {
+      console.error(error);
+      return Util?.handleFailResponse('User Login Failed ');
+    }
+  }
+
+  // Get All
+  async findAll() {
+    try {
       const orgs = await Organization.findAll({
-    
-        attributes:{
-          exclude:['password','createdAt','updatedAt','deletedAt']
-        }
-      })
+        attributes: {
+          exclude: ['password', 'createdAt', 'updatedAt', 'deletedAt'],
+        },
+      });
 
-      return Util?.handleSuccessRespone(orgs, "Organizations Data retrieved successfully.")
-  }catch(error){
-    console.log(error)
-    // return Util?.handleTryCatchError(Util?.getTryCatchMsg(error));
-    return Util?.handleFailResponse('Failed, Organizations Data Not Found');
+      return Util?.handleSuccessRespone(
+        orgs,
+        'Organizations Data retrieved successfully.',
+      );
+    } catch (error) {
+      console.log(error);
+      // return Util?.handleTryCatchError(Util?.getTryCatchMsg(error));
+      return Util?.handleFailResponse('Failed, Organizations Data Not Found');
+    }
   }
-  }
-
-
 
   // Get By Id
   async findOne(organizationId: string) {
-
     try {
-      const org = await Organization.findOne(
-        {
-          attributes:{
-            exclude:['password','createdAt','updatedAt','deletedAt']
-          },
-          
-          where: { organizationId } });
+      const org = await Organization.findOne({
+        attributes: {
+          exclude: ['password', 'createdAt', 'updatedAt', 'deletedAt'],
+        },
+
+        where: { organizationId },
+      });
       if (!org) {
         throw new Error('Organization not found.');
       }
 
-      return Util?.handleSuccessRespone(org, "Organization retrieve successfully.")
-
+      return Util?.handleSuccessRespone(
+        org,
+        'Organization retrieve successfully.',
+      );
     } catch (error) {
-      console.log(error)
+      console.log(error);
       return Util?.handleFailResponse('Failed, Organization Data Not Found');
       // return Util?.checkIfRecordNotFound
     }
-
   }
 
   // Update By Id
-  async update(organizationId: string, updateOrganizationDto: UpdateOrganizationDto) {
+  async update(
+    organizationId: string,
+    updateOrganizationDto: UpdateOrganizationDto,
+  ) {
     let rollImage = '';
     try {
-
       const org = await Organization.findOne({ where: { organizationId } });
       if (!org) {
-        return Util?.handleFailResponse(`Organization with this #${organizationId} not found`)
+        return Util?.handleFailResponse(
+          `Organization with this #${organizationId} not found`,
+        );
       }
 
       var image_matches = updateOrganizationDto?.profilePhoto?.match(
-        /^data:([A-Za-z-+\/]+);base64,(.+)$/
-      )
+        /^data:([A-Za-z-+\/]+);base64,(.+)$/,
+      );
       if (!image_matches) {
-        return Util?.handleFailResponse('Invalid Input file')
+        return Util?.handleFailResponse('Invalid Input file');
       }
 
-      let orgProfile = await this?.imgHelper?.uploadOrganizationImage(updateOrganizationDto?.profilePhoto)
-      rollImage = orgProfile
+      let orgProfile = await this?.imgHelper?.uploadOrganizationImage(
+        updateOrganizationDto?.profilePhoto,
+      );
+      rollImage = orgProfile;
 
-          // Delete the old profile photo if it exists in the directorate
-          let front_path = org?.profilePhoto
-          if (front_path != null){
-            fs.access(front_path, fs.F_OK, async (err) => {
-              if (err) {
-                console.error(err)
-                return
-              }
-              await this.imgHelper.unlinkFile(front_path); 
-            })
+      // Delete the old profile photo if it exists in the directorate
+      let front_path = org?.profilePhoto;
+      if (front_path != null) {
+        fs.access(front_path, fs.F_OK, async (err) => {
+          if (err) {
+            console.error(err);
+            return;
           }
+          await this.imgHelper.unlinkFile(front_path);
+        });
+      }
 
       let insertQry = {
         organizationName: updateOrganizationDto?.organizationName,
         email: updateOrganizationDto?.email,
         phoneNumber: updateOrganizationDto?.phoneNumber,
         profilePhoto: orgProfile,
-        
-      }
+      };
       // console.log(insertQry)
 
       // return false
-      await this?.organizationModel?.update(insertQry,
-        {
-          where:{organizationId:org?.organizationId}
-        })
-          return Util?.handleCreateSuccessRespone(`Organization with this #${organizationId} updated successfully`)
-
+      await this?.organizationModel?.update(insertQry, {
+        where: { organizationId: org?.organizationId },
+      });
+      return Util?.handleCreateSuccessRespone(
+        `Organization with this #${organizationId} updated successfully`,
+      );
     } catch (error) {
-      if(rollImage){
-        await this?.imgHelper?.unlinkFile(rollImage)
+      if (rollImage) {
+        await this?.imgHelper?.unlinkFile(rollImage);
       }
-      return Util?.handleFailResponse(`Organization with this #${organizationId} not Updated `);
+      return Util?.handleFailResponse(
+        `Organization with this #${organizationId} not Updated `,
+      );
     }
-
-
   }
 
-
-   // Update Organization Profile Photo
-   async updateImg(organizationId: string, createOrganizationImgDto: CreateOrganizationImgDto){
-
+  // Update Organization Profile Photo
+  async updateImg(
+    organizationId: string,
+    createOrganizationImgDto: CreateOrganizationImgDto,
+  ) {
     let rollImage = '';
 
     try {
-      const org_data  = await this.organizationModel.findOne({where:{organizationId}})
-      if(!org_data){
-        return Util?.handleFailResponse(`Organization with this #${organizationId} not found`)
+      const org_data = await this.organizationModel.findOne({
+        where: { organizationId },
+      });
+      if (!org_data) {
+        return Util?.handleFailResponse(
+          `Organization with this #${organizationId} not found`,
+        );
       }
 
       if (
         createOrganizationImgDto?.profilePhoto == null ||
         createOrganizationImgDto?.profilePhoto == undefined ||
-        createOrganizationImgDto?.profilePhoto == ""
-      ){
-        return Util?.handleFailResponse('File Can not be empty')
+        createOrganizationImgDto?.profilePhoto == ''
+      ) {
+        return Util?.handleFailResponse('File Can not be empty');
       }
 
       var image_matches = createOrganizationImgDto?.profilePhoto?.match(
-        /^data:([A-Za-z-+\/]+);base64,(.+)$/
-      )
-      if(!image_matches){
-        return Util?.handleFailResponse('Invalid Input file')
+        /^data:([A-Za-z-+\/]+);base64,(.+)$/,
+      );
+      if (!image_matches) {
+        return Util?.handleFailResponse('Invalid Input file');
       }
 
-      let org_image = await this?.imgHelper?.uploadOrganizationImage(createOrganizationImgDto?.profilePhoto)
-      
-      rollImage = org_image
+      let org_image = await this?.imgHelper?.uploadOrganizationImage(
+        createOrganizationImgDto?.profilePhoto,
+      );
 
-         // Delete the old profile photo if it exists in the directorate
-         let front_path = org_data?.profilePhoto
-         if (front_path != null){
-           fs.access(front_path, fs.F_OK, async (err) => {
-             if (err) {
-               console.error(err)
-               return
-             }
-             await this.imgHelper.unlinkFile(front_path); 
-           })
-         }
+      rollImage = org_image;
+
+      // Delete the old profile photo if it exists in the directorate
+      let front_path = org_data?.profilePhoto;
+      if (front_path != null) {
+        fs.access(front_path, fs.F_OK, async (err) => {
+          if (err) {
+            console.error(err);
+            return;
+          }
+          await this.imgHelper.unlinkFile(front_path);
+        });
+      }
 
       let insertQry = {
-        profilePhoto: org_image  
-      }
+        profilePhoto: org_image,
+      };
       // console.log(insertQry)
-      await this?.organizationModel?.update(insertQry,
-        {
-          where:{id:org_data?.id}
-        })
+      await this?.organizationModel?.update(insertQry, {
+        where: { id: org_data?.id },
+      });
 
-      return Util?.handleCreateSuccessRespone(`Organization with this #${organizationId} and Image updated successfully`)
- 
+      return Util?.handleCreateSuccessRespone(
+        `Organization with this #${organizationId} and Image updated successfully`,
+      );
     } catch (error) {
-      if(rollImage){
-        await this?.imgHelper?.unlinkFile(rollImage)
+      if (rollImage) {
+        await this?.imgHelper?.unlinkFile(rollImage);
       }
-      return Util?.handleFailResponse(`Organization with this #${organizationId} and Image not Updated`)
+      return Util?.handleFailResponse(
+        `Organization with this #${organizationId} and Image not Updated`,
+      );
     }
-
   }
-
 
   // Delete By Id
   async remove(organizationId: string) {
-
     try {
       const org = await Organization.findOne({ where: { organizationId } });
-      if (!org) 
+      if (!org)
         // throw new Error('Organization not found.');
-        return Util?.checkIfRecordNotFound("Organization not found.")
-      
+        return Util?.checkIfRecordNotFound('Organization not found.');
 
-      Object.assign(org)
-      await org.destroy()
-      return Util?.handleSuccessRespone(Util?.SuccessRespone, "Organization deleted successfully.")
-
+      Object.assign(org);
+      await org.destroy();
+      return Util?.handleSuccessRespone(
+        Util?.SuccessRespone,
+        'Organization deleted successfully.',
+      );
     } catch (error) {
-      console.log(error)
+      console.log(error);
       return Util?.handleFailResponse('Failed, Organizations Data Not Deleted');
     }
-
   }
 
-
   // Restore Deleted Data
-  async restoreUser(organizationId:string){
-
+  async restoreUser(organizationId: string) {
     try {
-
-      const organization = await this.organizationModel.restore({where:{organizationId}})
-      console.log(organization)
-      return Util?.handleSuccessRespone(Util?.SuccessRespone, "Organization restored successfully.")
-      
+      const organization = await this.organizationModel.restore({
+        where: { organizationId },
+      });
+      console.log(organization);
+      return Util?.handleSuccessRespone(
+        Util?.SuccessRespone,
+        'Organization restored successfully.',
+      );
     } catch (error) {
       return Util.handleForbiddenExceptionResponses('Data Not Restored');
     }
- 
   }
-  
 
-
-  async findOneByorganizationName(organizationName: string): Promise<Organization> {
-    return await this.organizationModel.findOne<Organization>({ where: { organizationName } })
+  async findOneByorganizationName(
+    organizationName: string,
+  ): Promise<Organization> {
+    return await this.organizationModel.findOne<Organization>({
+      where: { organizationName },
+    });
   }
 
   // async findOneByuseFullname(fullname: string): Promise<Organization>{
   //   return await this.organizationModel.findOne<Organization>({where: {fullname}})
   // }
 
-
   async findOneByEmail(email: string): Promise<Organization> {
-    return await this.organizationModel.findOne<Organization>({ where: { email } })
+    return await this.organizationModel.findOne<Organization>({
+      where: { email },
+    });
   }
 
   async findOneByPhoneNumber(phoneNumber: string): Promise<Organization> {
-    return await this.organizationModel.findOne<Organization>({ where: { phoneNumber } })
+    return await this.organizationModel.findOne<Organization>({
+      where: { phoneNumber },
+    });
   }
-
-
-
-
 
   async makeid(length) {
     let result = '';
-    const characters = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789';
+    const characters =
+      'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789';
     const charactersLength = characters.length;
     let counter = 0;
     while (counter < length) {
@@ -367,8 +456,30 @@ export class OrganizationService {
       counter += 1;
     }
     return result;
-
   }
 
+  async getTokens(org_id: string, email: string, organizationName: string) {
+    const jwtPayload = {
+      sub: org_id,
+      email: email,
+      scopes: organizationName,
+    };
 
+    const [at] = await Promise.all([
+      this.jwtService.signAsync(jwtPayload, {
+        secret: this.config.get<string>('JWT_SECRETTABLET'),
+        expiresIn: '31d',
+        // expiresIn: '7d',
+      }),
+      // this.jwtService.signAsync(jwtPayload, {
+      //   secret: this.config.get<string>('RT_SECRET'),
+      //   expiresIn: '7d',
+      // }),
+    ]);
+
+    return {
+      access_token: at,
+      // refresh_token: rt,
+    };
+  }
 }

@@ -23,6 +23,7 @@ import { ResetPasswordService } from 'src/helper/ResetPassHelper';
 
 
 
+
 @Injectable()
 export class UsersService {
  
@@ -92,7 +93,6 @@ async login(loginDto: LoginDTO){
     throw new HttpException('Invalid email or password',HttpStatus.FORBIDDEN)
   }
 
-
   const passwordMatches = await argon.verify(
     user.password,
     loginDto.password,
@@ -140,6 +140,9 @@ async login(loginDto: LoginDTO){
     }
 
 }
+
+
+
 
 // Get All Users
   async findAll() {
@@ -445,35 +448,26 @@ async login(loginDto: LoginDTO){
   }
 
 
-   async findOneByuserEmail(email: string): Promise<User>{
-    return await this.userModel.findOne<User>({where: {email}})
-  }
+ 
 
 
  
-  async findByemail(email: string){
-      return this.userModel.findOne({where:{email}})
-  }
-
-  async findById(id:number){
-    return this.userModel.findOne({where:{id}})
-  }
-
-  async findByEmail(email: string): Promise<User | undefined> {
-    return this.userModel.findOne({ where: { email } });
-  }
 
 
 
 
-    
+ 
+  // async findByemail(email: string){
+  //     return this.userModel.findOne({where:{email}})
+  // }
 
+  // async findById(id:number){
+  //   return this.userModel.findOne({where:{id}})
+  // }
 
-
-
-
-
-
+  // async findByEmail(email: string): Promise<User | undefined> {
+  //   return this.userModel.findOne({ where: { email } });
+  // }
 
 
 
@@ -486,16 +480,11 @@ async login(loginDto: LoginDTO){
       role: role
     };
 
-
-  
-
-  
-
     const [at, rt] = await Promise.all([
       this.jwtService.signAsync(jwtPayload, {
         secret: this.config.get<string>('AT_SECRET'),
-        // expiresIn: '5m',
-        expiresIn: '7d',
+        expiresIn: '15m',
+        // expiresIn: '7d',
       }),
       this.jwtService.signAsync(jwtPayload, {
         secret: this.config.get<string>('RT_SECRET'),
@@ -530,6 +519,8 @@ async login(loginDto: LoginDTO){
   async findOneByPhoneNumber(phoneNumber: string): Promise<User> {
     return await this.userModel.findOne<User>({ where: { phoneNumber } })
   }
+
+
 
 
 
