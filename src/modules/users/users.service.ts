@@ -483,7 +483,7 @@ async login(loginDto: LoginDTO){
     const [at, rt] = await Promise.all([
       this.jwtService.signAsync(jwtPayload, {
         secret: this.config.get<string>('AT_SECRET'),
-        expiresIn: '15m',
+        expiresIn: '5m',
         // expiresIn: '7d',
       }),
       this.jwtService.signAsync(jwtPayload, {

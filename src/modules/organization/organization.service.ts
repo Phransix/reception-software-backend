@@ -465,21 +465,21 @@ export class OrganizationService {
       scopes: organizationName,
     };
 
-    const [at] = await Promise.all([
+    const [at,rt] = await Promise.all([
       this.jwtService.signAsync(jwtPayload, {
         secret: this.config.get<string>('JWT_SECRETTABLET'),
-        expiresIn: '31d',
+        expiresIn: '5m',
         // expiresIn: '7d',
       }),
-      // this.jwtService.signAsync(jwtPayload, {
-      //   secret: this.config.get<string>('RT_SECRET'),
-      //   expiresIn: '7d',
-      // }),
+      this.jwtService.signAsync(jwtPayload, {
+        secret: this.config.get<string>('RT_SECRET'),
+        expiresIn: '7d',
+      }),
     ]);
 
     return {
       access_token: at,
-      // refresh_token: rt,
+      refresh_token: rt,
     };
   }
 }
