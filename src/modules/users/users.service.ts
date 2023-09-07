@@ -483,6 +483,7 @@ async login(loginDto: LoginDTO){
       sub: user_id,
       email: email,
       scopes: role,
+      role: role
     };
 
 
