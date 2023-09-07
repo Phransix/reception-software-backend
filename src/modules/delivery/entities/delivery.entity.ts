@@ -93,12 +93,6 @@ export class Delivery extends Model <Delivery> {
     })
     email: string
 
-    // @Column({
-    //     type: DataType.DATE,
-    //     allowNull: false
-    // })
-    // date_and_time: string
-
     @Column({
         type: DataType.ENUM,
         values: ['delivered','awaiting_pickup'],
@@ -139,10 +133,7 @@ export class Delivery extends Model <Delivery> {
 
     @Column ({
       type: DataType.DATEONLY,
-      allowNull: true,
-      set(_val){
-        this.setDataValue('createdAt',moment().format('DD/MM/YYYY'))
-      }
+      allowNull: true
   })
   createdAt: Date
 

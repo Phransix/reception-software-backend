@@ -9,6 +9,7 @@ import { Public } from 'src/common/decorators/public.decorator';
 import { AuthGuard } from '@nestjs/passport';
 import { AtGuard } from 'src/common/guards';
 import { Guest } from './entities/guest.entity';
+import { DoesGuestExist } from '../../common/guards/doesGuestExist.guard'
 
 
 @Controller('guest')
@@ -17,6 +18,7 @@ export class GuestController {
 
   @ApiTags('Guest')
   @Public()
+  @UseGuards(DoesGuestExist)
   @ApiOperation({summary:'Create New Guest'})
   @Post('createGuest')
   async create(@Body() createGuestDto: CreateGuestDto) {
