@@ -92,10 +92,20 @@ export class GuestService {
     const {phoneNumber,countryCode} = guestOpDTO
     const guestNo = await this.GuestModel.findOne({where:{phoneNumber}})
     const cCode = await this.GuestModel.findOne({where:{countryCode}})
+
+    let guest_data = {
+      guestId: guestNo?.guestId,
+      firstName: guestNo?.firstName,
+      lastname: guestNo?.lastName,
+      gender: guestNo?.gender,
+      countryCode: guestNo?.countryCode,
+      phoneNumber: guestNo?.phoneNumber
+    }
+
     if (!guestNo && !cCode) {
       throw new HttpException('Guest Sign In failed', HttpStatus.UNAUTHORIZED)
     } else {
-      throw new HttpException('Guest Sign In successful', HttpStatus.ACCEPTED)
+      return Util?.handleSuccessRespone(guest_data,"Guest Sign In Success")
     }
   }
 
