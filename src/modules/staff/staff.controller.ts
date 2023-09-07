@@ -24,6 +24,7 @@ import { AuthGuard } from '@nestjs/passport';
 import { CreateStaffImgDto } from './dto/create-staffImg.dto';
 import { Staff } from './entities/staff.entity';
 import * as Util from '../../utils/index';
+import { DoesStaffExist } from 'src/common/guards/doesStaffExist.guard';
 
 @ApiTags('Staff')
 @Controller('staff')
@@ -36,6 +37,7 @@ export class StaffController {
   @ApiOperation({ summary: 'Create New Staff' })
   @Public()
   @UseGuards(AtGuard)
+  @UseGuards(DoesStaffExist)
   @Post('registerNewStaff')
   create(@Body() createStaffDto: CreateStaffDto) {
     return this.staffService.create(createStaffDto);
@@ -106,6 +108,7 @@ export class StaffController {
   @ApiOperation({ summary: 'Update Staff By staffId' })
   @Public()
   @UseGuards(AtGuard)
+  @UseGuards(DoesStaffExist)
   @Patch(':staffId')
   update(
     @Param('staffId') staffId: string,

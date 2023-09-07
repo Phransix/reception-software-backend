@@ -449,6 +449,7 @@ async login(loginDto: LoginDTO){
     return await this.userModel.findOne<User>({where: {email}})
   }
 
+
  
   async findByemail(email: string){
       return this.userModel.findOne({where:{email}})

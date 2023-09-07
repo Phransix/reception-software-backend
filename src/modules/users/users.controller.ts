@@ -6,14 +6,9 @@ import {
   Patch,
   Param,
   Delete,
-  BadRequestException,
   UseGuards,
-  Request,
-  NotFoundException,
   HttpException,
   HttpStatus,
-  UseInterceptors,
-  UploadedFile,
   Query,
 } from '@nestjs/common';
 import { UsersService } from './users.service';
@@ -166,6 +161,7 @@ export class UsersController {
   @ApiOperation({ summary: 'Update User By userId' })
   @Public()
   @UseGuards(AtGuard)
+  @UseGuards(DoesUserExist)
   @Patch(':userId')
   async updateOrg(
     @Param('userId') userId: string,

@@ -268,4 +268,14 @@ export class StaffService {
     }
   }
 
+
+  async findOneByEmail(email: string): Promise<Staff> {
+    return await this.staffModel.findOne<Staff>({ where: { email } })
+  }
+
+  async findOneByPhoneNumber(phoneNumber: string): Promise<Staff> {
+    return await this.staffModel.findOne<Staff>({ where: { phoneNumber } })
+  }
+
+
 }

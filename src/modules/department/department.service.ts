@@ -146,4 +146,13 @@ export class DepartmentService {
       return Util?.handleFailResponse('The Department data does not exist');
     }
   }
+
+
+  async findOneByorganizationName(departmentName: string): Promise<Department> {
+    return await this.departmentModel.findOne<Department>({ where: { departmentName } })
+  }
+
+
+
+
 }
