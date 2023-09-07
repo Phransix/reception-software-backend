@@ -39,6 +39,7 @@ import {
 import { Roles } from 'src/common/decorators/roles.decorator';
 import { Role } from '../role/role.enum';
 import { RolesGuard } from 'src/common/guards/roles.guard';
+import { LogOutDTO } from 'src/guard/auth/logoutDto';
 
 @ApiTags('Users')
 @Controller('users')
@@ -78,10 +79,10 @@ export class UsersController {
     if (!user) {
       throw new HttpException('Invalid Credentials', HttpStatus.UNAUTHORIZED);
     } else {
-      // throw new HttpException('Login Successfully',HttpStatus.ACCEPTED)
       return user;
     }
   }
+
 
   // Get All Users
   @ApiTags('Users')
@@ -298,4 +299,11 @@ export class UsersController {
   async restoreUser(@Param('userId') userId: string) {
     return this.usersService.restoreUser(userId);
   }
+
+ 
+    
+
+
+ 
+
 }
