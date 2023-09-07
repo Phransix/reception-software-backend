@@ -60,7 +60,6 @@ export class OrganizationController {
   };
 
     // Login Organization
-    @ApiTags('Users')
     @ApiOperation({ summary: 'Organization/User Login' })
     @Public()
     @Post('login')
