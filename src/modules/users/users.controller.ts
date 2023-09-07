@@ -1,10 +1,28 @@
-import { Controller, Get, Post, Body, Patch, Param, Delete, BadRequestException, UseGuards, Request, NotFoundException, HttpException, HttpStatus, UseInterceptors, UploadedFile, Query } from '@nestjs/common';
+import {
+  Controller,
+  Get,
+  Post,
+  Body,
+  Patch,
+  Param,
+  Delete,
+  UseGuards,
+  HttpException,
+  HttpStatus,
+  Query,
+} from '@nestjs/common';
 import { UsersService } from './users.service';
 import { CreateUserDto } from './dto/create-user.dto';
 import { UpdateUserDto } from './dto/update-user.dto';
-import * as Util from '../../utils/index'
+import * as Util from '../../utils/index';
 import { User } from './entities/user.entity';
-import { ApiBearerAuth, ApiOperation, ApiParam, ApiQuery, ApiTags } from '@nestjs/swagger';
+import {
+  ApiBearerAuth,
+  ApiOperation,
+  ApiParam,
+  ApiQuery,
+  ApiTags,
+} from '@nestjs/swagger';
 import { ChangePassDTO } from 'src/guard/auth/changePassDTO';
 import { LoginDTO } from 'src/guard/auth/loginDTO';
 import { Public } from 'src/common/decorators/public.decorator';
@@ -14,23 +32,26 @@ import { AuthGuard } from '@nestjs/passport';
 import { DoesUserExist } from 'src/common/guards/doesUserExist.guard';
 import { InjectModel } from '@nestjs/sequelize';
 import { CreateUserImgDto } from './dto/create-userImg.dto';
-import { ForgotPasswordDto, ResetPasswordDto } from '../organization/dto/create-organization.dto';
+import {
+  ForgotPasswordDto,
+  ResetPasswordDto,
+} from '../organization/dto/create-organization.dto';
 import { Roles } from 'src/common/decorators/roles.decorator';
 import { Role } from '../role/role.enum';
 import { RolesGuard } from 'src/common/guards/roles.guard';
 
-
 @ApiTags('Users')
 @Controller('users')
 export class UsersController {
-  constructor(private readonly usersService: UsersService,
-    @InjectModel(User) private userModel: typeof User,) { }
-
+  constructor(
+    private readonly usersService: UsersService,
+    @InjectModel(User) private userModel: typeof User,
+  ) {}
 
   // Register New User
   @ApiTags('Users')
   @Roles(Role.Admin)
-  @UseGuards(AuthGuard('jwt'),RolesGuard)
+  @UseGuards(AuthGuard('jwt'), RolesGuard)
   @ApiBearerAuth('defaultBearerAuth')
   @ApiOperation({ summary: 'Create New User/Receptionist' })
   @UseGuards(AtGuard)
@@ -42,7 +63,7 @@ export class UsersController {
       let new_user = this.usersService.create(createUserDto);
       return new_user;
     } catch (error) {
-      return Util?.handleTryCatchError(Util?.getTryCatchMsg(error))
+      return Util?.handleTryCatchError(Util?.getTryCatchMsg(error));
     }
   }
 
@@ -54,13 +75,12 @@ export class UsersController {
   async login(@Body() loginDto: LoginDTO) {
     const user = await this.usersService.login(loginDto);
     if (!user) {
-      throw new HttpException('Invalid Credentials', HttpStatus.UNAUTHORIZED)
+      throw new HttpException('Invalid Credentials', HttpStatus.UNAUTHORIZED);
     } else {
       // throw new HttpException('Login Successfully',HttpStatus.ACCEPTED)
-      return user
+      return user;
     }
   }
-
 
   // Get All Users
   @ApiTags('Users')
@@ -71,49 +91,51 @@ export class UsersController {
   @ApiQuery({
     name: 'page',
     type: 'number',
-    required: false
+    required: false,
   })
   @ApiQuery({
     name: 'size',
     type: 'number',
-    required: false
+    required: false,
   })
-
   @UseGuards(AtGuard)
   @Get('getAllUsers')
-  async findAllfindAll(@GetCurrentUserId() userId: string,
+  async findAllfindAll(
+    @GetCurrentUserId() userId: string,
     @Query('page') page: number,
     @Query('size') size: number,
   ) {
-    console.log(userId)
+    console.log(userId);
 
     try {
       let currentPage = Util.Checknegative(page);
       if (currentPage) {
-        return Util?.handleErrorRespone("Users current page cannot be negative");
+        return Util?.handleErrorRespone(
+          'Users current page cannot be negative',
+        );
       }
 
-      const { limit, offset } = Util.getPagination(page, size)
+      const { limit, offset } = Util.getPagination(page, size);
 
       const allQueries = await User?.findAndCountAll({
         limit,
         offset,
-        attributes: { exclude: ['createdAt', 'updatedAt', 'deletedAt'] }
-      })
+        attributes: { exclude: ['createdAt', 'updatedAt', 'deletedAt'] },
+      });
 
-      let result = Util?.getPagingData(allQueries, page, limit)
-      console.log(result)
+      let result = Util?.getPagingData(allQueries, page, limit);
+      console.log(result);
 
-      const dataResult = { ...result }
-      return Util?.handleSuccessRespone(dataResult, 'Users Data retrieved successfully.')
-
-
+      const dataResult = { ...result };
+      return Util?.handleSuccessRespone(
+        dataResult,
+        'Users Data retrieved successfully.',
+      );
     } catch (error) {
-      console.log(error)
-      return Util?.handleTryCatchError(Util?.getTryCatchMsg(error))
+      console.log(error);
+      return Util?.handleTryCatchError(Util?.getTryCatchMsg(error));
     }
-  };
-
+  }
 
   // Get User By The Id
   @UseGuards(AuthGuard('jwt'))
@@ -123,18 +145,14 @@ export class UsersController {
   @UseGuards(AtGuard)
   @Get(':userId')
   async findOne(@Param('userId') userId: string) {
-
     try {
-
       let userData = await this.usersService.findOne(userId);
-      return userData
-
+      return userData;
     } catch (error) {
-      console.log(error)
-      return Util?.getTryCatchMsg(Util?.getTryCatchMsg(error))
+      console.log(error);
+      return Util?.getTryCatchMsg(Util?.getTryCatchMsg(error));
     }
-  };
-
+  }
 
   // Update User By The Id
   @ApiTags('Users')
@@ -143,20 +161,20 @@ export class UsersController {
   @ApiOperation({ summary: 'Update User By userId' })
   @Public()
   @UseGuards(AtGuard)
+  @UseGuards(DoesUserExist)
   @Patch(':userId')
-  async updateOrg(@Param('userId') userId: string, @Body() updateUserDto: UpdateUserDto) {
-
+  async updateOrg(
+    @Param('userId') userId: string,
+    @Body() updateUserDto: UpdateUserDto,
+  ) {
     try {
-
-      const userUpdate = await this.usersService.update(userId, updateUserDto)
-      return userUpdate
-
+      const userUpdate = await this.usersService.update(userId, updateUserDto);
+      return userUpdate;
     } catch (error) {
-      console.log(error)
+      console.log(error);
       return Util?.handleTryCatchError('User data Not updated');
     }
-  };
-
+  }
 
   // Update User Profile Photo With The Id
   @ApiTags('Users')
@@ -166,19 +184,21 @@ export class UsersController {
   @Public()
   @UseGuards(AtGuard)
   @Patch(':userId/profilePhoto')
-  async updateImg(@Param('id') userId: string, @Body() createUserImgDto: CreateUserImgDto) {
-
+  async updateImg(
+    @Param('id') userId: string,
+    @Body() createUserImgDto: CreateUserImgDto,
+  ) {
     try {
-
-      const userUpdateImg = await this.usersService.updateImg(userId, createUserImgDto)
-      return userUpdateImg
-
+      const userUpdateImg = await this.usersService.updateImg(
+        userId,
+        createUserImgDto,
+      );
+      return userUpdateImg;
     } catch (error) {
-      console.log(error)
+      console.log(error);
       return Util?.handleTryCatchError('User Profile Photo Not updated');
     }
-  };
-
+  }
 
   // Change User Password By The Id
   @ApiTags('Users')
@@ -188,14 +208,20 @@ export class UsersController {
   @Public()
   @UseGuards(AtGuard)
   @Patch(':userId/changePassword')
-  async changePassword(@Param('userId') userId: string, @Body() changePassDTO: ChangePassDTO) {
+  async changePassword(
+    @Param('userId') userId: string,
+    @Body() changePassDTO: ChangePassDTO,
+  ) {
     try {
-      const userPass = await this.usersService.changePass(userId, changePassDTO)
-      return userPass
+      const userPass = await this.usersService.changePass(
+        userId,
+        changePassDTO,
+      );
+      return userPass;
       // console.log(userPass)
     } catch (error) {
-      console.log(error)
-      return Util?.handleTryCatchError(Util?.getTryCatchMsg(error))
+      console.log(error);
+      return Util?.handleTryCatchError(Util?.getTryCatchMsg(error));
     }
   }
 
@@ -209,11 +235,10 @@ export class UsersController {
       let res = await this.usersService.forgetPassword(data);
       return res;
     } catch (error) {
-      console.log(error)
+      console.log(error);
       return Util?.handleFailResponse('Failed to send email');
     }
   }
-
 
   // Reset Password
   @ApiTags('Users')
@@ -221,9 +246,11 @@ export class UsersController {
   @ApiOperation({ summary: 'Reset Customer Password' })
   @Post('reset-password/:token')
   @ApiParam({ name: 'token', type: 'string', required: true })
-  async resetPassword(@Param('token') token: string, @Body() data: ResetPasswordDto) {
+  async resetPassword(
+    @Param('token') token: string,
+    @Body() data: ResetPasswordDto,
+  ) {
     try {
-
       let res = await this.usersService.resetPassword(token, data);
       return res;
     } catch (error) {
@@ -231,7 +258,6 @@ export class UsersController {
       return Util?.handleFailResponse('Failed to reset Password');
     }
   }
-
 
   // Delete/Remove User By The Id
   @ApiTags('Users')
@@ -242,24 +268,23 @@ export class UsersController {
   @UseGuards(AtGuard)
   @Delete(':userId')
   async remove(@Param('userId') userId: string) {
-
     try {
-
       const user = await User.findOne({ where: { userId } });
       if (!user) {
-        throw new Error('User data not Found')
+        throw new Error('User data not Found');
       }
 
-      Object.assign(user)
-      await user.destroy()
-      return Util?.handleSuccessRespone(Util?.SuccessRespone, "User data deleted successfully.")
-
+      Object.assign(user);
+      await user.destroy();
+      return Util?.handleSuccessRespone(
+        Util?.SuccessRespone,
+        'User data deleted successfully.',
+      );
     } catch (error) {
-      console.log(error)
+      console.log(error);
       return Util?.handleTryCatchError(Util?.getTryCatchMsg(error));
     }
   }
-
 
   // Restore Deleted User Date By Id
   @ApiTags('Users')
@@ -271,12 +296,6 @@ export class UsersController {
   @ApiTags('Users')
   @Post(':userId/restore')
   async restoreUser(@Param('userId') userId: string) {
-    return this.usersService.restoreUser(userId)
+    return this.usersService.restoreUser(userId);
   }
-
-
-
-
-
-
 }
