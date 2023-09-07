@@ -35,15 +35,17 @@ export class CreatePurposeDto {
 
     @ApiProperty({
         description: 'The Id of the department',
-        example: '0ebf89e0-1606-4f8a-ad7c-39f4a3424028'
+        example: '0ebf89e0-1606-4f8a-ad7c-39f4a3424028',
+        required: false
     })
-    @IsNotEmpty()
+    // @IsNotEmpty()
     readonly departmentId: string
 
     @ApiProperty({
         description: 'The Id of the staff',
-        example: '0ebf89e0-1606-4f8a-ad7c-39f4a3424028'
+        example: '0ebf89e0-1606-4f8a-ad7c-39f4a3424028',
+        required: false
     })
-    @IsNotEmpty()
+    // @IsNotEmpty()
     readonly staffId: string
 }
