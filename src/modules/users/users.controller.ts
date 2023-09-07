@@ -50,7 +50,8 @@ export class UsersController {
 
   // Register New User
   @ApiTags('Users')
-  @Roles(Role.Admin)
+  @Roles('Admin')
+  // @Roles(Role.Admin)
   @UseGuards(AuthGuard('jwt'), RolesGuard)
   @ApiBearerAuth('defaultBearerAuth')
   @ApiOperation({ summary: 'Create New User/Receptionist' })
@@ -161,7 +162,6 @@ export class UsersController {
   @ApiOperation({ summary: 'Update User By userId' })
   @Public()
   @UseGuards(AtGuard)
-  @UseGuards(DoesUserExist)
   @Patch(':userId')
   async updateOrg(
     @Param('userId') userId: string,

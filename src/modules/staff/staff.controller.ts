@@ -108,7 +108,6 @@ export class StaffController {
   @ApiOperation({ summary: 'Update Staff By staffId' })
   @Public()
   @UseGuards(AtGuard)
-  @UseGuards(DoesStaffExist)
   @Patch(':staffId')
   update(
     @Param('staffId') staffId: string,
