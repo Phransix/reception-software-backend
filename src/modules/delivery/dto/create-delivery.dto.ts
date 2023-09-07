@@ -67,15 +67,6 @@ export class CreateDeliveryDto {
      })
     readonly email: string;
 
-    
-    // @ApiProperty({
-    //     description: "The date and time of delivery",
-    //     example: '2023-12-24'
-    // })
-    // @IsString()
-    // @IsNotEmpty()
-    // readonly date_and_time: string;
-
     @ApiProperty({
         description: "The status of delivery",
         example: 'awaiting_pickup'

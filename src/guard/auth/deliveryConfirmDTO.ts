@@ -6,7 +6,7 @@ export class deliveryConfirmDTO {
         description: 'The name of the receipient',
         example: 'Kingsley'
     })
-    @IsString()
+    // @IsString()
     @IsNotEmpty()
     receipientName: string
 }

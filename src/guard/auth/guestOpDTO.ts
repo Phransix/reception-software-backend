@@ -8,8 +8,8 @@ export class guestOpDTO {
         example: '+233'
     })
     @IsNotEmpty()
-    @MaxLength(4)
-    @MinLength(4)
+    // @MaxLength(4)
+    // @MinLength(4)
     readonly countryCode: string
 
     @ApiProperty({
@@ -17,7 +17,7 @@ export class guestOpDTO {
         example: '546987415'
     })
     @IsNotEmpty()
-    @MaxLength(9)
-    @MinLength(9)
+    // @MaxLength(9)
+    // @MinLength(9)
     readonly phoneNumber: string
 }
