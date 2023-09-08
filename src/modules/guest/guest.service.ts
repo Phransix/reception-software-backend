@@ -22,7 +22,6 @@ export class GuestService {
     try {
 
       await Abstract?.createData(Guest, createGuestDto)
-
       const {phoneNumber} = createGuestDto
       const guestData = await this.GuestModel.findOne({where:{phoneNumber}})
 
@@ -34,7 +33,6 @@ export class GuestService {
         countryCode: guestData?.countryCode,
         phoneNumber: guestData?.phoneNumber
       }
-
       return Util?.handleSuccessRespone(guest_data, "Guest Created Successfully")
     } catch (error) {
       console.log(error)
