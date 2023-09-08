@@ -60,7 +60,7 @@ export class OrganizationController {
   };
 
     // Login Organization
-    @ApiOperation({ summary: 'Organization/User Login' })
+    @ApiOperation({ summary: 'Organization Login' })
     @Public()
     @Post('login')
     async login(@Body() loginDto: LoginDTO) {

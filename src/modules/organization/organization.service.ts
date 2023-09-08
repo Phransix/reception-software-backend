@@ -468,8 +468,8 @@ export class OrganizationService {
     const [at,rt] = await Promise.all([
       this.jwtService.signAsync(jwtPayload, {
         secret: this.config.get<string>('JWT_SECRETTABLET'),
-        expiresIn: '5m',
-        // expiresIn: '7d',
+        // expiresIn: '5m',
+        expiresIn: '7d',
       }),
       this.jwtService.signAsync(jwtPayload, {
         secret: this.config.get<string>('RT_SECRET'),
