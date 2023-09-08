@@ -20,8 +20,22 @@ export class GuestService {
   // Creating a guest
   async create(createGuestDto: CreateGuestDto) {
     try {
-      await Abstract?.createData(Guest, createGuestDto);
-      return Util?.handleCreateSuccessRespone("Guest Created Successfully")
+
+      await Abstract?.createData(Guest, createGuestDto)
+
+      const {phoneNumber} = createGuestDto
+      const guestData = await this.GuestModel.findOne({where:{phoneNumber}})
+
+      let guest_data = {
+        guestId: guestData?.guestId,
+        firstName: guestData?.firstName,
+        lastname: guestData?.lastName,
+        gender: guestData?.gender,
+        countryCode: guestData?.countryCode,
+        phoneNumber: guestData?.phoneNumber
+      }
+
+      return Util?.handleSuccessRespone(guest_data, "Guest Created Successfully")
     } catch (error) {
       console.log(error)
       return Util?.handleFailResponse('Guest Registration Failed')
