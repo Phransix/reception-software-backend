@@ -199,6 +199,31 @@ export class GuestService {
       }
     }
 
+    // Filter Guest by Organizationid
+    async orgGuestFilter (keyword : string){
+      try {
+        let filter = {}
+
+        if(keyword != null){
+          filter = {organizationId : keyword}
+        }
+
+        const filterCheck = await this.GuestModel.findAll({
+          where: {
+            ...filter
+          },
+        });
+        if (!filterCheck) {
+          throw new HttpException('Organization not found', HttpStatus.NOT_FOUND)
+        }
+        return filterCheck
+
+      } catch (error) {
+        console.log(error)
+        return Util?.handleFailResponse("Organization not found")
+      }
+    }
+
     async findOneByPhoneNumber(phoneNumber: string): Promise<Guest> {
       return await this.GuestModel.findOne<Guest>({ where: { phoneNumber } })
     }
