@@ -22,7 +22,6 @@ export class GuestService {
     try {
 
       await Abstract?.createData(Guest, createGuestDto)
-
       const {phoneNumber} = createGuestDto
       const guestData = await this.GuestModel.findOne({where:{phoneNumber}})
 
@@ -34,7 +33,6 @@ export class GuestService {
         countryCode: guestData?.countryCode,
         phoneNumber: guestData?.phoneNumber
       }
-
       return Util?.handleSuccessRespone(guest_data, "Guest Created Successfully")
     } catch (error) {
       console.log(error)
@@ -198,6 +196,31 @@ export class GuestService {
       } catch (error) {
         console.log(error)
         return Util?.handleFailResponse('Gender filtering failed')
+      }
+    }
+
+    // Filter Guest by Organizationid
+    async orgGuestFilter (keyword : string){
+      try {
+        let filter = {}
+
+        if(keyword != null){
+          filter = {organizationId : keyword}
+        }
+
+        const filterCheck = await this.GuestModel.findAll({
+          where: {
+            ...filter
+          },
+        });
+        if (!filterCheck) {
+          throw new HttpException('Organization not found', HttpStatus.NOT_FOUND)
+        }
+        return filterCheck
+
+      } catch (error) {
+        console.log(error)
+        return Util?.handleFailResponse("Organization not found")
       }
     }
 

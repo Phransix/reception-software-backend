@@ -246,4 +246,24 @@ try {
   }
 
 
+// Filter Guest by organization
+@UseGuards(AuthGuard('jwt'))
+@ApiBearerAuth('defaultBearerAuth')
+@Public()
+@UseGuards(AtGuard)
+@ApiTags('Guest')
+@ApiOperation({summary:'Filter Guest by OrganizationId'})
+@Get('guest/filterOrgGuest')
+async orgGuest (
+  @Query('keyword') keyword: string
+) {
+  try {
+    return this.guestService.orgGuestFilter(keyword)
+  } catch (error) {
+    console.log(error)
+    return Util?.handleFailResponse("Guest Filter should not be null")
+  }
+}
+
+
 }
