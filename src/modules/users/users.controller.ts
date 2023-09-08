@@ -36,10 +36,8 @@ import {
   ForgotPasswordDto,
   ResetPasswordDto,
 } from '../organization/dto/create-organization.dto';
-import { Roles } from 'src/common/decorators/roles.decorator';
-import { Role } from '../role/role.enum';
 import { RolesGuard } from 'src/common/guards/roles.guard';
-import { LogOutDTO } from 'src/guard/auth/logoutDto';
+
 
 @ApiTags('Users')
 @Controller('users')
@@ -51,8 +49,6 @@ export class UsersController {
 
   // Register New User
   @ApiTags('Users')
-  @Roles('Admin')
-  // @Roles(Role.Admin)
   @UseGuards(AuthGuard('jwt'), RolesGuard)
   @ApiBearerAuth('defaultBearerAuth')
   @ApiOperation({ summary: 'Create New User/Receptionist' })

@@ -93,6 +93,8 @@ export class StaffService {
         return Util?.handleFailResponse(`Staff with this #${staffId} not found`)
       }
 
+      return Util?.handleSuccessRespone(staff, "Staffs Data retrieved successfully.")
+
     } catch (error) {
       console.log(error)
       // return Util?.handleTryCatchError(Util?.getTryCatchMsg(error));
