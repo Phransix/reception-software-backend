@@ -136,7 +136,9 @@ export class StaffService {
 
       let insertQry = {
         organizationId: updateStaffDto?.organizationId,
+        organizationName:updateStaffDto?.organizationName,
         departmentId: updateStaffDto?.departmentId,
+        departmentName: updateStaffDto?.departmentName,
         title: updateStaffDto?.title,
         fullName: updateStaffDto?.fullName,
         email: updateStaffDto?.email,
