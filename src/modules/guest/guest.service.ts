@@ -6,8 +6,10 @@ import { Guest } from './entities/guest.entity';
 import * as Abstract from '../../utils/abstract'
 import * as Util from '../../utils/index'
 import { guestOpDTO } from 'src/guard/auth/guestOpDTO';
-import { Op } from 'sequelize';
-import moment from 'moment';
+import { Op, Sequelize } from 'sequelize';
+import { TIME } from 'sequelize';
+import { timeInterval } from 'rxjs';
+
 
 
 @Injectable()
@@ -36,7 +38,7 @@ export class GuestService {
       return Util?.handleSuccessRespone(guest_data, "Guest Created Successfully")
     } catch (error) {
       console.log(error)
-      return Util?.handleFailResponse('Guest Registration Failed')
+      return Util?.getTryCatchMsg(error)
     }
   }
 
@@ -50,7 +52,7 @@ export class GuestService {
       return Util?.handleSuccessRespone(guest, "Guest Data retrieval Successful")
     } catch (error) {
       console.log(error)
-      return Util?.handleFailResponse('Guest retrieval failed')
+      return Util?.getTryCatchMsg(error)
     }
   }
 
@@ -66,7 +68,7 @@ export class GuestService {
       return Util?.handleSuccessRespone(guest, 'Guest data retrieved successfully')
     } catch (error) {
       console.log(error)
-      return Util?.handleFailResponse('Guest Data retrieval failed')
+      return Util?.getTryCatchMsg(error)
     }
   }
 
@@ -81,7 +83,7 @@ export class GuestService {
       return Util?.handleSuccessRespone(guest, 'Guest data updated successfully')
     } catch (error) {
       console.log(error)
-      return Util?.handleFailResponse('Guest update failed')
+      return Util?.getTryCatchMsg(error)
     }
   }
 
@@ -96,7 +98,7 @@ export class GuestService {
 
     } catch (error) {
       console.log(error)
-      return Util?.handleFailResponse("Guest removal failed")
+      return Util?.getTryCatchMsg(error)
     }
   }
 
@@ -104,7 +106,7 @@ export class GuestService {
     const {phoneNumber,countryCode} = guestOpDTO
     const guestNo = await this.GuestModel.findOne({where:{phoneNumber}})
     const cCode = await this.GuestModel.findOne({where:{countryCode}})
-
+    const currentTime = new Date().toLocaleTimeString();
     let guest_data = {
       guestId: guestNo?.guestId,
       firstName: guestNo?.firstName,
@@ -114,9 +116,11 @@ export class GuestService {
       phoneNumber: guestNo?.phoneNumber
     }
 
-    if (!guestNo && !cCode) {
+    if (!guestNo || !cCode) {
       throw new HttpException('Guest Sign In failed', HttpStatus.UNAUTHORIZED)
     } else {
+      await Guest.update({signInDate: new Date()}, {where: {phoneNumber:phoneNumber}});
+      await Guest.update({signInTime: currentTime}, {where: {phoneNumber:phoneNumber}});
       return Util?.handleSuccessRespone(guest_data,"Guest Sign In Success")
     }
   }
@@ -125,9 +129,11 @@ export class GuestService {
     const {phoneNumber,countryCode} = guestOpDTO
     const guest = await this.GuestModel.findOne({where:{phoneNumber}})
     const cCode = await this.GuestModel.findOne({where:{countryCode}})
-    if (!guest && !cCode) {
+    const currentTime = new Date().toLocaleTimeString();
+    if (!guest || !cCode) {
       throw new HttpException('Guest Sign Out failed', HttpStatus.UNAUTHORIZED)
     } else {
+      await Guest.update({signOutTime: currentTime}, {where: {phoneNumber:phoneNumber}});
       throw new HttpException('Guest Sign Out successful', HttpStatus.ACCEPTED)
     }
   }
@@ -148,7 +154,7 @@ export class GuestService {
       return guest
     } catch (error) {
       console.log(error)
-      return Util?.handleFailResponse("Guest not found")
+      return Util?.getTryCatchMsg(error)
     }
   }
 
@@ -170,7 +176,7 @@ export class GuestService {
       return guestSearch
     } catch (error) {
       console.log(error)
-      return Util?.handleFailResponse("Guest Search failed")
+      return Util?.getTryCatchMsg(error)
     }
   }
 
@@ -195,7 +201,7 @@ export class GuestService {
         return filterCheck
       } catch (error) {
         console.log(error)
-        return Util?.handleFailResponse('Gender filtering failed')
+        return Util?.getTryCatchMsg(error)
       }
     }
 
@@ -220,7 +226,7 @@ export class GuestService {
 
       } catch (error) {
         console.log(error)
-        return Util?.handleFailResponse("Organization not found")
+        return Util?.getTryCatchMsg(error)
       }
     }
 

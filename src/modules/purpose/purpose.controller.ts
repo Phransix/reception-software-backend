@@ -26,7 +26,7 @@ export class PurposeController {
       return purpose
     } catch (error) {
       console.log(error)
-      return Util?.handleFailResponse("Purpose registration failed")
+      return Util?.getTryCatchMsg(error)
     }
   }
 
@@ -72,8 +72,7 @@ export class PurposeController {
 
     } catch (error) {
       console.log(error)
-      return Util?.handleFailResponse("Purpose retrieval failed")
-    }
+      return Util?.getTryCatchMsg(error)    }
 
   }
 
@@ -108,8 +107,8 @@ export class PurposeController {
       return purpose
     } catch (error) {
       console.log(error)
-      return Util?.handleFailResponse("Purpose data update failed")
-    }
+      return Util?.getTryCatchMsg(error)
+        }
   }
 
   @Public()
@@ -129,8 +128,8 @@ export class PurposeController {
       (await purpose).destroy()
     } catch (error) {
       console.log(error)
-      return Util?.handleTryCatchError("Purpose data not removed")
-    }
+      return Util?.getTryCatchMsg(error)
+        }
   }
 
   // Search and filter by purpose
@@ -153,8 +152,7 @@ export class PurposeController {
       return this.purposeService.guestPurpose(keyword);
     } catch (error) {
       console.log(error)
-      return Util?.handleFailResponse('Purpose Filter should not be null')
-    }
+      return Util?.getTryCatchMsg(error)    }
   }
 
   

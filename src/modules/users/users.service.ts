@@ -19,6 +19,7 @@ import { query } from 'express';
 import { where } from 'sequelize';
 import { ForgotPasswordDto, ResetPasswordDto } from '../organization/dto/create-organization.dto';
 import { ResetPasswordService } from 'src/helper/ResetPassHelper';
+import { log } from 'console';
 
 
 
@@ -88,6 +89,8 @@ async login(loginDto: LoginDTO){
 
   const user = await User.findOne({where:{email}})
   const org = await Organization.findOne({where:{email}})
+
+
   if(!user){
     // return Util.handleForbiddenExceptionResponses('Invaid email or password');
     throw new HttpException('Invalid email or password',HttpStatus.FORBIDDEN)
@@ -97,10 +100,14 @@ async login(loginDto: LoginDTO){
     user.password,
     loginDto.password,
   );
+  // console.log(passwordMatches);
+  // return false;
   if (!passwordMatches){
     // return Util.handleForbiddenExceptionResponses('Invaid email or password');
     throw new HttpException('Invalid email or password',HttpStatus.FORBIDDEN)
   }
+
+
       // Check if the oraganiazation is verified
      if (org?.isVerified != true)
      return Util?.handleFailResponse('Oraganiazation account not verified')

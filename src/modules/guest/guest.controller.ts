@@ -27,7 +27,8 @@ export class GuestController {
       return guest;
     } catch (error) {
       console.log(error)
-      return Util?.handleFailResponse("Guest registration failed")
+      // return Util?.handleFailResponse("Guest registration failed")
+      return Util?.getTryCatchMsg(error)
     }
   }
 
@@ -74,8 +75,8 @@ export class GuestController {
 
     } catch (error) {
       console.log(error)
-      return Util?.handleFailResponse("Guest retrieval failed")
-    }
+      return Util?.getTryCatchMsg(error)
+        }
 
   }
 
@@ -94,8 +95,8 @@ export class GuestController {
 
     } catch (error) {
       console.log(error)
-      return Util?.handleFailResponse("Guest retrieval failed")
-    }
+      return Util?.getTryCatchMsg(error)
+        }
   }
 
   @UseGuards(AuthGuard('jwt'))
@@ -111,8 +112,8 @@ export class GuestController {
       return guest
     } catch (error) {
       console.log(error);
-      return Util?.handleFailResponse("Guest update failed")
-    }
+      return Util?.getTryCatchMsg(error)
+        }
   }
 
   @UseGuards(AuthGuard('jwt'))
@@ -134,8 +135,7 @@ export class GuestController {
       (await guest).destroy
     } catch (error) {
       console.log(error)
-      return Util?.handleTryCatchError("Guest data not deleted")
-      
+      return Util?.getTryCatchMsg(error)      
     }
   }
 
@@ -184,8 +184,8 @@ export class GuestController {
       return this.guestService.searchGuest(keyword.charAt(0).toUpperCase());
     } catch (error) {
       console.log(error)
-      return Util?.handleFailResponse("Search should not be null")
-    }
+      return Util?.getTryCatchMsg(error)
+        }
     
   }
 
@@ -217,7 +217,7 @@ try {
   return guestSearch
 } catch (error) {
   console.log(error)
-  return Util?.handleFailResponse("Guest Not found")
+  return Util?.getTryCatchMsg(error)
 }
   }
 
@@ -241,8 +241,8 @@ try {
       return this.guestService.genderFilter(keyword)
     } catch (error) {
       console.log(error)
-      return Util?.handleFailResponse("Gender Filter should not be null")
-    }
+      return Util?.getTryCatchMsg(error)
+        }
   }
 
 
@@ -255,14 +255,14 @@ try {
 @ApiOperation({summary:'Filter Guest by OrganizationId'})
 @Get('guest/filterOrgGuest')
 async orgGuest (
-  @Query('keyword') keyword: string
+  @Query('keyword') keyword: string,
 ) {
   try {
     return this.guestService.orgGuestFilter(keyword)
   } catch (error) {
     console.log(error)
-    return Util?.handleFailResponse("Guest Filter should not be null")
-  }
+    return Util?.getTryCatchMsg(error)
+    }
 }
 
 

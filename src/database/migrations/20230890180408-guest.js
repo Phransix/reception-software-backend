@@ -58,6 +58,21 @@ module.exports = {
         allowNull: false,
         unique:true
       },
+      signInDate: {
+        type: Sequelize.DATEONLY,
+        allowNull: true,
+        defaultValue: null
+      },
+      signInTime: {
+        type: Sequelize.TIME,
+        allowNull: true,
+        defaultValue: null,
+      },
+      signOutTime: {
+        type: Sequelize.TIME,
+        allowNull: true,
+        defaultValue: null,
+      },
       createdAt: {
         type: Sequelize.DATE,
         allowNull: false,

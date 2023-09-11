@@ -22,8 +22,8 @@ export class DeliveryService {
       await Abstract?.createData(Delivery, createDeliveryDto);
       return Util?.handleCreateSuccessRespone( "Delivery Created Successfully");
     } catch (error) {
-      console.error(error)
-      return Util?.handleFailResponse("Delivery registration failed")
+      // console.error(error)
+      return Util?.handleTryCatchError(Util?.getTryCatchMsg(error))
     }
   }
 
@@ -37,7 +37,7 @@ export class DeliveryService {
       return Util?.handleSuccessRespone(delivery, "Deliveries Data retrieved Successfully")
     } catch (error) {
       console.log(error)
-      return Util?.handleFailResponse("Deliveries retrieval failed")
+      return Util?.getTryCatchMsg(error)
     }
   }
 
@@ -53,7 +53,7 @@ export class DeliveryService {
       return Util?.handleSuccessRespone(delivery, "Delivery Data retrieved successfully")
     } catch (error) {
       console.log(error)
-      return Util?.handleFailResponse("Delivery retrieval failed")
+      return Util?.getTryCatchMsg(error)
     }
   }
 
@@ -68,7 +68,7 @@ export class DeliveryService {
       return Util?.handleSuccessRespone(Util?.SuccessRespone, 'Delivery Data successfully updated')
     } catch (error) {
       console.log(error)
-      return Util?.handleFailResponse("Delivery update failed")
+      return Util?.getTryCatchMsg(error)
     }
   };
 
@@ -84,7 +84,7 @@ export class DeliveryService {
 
     } catch (error) {
       console.log(error)
-      return Util?.handleFailResponse("Delivery removal failed")
+      return Util?.getTryCatchMsg(error)
     }
   }
 
@@ -146,7 +146,7 @@ export class DeliveryService {
       return filterCheck
     } catch (error) {
       console.log(error)
-      return Util?.handleFailResponse('Type filtering failed')
+      return Util?.getTryCatchMsg(error)
     }
   }
 

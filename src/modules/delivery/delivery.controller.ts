@@ -30,7 +30,8 @@ export class DeliveryController {
       return Util?.handleCreateSuccessRespone("Delivery created successfully")
     } catch (error) {
       console.log(error)
-      return Util?.handleFailResponse("Delivery registration failed")
+      // return Util?.handleFailResponse("Delivery registration failed")
+      return Util?.getTryCatchMsg(error)
     }
   }
 
@@ -76,7 +77,7 @@ export class DeliveryController {
       return Util?.handleSuccessRespone(newOne, "Delivery retrieved succesfully")
     } catch (error) {
       console.log(error)
-      return Util?.handleFailResponse("Delivery retrieval failed")
+      return Util?.getTryCatchMsg(error)
     }
   }
 
@@ -94,7 +95,7 @@ export class DeliveryController {
 
     } catch (error) {
       console.log(error)
-      return Util?.handleFailResponse("Delivery retrieval failed")
+      return Util?.getTryCatchMsg(error)
     }
   }
 
@@ -111,7 +112,7 @@ export class DeliveryController {
       return delivery_Update
     } catch (error) {
       console.log(error);
-      return Util?.handleFailResponse("Delivery update failed")
+      return Util?.getTryCatchMsg(error)
     }
   }
 
@@ -138,7 +139,7 @@ export class DeliveryController {
 
     } catch (error) {
       console.log(error)
-      return Util?.handleTryCatchError("Delivery data not deleted")
+      return Util?.getTryCatchMsg(error)
 
     }
 
@@ -191,7 +192,7 @@ async findDeliveryByDateRange(
     return deliver
   } catch (error) {
     console.log(error)
-    return Util?.handleFailResponse("Delivery data not found")
+    return Util?.getTryCatchMsg(error)
   }
 }
 
@@ -215,7 +216,7 @@ async deliveryTypeFilter (
     return this.deliveryService.deliveryType(keyword)
   } catch (error) {
     console.log(error)
-    return Util?.handleFailResponse("Type Could not be filtered")
+    return Util?.getTryCatchMsg(error)
   }
 
 }
