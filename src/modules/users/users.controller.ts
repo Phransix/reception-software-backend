@@ -37,6 +37,7 @@ import {
   ResetPasswordDto,
 } from '../organization/dto/create-organization.dto';
 import { RolesGuard } from 'src/common/guards/roles.guard';
+import { LogOutDTO } from 'src/guard/auth/logoutDto';
 
 
 @ApiTags('Users')
@@ -61,7 +62,8 @@ export class UsersController {
       let new_user = this.usersService.create(createUserDto);
       return new_user;
     } catch (error) {
-      return Util?.handleTryCatchError(Util?.getTryCatchMsg(error));
+      // return Util?.handleTryCatchError(Util?.getTryCatchMsg('User registration failed'))
+      return Util?.getTryCatchMsg(error)
     }
   }
 
@@ -70,13 +72,23 @@ export class UsersController {
   @ApiOperation({ summary: 'Organization/User Login' })
   @Public()
   @Post('login')
+
   async login(@Body() loginDto: LoginDTO) {
-    const user = await this.usersService.login(loginDto);
-    if (!user) {
-      throw new HttpException('Invalid Credentials', HttpStatus.UNAUTHORIZED);
-    } else {
-      return user;
+    try {
+
+      const user = await this.usersService.login(loginDto);
+      if (!user) {
+        throw new HttpException('Invalid Credential', HttpStatus.UNAUTHORIZED);
+      } else {
+        return user;
+      }
+      
+    } catch (error) {
+      console.log(error)
+      // return Util?.handleTryCatchError(Util?.getTryCatchMsg('Login failed'));
+      return Util?.getTryCatchMsg(error)
     }
+  
   }
 
 
@@ -98,7 +110,7 @@ export class UsersController {
   })
   @UseGuards(AtGuard)
   @Get('getAllUsers')
-  async findAllfindAll(
+  async findAll(
     @GetCurrentUserId() userId: string,
     @Query('page') page: number,
     @Query('size') size: number,
@@ -119,7 +131,7 @@ export class UsersController {
         limit,
         offset,
         attributes: { exclude: ['createdAt', 'updatedAt', 'deletedAt'] },
-      });
+      }) 
 
       let result = Util?.getPagingData(allQueries, page, limit);
       console.log(result);
@@ -129,9 +141,10 @@ export class UsersController {
         dataResult,
         'Users Data retrieved successfully.',
       );
+      
     } catch (error) {
       console.log(error);
-      return Util?.handleTryCatchError(Util?.getTryCatchMsg(error));
+      return Util?.getTryCatchMsg(error)
     }
   }
 
@@ -148,7 +161,7 @@ export class UsersController {
       return userData;
     } catch (error) {
       console.log(error);
-      return Util?.getTryCatchMsg(Util?.getTryCatchMsg(error));
+      return Util?.getTryCatchMsg(error)
     }
   }
 
@@ -169,7 +182,8 @@ export class UsersController {
       return userUpdate;
     } catch (error) {
       console.log(error);
-      return Util?.handleTryCatchError('User data Not updated');
+      // return Util?.handleTryCatchError('User data Not updated');
+      return Util?.getTryCatchMsg(error)
     }
   }
 
@@ -193,7 +207,8 @@ export class UsersController {
       return userUpdateImg;
     } catch (error) {
       console.log(error);
-      return Util?.handleTryCatchError('User Profile Photo Not updated');
+      // return Util?.handleTryCatchError('User Profile Photo Not updated');
+      return Util?.getTryCatchMsg(error)
     }
   }
 
@@ -218,7 +233,8 @@ export class UsersController {
       // console.log(userPass)
     } catch (error) {
       console.log(error);
-      return Util?.handleTryCatchError(Util?.getTryCatchMsg(error));
+      // return Util?.handleTryCatchError('Failed to change password');
+      return Util?.getTryCatchMsg(error)
     }
   }
 
@@ -233,7 +249,8 @@ export class UsersController {
       return res;
     } catch (error) {
       console.log(error);
-      return Util?.handleFailResponse('Failed to send email');
+      // return Util?.handleTryCatchError('Failed to send email');
+      return Util?.getTryCatchMsg(error)
     }
   }
 
@@ -251,8 +268,8 @@ export class UsersController {
       let res = await this.usersService.resetPassword(token, data);
       return res;
     } catch (error) {
-      // return Util?.handleTryCatchError(Util?.getTryCatchMsg(error))
-      return Util?.handleFailResponse('Failed to reset Password');
+      // return Util?.handleTryCatchError('Failed to reset Password');
+      return Util?.getTryCatchMsg(error)
     }
   }
 
@@ -279,7 +296,8 @@ export class UsersController {
       );
     } catch (error) {
       console.log(error);
-      return Util?.handleTryCatchError(Util?.getTryCatchMsg(error));
+      // return Util?.handleTryCatchError(Util?.getTryCatchMsg('User data not deleted'));
+      return Util?.getTryCatchMsg(error)
     }
   }
 
@@ -296,10 +314,28 @@ export class UsersController {
     return this.usersService.restoreUser(userId);
   }
 
- 
-    
 
+    // Logout Users
+    @ApiTags('Users')
+    @ApiOperation({ summary: 'Organization/User Logout' })
+    @Public()
+    @Post('logout')
+  
+    async logout(@Body() logoutDto: LogOutDTO) {
+      try {
+  
+        const user = await this.usersService.logout(logoutDto);
+        if (!user) {
+          throw new HttpException('Invalid Credential', HttpStatus.UNAUTHORIZED);
+        } else {
+          return user;
+        }
+        
+      } catch (error) {
+        console.log(error)
+        return Util?.getTryCatchMsg(error)
+      }
 
- 
+    }
 
 }

@@ -95,6 +95,13 @@ export class User extends Model<User> {
      profilePhoto: string;
 
      @Column({
+      type: DataType.BOOLEAN,
+      allowNull: true,
+      defaultValue: false
+    })
+    isLogin: boolean;
+
+     @Column({
       type: DataType.STRING,
         allowNull: true
     })

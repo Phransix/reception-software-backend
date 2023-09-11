@@ -27,7 +27,8 @@ export class DepartmentService {
       );
     } catch (error) {
       console.log(error);
-      return Util?.handleFailResponse('Department registration failed');
+      // return Util?.handleFailResponse('Department registration failed');
+      return Util?.getTryCatchMsg(error)
     }
   }
 
@@ -46,7 +47,7 @@ export class DepartmentService {
       );
     } catch (error) {
       console.log(error);
-      return Util?.handleTryCatchError(Util?.getTryCatchMsg(error));
+      return Util?.getTryCatchMsg(error)
     }
   }
 
@@ -69,7 +70,8 @@ export class DepartmentService {
       );
     } catch (error) {
       console.log(error);
-      return Util?.handleTryCatchError(Util?.getTryCatchMsg(error));
+      // return Util?.handleTryCatchError(Util?.getTryCatchMsg(error));
+      return Util?.getTryCatchMsg(error)
     }
   }
 
@@ -92,7 +94,8 @@ export class DepartmentService {
       );
     } catch (error) {
       console.log(error);
-      return Util?.handleTryCatchError(Util?.getTryCatchMsg(error));
+      // return Util?.handleTryCatchError(Util?.getTryCatchMsg(error));
+      return Util?.getTryCatchMsg(error)
     }
   }
 
@@ -114,9 +117,10 @@ export class DepartmentService {
       );
     } catch (error) {
       console.log(error);
-      return Util?.handleTryCatchError(
-        `Department with this #${departmentId} not deleted `,
-      );
+      return Util?.getTryCatchMsg(error)
+      // return Util?.handleTryCatchError(
+      //   `Department with this #${departmentId} not deleted `,
+      // );
     }
   }
 
@@ -143,7 +147,8 @@ export class DepartmentService {
       );
     } catch (error) {
       console.log(error);
-      return Util?.handleFailResponse('The Department data does not exist');
+      return Util?.getTryCatchMsg(error)
+      // return Util?.handleFailResponse('The Department data does not exist');
     }
   }
 
