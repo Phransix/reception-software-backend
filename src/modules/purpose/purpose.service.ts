@@ -21,7 +21,7 @@ export class PurposeService {
       return Util?.handleCreateSuccessRespone("Purpose Created Successfully")
     } catch (error) {
       console.log(error)
-      return Util?.handleFailResponse("Purpose Registration Failed")
+      return Util?.getTryCatchMsg(error)
     }
   }
 
@@ -35,8 +35,8 @@ export class PurposeService {
       return Util?.handleSuccessRespone(purpose,"Purpose Data retrieved Successfully")
     } catch (error) {
       console.log(error)
-      return Util?.handleFailResponse('Purpose Data retrieval failed')
-    }
+      return Util?.getTryCatchMsg(error)
+        }
   }
 
   async findOne(purposeId: string) {
@@ -50,7 +50,7 @@ export class PurposeService {
       return Util?.handleSuccessRespone(purpose,'Purpose Data retrieved Successfully')
     } catch (error) {
       console.log(error)
-      return Util?.handleFailResponse('Purpose Data retrieval failed')
+      return Util?.getTryCatchMsg(error)    
     }
   }
 
@@ -65,8 +65,8 @@ export class PurposeService {
       return Util?.handleSuccessRespone(purpose, "Purpose Data updated Successfully")
     } catch (error) {
       console.log(error)
-      return Util?.handleFailResponse("Purpose update  failed")
-    }
+      return Util?.getTryCatchMsg(error)
+        }
   }
 
   async remove(purposeId: string) {
@@ -79,8 +79,8 @@ export class PurposeService {
       return Util?.handleSuccessRespone(Util?.SuccessRespone,"Purpose Data deleted successfully")
      } catch (error) {
       console.log(error)
-      return Util?.handleFailResponse("Purpose Data removal failed")
-     }
+      return Util?.getTryCatchMsg(error)
+         }
   }
 
   // Filter by Official and Personal Visits
@@ -105,8 +105,8 @@ export class PurposeService {
       return filterCheck
     } catch (error) {
       console.log(error)
-      return Util?.handleFailResponse('Purpose filtering failed')
-    }
+      return Util?.getTryCatchMsg(error)
+        }
   }
 }
 

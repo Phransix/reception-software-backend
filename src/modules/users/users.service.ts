@@ -99,9 +99,13 @@ async login(loginDto: LoginDTO){
     user.password,
     loginDto.password,
   );
+  // console.log(passwordMatches);
+  // return false;
   if (!passwordMatches){
     return Util.handleFailResponse('Invaid email or password');
   }
+
+
       // Check if the oraganiazation is verified
      if (org?.isVerified != true)
      return Util?.handleFailResponse('Oraganiazation account not verified')
