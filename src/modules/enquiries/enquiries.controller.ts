@@ -23,6 +23,8 @@ import {
 import { AuthGuard } from '@nestjs/passport';
 import { Public } from 'src/common/decorators/public.decorator';
 import { AtGuard } from 'src/common/guards';
+import { size } from 'lodash';
+import { where } from 'sequelize';
 
 @ApiTags('Enquiries')
 @Controller('enquiries')
@@ -192,26 +194,90 @@ export class EnquiriesController {
     }
   }
 
-  // Filter Enquiries By Purpose
+  // // Filter and Paginate Enquiries By Purpose
   @UseGuards(AuthGuard('jwt'))
   @ApiBearerAuth('defaultBearerAuth')
-  @Get('enquiry/filterPuropse')
+  @Public()
+  @UseGuards(AtGuard)
+  @ApiOperation({ summary: 'Filter Enquiry By The Purpose' })
   @ApiQuery({
     name: 'keyword',
     enum: Purpose,
     required: false,
   })
-  @Public()
-  @UseGuards(AtGuard)
-  @ApiOperation({ summary: 'Filter Enquiry By The Purpose' })
-  async purposefilter(@Query('keyword') keyword: string) {
+
+  @ApiQuery({
+    name: 'page',
+    type: 'number',
+    required: false
+  })
+  @ApiQuery({
+    name: 'size',
+    type: 'number',
+    required: false
+  })
+  
+  @Get('enquiry/filterPuropse')
+  async purposefilter(
+    @Query('keyword') keyword: string,
+    @Query('page') page: number,
+    @Query('size') size: number
+   ) {
     try {
-      return await this?.enquiriesService?.purposefilter(keyword);
+
+      let currentPage =Util?.Checknegative(page)
+      if(currentPage){
+        return Util?.handleErrorRespone('Enquiry current Page cannot be negative')
+      }
+
+      // return await this?.enquiriesService?.purposefilter(keyword);
+   
+
+    const { limit, offset } = Util?.getPagination(page,size)
+
+    let queryOption: any = {
+      limit,
+      offset,
+      attributes:{exclude:['createdAt','updatedAt','deletedAt']}
+    }
+
+    if (keyword) {
+      queryOption = {
+        ...queryOption,
+        where: {
+          purpose: keyword,
+        },
+      };
+    }
+
+    const allQueries = await Enquiry?.findAndCountAll(queryOption)
+
+     let result = Util?.getPagingData(allQueries,page,limit)
+     console.log(result)
+
+     const dataResult = {...result}
+     return Util?.handleSuccessRespone(dataResult, 'Enquiries Purpose Data Filtered Successfully.',)
+ 
     } catch (error) {
       console.log(error);
       return Util?.handleFailResponse('Filtering By Purpose failed');
     }
+
   }
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
   // Search Enquiry
   @UseGuards(AuthGuard('jwt'))
@@ -236,3 +302,65 @@ export class EnquiriesController {
     }
   }
 }
+
+
+
+
+  // // Filter Enquiries By Purpose
+  // // @UseGuards(AuthGuard('jwt'))
+  // // @ApiBearerAuth('defaultBearerAuth')
+  // @Public()
+  // @UseGuards(AtGuard)
+  // @ApiOperation({ summary: 'Filter Enquiry By The Purpose' })
+  // @ApiQuery({
+  //   name: 'keyword',
+  //   enum: Purpose,
+  //   required: false,
+  // })
+  // @ApiQuery({
+  //   name: 'page',
+  //   type: 'number',
+  //   required: false,
+  // })
+  // @ApiQuery({
+  //   name: 'size',
+  //   type: 'number',
+  //   required: false,
+  // })
+  // @Get('enquiry/filterPuropse')
+  // async purposefilter(@Query('keyword') keyword: string,
+  //    @Query('page') page:number,
+  //    @Query() size:number
+  // ) {
+  //   try {
+
+  //     let currentPage = Util?.Checknegative(page);
+  //     if(currentPage){
+  //       return Util?.handleErrorRespone('Enquiry current page cannot be negative')
+  //     }
+
+  //     const { limit, offset } = Util?.getPagination( page, size );
+
+  //     await this?.enquiriesService?.purposefilter(keyword);
+  //     const filtedQueries = await Enquiry?.findAndCountAll({
+  //       limit,
+  //       offset,
+  //       attributes: { exclude: ['createdAt', 'updatedAt', 'deletedAt'] },
+  //     });
+
+  //     let result = Util?.getPagingData(filtedQueries, page, limit);
+  //     console.log(result);
+
+
+  //     const dataResult = { ...result };
+  //     return Util?.handleSuccessRespone(
+  //       dataResult,
+  //       'Enquiries Purpose Data Filtered Successfully.',
+  //     );
+
+  //     // return await this?.enquiriesService?.purposefilter(keyword);
+  //   } catch (error) {
+  //     console.log(error);
+  //     return Util?.handleFailResponse('Filtering By Purpose failed');
+  //   }
+  // }

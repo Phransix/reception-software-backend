@@ -29,6 +29,7 @@ import { LoginDTO } from 'src/guard/auth/loginDTO';
 const fs = require('fs');
 import { JwtService } from '@nestjs/jwt';
 import { ConfigService } from '@nestjs/config';
+import { LogOutDTO } from 'src/guard/auth/logoutDto';
 
 @Injectable()
 export class OrganizationService {
@@ -197,6 +198,7 @@ export class OrganizationService {
         ...org_data,
         tokens,
       };
+
 
       //  Send user data and tokens
       return Util?.handleSuccessRespone(orgDetails, 'Login successfully.');
@@ -429,8 +431,8 @@ export class OrganizationService {
     });
   }
 
-  // async findOneByuseFullname(fullname: string): Promise<Organization>{
-  //   return await this.organizationModel.findOne<Organization>({where: {fullname}})
+  // async findByPassword(password: string): Promise<Organization>{
+  //   return await this.organizationModel.findOne<Organization>({where: {password}})
   // }
 
   async findOneByEmail(email: string): Promise<Organization> {
@@ -482,4 +484,39 @@ export class OrganizationService {
       refresh_token: rt,
     };
   }
+
+
+
+
+// // Logout Organization
+//  async logout (logout: LogOutDTO){
+//   const {password} = logout
+//   try {
+
+//     const user = await User.findByPassword(password);
+
+//     if (!user) {
+//       return null; // User not found
+//     }
+
+//     const passwordMatches = await argon.verify(
+//       user.password,
+//       password
+//     )
+
+    
+//   } catch (error) {
+//     console.log(error)
+//     return Util?.getTryCatchMsg(error)
+//   }
+//  }
+
+
+
+
+
+
+
+
+
 }

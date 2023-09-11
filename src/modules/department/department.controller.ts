@@ -44,7 +44,8 @@ export class DepartmentController {
       return newDepart;
     } catch (error) {
       console.log(error);
-      return Util?.handleTryCatchError(Util?.getTryCatchMsg(error));
+      return Util?.getTryCatchMsg(error)
+      // return Util?.handleTryCatchError(Util?.getTryCatchMsg(error));
     }
   }
 
@@ -92,7 +93,8 @@ export class DepartmentController {
       );
     } catch (error) {
       console.log(error);
-      return Util?.handleTryCatchError(Util?.getTryCatchMsg(error));
+      return Util?.getTryCatchMsg(error)
+      // return Util?.handleTryCatchError(Util?.getTryCatchMsg(error));
     }
   }
 
@@ -109,7 +111,8 @@ export class DepartmentController {
       return deptData;
     } catch (error) {
       console.log(error);
-      return Util?.handleTryCatchError(Util?.getTryCatchMsg(error));
+      return Util?.getTryCatchMsg(error)
+      // return Util?.handleTryCatchError(Util?.getTryCatchMsg(error));
     }
   }
 
@@ -125,7 +128,14 @@ export class DepartmentController {
     @Param('departmentId') departmentId: string,
     @Body() updateDepartmentDto: UpdateDepartmentDto,
   ) {
-    return this.departmentService.update(departmentId, updateDepartmentDto);
+    try {
+
+      return this.departmentService.update(departmentId, updateDepartmentDto);
+      
+    } catch (error) {
+      console.log(error)
+      return Util?.getTryCatchMsg(error)
+    }
   }
 
   // Delete Department
@@ -136,7 +146,15 @@ export class DepartmentController {
   @UseGuards(AtGuard)
   @Delete(':departmentId')
   remove(@Param('departmentId') departmentId: string) {
-    return this.departmentService.remove(departmentId);
+    try {
+      
+      return this.departmentService.remove(departmentId);
+
+    } catch (error) {
+      console.log(error)
+      return Util?.getTryCatchMsg(error)
+    }
+    
   }
 
   // Search Department
@@ -158,7 +176,8 @@ export class DepartmentController {
       );
     } catch (error) {
       console.log(error);
-      return Util?.handleFailResponse('No matching Department data found.');
+      // return Util?.handleFailResponse('No matching Department data found.');
+      return Util?.getTryCatchMsg(error)
     }
   }
 }
