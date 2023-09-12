@@ -16,6 +16,7 @@ import {
   ApiBearerAuth,
   ApiOperation,
   ApiQuery,
+  ApiResponse,
   ApiTags,
 } from '@nestjs/swagger';
 import * as Util from '../../utils/index';
@@ -31,6 +32,11 @@ export class DepartmentController {
   constructor(private readonly departmentService: DepartmentService) {}
 
   // Create New Department
+  @ApiResponse({
+    status: 201,
+    description: 'The record has been successfully created.',
+  })
+  @ApiResponse({ status: 403, description: 'Forbidden.' })
   @UseGuards(AuthGuard('jwt'))
   @ApiBearerAuth('defaultBearerAuth')
   @ApiOperation({ summary: 'Create New Department' })
@@ -44,7 +50,7 @@ export class DepartmentController {
       return newDepart;
     } catch (error) {
       console.log(error);
-      return Util?.getTryCatchMsg(error)
+      return Util?.getTryCatchMsg(error);
       // return Util?.handleTryCatchError(Util?.getTryCatchMsg(error));
     }
   }
@@ -93,7 +99,7 @@ export class DepartmentController {
       );
     } catch (error) {
       console.log(error);
-      return Util?.getTryCatchMsg(error)
+      return Util?.getTryCatchMsg(error);
       // return Util?.handleTryCatchError(Util?.getTryCatchMsg(error));
     }
   }
@@ -111,7 +117,7 @@ export class DepartmentController {
       return deptData;
     } catch (error) {
       console.log(error);
-      return Util?.getTryCatchMsg(error)
+      return Util?.getTryCatchMsg(error);
       // return Util?.handleTryCatchError(Util?.getTryCatchMsg(error));
     }
   }
@@ -129,12 +135,10 @@ export class DepartmentController {
     @Body() updateDepartmentDto: UpdateDepartmentDto,
   ) {
     try {
-
       return this.departmentService.update(departmentId, updateDepartmentDto);
-      
     } catch (error) {
-      console.log(error)
-      return Util?.getTryCatchMsg(error)
+      console.log(error);
+      return Util?.getTryCatchMsg(error);
     }
   }
 
@@ -147,14 +151,11 @@ export class DepartmentController {
   @Delete(':departmentId')
   async remove(@Param('departmentId') departmentId: string) {
     try {
-      
       return this.departmentService.remove(departmentId);
-
     } catch (error) {
-      console.log(error)
-      return Util?.getTryCatchMsg(error)
+      console.log(error);
+      return Util?.getTryCatchMsg(error);
     }
-    
   }
 
   // Search Department
@@ -177,7 +178,7 @@ export class DepartmentController {
     } catch (error) {
       console.log(error);
       // return Util?.handleFailResponse('No matching Department data found.');
-      return Util?.getTryCatchMsg(error)
+      return Util?.getTryCatchMsg(error);
     }
   }
 }

@@ -75,8 +75,10 @@ export class UsersController {
     try {
       const user = await this.usersService.login(loginDto);
       if (!user) {
-        throw new HttpException('Invalid Credential', HttpStatus.UNAUTHORIZED);
-      } else {
+        // throw new HttpException('Invalid Credential', HttpStatus.UNAUTHORIZED);
+        return Util?.handleFailResponse('Invalid Credentials')
+      } 
+      else {
         return user;
       }
     } catch (error) {
@@ -198,7 +200,6 @@ export class UsersController {
       return userUpdateImg;
     } catch (error) {
       console.log(error);
-      // return Util?.handleTryCatchError('User Profile Photo Not updated');
       return Util?.getTryCatchMsg(error);
     }
   }
@@ -221,10 +222,8 @@ export class UsersController {
         changePassDTO,
       );
       return userPass;
-      // console.log(userPass)
     } catch (error) {
       console.log(error);
-      // return Util?.handleTryCatchError('Failed to change password');
       return Util?.getTryCatchMsg(error);
     }
   }
@@ -259,7 +258,6 @@ export class UsersController {
       let res = await this.usersService.resetPassword(token, data);
       return res;
     } catch (error) {
-      // return Util?.handleTryCatchError('Failed to reset Password');
       return Util?.getTryCatchMsg(error);
     }
   }

@@ -21,8 +21,7 @@ export class DepartmentService {
     try {
       console.log(createDepartmentDto);
       await Abstract?.createData(Department, createDepartmentDto);
-      return Util?.handleSuccessRespone(
-        Util?.SuccessRespone,
+      return Util?.handleCreateSuccessRespone(
         'Department created successfully.',
       );
     } catch (error) {
@@ -88,8 +87,7 @@ export class DepartmentService {
 
       Object.assign(data, updateDepartmentDto);
       await data.save();
-      return Util?.handleSuccessRespone(
-        Util?.SuccessRespone,
+      return Util?.SuccessRespone(
         `Department with this #${departmentId} updated successfully`,
       );
     } catch (error) {
@@ -111,8 +109,7 @@ export class DepartmentService {
 
       Object.assign(data);
       await data.destroy();
-      return Util?.handleSuccessRespone(
-        Util?.SuccessRespone,
+      return Util?.SuccessRespone(
         `Department with this #${departmentId}  deleted successfully`,
       );
     } catch (error) {
