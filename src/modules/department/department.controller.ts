@@ -124,7 +124,7 @@ export class DepartmentController {
   @UseGuards(AtGuard)
   @UseGuards(DoesDeptExist)
   @Patch(':departmentId')
-  update(
+  async update(
     @Param('departmentId') departmentId: string,
     @Body() updateDepartmentDto: UpdateDepartmentDto,
   ) {
@@ -145,7 +145,7 @@ export class DepartmentController {
   @Public()
   @UseGuards(AtGuard)
   @Delete(':departmentId')
-  remove(@Param('departmentId') departmentId: string) {
+  async remove(@Param('departmentId') departmentId: string) {
     try {
       
       return this.departmentService.remove(departmentId);

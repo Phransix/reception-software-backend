@@ -103,7 +103,8 @@ export class OrganizationService {
     } catch (error) {
       t.rollback();
       console.log(error);
-      return Util?.handleFailResponse(' Organization Registration Failed');
+      // return Util?.handleFailResponse(' Organization Registration Failed');
+      return Util?.getTryCatchMsg(error)
     }
   }
 
@@ -142,8 +143,8 @@ export class OrganizationService {
       );
     } catch (error) {
       console.log(error);
-      // return Util?.handleTryCatchError(Util?.getTryCatchMsg(error));
-      return Util?.handleFailResponse('Accounts verification failed');
+      return Util?.getTryCatchMsg(error)
+      // return Util?.handleFailResponse('Accounts verification failed');
     }
   }
 
@@ -204,7 +205,8 @@ export class OrganizationService {
       return Util?.handleSuccessRespone(orgDetails, 'Login successfully.');
     } catch (error) {
       console.error(error);
-      return Util?.handleFailResponse('User Login Failed ');
+      // return Util?.handleFailResponse('User Login Failed ');
+      return Util?.getTryCatchMsg(error)
     }
   }
 
@@ -223,8 +225,8 @@ export class OrganizationService {
       );
     } catch (error) {
       console.log(error);
-      // return Util?.handleTryCatchError(Util?.getTryCatchMsg(error));
-      return Util?.handleFailResponse('Failed, Organizations Data Not Found');
+      return Util?.getTryCatchMsg(error)
+      // return Util?.handleFailResponse('Failed, Organizations Data Not Found');
     }
   }
 
@@ -248,8 +250,8 @@ export class OrganizationService {
       );
     } catch (error) {
       console.log(error);
-      return Util?.handleFailResponse('Failed, Organization Data Not Found');
-      // return Util?.checkIfRecordNotFound
+      return Util?.getTryCatchMsg(error)
+      // return Util?.handleFailResponse('Failed, Organization Data Not Found');
     }
   }
 
@@ -310,9 +312,7 @@ export class OrganizationService {
       if (rollImage) {
         await this?.imgHelper?.unlinkFile(rollImage);
       }
-      return Util?.handleFailResponse(
-        `Organization with this #${organizationId} not Updated `,
-      );
+      return Util?.getTryCatchMsg(error)
     }
   }
 
@@ -381,9 +381,7 @@ export class OrganizationService {
       if (rollImage) {
         await this?.imgHelper?.unlinkFile(rollImage);
       }
-      return Util?.handleFailResponse(
-        `Organization with this #${organizationId} and Image not Updated`,
-      );
+      return Util?.getTryCatchMsg(error)
     }
   }
 
@@ -403,7 +401,7 @@ export class OrganizationService {
       );
     } catch (error) {
       console.log(error);
-      return Util?.handleFailResponse('Failed, Organizations Data Not Deleted');
+      return Util?.getTryCatchMsg(error)
     }
   }
 
@@ -419,7 +417,8 @@ export class OrganizationService {
         'Organization restored successfully.',
       );
     } catch (error) {
-      return Util.handleForbiddenExceptionResponses('Data Not Restored');
+      // return Util.handleForbiddenExceptionResponses('Data Not Restored');
+      return Util?.getTryCatchMsg(error)
     }
   }
 
@@ -484,39 +483,5 @@ export class OrganizationService {
       refresh_token: rt,
     };
   }
-
-
-
-
-// // Logout Organization
-//  async logout (logout: LogOutDTO){
-//   const {password} = logout
-//   try {
-
-//     const user = await User.findByPassword(password);
-
-//     if (!user) {
-//       return null; // User not found
-//     }
-
-//     const passwordMatches = await argon.verify(
-//       user.password,
-//       password
-//     )
-
-    
-//   } catch (error) {
-//     console.log(error)
-//     return Util?.getTryCatchMsg(error)
-//   }
-//  }
-
-
-
-
-
-
-
-
 
 }

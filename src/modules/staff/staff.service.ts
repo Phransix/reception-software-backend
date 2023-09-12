@@ -56,7 +56,8 @@ export class StaffService {
 
     } catch (error) {
       console.log(error)
-      return Util?.handleFailResponse('Staff Registration Failed.');
+      return Util?.getTryCatchMsg(error)
+      // return Util?.handleFailResponse('Staff Registration Failed.');
     }
   };
 
@@ -75,7 +76,8 @@ export class StaffService {
 
     } catch (error) {
       console.log(error)
-      return Util?.handleFailResponse('Failed, Staffs Data Not Found');
+      return Util?.getTryCatchMsg(error)
+      // return Util?.handleFailResponse('Failed, Staffs Data Not Found');
     }
   }
 
@@ -97,7 +99,8 @@ export class StaffService {
 
     } catch (error) {
       console.log(error)
-      return Util?.handleFailResponse('Failed ,Staff Not Found ');
+      // return Util?.handleFailResponse('Failed ,Staff Not Found ');
+      return Util?.getTryCatchMsg(error)
     }
 
   }
@@ -161,7 +164,7 @@ export class StaffService {
        if (rollImage) {
         await this?.staffImgHelper?.unlinkFile(rollImage)
       }
-      return Util?.handleFailResponse(`Staff with this #${staffId} not Updated`)
+      return Util?.getTryCatchMsg(error)
     }
   }
 
@@ -223,7 +226,7 @@ export class StaffService {
       if (rollImage) {
         await this?.staffImgHelper?.unlinkFile(rollImage)
       }
-      return Util?.handleFailResponse(`Staff with this #${staffId} and Image not Updated`)
+      return Util?.getTryCatchMsg(error)
     }
   }
 
@@ -242,11 +245,11 @@ export class StaffService {
 
     } catch (error) {
       console.log(error)
-      return Util?.handleFailResponse(`Staff with this #${staffId} not Deleted`)
+      return Util?.getTryCatchMsg(error)
     }
   }
 
-  // Search Enquiry Data
+  // Search Staff by FullName 
   async searchStaff(keyword: string) {
     try {
       const staffData = await this?.staffModel.findAll({
@@ -269,7 +272,7 @@ export class StaffService {
 
     } catch (error) {
       console.log(error)
-      return Util?.handleFailResponse('The Staff data does not exist')
+      return Util?.getTryCatchMsg(error)
     }
   }
 
