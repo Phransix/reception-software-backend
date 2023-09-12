@@ -73,6 +73,14 @@ module.exports = {
         allowNull: true,
         defaultValue: null,
       },
+      visitStatus: {
+        type: Sequelize.ENUM('Signed In', 'Signed Out'),
+        allowNull: true,
+        defaultValue: 'Signed Out',
+        validate: {
+          isIn: [['Signed In','Signed Out']]
+        }
+      },
       createdAt: {
         type: Sequelize.DATE,
         allowNull: false,

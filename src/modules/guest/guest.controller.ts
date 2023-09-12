@@ -64,8 +64,13 @@ export class GuestController {
       const guest = await Guest.findAndCountAll({
         limit,
         offset,
-        attributes: { exclude: ['createdAt', 'updatedAt', 'deletedAt'] }
+        attributes: { exclude: ['signInDate','signInTime','signOutTime','visitStatus','createdAt', 'updatedAt', 'deletedAt'] }
       });
+
+      if (!guest || guest.count === 0) {
+        return Util?.handleFailResponse('No matching data found.');
+      }
+
       const response = Util.getPagingData(guest, page, limit)
       console.log(response)
       // return this.deliveryService.findAll();

@@ -64,6 +64,11 @@ export class PurposeController {
         offset,
         attributes: { exclude: ['createdAt', 'updatedAt', 'deletedAt'] }
       });
+
+      if (!purpose || purpose.count === 0) {
+        return Util?.handleFailResponse('No matching data found.');
+      }
+
       const response = Util.getPagingData(purpose, page, limit)
       console.log(response)
       let newOne = { ...response }

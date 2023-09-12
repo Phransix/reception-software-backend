@@ -71,6 +71,10 @@ export class DeliveryController {
         attributes: { exclude: ['createdAt', 'updatedAt', 'deletedAt'] }
       });
 
+      if (!delivery || delivery.count === 0) {
+        return Util?.handleFailResponse('No matching data found.');
+      }
+
       const response = Util.getPagingData(delivery, page,limit)
       console.log(response)
       let newOne = { ...response}

@@ -7,8 +7,6 @@ import * as Abstract from '../../utils/abstract'
 import * as Util from '../../utils/index'
 import { guestOpDTO } from 'src/guard/auth/guestOpDTO';
 import { Op, Sequelize } from 'sequelize';
-import { TIME } from 'sequelize';
-import { timeInterval } from 'rxjs';
 
 
 
@@ -119,8 +117,38 @@ export class GuestService {
     if (!guestNo || !cCode) {
       throw new HttpException('Guest Sign In failed', HttpStatus.UNAUTHORIZED)
     } else {
-      await Guest.update({signInDate: new Date()}, {where: {phoneNumber:phoneNumber}});
-      await Guest.update({signInTime: currentTime}, {where: {phoneNumber:phoneNumber}});
+      await Guest.update(
+        {
+          signInDate: new Date()
+        }, { 
+            where: 
+          { 
+            phoneNumber:phoneNumber
+          }
+        }
+      );
+      await Guest.update(
+        {
+          signInTime: currentTime
+        }, 
+        {
+          where: 
+          {
+            phoneNumber:phoneNumber
+          }
+        }
+      );
+      await Guest.update(
+        {
+          visitStatus: 'Signed In'
+        }, 
+        {
+          where: 
+          {
+            phoneNumber:phoneNumber
+          }
+        }
+      );
       return Util?.handleSuccessRespone(guest_data,"Guest Sign In Success")
     }
   }
@@ -133,7 +161,26 @@ export class GuestService {
     if (!guest || !cCode) {
       throw new HttpException('Guest Sign Out failed', HttpStatus.UNAUTHORIZED)
     } else {
-      await Guest.update({signOutTime: currentTime}, {where: {phoneNumber:phoneNumber}});
+      await Guest.update(
+        {
+          signOutTime: currentTime
+        }, 
+        {
+          where: {
+            phoneNumber:phoneNumber
+          }
+        }
+      );
+      await Guest.update(
+        {
+          visitStatus: 'Signed Out'
+        }, 
+        {
+          where: {
+            phoneNumber:phoneNumber
+          }
+        }
+      )
       throw new HttpException('Guest Sign Out successful', HttpStatus.ACCEPTED)
     }
   }

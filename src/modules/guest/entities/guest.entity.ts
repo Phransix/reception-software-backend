@@ -93,6 +93,13 @@ export class Guest extends Model<Guest>{
     signOutTime: string
 
     @Column({
+        type: DataType.ENUM,
+        values: ['Signed In', 'Signed Out'],
+        allowNull: true,
+    })
+    visitStatus: string;
+
+    @Column({
         type: DataType.DATE,
         allowNull: true,
         defaultValue: null

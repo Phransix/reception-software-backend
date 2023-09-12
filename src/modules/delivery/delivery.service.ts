@@ -1,4 +1,4 @@
-import { BadRequestException, HttpException, HttpStatus, Injectable, NotAcceptableException } from '@nestjs/common';
+import { HttpException, HttpStatus, Injectable, NotAcceptableException } from '@nestjs/common';
 import { CreateDeliveryDto} from './dto/create-delivery.dto';
 import { UpdateDeliveryDto } from './dto/update-delivery.dto';
 import { InjectModel } from '@nestjs/sequelize';
@@ -23,7 +23,7 @@ export class DeliveryService {
       return Util?.handleCreateSuccessRespone( "Delivery Created Successfully");
     } catch (error) {
       // console.error(error)
-      return Util?.handleTryCatchError(Util?.getTryCatchMsg(error))
+      return Util?.getTryCatchMsg(error)
     }
   }
 
@@ -108,7 +108,7 @@ export class DeliveryService {
     try {
       const deliver = await Delivery.findAll({
         where:{
-          createdAt: 
+          createdAt:
           {
           [Op.between]: [startDate, endDate],
         }

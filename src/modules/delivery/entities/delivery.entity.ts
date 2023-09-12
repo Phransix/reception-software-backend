@@ -133,9 +133,9 @@ export class Delivery extends Model <Delivery> {
 
     @Column ({
       type: DataType.DATEONLY,
-      allowNull: true
+      allowNull: false
   })
-  createdAt: Date
+  createdAt: string
 
     @Column ({
         type: DataType.DATE,
