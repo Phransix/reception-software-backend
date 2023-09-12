@@ -305,8 +305,8 @@ export class EnquiriesController {
   }
 
   // Search Enquiry
-  // @UseGuards(AuthGuard('jwt'))
-  // @ApiBearerAuth('defaultBearerAuth')
+  @UseGuards(AuthGuard('jwt'))
+  @ApiBearerAuth('defaultBearerAuth')
   @ApiOperation({ summary: 'Search Enquirer Name  From The System' })
   @Public()
   @ApiQuery({

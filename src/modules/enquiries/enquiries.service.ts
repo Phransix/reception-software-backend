@@ -20,8 +20,7 @@ export class EnquiriesService {
     try {
       console.log(createEnquiryDto);
       await Abstract?.createData(Enquiry, createEnquiryDto);
-      return Util?.handleSuccessRespone(
-        Util?.SuccessRespone,
+      return Util?.handleCreateSuccessRespone(
         'Enquiry created successfully.',
       );
     } catch (error) {
@@ -85,8 +84,7 @@ export class EnquiriesService {
 
       Object.assign(enquiry, updateEnquiryDto);
       await enquiry.save();
-      return Util?.handleSuccessRespone(
-        Util?.SuccessRespone,
+      return Util?.SuccessRespone(
         'Enquiry updated successfully.',
       );
     } catch (error) {
@@ -106,8 +104,7 @@ export class EnquiriesService {
 
       Object.assign(enquiry);
       await enquiry.destroy();
-      return Util?.handleSuccessRespone(
-        Util?.SuccessRespone,
+      return Util?.SuccessRespone(
         'Enquiry deleted successfully.',
       );
     } catch (error) {
@@ -172,7 +169,7 @@ export class EnquiriesService {
     }
   }
 
-  // Search Enquiry Data
+  // Search Enquiry Data by Full Name
   async searchEnquiry(keyword: string) {
     try {
       const enquiryData = await this?.enquiryModel.findAll({

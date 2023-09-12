@@ -22,6 +22,7 @@ import {
   ApiBearerAuth,
   ApiOperation,
   ApiQuery,
+  ApiResponse,
   ApiTags,
 } from '@nestjs/swagger';
 import * as Util from '../../utils/index';
@@ -40,6 +41,10 @@ export class OrganizationController {
   ) {}
 
   // Create New Organization
+  @ApiResponse({
+    status: 201,
+    description: 'The record has been successfully created.',
+  })
   @ApiOperation({ summary: 'create New Organization' })
   @Public()
   @UseGuards(DoesOrgExist)
@@ -51,7 +56,6 @@ export class OrganizationController {
     } catch (error) {
       console.log(error);
       return Util?.getTryCatchMsg(error);
-      // return Util?.handleFailResponse('Registration Failed');
     }
   }
 
@@ -68,7 +72,6 @@ export class OrganizationController {
     } catch (error) {
       console.log(error);
       return Util?.getTryCatchMsg(error);
-      // return Util?.handleFailResponse('Accounts verification failed');
     }
   }
 
@@ -91,6 +94,10 @@ export class OrganizationController {
   }
 
   // Get All Organization In the System
+  @ApiResponse({
+    status: 200,
+    description: 'The record has been retrieve successfully.',
+  })
   @UseGuards(AuthGuard('jwt'))
   @ApiBearerAuth('defaultBearerAuth')
   @ApiOperation({ summary: 'Get All Organization' })
@@ -135,7 +142,6 @@ export class OrganizationController {
     } catch (error) {
       console.log(error);
       return Util?.getTryCatchMsg(error);
-      // return Util?.handleFailResponse('Failed, Organizations Data Not Found');
     }
   }
 
@@ -154,7 +160,6 @@ export class OrganizationController {
     } catch (error) {
       console.log(error);
       return Util?.getTryCatchMsg(error);
-      // return Util?.handleFailResponse('Failed, Organization Data Not Found');
     }
   }
 
@@ -178,7 +183,6 @@ export class OrganizationController {
     } catch (error) {
       console.log(error);
       return Util?.getTryCatchMsg(error);
-      // return Util?.handleFailResponse('Failed to update Organization Data');
     }
   }
 

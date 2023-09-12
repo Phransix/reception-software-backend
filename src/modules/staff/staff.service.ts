@@ -99,7 +99,6 @@ export class StaffService {
 
     } catch (error) {
       console.log(error)
-      // return Util?.handleFailResponse('Failed ,Staff Not Found ');
       return Util?.getTryCatchMsg(error)
     }
 
@@ -158,7 +157,7 @@ export class StaffService {
           where: { id: staff_data?.id }
         })
 
-      return Util?.handleCreateSuccessRespone(`Staff with this #${staffId} updated successfully`)
+      return Util?.SuccessRespone(`Staff with this #${staffId} updated successfully`)
 
     } catch (error) {
        if (rollImage) {

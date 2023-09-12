@@ -138,7 +138,7 @@ export class OrganizationService {
         { isVerified: true },
         { where: { id: orgToken?.id, email: orgToken?.email } },
       );
-      return Util?.SuccessRespone(
+      return Util?.handleCreateSuccessRespone(
         'Your account has been successfully verified',
       );
     } catch (error) {
@@ -202,7 +202,7 @@ export class OrganizationService {
 
 
       //  Send user data and tokens
-      return Util?.handleSuccessRespone(orgDetails, 'Login successfully.');
+      return Util?.handleCustonCreateResponse(orgDetails, 'Login successfully.');
     } catch (error) {
       console.error(error);
       // return Util?.handleFailResponse('User Login Failed ');
@@ -412,8 +412,7 @@ export class OrganizationService {
         where: { organizationId },
       });
       console.log(organization);
-      return Util?.handleSuccessRespone(
-        Util?.SuccessRespone,
+      return Util?.handleCreateSuccessRespone(
         'Organization restored successfully.',
       );
     } catch (error) {
