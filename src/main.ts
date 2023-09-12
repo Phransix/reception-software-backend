@@ -6,7 +6,7 @@ import { urlencoded, json } from 'express';
 import { join } from 'path';
 import { ConfigService } from '@nestjs/config';
 import { ValidationPipe } from '@nestjs/common';
-import { HttpExceptionFilter } from 'src/filters/http-exception.filter';
+// import { HttpExceptionFilter } from 'src/filters/http-exception.filter';
 
 
 async function bootstrap() {
@@ -16,10 +16,10 @@ async function bootstrap() {
 
   app.useGlobalPipes(
     new ValidationPipe({
-    whitelist:true
+    // whitelist:true
   })
   )
-  app.useGlobalFilters(new HttpExceptionFilter());
+  // app.useGlobalFilters(new HttpExceptionFilter());
 
   app.setGlobalPrefix('api/v1');
   app.use(json({ limit: '50mb' }));

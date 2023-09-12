@@ -71,11 +71,9 @@ export class UsersService {
         profilePhoto: user_image,
         password: hash,
       };
-     
 
-      const user = await this.userModel?.create({ ...insertQry });
+      await this.userModel?.create({ ...insertQry });
 
-    
       return Util?.handleCreateSuccessRespone('User Created Successfully');
     } catch (error) {
       console.error(error);
@@ -92,7 +90,7 @@ export class UsersService {
       const org = await Organization.findOne({ where: { email } });
 
       if (!user) {
-        return Util.handleFailResponse('Invaid email or password');
+      return Util.handleFailResponse('Invalid email or password');
       }
 
       const passwordMatches = await argon.verify(
@@ -100,8 +98,10 @@ export class UsersService {
         loginDto.password,
       );
       if (!passwordMatches) {
-        return Util.handleFailResponse('Invaid email or password');
+        return Util.handleFailResponse('Invalid email or password');
       }
+    
+      
 
       // Check if the oraganiazation is verified
       if (org?.isVerified != true)
