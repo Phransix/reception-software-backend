@@ -22,8 +22,8 @@ export class GuestService {
     try {
 
       await Abstract?.createData(Guest, createGuestDto)
-      const {phoneNumber} = createGuestDto
-      const guestData = await this.GuestModel.findOne({where:{phoneNumber}})
+      const { phoneNumber } = createGuestDto
+      const guestData = await this.GuestModel.findOne({ where: { phoneNumber } })
 
       let guest_data = {
         guestId: guestData?.guestId,
@@ -100,10 +100,10 @@ export class GuestService {
     }
   }
 
-  async guestSignIn (guestOpDTO:guestOpDTO){
-    const {phoneNumber,countryCode} = guestOpDTO
-    const guestNo = await this.GuestModel.findOne({where:{phoneNumber}})
-    const cCode = await this.GuestModel.findOne({where:{countryCode}})
+  async guestSignIn(guestOpDTO: guestOpDTO) {
+    const { phoneNumber, countryCode } = guestOpDTO
+    const guestNo = await this.GuestModel.findOne({ where: { phoneNumber } })
+    const cCode = await this.GuestModel.findOne({ where: { countryCode } })
     const currentTime = new Date().toLocaleTimeString();
     let guest_data = {
       guestId: guestNo?.guestId,
@@ -115,69 +115,69 @@ export class GuestService {
     }
 
     if (!guestNo || !cCode) {
-      throw new HttpException('Guest Sign In failed', HttpStatus.UNAUTHORIZED)
+      throw new HttpException('Invalid phone number or country code', HttpStatus.UNAUTHORIZED)
     } else {
       await Guest.update(
         {
           signInDate: new Date()
-        }, { 
-            where: 
-          { 
-            phoneNumber:phoneNumber
-          }
+        }, {
+        where:
+        {
+          phoneNumber: phoneNumber
         }
+      }
       );
       await Guest.update(
         {
           signInTime: currentTime
-        }, 
+        },
         {
-          where: 
+          where:
           {
-            phoneNumber:phoneNumber
+            phoneNumber: phoneNumber
           }
         }
       );
       await Guest.update(
         {
           visitStatus: 'Signed In'
-        }, 
+        },
         {
-          where: 
+          where:
           {
-            phoneNumber:phoneNumber
+            phoneNumber: phoneNumber
           }
         }
       );
-      return Util?.handleSuccessRespone(guest_data,"Guest Sign In Success")
+      return Util?.handleSuccessRespone(guest_data, "Guest Sign In Success")
     }
   }
 
-  async guestSignOut (guestOpDTO:guestOpDTO){
-    const {phoneNumber,countryCode} = guestOpDTO
-    const guest = await this.GuestModel.findOne({where:{phoneNumber}})
-    const cCode = await this.GuestModel.findOne({where:{countryCode}})
+  async guestSignOut(guestOpDTO: guestOpDTO) {
+    const { phoneNumber, countryCode } = guestOpDTO
+    const guest = await this.GuestModel.findOne({ where: { phoneNumber } })
+    const cCode = await this.GuestModel.findOne({ where: { countryCode } })
     const currentTime = new Date().toLocaleTimeString();
     if (!guest || !cCode) {
-      throw new HttpException('Guest Sign Out failed', HttpStatus.UNAUTHORIZED)
+      throw new HttpException('Invalid phone number or country code', HttpStatus.UNAUTHORIZED)
     } else {
       await Guest.update(
         {
           signOutTime: currentTime
-        }, 
+        },
         {
           where: {
-            phoneNumber:phoneNumber
+            phoneNumber: phoneNumber
           }
         }
       );
       await Guest.update(
         {
           visitStatus: 'Signed Out'
-        }, 
+        },
         {
           where: {
-            phoneNumber:phoneNumber
+            phoneNumber: phoneNumber
           }
         }
       )
@@ -206,18 +206,18 @@ export class GuestService {
   }
 
   // Search by Custom Date Range
-  async customGuestSearch(startDate: Date, endDate: Date){
+  async customGuestSearch(startDate: Date, endDate: Date) {
     try {
       const guestSearch = await Guest.findAll({
-        where:{
-          createdAt: 
+        where: {
+          createdAt:
           {
-            [Op.between]: [startDate,endDate],
+            [Op.between]: [startDate, endDate],
           }
         },
-        attributes: {exclude: ['createdAt','updated', 'deletedAt']}
+        attributes: { exclude: ['createdAt', 'updated', 'deletedAt'] }
       });
-      if (!guestSearch || guestSearch.length === 0){
+      if (!guestSearch || guestSearch.length === 0) {
         return Util?.handleFailResponse("No matching Enquiry data found.")
       }
       return guestSearch
@@ -228,58 +228,85 @@ export class GuestService {
   }
 
 
-    // Filter Guest by Gender
-    async genderFilter (keyword: string){
-      try {
-        let filter = {}
+  // Filter Guest by Gender
+  async genderFilter(keyword: string) {
+    try {
+      let filter = {}
 
-        if(keyword != null){
-          filter = {gender : keyword}
-        }
-
-        const filterCheck = await this.GuestModel.findAll({
-          where: {
-            ...filter
-          },
-        });
-        if (!filterCheck) {
-          throw new HttpException('Gender not found', HttpStatus.NOT_FOUND)
-        }
-        return filterCheck
-      } catch (error) {
-        console.log(error)
-        return Util?.getTryCatchMsg(error)
+      if (keyword != null) {
+        filter = { gender: keyword }
       }
-    }
 
-    // Filter Guest by Organizationid
-    async orgGuestFilter (keyword : string){
-      try {
-        let filter = {}
-
-        if(keyword != null){
-          filter = {organizationId : keyword}
-        }
-
-        const filterCheck = await this.GuestModel.findAll({
-          where: {
-            ...filter
-          },
-        });
-        if (!filterCheck) {
-          throw new HttpException('Organization not found', HttpStatus.NOT_FOUND)
-        }
-        return filterCheck
-
-      } catch (error) {
-        console.log(error)
-        return Util?.getTryCatchMsg(error)
+      const filterCheck = await this.GuestModel.findAll({
+        where: {
+          ...filter
+        },
+      });
+      if (!filterCheck) {
+        throw new HttpException('Gender not found', HttpStatus.NOT_FOUND)
       }
+      return filterCheck
+    } catch (error) {
+      console.log(error)
+      return Util?.getTryCatchMsg(error)
     }
+  }
 
-    async findOneByPhoneNumber(phoneNumber: string): Promise<Guest> {
-      return await this.GuestModel.findOne<Guest>({ where: { phoneNumber } })
+  // Filter Guest by Organizationid
+  async orgGuestFilter(keyword: string) {
+    try {
+      let filter = {}
+
+      if (keyword != null) {
+        filter = { organizationId: keyword }
+      }
+
+      const filterCheck = await this.GuestModel.findAll({
+        where: {
+          ...filter
+        },
+      });
+      if (!filterCheck) {
+        throw new HttpException('Organization not found', HttpStatus.NOT_FOUND)
+      }
+      return filterCheck
+
+    } catch (error) {
+      console.log(error)
+      return Util?.getTryCatchMsg(error)
     }
+  }
+
+  // Filter Guest By visit status
+  async guestVisitStatus(keyword: string) {
+    try {
+      let filter = {}
+
+      if (keyword != null) {
+        filter = { visitStatus: keyword }
+      }
+
+      const filterStatus = await this.GuestModel.findAll({
+        where: {
+          ...filter
+        },
+      });
+
+      if (!filterStatus) {
+        throw new HttpException('Visit status not found', HttpStatus.NOT_FOUND)
+      }
+
+      return filterStatus
+    } catch (error) {
+      console.log(error)
+      return Util?.getTryCatchMsg(error)
+    }
+  }
+
+  async findOneByPhoneNumber(phoneNumber: string): Promise<Guest> {
+    return await this.GuestModel.findOne<Guest>({ where: { phoneNumber } })
+  }
+
 
 }
 

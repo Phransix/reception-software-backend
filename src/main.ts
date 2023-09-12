@@ -6,13 +6,21 @@ import { urlencoded, json } from 'express';
 import { join } from 'path';
 import { ConfigService } from '@nestjs/config';
 import { ValidationPipe } from '@nestjs/common';
+import { HttpExceptionFilter } from 'src/filters/http-exception.filter';
 
 
 async function bootstrap() {
 
   const app = await NestFactory.create<NestExpressApplication>(AppModule);
   app.enableCors();
-  app.useGlobalPipes(new ValidationPipe())
+
+  app.useGlobalPipes(
+    new ValidationPipe({
+    whitelist:true
+  })
+  )
+  app.useGlobalFilters(new HttpExceptionFilter());
+
   app.setGlobalPrefix('api/v1');
   app.use(json({ limit: '50mb' }));
   app.use(urlencoded({ extended: true, limit: '50mb' }));

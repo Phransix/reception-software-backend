@@ -1,4 +1,4 @@
-import { HttpException, HttpStatus, Injectable, NotAcceptableException } from '@nestjs/common';
+import { HttpException, HttpStatus, Injectable, NotAcceptableException, NotFoundException } from '@nestjs/common';
 import { CreateDeliveryDto} from './dto/create-delivery.dto';
 import { UpdateDeliveryDto } from './dto/update-delivery.dto';
 import { InjectModel } from '@nestjs/sequelize';
@@ -48,7 +48,7 @@ export class DeliveryService {
         attributes: {exclude:['createdAt','updatedAt']}
        });
       if (!delivery) {
-        throw new NotAcceptableException('The Delivery does not exist')
+        throw new NotAcceptableException('The Delivery data does not exist')
       }
       return Util?.handleSuccessRespone(delivery, "Delivery Data retrieved successfully")
     } catch (error) {
@@ -61,7 +61,7 @@ export class DeliveryService {
     try {
       const delivery = await Delivery.findOne({ where: { deliveryId } });
       if (!delivery) {
-        throw new NotAcceptableException('Delivery Data not Found')
+        throw new NotFoundException("Delivery data not found")
       }
       Object.assign(delivery, updateDeliveryDto);
       await delivery.save()
@@ -77,7 +77,7 @@ export class DeliveryService {
     try {
       const delivery = await Delivery.findByPk(deliveryId);
       if (!delivery) {
-        throw new NotAcceptableException("Delivery Data does not exist")
+        throw new NotFoundException("Delivery Data does not exist")
       }
       await delivery.destroy()
       return Util?.handleSuccessRespone(Util?.SuccessRespone, "Delivery Data deleted Successfully")

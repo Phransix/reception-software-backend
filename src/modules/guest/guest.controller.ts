@@ -1,6 +1,6 @@
 import { Controller, Get, Post, Body, Patch, Param, Delete, HttpException, HttpStatus, UseGuards, Query } from '@nestjs/common';
 import { GuestService } from './guest.service';
-import { CreateGuestDto, Gender } from './dto/create-guest.dto';
+import { CreateGuestDto, Gender, status } from './dto/create-guest.dto';
 import { UpdateGuestDto } from './dto/update-guest.dto';
 import { ApiBearerAuth, ApiOperation, ApiQuery, ApiTags } from '@nestjs/swagger';
 import * as Util from '../../utils/index'
@@ -64,7 +64,7 @@ export class GuestController {
       const guest = await Guest.findAndCountAll({
         limit,
         offset,
-        attributes: { exclude: ['signInDate','signInTime','signOutTime','visitStatus','createdAt', 'updatedAt', 'deletedAt'] }
+        attributes: { exclude: ['createdAt', 'updatedAt', 'deletedAt'] }
       });
 
       if (!guest || guest.count === 0) {
@@ -150,25 +150,38 @@ export class GuestController {
   @ApiOperation({summary:'Guest Sign In'})
   @Post('guestSignIn')
   async signIn (@Body() guestOpDTO: guestOpDTO){
-    const guest = this.guestService.guestSignIn(guestOpDTO)
-    if (!guest) {
-      throw new HttpException('Guest does not exist',HttpStatus.NOT_FOUND)
-    } else {
-      return guest
+
+    try {
+      const guest = this.guestService.guestSignIn(guestOpDTO)
+      if (!guest) {
+        throw new HttpException('Guest does not exist',HttpStatus.NOT_FOUND)
+      } else {
+        return guest
+      }
+    } catch (error) {
+      console.log(error)
+      return Util?.getTryCatchMsg(error)
     }
   }
+
 
   @Public()
   @ApiTags('Guest')
   @ApiOperation({summary:'Guest Sign Out'})
   @Post('guestSignOut')
   async signOut (@Body() guestOpDTO:guestOpDTO){
-    const guest = this.guestService.guestSignOut(guestOpDTO)
-    if (!guest) {
-      throw new HttpException('Guest does not exist',HttpStatus.NOT_FOUND)
-    } else {
-      return guest
+    try {
+      const guest = this.guestService.guestSignOut(guestOpDTO)
+      if (!guest) {
+        throw new HttpException('Guest does not exist',HttpStatus.NOT_FOUND)
+      } else {
+        return guest
+      }
+    } catch (error) {
+      console.log(error)
+      return Util?.getTryCatchMsg(error)
     }
+
   }
 
   // Search Guest by Firstnames
@@ -268,6 +281,30 @@ async orgGuest (
     console.log(error)
     return Util?.getTryCatchMsg(error)
     }
+}
+
+
+// Filter by Guest Visit Status
+@UseGuards(AuthGuard('jwt'))
+@ApiBearerAuth('defaultBearerAuth')
+@ApiQuery({
+  name: 'keyword',
+  enum: status,
+  required: false
+})
+@Public()
+@UseGuards(AtGuard)
+@ApiTags('Guest')
+@ApiOperation({summary: 'Filter Guest By Status'})
+@Get('guest/filterStatus')
+async filterGuestStatus (
+  @Query('keyword') keyword: string
+) {
+  try {
+    return this.guestService.guestVisitStatus(keyword)
+  } catch (error) {
+    console.log(error)
+  }
 }
 
 

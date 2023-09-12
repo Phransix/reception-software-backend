@@ -6,6 +6,13 @@ export enum Gender {
     FEMALE = 'female'
 }
 
+export enum status {
+    SIGNIN = 'Signed In',
+    SIGNOUT = 'Signed Out'
+}
+
+
+
 export class CreateGuestDto {
     static createdAt(createdAt: any) {
       throw new Error('Method not implemented.');
