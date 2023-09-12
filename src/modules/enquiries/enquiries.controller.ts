@@ -25,6 +25,7 @@ import { Public } from 'src/common/decorators/public.decorator';
 import { AtGuard } from 'src/common/guards';
 import { size } from 'lodash';
 import { where } from 'sequelize';
+import { type } from 'os';
 
 @ApiTags('Enquiries')
 @Controller('enquiries')
@@ -44,7 +45,7 @@ export class EnquiriesController {
       return new_Enquiry;
     } catch (error) {
       console.log(error);
-      return Util?.handleTryCatchError(Util?.getTryCatchMsg(error));
+       return Util?.getTryCatchMsg(error)
     }
   }
 
@@ -92,7 +93,7 @@ export class EnquiriesController {
       );
     } catch (error) {
       console.log(error);
-      return Util?.handleTryCatchError(Util?.getTryCatchMsg(error));
+      return Util?.getTryCatchMsg(error)
     }
   }
 
@@ -109,7 +110,7 @@ export class EnquiriesController {
       return enquiryData;
     } catch (error) {
       console.log(error);
-      return Util?.handleTryCatchError(Util?.getTryCatchMsg(error));
+      return Util?.getTryCatchMsg(error)
     }
   }
 
@@ -132,7 +133,7 @@ export class EnquiriesController {
       return enquiryUpdate;
     } catch (error) {
       console.log(error);
-      return Util?.handleTryCatchError(Util?.getTryCatchMsg(error));
+      return Util?.getTryCatchMsg(error)
     }
   }
 
@@ -156,7 +157,7 @@ export class EnquiriesController {
       return enquiryDelete;
     } catch (error) {
       console.log(error);
-      return Util?.handleTryCatchError(Util?.getTryCatchMsg(error));
+      return Util?.getTryCatchMsg(error)
     }
   }
 
@@ -175,22 +176,60 @@ export class EnquiriesController {
     type: 'Date',
     required: false,
   })
+  @ApiQuery({
+    name: 'page',
+    type: 'number',
+    required: false,
+  })
+  @ApiQuery({
+    name: 'size',
+    type: 'number',
+    required: false,
+  })
   @UseGuards(AtGuard)
   @ApiTags('Enquiries')
   @Get('enquiry/filterEnquiry')
   async findEnquiryByDateRange(
     @Query('startDate') startDate: Date,
     @Query('endDate') endDate: Date,
+    @Query('page') page: number,
+    @Query('size') size: number,
   ) {
     try {
-      const enquiryData = await this.enquiriesService.filterByCustomRange(
-        startDate,
-        endDate,
+      let enquiryData = { startDate, endDate };
+
+      let currentPage = Util?.Checknegative(page);
+      if (currentPage) {
+        return Util?.handleErrorRespone(
+          'Enquiry current page cannot be negative',
+        );
+      }
+      const { limit, offset } = Util?.getPagination(page, size);
+
+      const allQueries = await Enquiry.findAndCountAll({
+        limit,
+        offset,
+        attributes: { exclude: ['createdAt', 'updatedAt', 'deletedAt'] },
+      });
+
+      const result = Util?.getPagingData(allQueries, page, limit);
+
+      const dataResult = {
+        ...enquiryData,
+        where: {
+          pagination:result
+        },
+        
+      };
+
+      return Util?.handleSuccessRespone(
+        dataResult,
+        'Enquiries data retrieve successfully',
       );
-      return enquiryData;
     } catch (error) {
       console.log(error);
-      return Util?.handleFailResponse('Enquiry data not found');
+      // return Util?.handleFailResponse('Enquiry data not found');
+      return Util?.getTryCatchMsg(error)
     }
   }
 
@@ -205,84 +244,70 @@ export class EnquiriesController {
     enum: Purpose,
     required: false,
   })
-
   @ApiQuery({
     name: 'page',
     type: 'number',
-    required: false
+    required: false,
   })
   @ApiQuery({
     name: 'size',
     type: 'number',
-    required: false
+    required: false,
   })
-  
   @Get('enquiry/filterPuropse')
   async purposefilter(
     @Query('keyword') keyword: string,
     @Query('page') page: number,
-    @Query('size') size: number
-   ) {
+    @Query('size') size: number,
+  ) {
     try {
-
-      let currentPage =Util?.Checknegative(page)
-      if(currentPage){
-        return Util?.handleErrorRespone('Enquiry current Page cannot be negative')
+      let currentPage = Util?.Checknegative(page);
+      if (currentPage) {
+        return Util?.handleErrorRespone(
+          'Enquiry current Page cannot be negative',
+        );
       }
 
       // return await this?.enquiriesService?.purposefilter(keyword);
-   
 
-    const { limit, offset } = Util?.getPagination(page,size)
+      const { limit, offset } = Util?.getPagination(page, size);
 
-    let queryOption: any = {
-      limit,
-      offset,
-      attributes:{exclude:['createdAt','updatedAt','deletedAt']}
-    }
-
-    if (keyword) {
-      queryOption = {
-        ...queryOption,
-        where: {
-          purpose: keyword,
-        },
+      let queryOption: any = {
+        limit,
+        offset,
+        attributes: { exclude: ['createdAt', 'updatedAt', 'deletedAt'] },
       };
-    }
 
-    const allQueries = await Enquiry?.findAndCountAll(queryOption)
+      if (keyword) {
+        queryOption = {
+          ...queryOption,
+          where: {
+            purpose: keyword,
+          },
+        };
+      }
 
-     let result = Util?.getPagingData(allQueries,page,limit)
-     console.log(result)
+      const allQueries = await Enquiry?.findAndCountAll(queryOption);
 
-     const dataResult = {...result}
-     return Util?.handleSuccessRespone(dataResult, 'Enquiries Purpose Data Filtered Successfully.',)
- 
+      let result = Util?.getPagingData(allQueries, page, limit);
+      console.log(result);
+
+      const dataResult = { ...result };
+      return Util?.handleSuccessRespone(
+        dataResult,
+        'Enquiries Purpose Data Filtered Successfully.',
+      );
     } catch (error) {
       console.log(error);
-      return Util?.handleFailResponse('Filtering By Purpose failed');
+      // return Util?.handleFailResponse('Filtering By Purpose failed');
+      return Util?.getTryCatchMsg(error)
     }
-
   }
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
   // Search Enquiry
-  @UseGuards(AuthGuard('jwt'))
-  @ApiBearerAuth('defaultBearerAuth')
-  @ApiOperation({ summary: 'Search Enquiry Data From The System' })
+  // @UseGuards(AuthGuard('jwt'))
+  // @ApiBearerAuth('defaultBearerAuth')
+  @ApiOperation({ summary: 'Search Enquirer Name  From The System' })
   @Public()
   @ApiQuery({
     name: 'keyword',
@@ -291,76 +316,21 @@ export class EnquiriesController {
   })
   @UseGuards(AtGuard)
   @Get('enquiry/search')
-  async searchEnquiry(@Query('keyword') keyword: string) {
+  async searchEnquiry(
+    @Query('keyword') keyword: string,
+    
+  ) {
     try {
+
       return this?.enquiriesService?.searchEnquiry(
         keyword.charAt(0).toUpperCase(),
       );
+
+      
     } catch (error) {
       console.log(error);
-      return Util?.handleFailResponse('No matching Enquiry data found.');
+      return Util?.getTryCatchMsg(error)
     }
   }
 }
 
-
-
-
-  // // Filter Enquiries By Purpose
-  // // @UseGuards(AuthGuard('jwt'))
-  // // @ApiBearerAuth('defaultBearerAuth')
-  // @Public()
-  // @UseGuards(AtGuard)
-  // @ApiOperation({ summary: 'Filter Enquiry By The Purpose' })
-  // @ApiQuery({
-  //   name: 'keyword',
-  //   enum: Purpose,
-  //   required: false,
-  // })
-  // @ApiQuery({
-  //   name: 'page',
-  //   type: 'number',
-  //   required: false,
-  // })
-  // @ApiQuery({
-  //   name: 'size',
-  //   type: 'number',
-  //   required: false,
-  // })
-  // @Get('enquiry/filterPuropse')
-  // async purposefilter(@Query('keyword') keyword: string,
-  //    @Query('page') page:number,
-  //    @Query() size:number
-  // ) {
-  //   try {
-
-  //     let currentPage = Util?.Checknegative(page);
-  //     if(currentPage){
-  //       return Util?.handleErrorRespone('Enquiry current page cannot be negative')
-  //     }
-
-  //     const { limit, offset } = Util?.getPagination( page, size );
-
-  //     await this?.enquiriesService?.purposefilter(keyword);
-  //     const filtedQueries = await Enquiry?.findAndCountAll({
-  //       limit,
-  //       offset,
-  //       attributes: { exclude: ['createdAt', 'updatedAt', 'deletedAt'] },
-  //     });
-
-  //     let result = Util?.getPagingData(filtedQueries, page, limit);
-  //     console.log(result);
-
-
-  //     const dataResult = { ...result };
-  //     return Util?.handleSuccessRespone(
-  //       dataResult,
-  //       'Enquiries Purpose Data Filtered Successfully.',
-  //     );
-
-  //     // return await this?.enquiriesService?.purposefilter(keyword);
-  //   } catch (error) {
-  //     console.log(error);
-  //     return Util?.handleFailResponse('Filtering By Purpose failed');
-  //   }
-  // }

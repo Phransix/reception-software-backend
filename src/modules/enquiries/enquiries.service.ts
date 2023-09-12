@@ -27,7 +27,7 @@ export class EnquiriesService {
     } catch (error) {
       console.log(error);
       // return Util
-      return Util?.handleFailResponse('Enquiry registration failed');
+      return Util?.getTryCatchMsg(error)
     }
   }
 
@@ -45,7 +45,8 @@ export class EnquiriesService {
       );
     } catch (error) {
       console.log(error);
-      return Util?.handleTryCatchError(Util?.getTryCatchMsg(error));
+      // return Util
+      return Util?.getTryCatchMsg(error)
     }
   }
 
@@ -69,7 +70,8 @@ export class EnquiriesService {
       );
     } catch (error) {
       console.log(error);
-      return Util?.handleErrorRespone('Failed, Enquiry data not found');
+      // return Util?.handleErrorRespone('Failed, Enquiry data not found');
+      return Util?.getTryCatchMsg(error)
     }
   }
 
@@ -89,7 +91,8 @@ export class EnquiriesService {
       );
     } catch (error) {
       console.log(error);
-      return Util?.handleErrorRespone('Enquiry data Updare Failed');
+      // return Util?.handleErrorRespone('Enquiry data Updare Failed');
+      return Util?.getTryCatchMsg(error)
     }
   }
 
@@ -109,7 +112,7 @@ export class EnquiriesService {
       );
     } catch (error) {
       console.log(error);
-      return Util?.handleTryCatchError(Util?.getTryCatchMsg(error));
+      return Util?.getTryCatchMsg(error)
     }
   }
 
@@ -134,7 +137,8 @@ export class EnquiriesService {
       );
     } catch (error) {
       console.log(error);
-      return Util?.handleErrorRespone('Enquiry data search failed');
+      // return Util?.handleErrorRespone('Enquiry data search failed');
+      return Util?.getTryCatchMsg(error)
     }
   }
 
@@ -163,7 +167,8 @@ export class EnquiriesService {
       );
     } catch (error) {
       console.log(error);
-      return Util?.handleFailResponse('Filtering By Purpose failed');
+      // return Util?.handleFailResponse('Filtering By Purpose failed');
+      return Util?.getTryCatchMsg(error)
     }
   }
 
@@ -190,31 +195,9 @@ export class EnquiriesService {
       );
     } catch (error) {
       console.log(error);
-      return Util?.handleFailResponse('The Enquiry data does not exist');
+      return Util?.getTryCatchMsg(error)
     }
   }
 
-  // async searchEnquiry(keyword: string) {
-  //   try {
-  //     const enquiryData = await this?.enquiryModel.findAll({
-  //       where: {
-  //         [Op.or]: [
-  //           { enquirerFullName: { [Op.iLike]: `%${keyword}%` } },
-  //           { email: { [Op.iLike]: `%${keyword}%` } },
-  //           { phoneNumber: { [Op.iLike]: `%${keyword}%` } },
-  //           { purpose: { [Op.iLike]: `%${keyword}%` } },
-  //         ],
-  //       },
-  //     });
-
-  //     if (!enquiryData || enquiryData.length === 0) {
-  //       return Util?.handleFailResponse('No matching Enquiry data found.');
-  //     }
-
-  //     return Util?.handleSuccessRespone(enquiryData, 'Enquiries Data retrieved successfully.');
-  //   } catch (error) {
-  //     console.error(error);
-  //     return Util?.handleFailResponse('An error occurred while searching for Enquiry data.');
-  //   }
-  // }
+ 
 }

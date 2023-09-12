@@ -40,7 +40,12 @@ export class StaffController {
   @UseGuards(DoesStaffExist)
   @Post('registerNewStaff')
   create(@Body() createStaffDto: CreateStaffDto) {
-    return this.staffService.create(createStaffDto);
+    try {
+      return this.staffService.create(createStaffDto);
+    } catch (error) {
+      console.log(error);
+      return Util?.getTryCatchMsg(error);
+    }
   }
 
   // Get All Staffs
@@ -87,7 +92,7 @@ export class StaffController {
       );
     } catch (error) {
       console.log(error);
-      return Util?.handleFailResponse('Failed, Staffs Data Not Found');
+      return Util?.getTryCatchMsg(error);
     }
   }
 
@@ -98,8 +103,13 @@ export class StaffController {
   @Public()
   @UseGuards(AtGuard)
   @Get(':staffId')
-  findOne(@Param('staffId') staffId: string) {
-    return this.staffService.findOne(staffId);
+  async findOne(@Param('staffId') staffId: string) {
+    try {
+      return this.staffService.findOne(staffId);
+    } catch (error) {
+      console.log(error);
+      return Util?.getTryCatchMsg(error);
+    }
   }
 
   // Update Staff By Id
@@ -109,11 +119,16 @@ export class StaffController {
   @Public()
   @UseGuards(AtGuard)
   @Patch(':staffId')
-  update(
+  async update(
     @Param('staffId') staffId: string,
     @Body() updateStaffDto: UpdateStaffDto,
   ) {
-    return this.staffService.update(staffId, updateStaffDto);
+    try {
+      return this.staffService.update(staffId, updateStaffDto);
+    } catch (error) {
+      console.log(error);
+      return Util?.getTryCatchMsg(error);
+    }
   }
 
   // Update Staff Profile Photo
@@ -123,11 +138,16 @@ export class StaffController {
   @Public()
   @UseGuards(AtGuard)
   @Patch(':staffId/profilePhoto')
-  updateImg(
+  async updateImg(
     @Param('staffId') staffId: string,
     @Body() createStaffImgDto: CreateStaffImgDto,
   ) {
-    return this.staffService.updateImg(staffId, createStaffImgDto);
+    try {
+      return this.staffService.updateImg(staffId, createStaffImgDto);
+    } catch (error) {
+      console.log(error);
+      return Util?.getTryCatchMsg(error);
+    }
   }
 
   // Delete Staff By The Id
@@ -137,8 +157,13 @@ export class StaffController {
   @Public()
   @UseGuards(AtGuard)
   @Delete(':staffId')
-  remove(@Param('staffId') staffId: string) {
-    return this.staffService.remove(staffId);
+ async remove(@Param('staffId') staffId: string) {
+    try {
+      return this.staffService.remove(staffId);
+    } catch (error) {
+      console.log(error);
+      return Util?.getTryCatchMsg(error);
+    }
   }
 
   // Search Staff
@@ -158,7 +183,7 @@ export class StaffController {
       return this?.staffService?.searchStaff(keyword.charAt(0).toUpperCase());
     } catch (error) {
       console.log(error);
-      return Util?.handleFailResponse('No matching Staff data found.');
+      return Util?.getTryCatchMsg(error);
     }
   }
 }
