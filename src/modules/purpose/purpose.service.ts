@@ -15,13 +15,14 @@ export class PurposeService {
     @InjectModel(Purpose) private readonly PurposeModel: typeof Purpose
   ){}
 
+  // Create Purpose
   async create(createPurposeDto: CreatePurposeDto) {
     try {
       await Abstract?.createData(Purpose, createPurposeDto)
       return Util?.handleCreateSuccessRespone("Purpose Created Successfully")
     } catch (error) {
       console.log(error)
-      return Util?.getTryCatchMsg(error)
+      return Util?.handleGrpcReqError(Util?.getTryCatchMsg(error))
     }
   }
 
@@ -35,7 +36,7 @@ export class PurposeService {
       return Util?.handleSuccessRespone(purpose,"Purpose Data retrieved Successfully")
     } catch (error) {
       console.log(error)
-      return Util?.getTryCatchMsg(error)
+      return Util?.handleGrpcReqError(Util?.getTryCatchMsg(error))
         }
   }
 
@@ -50,7 +51,7 @@ export class PurposeService {
       return Util?.handleSuccessRespone(purpose,'Purpose Data retrieved Successfully')
     } catch (error) {
       console.log(error)
-      return Util?.getTryCatchMsg(error)    
+      return Util?.handleGrpcReqError(Util?.getTryCatchMsg(error)) 
     }
   }
 
@@ -65,13 +66,13 @@ export class PurposeService {
       return Util?.handleSuccessRespone(purpose, "Purpose Data updated Successfully")
     } catch (error) {
       console.log(error)
-      return Util?.getTryCatchMsg(error)
+      return Util?.handleGrpcReqError(Util?.getTryCatchMsg(error))
         }
   }
 
   async remove(purposeId: string) {
      try {
-      const purpose = await Purpose.findByPk(purposeId)
+      const purpose = await Purpose.findOne({ where: { purposeId } })
       if (!purpose) {
         throw new NotAcceptableException("Purpose Data does not exist")
       }
@@ -79,7 +80,7 @@ export class PurposeService {
       return Util?.handleSuccessRespone(Util?.SuccessRespone,"Purpose Data deleted successfully")
      } catch (error) {
       console.log(error)
-      return Util?.getTryCatchMsg(error)
+      return Util?.handleGrpcReqError(Util?.getTryCatchMsg(error))
          }
   }
 
@@ -105,7 +106,7 @@ export class PurposeService {
       return filterCheck
     } catch (error) {
       console.log(error)
-      return Util?.getTryCatchMsg(error)
+      return Util?.handleGrpcReqError(Util?.getTryCatchMsg(error))
         }
   }
 }

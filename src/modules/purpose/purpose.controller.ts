@@ -1,4 +1,4 @@
-import { Controller, Get, Post, Body, Patch, Param, Delete, UseGuards, Query, Req } from '@nestjs/common';
+import { Controller, Get, Post, Body, Patch, Param, Delete, UseGuards, Query, Req, HttpStatus } from '@nestjs/common';
 import { PurposeService } from './purpose.service';
 import { CreatePurposeDto, visitPurpose } from './dto/create-purpose.dto';
 import { UpdatePurposeDto } from './dto/update-purpose.dto';
@@ -9,10 +9,11 @@ import { AuthGuard } from '@nestjs/passport';
 import { Purpose } from './entities/purpose.entity';
 import { AtGuard } from 'src/common/guards/at.guard';
 import { ENUM } from 'sequelize';
+import { Guest } from '../guest/entities/guest.entity';
 
 @Controller('purpose')
 export class PurposeController {
-  constructor(private readonly purposeService: PurposeService) {}
+  constructor(private readonly purposeService: PurposeService) { }
 
   @Public()
   @ApiTags('Purpose')
@@ -20,13 +21,17 @@ export class PurposeController {
   @ApiOperation({summary:'Create New Purpose'})
   @Post('createPurpose')
   async create(@Body() createPurposeDto: CreatePurposeDto) {
-    // return this.purposeService.create(createPurposeDto);
+    let ErrorCode: number
     try {
       const purpose = await this.purposeService.create(createPurposeDto);
+    //   if (purpose?.status_code != HttpStatus.CREATED) {
+    //     ErrorCode = purpose?.status_code;
+    //     throw new Error (purpose?.message)
+    // } 
       return purpose
     } catch (error) {
       console.log(error)
-      return Util?.getTryCatchMsg(error)
+      return Util?.handleRequestError(Util?.getTryCatchMsg(error),ErrorCode)
     }
   }
 
@@ -77,7 +82,8 @@ export class PurposeController {
 
     } catch (error) {
       console.log(error)
-      return Util?.getTryCatchMsg(error)    }
+      return Util?.getTryCatchMsg(error) 
+       }
 
   }
 
@@ -90,12 +96,13 @@ export class PurposeController {
   @ApiOperation({summary:'Get Purpose By purposeId'})
   @Get(':purposeId')
   async findOne(@Param('purposeId') purposeId: string) {
+    let ErrorCode: number
     try {
       const purpose = await this.purposeService.findOne(purposeId);
       return purpose;
     } catch (error) {
       console.log(error)
-      return Util?.handleFailResponse('Purpose retrieval failed')
+      return Util?.handleRequestError(Util?.getTryCatchMsg(error),ErrorCode)
     }
   }
 
@@ -107,12 +114,13 @@ export class PurposeController {
   @ApiOperation({summary:'Update Purpose By purposeId'})
   @Patch(':purposeId')
   async update(@Param('purposeId') purposeId: string, @Body() updatePurposeDto: UpdatePurposeDto) {
+    let ErrorCode: number
     try {
       const purpose = this.purposeService.update(purposeId,updatePurposeDto)
       return purpose
     } catch (error) {
       console.log(error)
-      return Util?.getTryCatchMsg(error)
+      return Util?.handleRequestError(Util?.getTryCatchMsg(error),ErrorCode)
         }
   }
 
@@ -124,16 +132,17 @@ export class PurposeController {
   @ApiOperation({summary:'Remove Purpose By purposeId'})
   @Delete(':purposeId')
   async remove(@Param('purposeId') purposeId: string) {
+    let ErrorCode: number
     try {
       const purpose = await this.purposeService.findOne(purposeId);
-      if (!purpose) {
-        return Util?.handleFailResponse("Purpose data not found")
-      }
-      Object.assign(purpose)
-      (await purpose).destroy()
+    //   if (purpose?.status_code != HttpStatus.OK) {
+    //     ErrorCode = purpose?.status_code;
+    //     throw new Error(purpose?.message)
+    // } 
+      return purpose
     } catch (error) {
       console.log(error)
-      return Util?.getTryCatchMsg(error)
+      return Util?.handleRequestError(Util?.getTryCatchMsg(error),ErrorCode)
         }
   }
 
@@ -153,11 +162,13 @@ export class PurposeController {
   async purposeFilter(
     @Query('keyword') keyword: string
     ){
+      let ErrorCode
     try {
       return this.purposeService.guestPurpose(keyword);
     } catch (error) {
       console.log(error)
-      return Util?.getTryCatchMsg(error)    }
+      return Util?.handleRequestError(Util?.getTryCatchMsg(error),ErrorCode)
+     }
   }
 
   

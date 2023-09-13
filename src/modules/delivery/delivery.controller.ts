@@ -1,4 +1,4 @@
-import { Controller, Get, Post, Body, Patch, Param, Delete, Res, Query, Req, HttpException, HttpStatus, UseGuards } from '@nestjs/common';
+import { Controller, Get, Post, Body, Patch, Param, Delete, Query, HttpException, HttpStatus, UseGuards } from '@nestjs/common';
 import { DeliveryService } from './delivery.service';
 import { CreateDeliveryDto, Delivery_type } from './dto/create-delivery.dto';
 import { UpdateDeliveryDto } from './dto/update-delivery.dto';
@@ -17,6 +17,7 @@ export class DeliveryController {
   userService: any;
   constructor(private readonly deliveryService: DeliveryService) { }
 
+  // Create Delivery
   @UseGuards(AuthGuard('jwt'))
   @ApiBearerAuth('defaultBearerAuth')
   @Public()
@@ -25,16 +26,21 @@ export class DeliveryController {
   @ApiOperation({ summary: 'Create New Delivery' })
   @Post('createDelivery')
   async createDelivery(@Body() createDeliveryDto: CreateDeliveryDto) {
+    let ErrorCode: number
     try {
-      let new_Delivery = await Delivery.create(createDeliveryDto);
+      let new_Delivery = await this.deliveryService.create(createDeliveryDto);
+      if (new_Delivery?.status_code != HttpStatus.CREATED) {
+        ErrorCode = new_Delivery?.status_code;
+        throw new Error(new_Delivery?.message)
+    } 
       return Util?.handleCreateSuccessRespone("Delivery created successfully")
     } catch (error) {
       console.log(error)
-      return Util?.getTryCatchMsg(error)
+      return Util?.handleRequestError(Util?.getTryCatchMsg(error),ErrorCode)
     }
   }
 
-
+  // Get All Delivery
   @UseGuards(AuthGuard('jwt'))
   @ApiBearerAuth('defaultBearerAuth')
   @Public()
@@ -84,6 +90,7 @@ export class DeliveryController {
     }
   }
 
+  // Get Delivery by deliveryId
   @UseGuards(AuthGuard('jwt'))
   @ApiBearerAuth('defaultBearerAuth')
   @Public()
@@ -92,16 +99,22 @@ export class DeliveryController {
   @ApiOperation({ summary: 'Get All Delivery By deliveryId' })
   @Get(':deliveryId')
   async findOne(@Param('deliveryId') deliveryId: string) {
+    let ErrorCode: number
     try {
       let delivery = await this.deliveryService.findOne(deliveryId);
+      if (delivery?.status_code != HttpStatus.OK) {
+        ErrorCode = delivery?.status_code;
+        throw new Error(delivery?.message)
+    } 
       return delivery;
 
     } catch (error) {
       console.log(error)
-      return Util?.getTryCatchMsg(error)
+      return Util?.handleRequestError(Util?.getTryCatchMsg(error),ErrorCode)
     }
   }
 
+  // Update Delivery By Id
   @UseGuards(AuthGuard('jwt'))
   @ApiBearerAuth('defaultBearerAuth')
   @Public()
@@ -109,16 +122,23 @@ export class DeliveryController {
   @ApiTags('Delivery')
   @ApiOperation({ summary: 'Update Delivery By deliveryId' })
   @Patch(':deliveryId')
-  update(@Param('deliveryId') deliveryId: string, @Body() updateDeliveryDto: UpdateDeliveryDto) {
+  async update(@Param('deliveryId') deliveryId: string, @Body() updateDeliveryDto: UpdateDeliveryDto) {
+    let ErrorCode: number
     try {
-      const delivery_Update = this.deliveryService.update(deliveryId, updateDeliveryDto)
+      const delivery_Update = await this.deliveryService.update(deliveryId, updateDeliveryDto)
+      if (delivery_Update?.status_code != HttpStatus.OK) {
+        ErrorCode = delivery_Update?.status_code;
+        throw new Error(delivery_Update?.message)
+    } 
       return delivery_Update
     } catch (error) {
       console.log(error);
-      return Util?.getTryCatchMsg(error)
+      return Util?.handleRequestError(Util?.getTryCatchMsg(error),ErrorCode)
     }
   }
 
+
+  // Delete Delivery By deliveryId
   @UseGuards(AuthGuard('jwt'))
   @ApiBearerAuth('defaultBearerAuth')
   @Public()
@@ -127,22 +147,18 @@ export class DeliveryController {
   @ApiOperation({ summary: 'Remove Delivery By deliveryId' })
   @Delete(':deliveryId')
   async remove(@Param('deliveryId') deliveryId: string) {
-
+  let ErrorCode: number
     try {
 
-      const delivery = await Delivery.findOne({ where: { deliveryId } })
-      if (!delivery) {
-        return Util?.handleFailResponse("Delivery data not found")
-      }
-
-      Object.assign(delivery)
-      await delivery.destroy()
-      return Util?.handleSuccessRespone(Util?.SuccessRespone, "Delivery data deleted successfully.")
-
-
+      const delivery = await this.deliveryService.remove(deliveryId)
+      if (delivery?.status_code != HttpStatus.OK) {
+        ErrorCode = delivery?.status_code;
+        throw new Error(delivery?.message)
+    } 
+    return delivery
     } catch (error) {
       console.log(error)
-      return Util?.getTryCatchMsg(error)
+      return Util?.handleRequestError(Util?.getTryCatchMsg(error),ErrorCode)
 
     }
 
@@ -157,14 +173,24 @@ export class DeliveryController {
 @ApiOperation({ summary: 'Confirm Delivery By Receptionist' })
 @Post('deliveryConfirmation')
 async staffConfirm(@Body() deliveryConfirmDTO: deliveryConfirmDTO) {
-  const deliveryTo = this.deliveryService.deliveryConfirm(deliveryConfirmDTO)
-  if (!deliveryTo) {
-    throw new HttpException('Staff does not exist', HttpStatus.NOT_FOUND)
+  let ErrorCode: number
+  try {
+    const deliveryTo = await this.deliveryService.deliveryConfirm(deliveryConfirmDTO)
+    if (deliveryTo?.status_code != HttpStatus.OK) {
+      ErrorCode = deliveryTo?.status_code;
+      throw new Error(deliveryTo?.message)
+  } 
+    if (!deliveryTo) {
+      return Util?.handleFailResponse('Staff does not exist')
+    }
+    else {
+      return deliveryTo
+    }
+  } catch (error) {
+    console.log(error)
+    return Util?.handleRequestError(Util?.getTryCatchMsg(error),ErrorCode)
   }
-  else {
-    return deliveryTo
-    // throw new HttpException('Item Delivered to staff successfully',HttpStatus.ACCEPTED)
-  }
+
 }
 
 // Filter by Date Range
@@ -190,12 +216,17 @@ async findDeliveryByDateRange(
   @Query('startDate') startDate: Date,
   @Query('endDate') endDate: Date,
 ) {
+  let ErrorCode: number
   try {
     const deliver = await this.deliveryService.findByDateRange(startDate, endDate)
+    if (deliver?.status_code != HttpStatus.OK) {
+      ErrorCode = deliver?.status_code;
+      throw new Error(deliver?.message)
+  } 
     return deliver
   } catch (error) {
     console.log(error)
-    return Util?.getTryCatchMsg(error)
+    return Util?.handleRequestError(Util?.getTryCatchMsg(error),ErrorCode)
   }
 }
 
@@ -215,11 +246,17 @@ async findDeliveryByDateRange(
 async deliveryTypeFilter (
   @Query('keyword') keyword: string
 ) {
+  let ErrorCode: number
   try {
-    return this.deliveryService.deliveryType(keyword)
+    const delivery = await this.deliveryService.deliveryType(keyword)
+    if (delivery?.status_code != HttpStatus.OK) {
+      ErrorCode = delivery?.status_code;
+      throw new Error(delivery?.message)
+  } 
+  return delivery
   } catch (error) {
     console.log(error)
-    return Util?.getTryCatchMsg(error)
+    return Util?.handleRequestError(Util?.getTryCatchMsg(error),ErrorCode)
   }
 
 }

@@ -36,7 +36,7 @@ export class GuestService {
       return Util?.handleSuccessRespone(guest_data, "Guest Created Successfully")
     } catch (error) {
       console.log(error)
-      return Util?.getTryCatchMsg(error)
+      return Util?.handleGrpcTryCatchError(Util?.getTryCatchMsg(error));
     }
   }
 
@@ -50,7 +50,7 @@ export class GuestService {
       return Util?.handleSuccessRespone(guest, "Guest Data retrieval Successful")
     } catch (error) {
       console.log(error)
-      return Util?.getTryCatchMsg(error)
+      return Util?.handleGrpcTryCatchError(Util?.getTryCatchMsg(error));
     }
   }
 
@@ -61,12 +61,12 @@ export class GuestService {
         attributes: { exclude: ['createdAt', 'updatedAt'] }
       });
       if (!guest) {
-        throw new NotAcceptableException('The guest does not exist')
+        return Util?.handleFailResponse('The guest does not exist')
       }
       return Util?.handleSuccessRespone(guest, 'Guest data retrieved successfully')
     } catch (error) {
       console.log(error)
-      return Util?.getTryCatchMsg(error)
+      return Util?.handleGrpcTryCatchError(Util?.getTryCatchMsg(error));
     }
   }
 
@@ -74,119 +74,129 @@ export class GuestService {
     try {
       const guest = await Guest.findOne({ where: { guestId } });
       if (!guest) {
-        throw new NotAcceptableException('Guest data not found')
+        return Util?.handleFailResponse('Guest data not found')
       }
       Object.assign(guest, updateGuestDto)
       await guest.save()
       return Util?.handleSuccessRespone(guest, 'Guest data updated successfully')
     } catch (error) {
       console.log(error)
-      return Util?.getTryCatchMsg(error)
+      return Util?.handleGrpcTryCatchError(Util?.getTryCatchMsg(error));
     }
   }
 
   async remove(guestId: string) {
     try {
-      const guest = await Guest.findByPk(guestId);
+      const guest = await Guest.findOne({ where: { guestId } });
       if (!guest) {
-        throw new NotAcceptableException("Guest Data does not exist")
+        return Util?.handleFailResponse("Guest Data does not exist")
       }
       await guest.destroy()
       return Util?.handleSuccessRespone(Util?.SuccessRespone, "Guest Data deleted Successfully")
 
     } catch (error) {
       console.log(error)
-      return Util?.getTryCatchMsg(error)
+      return Util?.handleGrpcTryCatchError(Util?.getTryCatchMsg(error));
     }
   }
 
   async guestSignIn(guestOpDTO: guestOpDTO) {
-    const { phoneNumber, countryCode } = guestOpDTO
-    const guestNo = await this.GuestModel.findOne({ where: { phoneNumber } })
-    const cCode = await this.GuestModel.findOne({ where: { countryCode } })
-    const currentTime = new Date().toLocaleTimeString();
-    let guest_data = {
-      guestId: guestNo?.guestId,
-      firstName: guestNo?.firstName,
-      lastname: guestNo?.lastName,
-      gender: guestNo?.gender,
-      countryCode: guestNo?.countryCode,
-      phoneNumber: guestNo?.phoneNumber,
-      signInDate: guestNo?.signInDate,
-      signInTime: guestNo?.signInTime
-    }
-
-    if (!guestNo || !cCode) {
-      throw new HttpException('Invalid phone number or country code', HttpStatus.UNAUTHORIZED)
-    } else {
-      await Guest.update(
-        {
-          signInDate: new Date()
-        }, {
-        where:
-        {
-          phoneNumber: phoneNumber
-        }
+    try {
+      const { phoneNumber, countryCode } = guestOpDTO
+      const guestNo = await this.GuestModel.findOne({ where: { phoneNumber } })
+      const cCode = await this.GuestModel.findOne({ where: { countryCode } })
+      const currentTime = new Date().toLocaleTimeString();
+      let guest_data = {
+        guestId: guestNo?.guestId,
+        firstName: guestNo?.firstName,
+        lastname: guestNo?.lastName,
+        gender: guestNo?.gender,
+        countryCode: guestNo?.countryCode,
+        phoneNumber: guestNo?.phoneNumber,
+        signInDate: guestNo?.signInDate,
+        signInTime: guestNo?.signInTime
       }
-      );
-      await Guest.update(
-        {
-          signInTime: currentTime
-        },
-        {
+  
+      if (!guestNo || !cCode) {
+        return Util?.handleFailResponse('Invalid phone number or country code')
+      } else {
+        await Guest.update(
+          {
+            signInDate: new Date()
+          }, {
           where:
           {
             phoneNumber: phoneNumber
           }
         }
-      );
-      await Guest.update(
-        {
-          visitStatus: 'Signed In'
-        },
-        {
-          where:
+        );
+        await Guest.update(
           {
-            phoneNumber: phoneNumber
+            signInTime: currentTime
+          },
+          {
+            where:
+            {
+              phoneNumber: phoneNumber
+            }
           }
-        }
-      );
-      return Util?.handleSuccessRespone(guest_data, "Guest Sign In Success")
+        );
+        await Guest.update(
+          {
+            visitStatus: 'Signed In'
+          },
+          {
+            where:
+            {
+              phoneNumber: phoneNumber
+            }
+          }
+        );
+        return Util?.handleSuccessRespone(guest_data, "Guest Sign In Success")
+      }
+    } catch (error) {
+      console.log(error)
+      return Util?.handleGrpcTryCatchError(Util?.getTryCatchMsg(error));
     }
   }
 
   async guestSignOut(guestOpDTO: guestOpDTO) {
-    const { phoneNumber, countryCode } = guestOpDTO
-    const guest = await this.GuestModel.findOne({ where: { phoneNumber } })
-    const cCode = await this.GuestModel.findOne({ where: { countryCode } })
-    const currentTime = new Date().toLocaleTimeString();
-    let guest_data = {
-      signOutTime: guest?.signOutTime
-    }
-    if (!guest || !cCode) {
-      throw new HttpException('Invalid phone number or country code', HttpStatus.UNAUTHORIZED)
-    } else {
-      await Guest.update(
-        {
-          signOutTime: currentTime
-        },
-        {
-          where: {
-            phoneNumber: phoneNumber
+    try {
+      const { phoneNumber, countryCode } = guestOpDTO
+      const guest = await this.GuestModel.findOne({ where: { phoneNumber } })
+      const cCode = await this.GuestModel.findOne({ where: { countryCode } })
+      const currentTime = new Date().toLocaleTimeString();
+      let guest_data = {
+        signOutTime: guest?.signOutTime
+      }
+      if (!guest || !cCode) {
+        return Util?.handleFailResponse('Invalid phone number or country code')
+      } else {
+        await Guest.update(
+          {
+            signOutTime: currentTime
+          },
+          {
+            where: {
+              phoneNumber: phoneNumber
+            }
           }
-        }
-      );
-      await Guest.update(
-        {
-          visitStatus: 'Signed Out'
-        },
-        {
-          where: {
-            phoneNumber: phoneNumber
+        );
+        await Guest.update(
+          {
+            visitStatus: 'Signed Out'
+          },
+          {
+            where: {
+              phoneNumber: phoneNumber
+            }
           }
-        }
-      )
-      return Util?.handleSuccessRespone(guest_data, "Guest Sign Out Success")
+        )
+        return Util?.handleSuccessRespone(guest_data, "Guest Sign Out Success")
+      }
+    } catch (error) {
+      console.log(error)
+      return Util?.handleGrpcTryCatchError(Util?.getTryCatchMsg(error));
     }
   }
 
@@ -201,12 +211,12 @@ export class GuestService {
         },
       });
       if (!guest) {
-        throw new HttpException('Guest not found', HttpStatus.NOT_FOUND)
+        return Util?.handleFailResponse('Guest not found')
       }
       return guest
     } catch (error) {
       console.log(error)
-      return Util?.getTryCatchMsg(error)
+      return Util?.handleGrpcTryCatchError(Util?.getTryCatchMsg(error));
     }
   }
 
@@ -228,7 +238,7 @@ export class GuestService {
       return guestSearch
     } catch (error) {
       console.log(error)
-      return Util?.getTryCatchMsg(error)
+      return Util?.handleGrpcTryCatchError(Util?.getTryCatchMsg(error));
     }
   }
 
@@ -248,12 +258,12 @@ export class GuestService {
         },
       });
       if (!filterCheck) {
-        throw new HttpException('Gender not found', HttpStatus.NOT_FOUND)
+        return Util?.handleFailResponse('Gender not found')
       }
       return filterCheck
     } catch (error) {
       console.log(error)
-      return Util?.getTryCatchMsg(error)
+      return Util?.handleGrpcTryCatchError(Util?.getTryCatchMsg(error));
     }
   }
 
@@ -272,13 +282,13 @@ export class GuestService {
         },
       });
       if (!filterCheck) {
-        throw new HttpException('Organization not found', HttpStatus.NOT_FOUND)
+        return Util?.handleFailResponse('Organization not found')
       }
       return filterCheck
 
     } catch (error) {
       console.log(error)
-      return Util?.getTryCatchMsg(error)
+      return Util?.handleGrpcTryCatchError(Util?.getTryCatchMsg(error));
     }
   }
 
@@ -298,13 +308,13 @@ export class GuestService {
       });
 
       if (!filterStatus) {
-        throw new HttpException('Visit status not found', HttpStatus.NOT_FOUND)
+        return Util?.handleFailResponse('Visit status not found')
       }
 
       return filterStatus
     } catch (error) {
       console.log(error)
-      return Util?.getTryCatchMsg(error)
+      return Util?.handleGrpcTryCatchError(Util?.getTryCatchMsg(error));
     }
   }
 
