@@ -164,11 +164,6 @@ export class EnquiriesController {
   async remove(@Param('enquiryId') enquiryId: string) {
     let ErrorCode: number
     try {
-      const enquiry = await Enquiry.findOne({ where: { enquiryId } });
-      if (!enquiry) {
-        // throw new Error('Enquiry not Found')
-        return Util?.handleFailResponse('Enquiry not found');
-      }
 
       let enquiryDelete = await this.enquiriesService.remove(enquiryId);
       if (enquiryDelete?.status_code != HttpStatus.OK) {
@@ -216,6 +211,7 @@ export class EnquiriesController {
     @Query('page') page: number,
     @Query('size') size: number,
   ) {
+    let ErrorCode:number
     try {
       let enquiryData = { startDate, endDate };
 
@@ -243,14 +239,18 @@ export class EnquiriesController {
         
       };
 
+    //   if (result?.status_code != HttpStatus.OK) {
+    //     ErrorCode = result?.status_code;
+    //     throw new Error(result?.message)
+    // } 
+
       return Util?.handleSuccessRespone(
         dataResult,
         'Enquiries data retrieve successfully',
       );
     } catch (error) {
       console.log(error);
-      // return Util?.handleFailResponse('Enquiry data not found');
-      return Util?.getTryCatchMsg(error)
+      return Util?.handleRequestError(Util?.getTryCatchMsg(error),ErrorCode)
     }
   }
 

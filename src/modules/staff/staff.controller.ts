@@ -113,7 +113,7 @@ export class StaffController {
   async findOne(@Param('staffId') staffId: string) {
     let ErrorCode: number
     try {
-      let staff_data = await this.staffService.findOne(staffId);
+      let staff_data = await this.staffService?.findOne(staffId);
       if (staff_data?.status_code != HttpStatus.OK) {
         ErrorCode = staff_data?.status_code;
         throw new Error(staff_data?.message)

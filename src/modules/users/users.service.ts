@@ -422,9 +422,7 @@ export class UsersService {
       if (!user) {
         throw new Error('User data not found.');
       }
-
-      Object.assign(user);
-      await user.destroy();
+      await this?.userModel?.destroy()
       return Util?.SuccessRespone('User deleted successfully.');
     } catch (error) {
       console.log(error);
@@ -489,7 +487,7 @@ export class UsersService {
     const [at, rt] = await Promise.all([
       this.jwtService.signAsync(jwtPayload, {
         secret: this.config.get<string>('AT_SECRET'),
-        // expiresIn: '5m',
+        // expiresIn: '15m',
         expiresIn: '7d',
       }),
       this.jwtService.signAsync(jwtPayload, {

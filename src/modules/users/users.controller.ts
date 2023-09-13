@@ -140,8 +140,6 @@ export class UsersController {
       });
 
 
-
-
       let result = Util?.getPagingData(allQueries, page, limit);
       console.log(result);
 
@@ -159,26 +157,29 @@ export class UsersController {
   }
 
   // Get User By The Id
-  // @UseGuards(AuthGuard('jwt'))
-  // @ApiBearerAuth('defaultBearerAuth')
+  @UseGuards(AuthGuard('jwt'))
+  @ApiBearerAuth('defaultBearerAuth')
   @ApiOperation({ summary: 'Get User By userId' })
   @Public()
   @UseGuards(AtGuard)
   @Get(':userId')
   async findOne(@Param('userId') userId: string) {
-    let ErrorCode = Number
+    let ErrorCode: number
     try {
       let userData = await this.usersService.findOne(userId);
-    //   if ((userData)?.status_code != HttpStatus.CREATED) {
-    //     ErrorCode = ( userData)?.status_code;
-    //     throw new Error(( userData)?.message)
-    // } 
-      return userData;
+      if (userData?.status_code != HttpStatus.OK) {
+        ErrorCode = userData?.status_code;
+        throw new Error(userData?.message)
+    } 
+      return userData
+
     } catch (error) {
       console.log(error);
-      return Util?.getTryCatchMsg(error);
+      return Util?.handleRequestError(Util?.getTryCatchMsg(error),ErrorCode)
     }
   }
+
+
 
   // Update User By The Id
   @ApiTags('Users')
@@ -319,18 +320,13 @@ export class UsersController {
   async remove(@Param('userId') userId: string) {
     let ErrorCode: number
     try {
-      const user = await User.findOne({ where: { userId } });
-      if (!user) {
-        throw new Error('User data not Found');
-      }
-
-      Object.assign(user);
-      await user.destroy();
-
-    //   if ((user)?.status_code != HttpStatus.CREATED) {
-    //     ErrorCode = ( user)?.status_code;
-    //     throw new Error(( user)?.message)
-    // } 
+     
+      let user_delete = await this.usersService.remove(userId);
+      if (user_delete?.status_code != HttpStatus.OK) {
+        ErrorCode = user_delete?.status_code;
+        throw new Error(user_delete?.message)
+    } 
+      return user_delete
      
     } catch (error) {
       console.log(error);
