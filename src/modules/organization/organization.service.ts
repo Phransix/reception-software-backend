@@ -386,12 +386,11 @@ export class OrganizationService {
   async remove(organizationId: string) {
     try {
       const org = await Organization.findOne({ where: { organizationId } });
-      if (!org)
-        // throw new Error('Organization not found.');
+      if (!org){
         return Util?.checkIfRecordNotFound('Organization not found.');
+      }
+        await this?.organizationModel?.destroy()
 
-      Object.assign(org);
-      await org.destroy();
       return Util?.handleSuccessRespone(
         Util?.SuccessRespone,
         'Organization deleted successfully.',
@@ -401,6 +400,8 @@ export class OrganizationService {
       return Util?.handleGrpcTryCatchError(Util?.getTryCatchMsg(error));
     }
   }
+
+
 
   // Restore Deleted Data
   async restoreUser(organizationId: string) {
@@ -464,8 +465,8 @@ export class OrganizationService {
     const [at,rt] = await Promise.all([
       this.jwtService.signAsync(jwtPayload, {
         secret: this.config.get<string>('JWT_SECRETTABLET'),
-        // expiresIn: '5m',
-        expiresIn: '7d',
+        expiresIn: '1m',
+        // expiresIn: '7d',
       }),
       this.jwtService.signAsync(jwtPayload, {
         secret: this.config.get<string>('RT_SECRET'),

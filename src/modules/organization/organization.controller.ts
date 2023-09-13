@@ -37,8 +37,8 @@ import { LoginDTO } from 'src/guard/auth/loginDTO';
 @Controller('organization')
 export class OrganizationController {
   constructor(
-    private readonly organizationService: OrganizationService, // private readonly userService: UsersService
-  ) {}
+    private readonly organizationService: OrganizationService) {}
+  
 
   // Create New Organization
   @ApiResponse({
@@ -223,7 +223,7 @@ export class OrganizationController {
   ) {
     let ErrorCode: number;
     try {
-      const orgUpdate = await this.organizationService.updateImg(
+      const orgUpdate = await this.organizationService?.updateImg(
         organizationId,
         createOrganizationImgDto,
       );
@@ -249,12 +249,14 @@ export class OrganizationController {
   async remove(@Param('organizationId') organizationId: string) {
     let ErrorCode: number;
     try {
-      let orgDelete = await this.organizationService.remove(organizationId);
-      //   if (orgUpdate?.status_code != HttpStatus.OK) {
-      //     ErrorCode = orgUpdate?.status_code;
-      //     throw new Error(orgUpdate?.message)
-      // }
-      return orgDelete;
+      let data = await this?.organizationService?.remove(organizationId);
+
+      if ( data && 'status_code' in data && data.status_code !== HttpStatus.OK) {
+        ErrorCode = data?.status_code;
+        throw new Error(data?.message);
+      }
+    
+      return data;
     } catch (error) {
       console.log(error);
       return Util?.handleRequestError(Util?.getTryCatchMsg(error), ErrorCode);

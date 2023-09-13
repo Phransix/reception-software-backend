@@ -237,8 +237,8 @@ export class StaffService {
         return Util?.handleFailResponse(`Staff with this #${staffId} not found`)
       }
 
-      Object.assign(staff)
-      await staff.destroy()
+      await this?.staffModel?.destroy()
+    
       return Util?.handleSuccessRespone(Util?.SuccessRespone, `Staff with this #${staffId}  deleted successfully`)
 
 
