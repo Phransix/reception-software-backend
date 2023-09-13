@@ -56,8 +56,7 @@ export class StaffService {
 
     } catch (error) {
       console.log(error)
-      return Util?.getTryCatchMsg(error)
-      // return Util?.handleFailResponse('Staff Registration Failed.');
+      return Util?.handleGrpcTryCatchError(Util?.getTryCatchMsg(error));
     }
   };
 
@@ -76,8 +75,7 @@ export class StaffService {
 
     } catch (error) {
       console.log(error)
-      return Util?.getTryCatchMsg(error)
-      // return Util?.handleFailResponse('Failed, Staffs Data Not Found');
+      return Util?.handleGrpcTryCatchError(Util?.getTryCatchMsg(error));
     }
   }
 
@@ -163,7 +161,8 @@ export class StaffService {
        if (rollImage) {
         await this?.staffImgHelper?.unlinkFile(rollImage)
       }
-      return Util?.getTryCatchMsg(error)
+      console.log(error)
+      return Util?.handleGrpcTryCatchError(Util?.getTryCatchMsg(error));
     }
   }
 
@@ -225,7 +224,8 @@ export class StaffService {
       if (rollImage) {
         await this?.staffImgHelper?.unlinkFile(rollImage)
       }
-      return Util?.getTryCatchMsg(error)
+      console.log(error)
+      return Util?.handleGrpcTryCatchError(Util?.getTryCatchMsg(error));
     }
   }
 
@@ -244,7 +244,7 @@ export class StaffService {
 
     } catch (error) {
       console.log(error)
-      return Util?.getTryCatchMsg(error)
+      return Util?.handleGrpcTryCatchError(Util?.getTryCatchMsg(error));
     }
   }
 
@@ -271,7 +271,7 @@ export class StaffService {
 
     } catch (error) {
       console.log(error)
-      return Util?.getTryCatchMsg(error)
+      return Util?.handleGrpcTryCatchError(Util?.getTryCatchMsg(error));
     }
   }
 

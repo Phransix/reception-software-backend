@@ -77,7 +77,7 @@ export class UsersService {
       return Util?.handleCreateSuccessRespone('User Created Successfully');
     } catch (error) {
       console.error(error);
-      return Util?.getTryCatchMsg(error);
+      return Util?.handleGrpcTryCatchError(Util?.getTryCatchMsg(error));
     }
   }
 
@@ -90,7 +90,7 @@ export class UsersService {
       const org = await Organization.findOne({ where: { email } });
 
       if (!user) {
-      return Util.handleFailResponse('Invalid email or password');
+        return Util.handleFailResponse('Invalid email or password');
       }
 
       const passwordMatches = await argon.verify(
@@ -100,18 +100,17 @@ export class UsersService {
       if (!passwordMatches) {
         return Util.handleFailResponse('Invalid email or password');
       }
-    
-      
 
       // Check if the oraganiazation is verified
       if (org?.isVerified != true)
         return Util?.handleFailResponse('Oraganiazation account not verified');
       console.log(org?.isVerified);
 
-        //  Check the Role of the User
-      const user_role = await User.findOne({where:{roleName:user?.roleName}})
-      if(!user_role)
-        return Util.handleNotFoundResponse()
+      //  Check the Role of the User
+      const user_role = await User.findOne({
+        where: { roleName: user?.roleName },
+      });
+      if (!user_role) return Util.handleNotFoundResponse();
 
       let tokens = await this?.getTokens(
         user.userId,
@@ -142,11 +141,13 @@ export class UsersService {
       );
 
       //  Send user data and tokens
-      return Util?.handleCustonCreateResponse(userDetails, 'Login successfully.');
-    } 
-    catch (error) {
+      return Util?.handleCustonCreateResponse(
+        userDetails,
+        'Login successfully.',
+      );
+    } catch (error) {
       console.error(error);
-      return Util?.getTryCatchMsg(error);
+      return Util?.handleGrpcTryCatchError(Util?.getTryCatchMsg(error));
     }
   }
 
@@ -159,8 +160,8 @@ export class UsersService {
         },
       });
 
-       // Check if users exist
-       if (!users || users.length === 0) {
+      // Check if users exist
+      if (!users || users.length === 0) {
         return { message: 'No users found' };
       }
 
@@ -170,7 +171,7 @@ export class UsersService {
       );
     } catch (error) {
       console.log(error);
-      return Util?.getTryCatchMsg(error);
+      return Util?.handleGrpcTryCatchError(Util?.getTryCatchMsg(error));
     }
   }
 
@@ -190,7 +191,7 @@ export class UsersService {
       return Util?.handleSuccessRespone(user, 'User retrieve successfully.');
     } catch (error) {
       console.log(error);
-      return Util?.getTryCatchMsg(error);
+      return Util?.handleGrpcTryCatchError(Util?.getTryCatchMsg(error));
     }
   }
 
@@ -241,14 +242,13 @@ export class UsersService {
         where: { id: user?.id },
       });
 
-      return Util?.SuccessRespone(
-        'User updated successfully',
-      );
+      return Util?.SuccessRespone('User updated successfully');
     } catch (error) {
       if (rollImage) {
         await this.imagehelper.unlinkFile(rollImage);
       }
-      return Util?.getTryCatchMsg(error);
+      console.log(error)
+      return Util?.handleGrpcTryCatchError(Util?.getTryCatchMsg(error));
     }
   }
 
@@ -284,7 +284,7 @@ export class UsersService {
       );
     } catch (error) {
       console.log(error);
-      return Util?.getTryCatchMsg(error);
+      return Util?.handleGrpcTryCatchError(Util?.getTryCatchMsg(error));
     }
   }
 
@@ -310,7 +310,8 @@ export class UsersService {
         `Reset password link sent to ${user?.email}`,
       );
     } catch (error) {
-      return Util?.getTryCatchMsg(error);
+      console.log(error)
+      return Util?.handleGrpcTryCatchError(Util?.getTryCatchMsg(error));
     }
   }
 
@@ -345,8 +346,8 @@ export class UsersService {
       return Util.handleCreateSuccessRespone('Password Reset Successful');
     } catch (error) {
       t.rollback();
-      // return Util?.handleFailResponse('Failed to reset password');
-      return Util?.getTryCatchMsg(error);
+      console.log(error);
+      return Util?.handleGrpcTryCatchError(Util?.getTryCatchMsg(error));
     }
   }
 
@@ -409,8 +410,8 @@ export class UsersService {
       if (rollImage) {
         await this.imagehelper.unlinkFile(rollImage);
       }
-      // return Util?.handleFailResponse(`User with this #${userId} and Image not Updated`)
-      return Util?.getTryCatchMsg(error);
+      console.log(error);
+      return Util?.handleGrpcTryCatchError(Util?.getTryCatchMsg(error));
     }
   }
 
@@ -424,13 +425,10 @@ export class UsersService {
 
       Object.assign(user);
       await user.destroy();
-      return Util?.SuccessRespone(
-        'User deleted successfully.',
-      );
+      return Util?.SuccessRespone('User deleted successfully.');
     } catch (error) {
       console.log(error);
-      // return Util?.handleFailResponse(`Failed, User with this #${userId} not Deleted`)
-      return Util?.getTryCatchMsg(error);
+      return Util?.handleGrpcTryCatchError(Util?.getTryCatchMsg(error));
     }
   }
 
@@ -443,41 +441,42 @@ export class UsersService {
         'Organization restored successfully.',
       );
     } catch (error) {
-      return Util?.getTryCatchMsg(error);
+      console.log(error);
+      return Util?.handleGrpcTryCatchError(Util?.getTryCatchMsg(error));
     }
   }
 
-    // Logout Organization
-    async logout(logout: LogOutDTO) {
-      const { password } = logout;
-      try {
-        const user = await User.findOne();
-  
-        if (!user) {
-          return null; // User not found
-        }
-  
-        const passwordMatches = await argon.verify(user.password, password);
-        if (!passwordMatches) {
-          return Util.handleFailResponse('Invalid password');
-        }
-  
-        if (user?.isLogin === false)
-          return Util?.handleFailResponse(
-            'Organization/User account already logout ',
-          );
-  
-        await User.update(
-          { isLogin: false },
-          { where: { password: user?.password } },
-        );
-  
-        return Util?.handleCreateSuccessRespone('Logout successful');
-      } catch (error) {
-        console.log(error);
-        return Util?.getTryCatchMsg(error);
+  // Logout Organization
+  async logout(logout: LogOutDTO) {
+    const { password } = logout;
+    try {
+      const user = await User.findOne();
+
+      if (!user) {
+        return null; // User not found
       }
+
+      const passwordMatches = await argon.verify(user.password, password);
+      if (!passwordMatches) {
+        return Util.handleFailResponse('Invalid password');
+      }
+
+      if (user?.isLogin === false)
+        return Util?.handleFailResponse(
+          'Organization/User account already logout ',
+        );
+
+      await User.update(
+        { isLogin: false },
+        { where: { password: user?.password } },
+      );
+
+      return Util?.handleCreateSuccessRespone('Logout successful');
+    } catch (error) {
+      console.log(error);
+      return Util?.handleGrpcTryCatchError(Util?.getTryCatchMsg(error));
     }
+  }
 
   async getTokens(user_id: string, email: string, role: string) {
     const jwtPayload = {
@@ -529,6 +528,4 @@ export class UsersService {
   async findByPassword(password: string): Promise<User> {
     return await this.userModel.findOne<User>({ where: { password } });
   }
-
-
 }

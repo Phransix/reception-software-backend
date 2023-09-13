@@ -8,6 +8,7 @@ import {
   Delete,
   UseGuards,
   Query,
+  HttpStatus,
 } from '@nestjs/common';
 import { DepartmentService } from './department.service';
 import { CreateDepartmentDto } from './dto/create-department.dto';
@@ -45,13 +46,17 @@ export class DepartmentController {
   @UseGuards(DoesDeptExist)
   @Post('createNewDepartment')
   async create(@Body() createDepartmentDto: CreateDepartmentDto) {
+    let ErrorCode: number
     try {
-      let newDepart = this.departmentService.create(createDepartmentDto);
+      let newDepart = await this.departmentService.create(createDepartmentDto);
+      if (newDepart?.status_code != HttpStatus.CREATED) {
+        ErrorCode = newDepart?.status_code;
+        throw new Error(newDepart?.message)
+    } 
       return newDepart;
     } catch (error) {
       console.log(error);
-      return Util?.getTryCatchMsg(error);
-      // return Util?.handleTryCatchError(Util?.getTryCatchMsg(error));
+      return Util?.handleRequestError(Util?.getTryCatchMsg(error),ErrorCode)
     }
   }
 
@@ -112,13 +117,17 @@ export class DepartmentController {
   @UseGuards(AtGuard)
   @Get(':departmentId')
   async findOne(@Param('departmentId') departmentId: string) {
+    let ErrorCode: number
     try {
       let deptData = await this.departmentService.findOne(departmentId);
+      if (deptData?.status_code != HttpStatus.OK) {
+        ErrorCode = deptData?.status_code;
+        throw new Error(deptData?.message)
+    } 
       return deptData;
     } catch (error) {
       console.log(error);
-      return Util?.getTryCatchMsg(error);
-      // return Util?.handleTryCatchError(Util?.getTryCatchMsg(error));
+      return Util?.handleRequestError(Util?.getTryCatchMsg(error),ErrorCode)
     }
   }
 
@@ -134,11 +143,17 @@ export class DepartmentController {
     @Param('departmentId') departmentId: string,
     @Body() updateDepartmentDto: UpdateDepartmentDto,
   ) {
+    let ErrorCode: number
     try {
-      return this.departmentService.update(departmentId, updateDepartmentDto);
+      let deptUpdate = await this.departmentService.update(departmentId, updateDepartmentDto);
+      if (deptUpdate?.status_code != HttpStatus.OK) {
+        ErrorCode = deptUpdate?.status_code;
+        throw new Error(deptUpdate?.message)
+    } 
+      return deptUpdate
     } catch (error) {
       console.log(error);
-      return Util?.getTryCatchMsg(error);
+      return Util?.handleRequestError(Util?.getTryCatchMsg(error),ErrorCode)
     }
   }
 
@@ -150,11 +165,17 @@ export class DepartmentController {
   @UseGuards(AtGuard)
   @Delete(':departmentId')
   async remove(@Param('departmentId') departmentId: string) {
+    let ErrorCode: number
     try {
-      return this.departmentService.remove(departmentId);
+      let deptRemove = await this.departmentService.remove(departmentId);
+      if (deptRemove?.status_code != HttpStatus.OK) {
+        ErrorCode = deptRemove?.status_code;
+        throw new Error(deptRemove?.message)
+    } 
+      return deptRemove
     } catch (error) {
       console.log(error);
-      return Util?.getTryCatchMsg(error);
+      return Util?.handleRequestError(Util?.getTryCatchMsg(error),ErrorCode)
     }
   }
 
@@ -171,14 +192,19 @@ export class DepartmentController {
   @UseGuards(AtGuard)
   @Get('department/search')
   async searchDepartment(@Query('keyword') keyword: string) {
+    let ErrorCode: number
     try {
-      return this?.departmentService?.searchDepartment(
+      let deptSearch = await this?.departmentService?.searchDepartment(
         keyword.charAt(0).toUpperCase(),
       );
+      if (deptSearch?.status_code != HttpStatus.OK) {
+        ErrorCode = deptSearch?.status_code;
+        throw new Error(deptSearch?.message)
+    } 
+      return deptSearch
     } catch (error) {
       console.log(error);
-      // return Util?.handleFailResponse('No matching Department data found.');
-      return Util?.getTryCatchMsg(error);
+      return Util?.handleRequestError(Util?.getTryCatchMsg(error),ErrorCode)
     }
   }
 }

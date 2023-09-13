@@ -103,8 +103,7 @@ export class OrganizationService {
     } catch (error) {
       t.rollback();
       console.log(error);
-      // return Util?.handleFailResponse(' Organization Registration Failed');
-      return Util?.getTryCatchMsg(error)
+      return Util?.handleGrpcTryCatchError(Util?.getTryCatchMsg(error));
     }
   }
 
@@ -143,8 +142,7 @@ export class OrganizationService {
       );
     } catch (error) {
       console.log(error);
-      return Util?.getTryCatchMsg(error)
-      // return Util?.handleFailResponse('Accounts verification failed');
+      return Util?.handleGrpcTryCatchError(Util?.getTryCatchMsg(error));
     }
   }
 
@@ -205,8 +203,7 @@ export class OrganizationService {
       return Util?.handleCustonCreateResponse(orgDetails, 'Login successfully.');
     } catch (error) {
       console.error(error);
-      // return Util?.handleFailResponse('User Login Failed ');
-      return Util?.getTryCatchMsg(error)
+      return Util?.handleGrpcTryCatchError(Util?.getTryCatchMsg(error));
     }
   }
 
@@ -225,8 +222,7 @@ export class OrganizationService {
       );
     } catch (error) {
       console.log(error);
-      return Util?.getTryCatchMsg(error)
-      // return Util?.handleFailResponse('Failed, Organizations Data Not Found');
+      return Util?.handleGrpcTryCatchError(Util?.getTryCatchMsg(error));
     }
   }
 
@@ -250,8 +246,7 @@ export class OrganizationService {
       );
     } catch (error) {
       console.log(error);
-      return Util?.getTryCatchMsg(error)
-      // return Util?.handleFailResponse('Failed, Organization Data Not Found');
+      return Util?.handleGrpcTryCatchError(Util?.getTryCatchMsg(error));
     }
   }
 
@@ -312,7 +307,8 @@ export class OrganizationService {
       if (rollImage) {
         await this?.imgHelper?.unlinkFile(rollImage);
       }
-      return Util?.getTryCatchMsg(error)
+      console.log(error)
+      return Util?.handleGrpcTryCatchError(Util?.getTryCatchMsg(error));
     }
   }
 
@@ -381,7 +377,8 @@ export class OrganizationService {
       if (rollImage) {
         await this?.imgHelper?.unlinkFile(rollImage);
       }
-      return Util?.getTryCatchMsg(error)
+      console.log(error)
+      return Util?.handleGrpcTryCatchError(Util?.getTryCatchMsg(error));
     }
   }
 
@@ -401,7 +398,7 @@ export class OrganizationService {
       );
     } catch (error) {
       console.log(error);
-      return Util?.getTryCatchMsg(error)
+      return Util?.handleGrpcTryCatchError(Util?.getTryCatchMsg(error));
     }
   }
 
@@ -416,8 +413,7 @@ export class OrganizationService {
         'Organization restored successfully.',
       );
     } catch (error) {
-      // return Util.handleForbiddenExceptionResponses('Data Not Restored');
-      return Util?.getTryCatchMsg(error)
+      return Util?.handleGrpcTryCatchError(Util?.getTryCatchMsg(error));
     }
   }
 

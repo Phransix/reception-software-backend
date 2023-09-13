@@ -8,6 +8,7 @@ import {
   Delete,
   UseGuards,
   Query,
+  HttpStatus,
 } from '@nestjs/common';
 import { StaffService } from './staff.service';
 import { CreateStaffDto } from './dto/create-staff.dto';
@@ -39,12 +40,18 @@ export class StaffController {
   @UseGuards(AtGuard)
   @UseGuards(DoesStaffExist)
   @Post('registerNewStaff')
-  create(@Body() createStaffDto: CreateStaffDto) {
+ async create(@Body() createStaffDto: CreateStaffDto) {
+    let ErrorCode: number
     try {
-      return this.staffService.create(createStaffDto);
+      let new_data = await this.staffService.create(createStaffDto);
+      if (new_data?.status_code != HttpStatus.CREATED) {
+        ErrorCode = new_data?.status_code;
+        throw new Error(new_data?.message)
+    } 
+      return new_data
     } catch (error) {
       console.log(error);
-      return Util?.getTryCatchMsg(error);
+      return Util?.handleRequestError(Util?.getTryCatchMsg(error),ErrorCode)
     }
   }
 
@@ -104,11 +111,18 @@ export class StaffController {
   @UseGuards(AtGuard)
   @Get(':staffId')
   async findOne(@Param('staffId') staffId: string) {
+    let ErrorCode: number
     try {
-      return this.staffService.findOne(staffId);
+      let staff_data = await this.staffService.findOne(staffId);
+      if (staff_data?.status_code != HttpStatus.OK) {
+        ErrorCode = staff_data?.status_code;
+        throw new Error(staff_data?.message)
+    } 
+      return staff_data
+
     } catch (error) {
       console.log(error);
-      return Util?.getTryCatchMsg(error);
+      return Util?.handleRequestError(Util?.getTryCatchMsg(error),ErrorCode)
     }
   }
 
@@ -123,11 +137,17 @@ export class StaffController {
     @Param('staffId') staffId: string,
     @Body() updateStaffDto: UpdateStaffDto,
   ) {
+    let ErrorCode: number
     try {
-      return this.staffService.update(staffId, updateStaffDto);
+      let staff_update= await this.staffService.update(staffId, updateStaffDto);
+      if (staff_update?.status_code != HttpStatus.OK) {
+        ErrorCode = staff_update?.status_code;
+        throw new Error(staff_update?.message)
+    } 
+      return staff_update
     } catch (error) {
       console.log(error);
-      return Util?.getTryCatchMsg(error);
+      return Util?.handleRequestError(Util?.getTryCatchMsg(error),ErrorCode)
     }
   }
 
@@ -142,11 +162,17 @@ export class StaffController {
     @Param('staffId') staffId: string,
     @Body() createStaffImgDto: CreateStaffImgDto,
   ) {
+    let ErrorCode: number
     try {
-      return this.staffService.updateImg(staffId, createStaffImgDto);
+      let staff_update = await this.staffService.updateImg(staffId, createStaffImgDto);
+      if (staff_update?.status_code != HttpStatus.OK) {
+        ErrorCode = staff_update?.status_code;
+        throw new Error(staff_update?.message)
+    } 
+        return staff_update
     } catch (error) {
       console.log(error);
-      return Util?.getTryCatchMsg(error);
+      return Util?.handleRequestError(Util?.getTryCatchMsg(error),ErrorCode)
     }
   }
 
@@ -158,11 +184,17 @@ export class StaffController {
   @UseGuards(AtGuard)
   @Delete(':staffId')
  async remove(@Param('staffId') staffId: string) {
+  let ErrorCode: number
     try {
-      return this.staffService.remove(staffId);
+      let staff_delete = await this.staffService.remove(staffId);
+      if (staff_delete?.status_code != HttpStatus.OK) {
+        ErrorCode = staff_delete?.status_code;
+        throw new Error(staff_delete?.message)
+    } 
+      return staff_delete
     } catch (error) {
       console.log(error);
-      return Util?.getTryCatchMsg(error);
+      return Util?.handleRequestError(Util?.getTryCatchMsg(error),ErrorCode)
     }
   }
 
@@ -179,11 +211,17 @@ export class StaffController {
   @UseGuards(AtGuard)
   @Get('staff/search')
   async searchStaff(@Query('keyword') keyword: string) {
+    let ErrorCode: number
     try {
-      return this?.staffService?.searchStaff(keyword.charAt(0).toUpperCase());
+      let staff_search = await this?.staffService?.searchStaff(keyword.charAt(0).toUpperCase());
+      if (staff_search?.status_code != HttpStatus.OK) {
+        ErrorCode = staff_search?.status_code;
+        throw new Error(staff_search?.message)
+    } 
+      return staff_search
     } catch (error) {
       console.log(error);
-      return Util?.getTryCatchMsg(error);
+      return Util?.handleRequestError(Util?.getTryCatchMsg(error),ErrorCode)
     }
   }
 }
