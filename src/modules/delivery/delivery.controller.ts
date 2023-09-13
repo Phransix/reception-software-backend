@@ -9,7 +9,7 @@ import { deliveryConfirmDTO } from 'src/guard/auth/deliveryConfirmDTO';
 import { Public } from 'src/common/decorators/public.decorator';
 import { AtGuard } from 'src/common/guards';
 import { AuthGuard } from '@nestjs/passport';
-import { query } from 'express';
+
 
 
 @Controller('delivery')
@@ -30,7 +30,6 @@ export class DeliveryController {
       return Util?.handleCreateSuccessRespone("Delivery created successfully")
     } catch (error) {
       console.log(error)
-      // return Util?.handleFailResponse("Delivery registration failed")
       return Util?.getTryCatchMsg(error)
     }
   }

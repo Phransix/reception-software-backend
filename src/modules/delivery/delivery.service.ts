@@ -122,7 +122,7 @@ export class DeliveryService {
       return deliver
     } catch (error) {
       console.log(error)
-      return Util?.handleFailResponse("Delivery data search failed")
+      return Util?.getTryCatchMsg(error)
     }
   }
 

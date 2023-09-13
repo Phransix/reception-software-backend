@@ -99,6 +99,12 @@ export class Guest extends Model<Guest>{
     })
     visitStatus: string;
 
+    @Column ({
+        type: DataType.DATEONLY,
+        allowNull: false
+    })
+    createdAt: string
+
     @Column({
         type: DataType.DATE,
         allowNull: true,

@@ -111,7 +111,9 @@ export class GuestService {
       lastname: guestNo?.lastName,
       gender: guestNo?.gender,
       countryCode: guestNo?.countryCode,
-      phoneNumber: guestNo?.phoneNumber
+      phoneNumber: guestNo?.phoneNumber,
+      signInDate: guestNo?.signInDate,
+      signInTime: guestNo?.signInTime
     }
 
     if (!guestNo || !cCode) {
@@ -158,6 +160,9 @@ export class GuestService {
     const guest = await this.GuestModel.findOne({ where: { phoneNumber } })
     const cCode = await this.GuestModel.findOne({ where: { countryCode } })
     const currentTime = new Date().toLocaleTimeString();
+    let guest_data = {
+      signOutTime: guest?.signOutTime
+    }
     if (!guest || !cCode) {
       throw new HttpException('Invalid phone number or country code', HttpStatus.UNAUTHORIZED)
     } else {
@@ -181,7 +186,7 @@ export class GuestService {
           }
         }
       )
-      throw new HttpException('Guest Sign Out successful', HttpStatus.ACCEPTED)
+      return Util?.handleSuccessRespone(guest_data, "Guest Sign Out Success")
     }
   }
 
