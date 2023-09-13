@@ -50,12 +50,19 @@ export class OrganizationController {
   @UseGuards(DoesOrgExist)
   @Post('signUp')
   async create(@Body() createOrganizationDto: CreateOrganizationDto) {
+    let ErrorCode: number;
     try {
-      let new_Enquiry = this.organizationService.create(createOrganizationDto);
-      return new_Enquiry;
+      let new_org = await this.organizationService.create(
+        createOrganizationDto,
+      );
+      if (new_org?.status_code != HttpStatus.CREATED) {
+        ErrorCode = new_org?.status_code;
+        throw new Error(new_org?.message);
+      }
+      return new_org;
     } catch (error) {
       console.log(error);
-      return Util?.getTryCatchMsg(error);
+      return Util?.handleRequestError(Util?.getTryCatchMsg(error), ErrorCode);
     }
   }
 
@@ -64,14 +71,19 @@ export class OrganizationController {
   @Public()
   @Post('verifyEmail')
   async verifyEmail(@Body() token: VerifyEmailDto) {
+    let ErrorCode: number;
     try {
       console.log(token);
 
       const emailVerify = await this.organizationService.verifyEmail(token);
+      if (emailVerify?.status_code != HttpStatus.CREATED) {
+        ErrorCode = emailVerify?.status_code;
+        throw new Error(emailVerify?.message);
+      }
       return emailVerify;
     } catch (error) {
       console.log(error);
-      return Util?.getTryCatchMsg(error);
+      return Util?.handleRequestError(Util?.getTryCatchMsg(error), ErrorCode);
     }
   }
 
@@ -80,16 +92,16 @@ export class OrganizationController {
   @Public()
   @Post('login')
   async login(@Body() loginDto: LoginDTO) {
+    let ErrorCode: number;
     try {
       const org = await this.organizationService.login(loginDto);
-      if (!org) {
-        throw new HttpException('Invalid Credentials', HttpStatus.UNAUTHORIZED);
-      } else {
-        return org;
+      if (org?.status_code != HttpStatus.CREATED) {
+        ErrorCode = org?.status_code;
+        throw new Error(org?.message);
       }
     } catch (error) {
       console.log(error);
-      return Util?.getTryCatchMsg(error);
+      return Util?.handleRequestError(Util?.getTryCatchMsg(error), ErrorCode);
     }
   }
 
@@ -154,12 +166,17 @@ export class OrganizationController {
   @UseGuards(AtGuard)
   @Get(':organizationId')
   async findOne(@Param('organizationId') organizationId: string) {
+    let ErrorCode: number;
     try {
-      let orgData = this.organizationService.findOne(organizationId);
+      let orgData = await this.organizationService.findOne(organizationId);
+      if (orgData?.status_code != HttpStatus.OK) {
+        ErrorCode = orgData?.status_code;
+        throw new Error(orgData?.message);
+      }
       return orgData;
     } catch (error) {
       console.log(error);
-      return Util?.getTryCatchMsg(error);
+      return Util?.handleRequestError(Util?.getTryCatchMsg(error), ErrorCode);
     }
   }
 
@@ -174,15 +191,20 @@ export class OrganizationController {
     @Param('organizationId') organizationId: string,
     @Body() updateOrganizationDto: UpdateOrganizationDto,
   ) {
+    let ErrorCode: number;
     try {
       const orgUpdate = await this.organizationService.update(
         organizationId,
         updateOrganizationDto,
       );
+      if (orgUpdate?.status_code != HttpStatus.OK) {
+        ErrorCode = orgUpdate?.status_code;
+        throw new Error(orgUpdate?.message);
+      }
       return orgUpdate;
     } catch (error) {
       console.log(error);
-      return Util?.getTryCatchMsg(error);
+      return Util?.handleRequestError(Util?.getTryCatchMsg(error), ErrorCode);
     }
   }
 
@@ -199,15 +221,20 @@ export class OrganizationController {
     @Param('organizationId') organizationId: string,
     @Body() createOrganizationImgDto: CreateOrganizationImgDto,
   ) {
+    let ErrorCode: number;
     try {
       const orgUpdate = await this.organizationService.updateImg(
         organizationId,
         createOrganizationImgDto,
       );
+      if (orgUpdate?.status_code != HttpStatus.OK) {
+        ErrorCode = orgUpdate?.status_code;
+        throw new Error(orgUpdate?.message);
+      }
       return orgUpdate;
     } catch (error) {
       console.log(error);
-      return Util?.getTryCatchMsg(error);
+      return Util?.handleRequestError(Util?.getTryCatchMsg(error), ErrorCode);
     }
   }
 
@@ -220,12 +247,17 @@ export class OrganizationController {
   @ApiTags('Organization')
   @Delete(':organizationId')
   async remove(@Param('organizationId') organizationId: string) {
+    let ErrorCode: number;
     try {
       let orgDelete = await this.organizationService.remove(organizationId);
+      //   if (orgUpdate?.status_code != HttpStatus.OK) {
+      //     ErrorCode = orgUpdate?.status_code;
+      //     throw new Error(orgUpdate?.message)
+      // }
       return orgDelete;
     } catch (error) {
       console.log(error);
-      return Util?.getTryCatchMsg(error);
+      return Util?.handleRequestError(Util?.getTryCatchMsg(error), ErrorCode);
     }
   }
 
@@ -238,11 +270,18 @@ export class OrganizationController {
   @ApiTags('Organization')
   @Post(':organizationId/restore')
   async restoreUser(@Param('organizationId') organizationId: string) {
+    let ErrorCode: number;
     try {
-      return this.organizationService.restoreUser(organizationId);
+      let orgRestore = await this.organizationService.restoreUser(
+        organizationId,
+      );
+      if (orgRestore?.status_code != HttpStatus.CREATED) {
+        ErrorCode = orgRestore?.status_code;
+        throw new Error(orgRestore?.message);
+      }
     } catch (error) {
       console.log(error);
-      return Util?.getTryCatchMsg(error);
+      return Util?.handleRequestError(Util?.getTryCatchMsg(error), ErrorCode);
     }
   }
 }

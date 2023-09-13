@@ -119,7 +119,16 @@ export const handleCustonCreateResponse = (data, msg) => {
       message:msg,    };
   }
 
-  
+  export const handleGrpcTryCatchError = (
+    message = "There was an error processing your request"
+  ) => {
+    return {
+      status_code: HttpStatus?.BAD_REQUEST,
+      failed: true,
+      message : message,
+      // service_id: "PRODUCT_CATEGORY_SERVICE"
+    };
+  };
   
   export const handleGrpcReqError = (error) => {
     console.error(error);
@@ -477,8 +486,8 @@ export const generateId =(pattern,length) => {
 }
 
 
-
-
 // export const destroyToken = (token) => {
 //   return jwt.(token);
 // }
+
+

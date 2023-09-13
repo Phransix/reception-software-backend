@@ -25,8 +25,7 @@ export class EnquiriesService {
       );
     } catch (error) {
       console.log(error);
-      // return Util
-      return Util?.getTryCatchMsg(error)
+      return Util?.handleGrpcTryCatchError(Util?.getTryCatchMsg(error));
     }
   }
 
@@ -44,8 +43,7 @@ export class EnquiriesService {
       );
     } catch (error) {
       console.log(error);
-      // return Util
-      return Util?.getTryCatchMsg(error)
+      return Util?.handleGrpcTryCatchError(Util?.getTryCatchMsg(error));
     }
   }
 
@@ -69,8 +67,7 @@ export class EnquiriesService {
       );
     } catch (error) {
       console.log(error);
-      // return Util?.handleErrorRespone('Failed, Enquiry data not found');
-      return Util?.getTryCatchMsg(error)
+      return Util?.handleGrpcTryCatchError(Util?.getTryCatchMsg(error));
     }
   }
 
@@ -89,8 +86,7 @@ export class EnquiriesService {
       );
     } catch (error) {
       console.log(error);
-      // return Util?.handleErrorRespone('Enquiry data Updare Failed');
-      return Util?.getTryCatchMsg(error)
+      return Util?.handleGrpcTryCatchError(Util?.getTryCatchMsg(error));
     }
   }
 
@@ -109,7 +105,7 @@ export class EnquiriesService {
       );
     } catch (error) {
       console.log(error);
-      return Util?.getTryCatchMsg(error)
+      return Util?.handleGrpcTryCatchError(Util?.getTryCatchMsg(error));
     }
   }
 
@@ -134,8 +130,7 @@ export class EnquiriesService {
       );
     } catch (error) {
       console.log(error);
-      // return Util?.handleErrorRespone('Enquiry data search failed');
-      return Util?.getTryCatchMsg(error)
+      return Util?.handleGrpcTryCatchError(Util?.getTryCatchMsg(error));
     }
   }
 
@@ -164,8 +159,7 @@ export class EnquiriesService {
       );
     } catch (error) {
       console.log(error);
-      // return Util?.handleFailResponse('Filtering By Purpose failed');
-      return Util?.getTryCatchMsg(error)
+      return Util?.handleGrpcTryCatchError(Util?.getTryCatchMsg(error));
     }
   }
 
@@ -192,7 +186,7 @@ export class EnquiriesService {
       );
     } catch (error) {
       console.log(error);
-      return Util?.getTryCatchMsg(error)
+      return Util?.handleGrpcTryCatchError(Util?.getTryCatchMsg(error));
     }
   }
 

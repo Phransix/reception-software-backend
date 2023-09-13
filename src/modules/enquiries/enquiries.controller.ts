@@ -8,6 +8,7 @@ import {
   Delete,
   UseGuards,
   Query,
+  HttpStatus,
 } from '@nestjs/common';
 import { EnquiriesService } from './enquiries.service';
 import { CreateEnquiryDto, Purpose } from './dto/create-enquiry.dto';
@@ -40,12 +41,17 @@ export class EnquiriesController {
   @UseGuards(AtGuard)
   @Post('creatEnquiry')
   async create(@Body() createEnquiryDto: CreateEnquiryDto) {
+    let ErrorCode: number
     try {
-      let new_Enquiry = this.enquiriesService.create(createEnquiryDto);
+      let new_Enquiry = await this.enquiriesService.create(createEnquiryDto);
+      if (new_Enquiry?.status_code != HttpStatus.CREATED) {
+        ErrorCode = new_Enquiry?.status_code;
+        throw new Error(new_Enquiry?.message)
+    } 
       return new_Enquiry;
     } catch (error) {
       console.log(error);
-       return Util?.getTryCatchMsg(error)
+      return Util?.handleRequestError(Util?.getTryCatchMsg(error),ErrorCode)
     }
   }
 
@@ -105,12 +111,17 @@ export class EnquiriesController {
   @UseGuards(AtGuard)
   @Get(':enquiryId')
   async findOne(@Param('enquiryId') enquiryId: string) {
+    let ErrorCode: number
     try {
       let enquiryData = await this.enquiriesService.findOne(enquiryId);
+      if (enquiryData?.status_code != HttpStatus.OK) {
+        ErrorCode = enquiryData?.status_code;
+        throw new Error(enquiryData?.message)
+    } 
       return enquiryData;
     } catch (error) {
       console.log(error);
-      return Util?.getTryCatchMsg(error)
+      return Util?.handleRequestError(Util?.getTryCatchMsg(error),ErrorCode)
     }
   }
 
@@ -125,15 +136,20 @@ export class EnquiriesController {
     @Param('enquiryId') enquiryId: string,
     @Body() updateEnquiryDto: UpdateEnquiryDto,
   ) {
+    let ErrorCode: number
     try {
       const enquiryUpdate = await this.enquiriesService.update(
         enquiryId,
         updateEnquiryDto,
       );
+      if (enquiryUpdate?.status_code != HttpStatus.OK) {
+        ErrorCode = enquiryUpdate?.status_code;
+        throw new Error(enquiryUpdate?.message)
+    } 
       return enquiryUpdate;
     } catch (error) {
       console.log(error);
-      return Util?.getTryCatchMsg(error)
+      return Util?.handleRequestError(Util?.getTryCatchMsg(error),ErrorCode)
     }
   }
 
@@ -146,6 +162,7 @@ export class EnquiriesController {
   @ApiTags('Enquiries')
   @Delete(':enquiryId')
   async remove(@Param('enquiryId') enquiryId: string) {
+    let ErrorCode: number
     try {
       const enquiry = await Enquiry.findOne({ where: { enquiryId } });
       if (!enquiry) {
@@ -154,10 +171,14 @@ export class EnquiriesController {
       }
 
       let enquiryDelete = await this.enquiriesService.remove(enquiryId);
+      if (enquiryDelete?.status_code != HttpStatus.OK) {
+        ErrorCode = enquiryDelete?.status_code;
+        throw new Error(enquiryDelete?.message)
+    } 
       return enquiryDelete;
     } catch (error) {
       console.log(error);
-      return Util?.getTryCatchMsg(error)
+      return Util?.handleRequestError(Util?.getTryCatchMsg(error),ErrorCode)
     }
   }
 
@@ -318,18 +339,24 @@ export class EnquiriesController {
   @Get('enquiry/search')
   async searchEnquiry(
     @Query('keyword') keyword: string,
-    
   ) {
+    let ErrorCode: number
     try {
 
-      return this?.enquiriesService?.searchEnquiry(
+      let enquirySearch = await this?.enquiriesService?.searchEnquiry(
         keyword.charAt(0).toUpperCase(),
       );
 
+      if (enquirySearch?.status_code != HttpStatus.OK) {
+        ErrorCode = enquirySearch?.status_code;
+        throw new Error(enquirySearch?.message)
+    } 
+
+      return enquirySearch
       
     } catch (error) {
       console.log(error);
-      return Util?.getTryCatchMsg(error)
+      return Util?.handleRequestError(Util?.getTryCatchMsg(error),ErrorCode)
     }
   }
 }

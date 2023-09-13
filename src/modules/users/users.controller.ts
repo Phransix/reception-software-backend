@@ -21,6 +21,7 @@ import {
   ApiOperation,
   ApiParam,
   ApiQuery,
+  ApiResponse,
   ApiTags,
 } from '@nestjs/swagger';
 import { ChangePassDTO } from 'src/guard/auth/changePassDTO';
@@ -38,6 +39,7 @@ import {
 } from '../organization/dto/create-organization.dto';
 import { RolesGuard } from 'src/common/guards/roles.guard';
 import { LogOutDTO } from 'src/guard/auth/logoutDto';
+import { log } from 'console';
 
 @ApiTags('Users')
 @Controller('users')
@@ -49,7 +51,7 @@ export class UsersController {
 
   // Register New User
   @ApiTags('Users')
-  @UseGuards(AuthGuard('jwt'), RolesGuard)
+  @UseGuards(AuthGuard('jwt'))
   @ApiBearerAuth('defaultBearerAuth')
   @ApiOperation({ summary: 'Create New User/Receptionist' })
   @UseGuards(AtGuard)
@@ -57,40 +59,49 @@ export class UsersController {
   @UseGuards(DoesUserExist)
   @Post('registerNewUser')
   async createDelivery(@Body() createUserDto: CreateUserDto) {
+    let ErrorCode: number
     try {
-      let new_user = this.usersService.create(createUserDto);
+      let new_user = await this.usersService.create(createUserDto);
+      if ((new_user)?.status_code != HttpStatus.CREATED) {
+        ErrorCode = ( new_user)?.status_code;
+        throw new Error(( new_user)?.message)
+    } 
       return new_user;
     } catch (error) {
-      // return Util?.handleTryCatchError(Util?.getTryCatchMsg('User registration failed'))
-      return Util?.getTryCatchMsg(error);
+      console.log(error)
+      return Util?.handleRequestError(Util?.getTryCatchMsg(error),ErrorCode)
     }
   }
 
   // Login Users
   @ApiTags('Users')
+  @ApiResponse({
+    status: 201,
+    description: 'The login record',
+  })
   @ApiOperation({ summary: 'Organization/User Login' })
   @Public()
   @Post('login')
   async login(@Body() loginDto: LoginDTO) {
+    let ErrorCode: number
     try {
-      const user = await this.usersService.login(loginDto);
-      if (!user) {
-        // throw new HttpException('Invalid Credential', HttpStatus.UNAUTHORIZED);
-        return Util?.handleFailResponse('Invalid Credentials')
+      let user = await this.usersService.login(loginDto); 
+      if (user?.status_code != HttpStatus.CREATED) {
+          ErrorCode = user?.status_code;
+          throw new Error(user?.message)
       } 
-      else {
         return user;
-      }
+    
     } catch (error) {
-      console.log(error);
-      return Util?.getTryCatchMsg(error);
+      console.log(error)
+      return Util?.handleRequestError(Util?.getTryCatchMsg(error),ErrorCode)
     }
   }
 
   // Get All Users
   @ApiTags('Users')
-  @UseGuards(AuthGuard('jwt'))
-  @ApiBearerAuth('defaultBearerAuth')
+  // @UseGuards(AuthGuard('jwt'))
+  // @ApiBearerAuth('defaultBearerAuth')
   @ApiOperation({ summary: 'Get All Users' })
   @Public()
   @ApiQuery({
@@ -128,10 +139,15 @@ export class UsersController {
         attributes: { exclude: ['createdAt', 'updatedAt', 'deletedAt'] },
       });
 
+
+
+
       let result = Util?.getPagingData(allQueries, page, limit);
       console.log(result);
 
+
       const dataResult = { ...result };
+
       return Util?.handleSuccessRespone(
         dataResult,
         'Users Data retrieved successfully.',
@@ -143,15 +159,20 @@ export class UsersController {
   }
 
   // Get User By The Id
-  @UseGuards(AuthGuard('jwt'))
-  @ApiBearerAuth('defaultBearerAuth')
+  // @UseGuards(AuthGuard('jwt'))
+  // @ApiBearerAuth('defaultBearerAuth')
   @ApiOperation({ summary: 'Get User By userId' })
   @Public()
   @UseGuards(AtGuard)
   @Get(':userId')
   async findOne(@Param('userId') userId: string) {
+    let ErrorCode = Number
     try {
       let userData = await this.usersService.findOne(userId);
+    //   if ((userData)?.status_code != HttpStatus.CREATED) {
+    //     ErrorCode = ( userData)?.status_code;
+    //     throw new Error(( userData)?.message)
+    // } 
       return userData;
     } catch (error) {
       console.log(error);
@@ -171,12 +192,17 @@ export class UsersController {
     @Param('userId') userId: string,
     @Body() updateUserDto: UpdateUserDto,
   ) {
+    let ErrorCode: number
     try {
       const userUpdate = await this.usersService.update(userId, updateUserDto);
+      if ((userUpdate)?.status_code != HttpStatus.OK) {
+        ErrorCode = ( userUpdate)?.status_code;
+        throw new Error(( userUpdate)?.message)
+    } 
       return userUpdate;
     } catch (error) {
       console.log(error);
-      return Util?.getTryCatchMsg(error);
+      return Util?.handleRequestError(Util?.getTryCatchMsg(error),ErrorCode)
     }
   }
 
@@ -189,18 +215,23 @@ export class UsersController {
   @UseGuards(AtGuard)
   @Patch(':userId/profilePhoto')
   async updateImg(
-    @Param('id') userId: string,
+    @Param('userId') userId: string,
     @Body() createUserImgDto: CreateUserImgDto,
   ) {
+    let ErrorCode: number
     try {
       const userUpdateImg = await this.usersService.updateImg(
         userId,
         createUserImgDto,
       );
+      if ((userUpdateImg)?.status_code != HttpStatus.OK) {
+        ErrorCode = ( userUpdateImg)?.status_code;
+        throw new Error(( userUpdateImg)?.message)
+    } 
       return userUpdateImg;
     } catch (error) {
       console.log(error);
-      return Util?.getTryCatchMsg(error);
+      return Util?.handleRequestError(Util?.getTryCatchMsg(error),ErrorCode)
     }
   }
 
@@ -216,15 +247,20 @@ export class UsersController {
     @Param('userId') userId: string,
     @Body() changePassDTO: ChangePassDTO,
   ) {
+    let ErrorCode: number
     try {
       const userPass = await this.usersService.changePass(
         userId,
         changePassDTO,
       );
+      if ((userPass)?.status_code != HttpStatus.OK) {
+        ErrorCode = ( userPass)?.status_code;
+        throw new Error(( userPass)?.message)
+    } 
       return userPass;
     } catch (error) {
       console.log(error);
-      return Util?.getTryCatchMsg(error);
+      return Util?.handleRequestError(Util?.getTryCatchMsg(error),ErrorCode)
     }
   }
 
@@ -234,13 +270,17 @@ export class UsersController {
   @ApiOperation({ summary: 'Forgot Customer Password' })
   @Post('forgot-password')
   async forgotPassword(@Body() data: ForgotPasswordDto) {
+    let ErrorCode: number
     try {
       let res = await this.usersService.forgetPassword(data);
+      if ((res)?.status_code != HttpStatus.CREATED) {
+        ErrorCode = ( res)?.status_code;
+        throw new Error(( res)?.message)
+    } 
       return res;
     } catch (error) {
       console.log(error);
-      // return Util?.handleTryCatchError('Failed to send email');
-      return Util?.getTryCatchMsg(error);
+      return Util?.handleRequestError(Util?.getTryCatchMsg(error),ErrorCode)
     }
   }
 
@@ -254,11 +294,17 @@ export class UsersController {
     @Param('token') token: string,
     @Body() data: ResetPasswordDto,
   ) {
+    let ErrorCode: number
     try {
       let res = await this.usersService.resetPassword(token, data);
+      if ((res)?.status_code != HttpStatus.CREATED) {
+        ErrorCode = ( res)?.status_code;
+        throw new Error(( res)?.message)
+    } 
       return res;
     } catch (error) {
-      return Util?.getTryCatchMsg(error);
+      console.log(error);
+      return Util?.handleRequestError(Util?.getTryCatchMsg(error),ErrorCode)
     }
   }
 
@@ -271,6 +317,7 @@ export class UsersController {
   @UseGuards(AtGuard)
   @Delete(':userId')
   async remove(@Param('userId') userId: string) {
+    let ErrorCode: number
     try {
       const user = await User.findOne({ where: { userId } });
       if (!user) {
@@ -279,14 +326,15 @@ export class UsersController {
 
       Object.assign(user);
       await user.destroy();
-      return Util?.handleSuccessRespone(
-        Util?.SuccessRespone,
-        'User data deleted successfully.',
-      );
+
+    //   if ((user)?.status_code != HttpStatus.CREATED) {
+    //     ErrorCode = ( user)?.status_code;
+    //     throw new Error(( user)?.message)
+    // } 
+     
     } catch (error) {
       console.log(error);
-      // return Util?.handleTryCatchError(Util?.getTryCatchMsg('User data not deleted'));
-      return Util?.getTryCatchMsg(error);
+      return Util?.handleRequestError(Util?.getTryCatchMsg(error),ErrorCode);
     }
   }
 
@@ -309,16 +357,16 @@ export class UsersController {
   @Public()
   @Post('logout')
   async logout(@Body() logoutDto: LogOutDTO) {
+    let ErrorCode: number
     try {
       const user = await this.usersService.logout(logoutDto);
-      if (!user) {
-        throw new HttpException('Invalid Credential', HttpStatus.UNAUTHORIZED);
-      } else {
-        return user;
-      }
+      if (user?.status_code != HttpStatus.CREATED) {
+        ErrorCode = user?.status_code;
+        throw new Error(user?.message)
+    } 
     } catch (error) {
       console.log(error);
-      return Util?.getTryCatchMsg(error);
+      return Util?.handleRequestError(Util?.getTryCatchMsg(error),ErrorCode)
     }
   }
 }
