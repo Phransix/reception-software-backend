@@ -51,6 +51,7 @@ export class DepartmentService {
       console.log(result);
 
       const dataResult = { ...result };
+      
       return Util?.handleSuccessRespone(
         dataResult,
         'Departments Data retrieved successfully.',
@@ -139,10 +140,6 @@ export class DepartmentService {
           departmentName: { [Op.like]: `%${keyword}%` },
         },
       });
-
-      if (!deptData || deptData.length === 0) {
-        return Util?.handleFailResponse('No matching Department data found.');
-      }
 
       return Util?.handleSuccessRespone(
         deptData,

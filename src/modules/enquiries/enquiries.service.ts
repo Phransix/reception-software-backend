@@ -259,10 +259,6 @@ export class EnquiriesService {
         },
       });
 
-      if (!enquiryData || enquiryData.length === 0) {
-        return Util?.handleFailResponse('No matching Enquiry data found.');
-      }
-
       return Util?.handleSuccessRespone(
         enquiryData,
         'Enquiries Data retrieved successfully.',
