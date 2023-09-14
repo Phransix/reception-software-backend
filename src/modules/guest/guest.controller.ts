@@ -58,32 +58,18 @@ export class GuestController {
     @Query('page') page: number,
     @Query('size') size: number,
   ) {
+    let ErrorCode: number;
     try {
-      let currentPage = Util.Checknegative(page);
-      if (currentPage)
-        return Util?.handleErrorRespone("Guest current page cannot be negative");
+      let guesData = await this.guestService?.findAll(page, size);
 
-      const { limit, offset } = Util.getPagination(page, size)
-
-      const guest = await Guest.findAndCountAll({
-        limit,
-        offset,
-        attributes: { exclude: ['createdAt', 'updatedAt', 'deletedAt'] }
-      });
-
-      if (!guest || guest.count === 0) {
-        return Util?.handleFailResponse('No matching data found.');
+      if (guesData?.status_code != HttpStatus.OK) {
+        ErrorCode = guesData?.status_code;
+        throw new Error(guesData?.message);
       }
-
-      const response = Util.getPagingData(guest, page, limit)
-      console.log(response)
-      let newOne = { ...response }
-      return Util?.handleSuccessRespone(newOne, "Guest Data retrieved succesfully")
-
-
+      return guesData;
     } catch (error) {
       console.log(error)
-      return Util?.getTryCatchMsg(error)
+      return Util?.handleRequestError(Util?.getTryCatchMsg(error), ErrorCode);
     }
 
   }
@@ -167,7 +153,7 @@ export class GuestController {
     let ErrorCode: number
     try {
       const guest = await this.guestService.guestSignIn(guestOpDTO)
-      if (guest?.status_code != HttpStatus.OK) {
+      if (guest?.status_code != HttpStatus.CREATED) {
         ErrorCode = guest?.status_code;
         throw new Error(guest?.message)
       }
@@ -191,7 +177,7 @@ export class GuestController {
     let ErrorCode: number
     try {
       const guest = await this.guestService.guestSignOut(guestOpDTO)
-      if (guest?.status_code != HttpStatus.OK) {
+      if (guest?.status_code != HttpStatus.CREATED) {
         ErrorCode = guest?.status_code;
         throw new Error(guest?.message)
       }

@@ -40,14 +40,31 @@ export class GuestService {
     }
   }
 
-  async findAll() {
+  async findAll(page:number, size: number) {
     try {
-      const guest = await Guest.findAll({
-        attributes: {
-          exclude: ['createdAt', 'updatedAt']
-        }
+      let currentPage = Util?.Checknegative(page);
+      if (currentPage) {
+        return Util?.handleErrorRespone(
+          'Guest current page cannot be negative',
+        );
+      }
+
+      const { limit, offset } = Util?.getPagination(page, size);
+
+      const guestData = await Guest.findAndCountAll({
+        limit,
+        offset,
+        attributes: { exclude: ['createdAt', 'updatedAt', 'deletedAt'] },
       })
-      return Util?.handleSuccessRespone(guest, "Guest Data retrieval Successful")
+      
+      let result = Util?.getPagingData(guestData, page, limit);
+      console.log(result);
+
+      const dataResult = { ...result };
+      return Util?.handleSuccessRespone(
+        dataResult,
+        'Guest Data retrieved successfully.',
+      );
     } catch (error) {
       console.log(error)
       return Util?.handleGrpcTryCatchError(Util?.getTryCatchMsg(error));
@@ -152,7 +169,7 @@ export class GuestService {
             }
           }
         );
-        return Util?.handleSuccessRespone(guest_data, "Guest Sign In Success")
+        return Util?.handleCustonCreateResponse(guest_data, "Guest Sign In Success")
       }
     } catch (error) {
       console.log(error)
@@ -192,7 +209,7 @@ export class GuestService {
             }
           }
         )
-        return Util?.handleSuccessRespone(guest_data, "Guest Sign Out Success")
+        return Util?.handleCustonCreateResponse(guest_data, "Guest Sign Out Success")
       }
     } catch (error) {
       console.log(error)

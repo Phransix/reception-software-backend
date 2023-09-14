@@ -24,18 +24,34 @@ export class PurposeService {
     }
   }
 
-  async findAll() {
+  async findAll(page: number, size: number) {
     try {
-      const purpose = await Purpose.findAll({
-        attributes: {
-          exclude:['createdAt','updatedAt']
-        }
-      })
-      return Util?.handleSuccessRespone(purpose,"Purpose Data retrieved Successfully")
+      let currentPage = Util.Checknegative(page);
+      if (currentPage) {
+        return Util?.handleErrorRespone(
+          'Purpose current page cannot be negative',
+        );
+      }
+      const { limit, offset } = Util.getPagination(page, size);
+
+      const allQueries = await Purpose.findAndCountAll({
+        limit,
+        offset,
+        attributes: { exclude: ['createdAt', 'updatedAt', 'deletedAt'] },
+      });
+
+      let result = Util?.getPagingData(allQueries, page, limit);
+      console.log(result);
+
+      const dataResult = { ...result };
+      return Util?.handleSuccessRespone(
+        dataResult,
+        'Purpose Data retrieved successfully.',
+      );
     } catch (error) {
-      console.log(error)
-      return Util?.handleGrpcReqError(Util?.getTryCatchMsg(error))
-        }
+      console.log(error);
+      return Util?.handleGrpcTryCatchError(Util?.getTryCatchMsg(error));
+    }
   }
 
   async findOne(purposeId: string) {

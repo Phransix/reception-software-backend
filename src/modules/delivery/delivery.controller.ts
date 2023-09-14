@@ -63,31 +63,19 @@ export class DeliveryController {
     @Query('page') page?: number,
     @Query('size') size?: number,
   ) {
-    try {
-      let currentPages = Util.Checknegative(page);
-      if (currentPages)
-        return Util?.handleErrorRespone("Delivery current page cannot be negative");
-
-      const { limit, offset } = Util.getPagination(page, size)
-
-      const delivery = await Delivery.findAndCountAll({
-        limit,
-        offset,
-        attributes: { exclude: ['createdAt', 'updatedAt', 'deletedAt'] }
-      });
-
-      if (!delivery || delivery.count === 0) {
-        return Util?.handleFailResponse('No matching data found.');
+      let ErrorCode: number;
+      try {
+        let deliveryData = await this.deliveryService?.findAll(page, size);
+  
+        if (deliveryData?.status_code != HttpStatus.OK) {
+          ErrorCode = deliveryData?.status_code;
+          throw new Error(deliveryData?.message);
+        }
+        return deliveryData;
+      } catch (error) {
+        console.log(error);
+        return Util?.handleRequestError(Util?.getTryCatchMsg(error), ErrorCode);
       }
-
-      const response = Util.getPagingData(delivery, page,limit)
-      console.log(response)
-      let newOne = { ...response}
-      return Util?.handleSuccessRespone(newOne, "Delivery retrieved succesfully")
-    } catch (error) {
-      console.log(error)
-      return Util?.getTryCatchMsg(error)
-    }
   }
 
   // Get Delivery by deliveryId
@@ -176,16 +164,15 @@ async staffConfirm(@Body() deliveryConfirmDTO: deliveryConfirmDTO) {
   let ErrorCode: number
   try {
     const deliveryTo = await this.deliveryService.deliveryConfirm(deliveryConfirmDTO)
-    if (deliveryTo?.status_code != HttpStatus.OK) {
+    if (deliveryTo?.status_code != HttpStatus.CREATED) {
       ErrorCode = deliveryTo?.status_code;
       throw new Error(deliveryTo?.message)
   } 
     if (!deliveryTo) {
-      return Util?.handleFailResponse('Staff does not exist')
+      return Util?.handleFailResponse('Delivery does not exist')
     }
-    else {
+
       return deliveryTo
-    }
   } catch (error) {
     console.log(error)
     return Util?.handleRequestError(Util?.getTryCatchMsg(error),ErrorCode)

@@ -7,6 +7,7 @@ import * as Abstract from '../../utils/abstract'
 import * as Util from '../../utils/index'
 import { Op } from 'sequelize';
 import { deliveryConfirmDTO } from 'src/guard/auth/deliveryConfirmDTO';
+import { Purpose } from '../purpose/entities/purpose.entity';
 
 
 @Injectable()
@@ -29,16 +30,32 @@ export class DeliveryService {
   }
 
   // Get All Delivery
-  async findAll() {
+  async findAll(page: number, size: number) {
     try {
-      const deliveries = await Delivery.findAll({
-        attributes: {
-          exclude: ['createdAt', 'updatedAt', 'deletedAt']
-        }
-      })
-      return Util?.handleSuccessRespone(deliveries, "Deliveries Data retrieved Successfully")
+      let currentPage = Util.Checknegative(page);
+      if (currentPage) {
+        return Util?.handleErrorRespone(
+          'Deliveries current page cannot be negative',
+        );
+      }
+      const { limit, offset } = Util.getPagination(page, size);
+
+      const allQueries = await Delivery.findAndCountAll({
+        limit,
+        offset,
+        attributes: { exclude: ['createdAt', 'updatedAt', 'deletedAt'] },
+      });
+
+      let result = Util?.getPagingData(allQueries, page, limit);
+      console.log(result);
+
+      const dataResult = { ...result };
+      return Util?.handleSuccessRespone(
+        dataResult,
+        'Delivery Data retrieved successfully.',
+      );
     } catch (error) {
-      console.log(error)
+      console.log(error);
       return Util?.handleGrpcTryCatchError(Util?.getTryCatchMsg(error));
     }
   }
@@ -100,7 +117,7 @@ export class DeliveryService {
 
       const delivery = await this.DeliveryModel.findOne({ where: { receipientName } })
       if (!delivery) {
-        return Util?.SuccessRespone('Delivery Confirmation Failed')
+        return Util?.handleFailResponse('Delivery Confirmation Failed')
       }
 
       await Delivery.update({ status: 'delivered' }, { where: { receipientName: receipientName } })

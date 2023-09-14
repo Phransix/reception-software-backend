@@ -56,33 +56,19 @@ export class PurposeController {
     @Query('page') page: number,
     @Query('size') size: number,
   ) {
+    let ErrorCode: number;
     try {
-      let currentPage = Util.Checknegative(page);
-      if (currentPage)
-        return Util?.handleErrorRespone("Purpose current page cannot be negative");
+      let purposeData = await this.purposeService?.findAll(page, size);
 
-      const { limit, offset } = Util.getPagination(page, size)
-
-      const purpose = await Purpose.findAndCountAll({
-        limit,
-        offset,
-        attributes: { exclude: ['createdAt', 'updatedAt', 'deletedAt'] }
-      });
-
-      if (!purpose || purpose.count === 0) {
-        return Util?.handleFailResponse('No matching data found.');
+      if (purposeData?.status_code != HttpStatus.OK) {
+        ErrorCode = purposeData?.status_code;
+        throw new Error(purposeData?.message);
       }
-
-      const response = Util.getPagingData(purpose, page, limit)
-      console.log(response)
-      let newOne = { ...response }
-      return Util?.handleSuccessRespone(newOne, "Purpose retrieved succesfully")
-
-
+      return purposeData;
     } catch (error) {
-      console.log(error)
-      return Util?.getTryCatchMsg(error) 
-       }
+      console.log(error);
+      return Util?.handleRequestError(Util?.getTryCatchMsg(error), ErrorCode);
+    }
 
   }
 
@@ -119,7 +105,7 @@ export class PurposeController {
   async update(@Param('purposeId') purposeId: string, @Body() updatePurposeDto: UpdatePurposeDto) {
     let ErrorCode: number
     try {
-      const purpose = this.purposeService.update(purposeId,updatePurposeDto)
+      const purpose = await this.purposeService.update(purposeId,updatePurposeDto)
       if (purpose && 'status_code' in purpose && purpose.status_code !== HttpStatus.OK) {
         ErrorCode = purpose?.status_code;
         throw new Error(purpose?.message)

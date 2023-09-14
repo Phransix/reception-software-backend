@@ -114,5 +114,3 @@ export class Guest extends Model<Guest>{
 
 
 }
-
-
