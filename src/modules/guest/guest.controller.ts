@@ -224,10 +224,10 @@ export class GuestController {
     let ErrorCode: number
     try {
       const guest = await this.guestService.searchGuest(keyword.charAt(0).toUpperCase());
-      // if (guest?.status_code != HttpStatus.OK) {
-      //   ErrorCode = guest?.status_code;
-      //   throw new Error(guest?.message)
-      // }
+      if (guest?.status_code != HttpStatus.OK) {
+        ErrorCode = guest?.status_code;
+        throw new Error(guest?.message)
+      }
       return guest
     } catch (error) {
       console.log(error)
@@ -262,10 +262,10 @@ export class GuestController {
     let ErrorCode: number
     try {
       const guestSearch = await this.guestService.customGuestSearch(startDate, endDate)
-      // if (guestSearch?.status_code != HttpStatus.OK) {
-      //   ErrorCode = guestSearch?.status_code;
-      //   throw new Error(guestSearch?.message)
-      // }
+      if (guestSearch?.status_code != HttpStatus.OK) {
+        ErrorCode = guestSearch?.status_code;
+        throw new Error(guestSearch?.message)
+      }
       return guestSearch
     } catch (error) {
       console.log(error)
@@ -291,7 +291,12 @@ export class GuestController {
   ) {
     let ErrorCode: number
     try {
-      return this.guestService.genderFilter(keyword)
+      const guest = await this.guestService.genderFilter(keyword)
+      if (guest?.status_code != HttpStatus.OK) {
+        ErrorCode = guest?.status_code;
+        throw new Error(guest?.message)
+    } 
+    return guest
     } catch (error) {
       console.log(error)
       return Util?.handleRequestError(Util?.getTryCatchMsg(error), ErrorCode)
@@ -313,7 +318,13 @@ export class GuestController {
     let ErrorCode: number
     try {
 
-      return this.guestService.orgGuestFilter(keyword)
+      const guest = await this.guestService.orgGuestFilter(keyword)
+
+      if (guest?.status_code != HttpStatus.OK) {
+        ErrorCode = guest?.status_code;
+        throw new Error(guest?.message)
+    } 
+    return guest
     } catch (error) {
       console.log(error)
       return Util?.handleRequestError(Util?.getTryCatchMsg(error), ErrorCode)
@@ -339,7 +350,12 @@ export class GuestController {
   ) {
     let ErrorCode: number
     try {
-      return this.guestService.guestVisitStatus(keyword)
+      const guest = await this.guestService.guestVisitStatus(keyword)
+      if (guest?.status_code != HttpStatus.OK) {
+        ErrorCode = guest?.status_code;
+        throw new Error(guest?.message)
+    } 
+    return guest
     } catch (error) {
       console.log(error)
       return Util?.handleRequestError(Util?.getTryCatchMsg(error), ErrorCode)

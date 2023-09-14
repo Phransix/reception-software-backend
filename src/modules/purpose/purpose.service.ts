@@ -5,15 +5,13 @@ import { InjectModel } from '@nestjs/sequelize';
 import { Purpose } from './entities/purpose.entity';
 import * as Abstract from '../../utils/abstract'
 import * as Util from '../../utils/index'
-import { Op } from 'sequelize';
-import { log } from 'console';
 
 @Injectable()
 export class PurposeService {
 
   constructor (
     @InjectModel(Purpose) private readonly PurposeModel: typeof Purpose
-  ){}
+  ){ }
 
   // Create Purpose
   async create(createPurposeDto: CreatePurposeDto) {
@@ -63,7 +61,7 @@ export class PurposeService {
       }
       Object.assign(purpose, updatePurposeDto)
       await purpose.save()
-      return Util?.handleSuccessRespone(purpose, "Purpose Data updated Successfully")
+      return Util?.SuccessRespone("Purpose Data updated Successfully")
     } catch (error) {
       console.log(error)
       return Util?.handleGrpcReqError(Util?.getTryCatchMsg(error))
@@ -103,7 +101,7 @@ export class PurposeService {
       if (!filterCheck) {
         throw new HttpException('Purpose not found', HttpStatus.NOT_FOUND)
       }
-      return filterCheck
+      return Util?.handleSuccessRespone(filterCheck, "Purpose Data updated Successfully")
     } catch (error) {
       console.log(error)
       return Util?.handleGrpcReqError(Util?.getTryCatchMsg(error))

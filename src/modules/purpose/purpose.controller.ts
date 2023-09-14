@@ -1,4 +1,4 @@
-import { Controller, Get, Post, Body, Patch, Param, Delete, UseGuards, Query, Req, HttpStatus } from '@nestjs/common';
+import { Controller, Get, Post, Body, Patch, Param, Delete, UseGuards, Query, HttpStatus } from '@nestjs/common';
 import { PurposeService } from './purpose.service';
 import { CreatePurposeDto, visitPurpose } from './dto/create-purpose.dto';
 import { UpdatePurposeDto } from './dto/update-purpose.dto';
@@ -8,8 +8,7 @@ import * as Util from '../../utils/index'
 import { AuthGuard } from '@nestjs/passport';
 import { Purpose } from './entities/purpose.entity';
 import { AtGuard } from 'src/common/guards/at.guard';
-import { ENUM } from 'sequelize';
-import { Guest } from '../guest/entities/guest.entity';
+
 
 @Controller('purpose')
 export class PurposeController {
@@ -23,11 +22,11 @@ export class PurposeController {
   async create(@Body() createPurposeDto: CreatePurposeDto) {
     let ErrorCode: number
     try {
-      const purpose = await this.purposeService.create(createPurposeDto);
-    //   if (purpose?.status_code != HttpStatus.CREATED) {
-    //     ErrorCode = purpose?.status_code;
-    //     throw new Error (purpose?.message)
-    // } 
+      let purpose =  await this.purposeService.create(createPurposeDto);
+      if (purpose && 'status_code' in purpose && purpose.status_code !== HttpStatus.CREATED) {
+        ErrorCode = purpose?.status_code;
+        throw new Error(purpose?.message)
+      }
       return purpose
     } catch (error) {
       console.log(error)
@@ -99,6 +98,10 @@ export class PurposeController {
     let ErrorCode: number
     try {
       const purpose = await this.purposeService.findOne(purposeId);
+      if (purpose && 'status_code' in purpose && purpose.status_code !== HttpStatus.OK) {
+        ErrorCode = purpose?.status_code;
+        throw new Error(purpose?.message)
+      }
       return purpose;
     } catch (error) {
       console.log(error)
@@ -117,6 +120,10 @@ export class PurposeController {
     let ErrorCode: number
     try {
       const purpose = this.purposeService.update(purposeId,updatePurposeDto)
+      if (purpose && 'status_code' in purpose && purpose.status_code !== HttpStatus.OK) {
+        ErrorCode = purpose?.status_code;
+        throw new Error(purpose?.message)
+      }
       return purpose
     } catch (error) {
       console.log(error)
@@ -135,10 +142,10 @@ export class PurposeController {
     let ErrorCode: number
     try {
       const purpose = await this.purposeService.findOne(purposeId);
-    //   if (purpose?.status_code != HttpStatus.OK) {
-    //     ErrorCode = purpose?.status_code;
-    //     throw new Error(purpose?.message)
-    // } 
+      if (purpose && 'status_code' in purpose && purpose.status_code !== HttpStatus.OK) {
+        ErrorCode = purpose?.status_code;
+        throw new Error(purpose?.message)
+      }
       return purpose
     } catch (error) {
       console.log(error)
@@ -162,9 +169,13 @@ export class PurposeController {
   async purposeFilter(
     @Query('keyword') keyword: string
     ){
-      let ErrorCode
+      let ErrorCode: number
     try {
-      return this.purposeService.guestPurpose(keyword);
+      const purpose = await this.purposeService.guestPurpose(keyword);
+      if (purpose && 'status_code' in purpose && purpose.status_code !== HttpStatus.OK) {
+        ErrorCode = purpose?.status_code;
+        throw new Error(purpose?.message)
+      }
     } catch (error) {
       console.log(error)
       return Util?.handleRequestError(Util?.getTryCatchMsg(error),ErrorCode)

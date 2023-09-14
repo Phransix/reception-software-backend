@@ -210,10 +210,10 @@ export class GuestService {
           },
         },
       });
-      if (!guest) {
-        return Util?.handleFailResponse('Guest not found')
+      if (!guest || guest.length === 0) {
+        return Util?.handleFailResponse('No matching data found.');
       }
-      return guest
+      return Util?.handleSuccessRespone(guest, "Guest name change Success")
     } catch (error) {
       console.log(error)
       return Util?.handleGrpcTryCatchError(Util?.getTryCatchMsg(error));
@@ -233,9 +233,9 @@ export class GuestService {
         attributes: { exclude: ['createdAt', 'updated', 'deletedAt'] }
       });
       if (!guestSearch || guestSearch.length === 0) {
-        return Util?.handleFailResponse("No matching Enquiry data found.")
+        return Util?.handleFailResponse('No matching data found.');
       }
-      return guestSearch
+      return Util?.handleSuccessRespone(guestSearch, "Guest Data retrieved Successfully")
     } catch (error) {
       console.log(error)
       return Util?.handleGrpcTryCatchError(Util?.getTryCatchMsg(error));
@@ -257,10 +257,10 @@ export class GuestService {
           ...filter
         },
       });
-      if (!filterCheck) {
-        return Util?.handleFailResponse('Gender not found')
+      if (!filterCheck || filterCheck.length === 0) {
+        return Util?.handleFailResponse('No matching data found.');
       }
-      return filterCheck
+      return Util?.handleSuccessRespone(filterCheck, "Guest Data filtered Successfully")
     } catch (error) {
       console.log(error)
       return Util?.handleGrpcTryCatchError(Util?.getTryCatchMsg(error));
@@ -281,11 +281,10 @@ export class GuestService {
           ...filter
         },
       });
-      if (!filterCheck) {
-        return Util?.handleFailResponse('Organization not found')
+      if (!filterCheck || filterCheck.length === 0) {
+        return Util?.handleFailResponse('No matching data found.');
       }
-      return filterCheck
-
+      return Util?.handleSuccessRespone(filterCheck, "Guest Data filtered Successfully")
     } catch (error) {
       console.log(error)
       return Util?.handleGrpcTryCatchError(Util?.getTryCatchMsg(error));
@@ -307,11 +306,11 @@ export class GuestService {
         },
       });
 
-      if (!filterStatus) {
-        return Util?.handleFailResponse('Visit status not found')
+      if (!filterStatus || filterStatus.length === 0) {
+        return Util?.handleFailResponse('No matching data found.');
       }
 
-      return filterStatus
+      return Util?.handleSuccessRespone(filterStatus, "Guest Data filtered Successfully")
     } catch (error) {
       console.log(error)
       return Util?.handleGrpcTryCatchError(Util?.getTryCatchMsg(error));
