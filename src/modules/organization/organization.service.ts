@@ -198,7 +198,6 @@ export class OrganizationService {
         tokens,
       };
 
-
       //  Send user data and tokens
       return Util?.handleCustonCreateResponse(orgDetails, 'Login successfully.');
     } catch (error) {
@@ -438,9 +437,7 @@ export class OrganizationService {
     });
   }
 
-  // async findByPassword(password: string): Promise<Organization>{
-  //   return await this.organizationModel.findOne<Organization>({where: {password}})
-  // }
+ 
 
   async findOneByEmail(email: string): Promise<Organization> {
     return await this.organizationModel.findOne<Organization>({
@@ -477,8 +474,8 @@ export class OrganizationService {
     const [at,rt] = await Promise.all([
       this.jwtService.signAsync(jwtPayload, {
         secret: this.config.get<string>('JWT_SECRETTABLET'),
-        expiresIn: '1m',
-        // expiresIn: '7d',
+        // expiresIn: '1m',
+        expiresIn: '7d',
       }),
       this.jwtService.signAsync(jwtPayload, {
         secret: this.config.get<string>('RT_SECRET'),

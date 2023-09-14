@@ -81,13 +81,13 @@ export class DepartmentController {
    async findAll(@Query('page') page: number, @Query('size') size: number) {
      let ErrorCode: number;
      try {
-       let staffData = await this.departmentService?.findAll(page, size);
+       let deptData = await this.departmentService?.findAll(page, size);
  
-       if (staffData?.status_code != HttpStatus.OK) {
-         ErrorCode = staffData?.status_code;
-         throw new Error(staffData?.message);
+       if (deptData?.status_code != HttpStatus.OK) {
+         ErrorCode = deptData?.status_code;
+         throw new Error(deptData?.message);
        }
-       return staffData;
+       return deptData;
      } catch (error) {
        console.log(error);
        return Util?.handleRequestError(Util?.getTryCatchMsg(error), ErrorCode);

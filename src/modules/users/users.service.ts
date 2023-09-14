@@ -1,5 +1,6 @@
 import {
   BadRequestException,
+  ForbiddenException,
   HttpException,
   HttpStatus,
   Injectable,
@@ -31,6 +32,7 @@ import {
 import { ResetPasswordService } from 'src/helper/ResetPassHelper';
 import { log } from 'console';
 import { LogOutDTO } from 'src/guard/auth/logoutDto';
+import { UsersModule } from './users.module';
 
 @Injectable()
 export class UsersService {
@@ -254,7 +256,7 @@ export class UsersService {
       if (rollImage) {
         await this.imagehelper.unlinkFile(rollImage);
       }
-      console.log(error)
+      console.log(error);
       return Util?.handleGrpcTryCatchError(Util?.getTryCatchMsg(error));
     }
   }
@@ -317,7 +319,7 @@ export class UsersService {
         `Reset password link sent to ${user?.email}`,
       );
     } catch (error) {
-      console.log(error)
+      console.log(error);
       return Util?.handleGrpcTryCatchError(Util?.getTryCatchMsg(error));
     }
   }
@@ -429,7 +431,7 @@ export class UsersService {
       if (!user) {
         throw new Error('User data not found.');
       }
-      await this?.userModel?.destroy()
+      await this?.userModel?.destroy();
       return Util?.SuccessRespone('User deleted successfully.');
     } catch (error) {
       console.log(error);
@@ -483,6 +485,8 @@ export class UsersService {
     }
   }
 
+
+
   async getTokens(user_id: string, email: string, role: string) {
     const jwtPayload = {
       sub: user_id,
@@ -495,7 +499,7 @@ export class UsersService {
       this.jwtService.signAsync(jwtPayload, {
         secret: this.config.get<string>('AT_SECRET'),
         // expiresIn: '15m',
-        expiresIn: '7d',
+        expiresIn: '3d',
       }),
       this.jwtService.signAsync(jwtPayload, {
         secret: this.config.get<string>('RT_SECRET'),

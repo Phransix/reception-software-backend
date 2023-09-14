@@ -278,10 +278,6 @@ export class StaffService {
         },
       });
 
-      if (!staffData || staffData.length === 0) {
-        return Util?.handleFailResponse('No matching Staff data found.');
-      }
-
       return Util?.handleSuccessRespone(
         staffData,
         'Staffs Data retrieved successfully.',
