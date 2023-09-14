@@ -20,9 +20,7 @@ export class EnquiriesService {
     try {
       console.log(createEnquiryDto);
       await Abstract?.createData(Enquiry, createEnquiryDto);
-      return Util?.handleCreateSuccessRespone(
-        'Enquiry created successfully.',
-      );
+      return Util?.handleCreateSuccessRespone('Enquiry created successfully.');
     } catch (error) {
       console.log(error);
       return Util?.handleGrpcTryCatchError(Util?.getTryCatchMsg(error));
@@ -30,15 +28,28 @@ export class EnquiriesService {
   }
 
   // Get All Enquiries
-  async findAll() {
+  async findAll(page: number, size: number) {
     try {
-      const enquiries = await Enquiry.findAll({
-        attributes: {
-          exclude: ['createdAt', 'updatedAt', 'deletedAt'],
-        },
+      let currentPage = Util.Checknegative(page);
+      if (currentPage) {
+        return Util?.handleErrorRespone(
+          'Enquiries current page cannot be negative',
+        );
+      }
+      const { limit, offset } = Util.getPagination(page, size);
+
+      const allQueries = await Enquiry.findAndCountAll({
+        limit,
+        offset,
+        attributes: { exclude: ['createdAt', 'updatedAt', 'deletedAt'] },
       });
+
+      let result = Util?.getPagingData(allQueries, page, limit);
+      console.log(result);
+
+      const dataResult = { ...result };
       return Util?.handleSuccessRespone(
-        enquiries,
+        dataResult,
         'Enquiries Data retrieved successfully.',
       );
     } catch (error) {
@@ -81,9 +92,7 @@ export class EnquiriesService {
 
       Object.assign(enquiry, updateEnquiryDto);
       await enquiry.save();
-      return Util?.SuccessRespone(
-        'Enquiry updated successfully.',
-      );
+      return Util?.SuccessRespone('Enquiry updated successfully.');
     } catch (error) {
       console.log(error);
       return Util?.handleGrpcTryCatchError(Util?.getTryCatchMsg(error));
@@ -100,9 +109,7 @@ export class EnquiriesService {
 
       Object.assign(enquiry);
       await enquiry.destroy();
-      return Util?.SuccessRespone(
-        'Enquiry deleted successfully.',
-      );
+      return Util?.SuccessRespone('Enquiry deleted successfully.');
     } catch (error) {
       console.log(error);
       return Util?.handleGrpcTryCatchError(Util?.getTryCatchMsg(error));
@@ -110,23 +117,41 @@ export class EnquiriesService {
   }
 
   // Filter Enquiry Data By Costom Range
-  async filterByCustomRange(startDate: Date, endDate: Date) {
+  async findEnquiryByDateRange(
+    startDate: Date,
+    endDate: Date,
+    page: number,
+    size: number,
+  ) {
     try {
-      let enquiryData = await Enquiry.findAll({
-        where: {
-          createdAt: {
-            [Op.between]: [startDate, endDate],
-          },
-        },
+      let enquiryData = { startDate, endDate };
+
+      let currentPage = Util?.Checknegative(page);
+      if (currentPage) {
+        return Util?.handleErrorRespone(
+          'Enquiry current page cannot be negative',
+        );
+      }
+      const { limit, offset } = Util?.getPagination(page, size);
+
+      const allQueries = await Enquiry.findAndCountAll({
+        limit,
+        offset,
         attributes: { exclude: ['createdAt', 'updatedAt', 'deletedAt'] },
       });
-      if (!enquiryData || enquiryData.length === 0) {
-        return Util?.handleFailResponse('No matching Enquiry data found.');
-      }
+
+      const result = Util?.getPagingData(allQueries, page, limit);
+
+      const dataResult = {
+        ...enquiryData,
+        where: {
+          pagination: result,
+        },
+      };
 
       return Util?.handleSuccessRespone(
-        enquiryData,
-        'Enquiries Data retrieved successfully.',
+        dataResult,
+        'Enquiries data retrieve successfully',
       );
     } catch (error) {
       console.log(error);
@@ -135,7 +160,35 @@ export class EnquiriesService {
   }
 
   // Filter Enquiries By Purpose
-  async purposefilter(keyword: string) {
+  // async purposefilter(keyword: string) {
+  //   try {
+  //     let filter = {};
+
+  //     if (keyword != null) {
+  //       filter = { purpose: keyword };
+  //     }
+  //     const filterCheck = await this?.enquiryModel.findAll({
+  //       where: {
+  //         ...filter,
+  //       },
+  //     });
+  //     if (!filterCheck) {
+  //       return Util?.handleFailResponse(
+  //         'No matching Enquiry Purpose data found.',
+  //       );
+  //     }
+
+  //     return Util?.handleSuccessRespone(
+  //       filterCheck,
+  //       'Enquiries Purpose Data Filtered Successfully.',
+  //     );
+  //   } catch (error) {
+  //     console.log(error);
+  //     return Util?.handleGrpcTryCatchError(Util?.getTryCatchMsg(error));
+  //   }
+  // }
+
+  async purposefilter(keyword: string, page: number, size: number) {
     try {
       let filter = {};
 
@@ -153,8 +206,38 @@ export class EnquiriesService {
         );
       }
 
+      let currentPage = Util?.Checknegative(page);
+      if (currentPage) {
+        return Util?.handleErrorRespone(
+          'Enquiry current Page cannot be negative',
+        );
+      }
+
+      const { limit, offset } = Util?.getPagination(page, size);
+
+      let queryOption: any = {
+        limit,
+        offset,
+        attributes: { exclude: ['createdAt', 'updatedAt', 'deletedAt'] },
+      };
+
+      if (keyword) {
+        queryOption = {
+          ...queryOption,
+          where: {
+            purpose: keyword,
+          },
+        };
+      }
+
+      const allQueries = await Enquiry?.findAndCountAll(queryOption);
+
+      let result = Util?.getPagingData(allQueries, page, limit);
+      console.log(result);
+
+      const dataResult = { ...result };
       return Util?.handleSuccessRespone(
-        filterCheck,
+        dataResult,
         'Enquiries Purpose Data Filtered Successfully.',
       );
     } catch (error) {
@@ -189,6 +272,4 @@ export class EnquiriesService {
       return Util?.handleGrpcTryCatchError(Util?.getTryCatchMsg(error));
     }
   }
-
- 
 }

@@ -4,39 +4,37 @@ import { CreateStaffImgDto } from './dto/create-staffImg.dto';
 import { UpdateStaffDto } from './dto/update-staff.dto';
 import { InjectModel } from '@nestjs/sequelize';
 import { Staff } from './entities/staff.entity';
-import * as Util from '../../utils/index'
+import * as Util from '../../utils/index';
 import { staffImageUploadProfile } from 'src/helper/staffProfiles';
 import { Op } from 'sequelize';
+import { Organization } from '../organization/entities/organization.entity';
 // import * as fs from 'fs';
-const fs = require('fs')
-
-
-
+const fs = require('fs');
 
 @Injectable()
 export class StaffService {
-
-  constructor(@InjectModel(Staff) private staffModel: typeof Staff,
-    private staffImgHelper: staffImageUploadProfile
-  ) { }
+  constructor(
+    @InjectModel(Staff) private staffModel: typeof Staff,
+    private staffImgHelper: staffImageUploadProfile,
+  ) {}
 
   // Create New Staff
   async create(createStaffDto: CreateStaffDto) {
     try {
-
       var image_matches = createStaffDto?.profilePhoto?.match(
-        /^data:([A-Za-z-+\/]+);base64,(.+)$/
-      )
+        /^data:([A-Za-z-+\/]+);base64,(.+)$/,
+      );
       if (!image_matches) {
-        return Util?.handleFailResponse('Invalid Input file')
+        return Util?.handleFailResponse('Invalid Input file');
       }
 
-      let staff_image = await this?.staffImgHelper?.uploadStaffImage(createStaffDto?.profilePhoto)
+      let staff_image = await this?.staffImgHelper?.uploadStaffImage(
+        createStaffDto?.profilePhoto,
+      );
 
       let insertQry = {
-
         organizationId: createStaffDto?.organizationId,
-        organizationName:createStaffDto?.organizationName,
+        organizationName: createStaffDto?.organizationName,
         departmentId: createStaffDto?.departmentId,
         departmentName: createStaffDto?.departmentName,
         title: createStaffDto?.title,
@@ -45,36 +43,46 @@ export class StaffService {
         phoneNumber: createStaffDto?.phoneNumber,
         gender: createStaffDto?.gender,
         role: createStaffDto?.role,
-        profilePhoto: staff_image
+        profilePhoto: staff_image,
+      };
+      console.log(insertQry);
 
-      }
-      console.log(insertQry)
-
-      await this.staffModel?.create({ ...insertQry })
+      await this.staffModel?.create({ ...insertQry });
       // await Abstract?.createData(Staff,createStaffDto);
-      return Util?.handleCreateSuccessRespone("Staff Created Successfully");
-
+      return Util?.handleCreateSuccessRespone('Staff Created Successfully');
     } catch (error) {
-      console.log(error)
+      console.log(error);
       return Util?.handleGrpcTryCatchError(Util?.getTryCatchMsg(error));
     }
-  };
-
+  }
 
   // Get All Staffs
-  async findAll() {
+  async findAll(page: number, size: number) {
     try {
-      const staffs = await Staff.findAll({
+      let currentPage = Util.Checknegative(page);
+      if (currentPage) {
+        return Util?.handleErrorRespone(
+          'Staffs current page cannot be negative',
+        );
+      }
+      const { limit, offset } = Util.getPagination(page, size);
 
-        attributes: {
-          exclude: ['password', 'createdAt', 'updatedAt', 'deletedAt']
-        },
-      })
-      console.log(staffs)
-      return Util?.handleSuccessRespone(staffs, "Staffs Data retrieved successfully.")
+      const allQueries = await Staff.findAndCountAll({
+        limit,
+        offset,
+        attributes: { exclude: ['createdAt', 'updatedAt', 'deletedAt'] },
+      });
 
+      let result = Util?.getPagingData(allQueries, page, limit);
+      console.log(result);
+
+      const dataResult = { ...result };
+      return Util?.handleSuccessRespone(
+        dataResult,
+        'Staffs Data retrieved successfully.',
+      );
     } catch (error) {
-      console.log(error)
+      console.log(error);
       return Util?.handleGrpcTryCatchError(Util?.getTryCatchMsg(error));
     }
   }
@@ -84,22 +92,25 @@ export class StaffService {
     try {
       const staff = await Staff.findOne({
         attributes: {
-          exclude: ['password', 'createdAt', 'updatedAt', 'deletedAt']
+          exclude: ['password', 'createdAt', 'updatedAt', 'deletedAt'],
         },
-        where: { staffId }
-      })
+        where: { staffId },
+      });
 
       if (!staff) {
-        return Util?.handleFailResponse(`Staff with this #${staffId} not found`)
+        return Util?.handleFailResponse(
+          `Staff with this #${staffId} not found`,
+        );
       }
 
-      return Util?.handleSuccessRespone(staff, "Staffs Data retrieved successfully.")
-
+      return Util?.handleSuccessRespone(
+        staff,
+        'Staffs Data retrieved successfully.',
+      );
     } catch (error) {
-      console.log(error)
-      return Util?.getTryCatchMsg(error)
+      console.log(error);
+      return Util?.handleGrpcTryCatchError(Util?.getTryCatchMsg(error));
     }
-
   }
 
   // Update Staff By The Id
@@ -107,37 +118,41 @@ export class StaffService {
     let rollImage = '';
 
     try {
-      const staff_data = await this.staffModel.findOne({ where: { staffId } })
+      const staff_data = await this.staffModel.findOne({ where: { staffId } });
       if (!staff_data) {
-        return Util?.handleFailResponse(`Staff with this #${staffId} not found`)
+        return Util?.handleFailResponse(
+          `Staff with this #${staffId} not found`,
+        );
       }
 
       var image_matches = updateStaffDto?.profilePhoto?.match(
-        /^data:([A-Za-z-+\/]+);base64,(.+)$/
-      )
+        /^data:([A-Za-z-+\/]+);base64,(.+)$/,
+      );
       if (!image_matches) {
-        return Util?.handleFailResponse('Invalid Input file')
+        return Util?.handleFailResponse('Invalid Input file');
       }
 
-      let staff_image = await this?.staffImgHelper?.uploadStaffImage(updateStaffDto?.profilePhoto)
-      rollImage = staff_image
+      let staff_image = await this?.staffImgHelper?.uploadStaffImage(
+        updateStaffDto?.profilePhoto,
+      );
+      rollImage = staff_image;
 
-       // Delete the old profile photo if it exists in the directorate
-       let front_path =staff_data?.profilePhoto
- 
-       if(front_path != null){
-         fs.access(front_path, fs.F_OK, async (err) => {
-           if (err) {
-             console.error(err)
-             return
-           }
-           await this.staffImgHelper.unlinkFile(front_path); 
-         })
-       }
+      // Delete the old profile photo if it exists in the directorate
+      let front_path = staff_data?.profilePhoto;
+
+      if (front_path != null) {
+        fs.access(front_path, fs.F_OK, async (err) => {
+          if (err) {
+            console.error(err);
+            return;
+          }
+          await this.staffImgHelper.unlinkFile(front_path);
+        });
+      }
 
       let insertQry = {
         organizationId: updateStaffDto?.organizationId,
-        organizationName:updateStaffDto?.organizationName,
+        organizationName: updateStaffDto?.organizationName,
         departmentId: updateStaffDto?.departmentId,
         departmentName: updateStaffDto?.departmentName,
         title: updateStaffDto?.title,
@@ -146,85 +161,84 @@ export class StaffService {
         phoneNumber: updateStaffDto?.phoneNumber,
         gender: updateStaffDto?.gender,
         role: updateStaffDto?.role,
-        profilePhoto: staff_image
+        profilePhoto: staff_image,
+      };
 
-      }
+      await this?.staffModel?.update(insertQry, {
+        where: { id: staff_data?.id },
+      });
 
-      await this?.staffModel?.update(insertQry,
-        {
-          where: { id: staff_data?.id }
-        })
-
-      return Util?.SuccessRespone(`Staff with this #${staffId} updated successfully`)
-
+      return Util?.SuccessRespone(
+        `Staff with this #${staffId} updated successfully`,
+      );
     } catch (error) {
-       if (rollImage) {
-        await this?.staffImgHelper?.unlinkFile(rollImage)
+      if (rollImage) {
+        await this?.staffImgHelper?.unlinkFile(rollImage);
       }
-      console.log(error)
+      console.log(error);
       return Util?.handleGrpcTryCatchError(Util?.getTryCatchMsg(error));
     }
   }
-
 
   // Update Staff Profile Photo By The Id
   async updateImg(staffId: string, createStaffImgDto: CreateStaffImgDto) {
     let rollImage = '';
     try {
-      const staff_data = await this.staffModel.findOne({ where: { staffId } })
+      const staff_data = await this.staffModel.findOne({ where: { staffId } });
       if (!staff_data) {
-        return Util?.handleFailResponse(`Staff with this #${staffId} not found`)
+        return Util?.handleFailResponse(
+          `Staff with this #${staffId} not found`,
+        );
       }
 
       if (
         createStaffImgDto?.profilePhoto == null ||
         createStaffImgDto?.profilePhoto == undefined ||
-        createStaffImgDto?.profilePhoto == ""
+        createStaffImgDto?.profilePhoto == ''
       ) {
-        return Util?.handleFailResponse('File Can not be empty')
+        return Util?.handleFailResponse('File Can not be empty');
       }
 
       var image_matches = createStaffImgDto?.profilePhoto?.match(
-        /^data:([A-Za-z-+\/]+);base64,(.+)$/
-      )
+        /^data:([A-Za-z-+\/]+);base64,(.+)$/,
+      );
       if (!image_matches) {
-        return Util?.handleFailResponse('Invalid Input file')
+        return Util?.handleFailResponse('Invalid Input file');
       }
 
-      let staff_image = await this?.staffImgHelper?.uploadStaffImage(createStaffImgDto?.profilePhoto)
+      let staff_image = await this?.staffImgHelper?.uploadStaffImage(
+        createStaffImgDto?.profilePhoto,
+      );
 
-      rollImage = staff_image
+      rollImage = staff_image;
 
-        // Delete the old profile photo if it exists in the directorate
-        let front_path =staff_data?.profilePhoto
- 
-            if(front_path != null){
-              fs.access(front_path, fs.F_OK, async (err) => {
-                if (err) {
-                  console.error(err)
-                  return
-                }
-                await this.staffImgHelper.unlinkFile(front_path); 
-              })
-            }
+      // Delete the old profile photo if it exists in the directorate
+      let front_path = staff_data?.profilePhoto;
 
-    
+      if (front_path != null) {
+        fs.access(front_path, fs.F_OK, async (err) => {
+          if (err) {
+            console.error(err);
+            return;
+          }
+          await this.staffImgHelper.unlinkFile(front_path);
+        });
+      }
       let insertQry = {
-        profilePhoto: staff_image
-      }
+        profilePhoto: staff_image,
+      };
+      await this?.staffModel?.update(insertQry, {
+        where: { id: staff_data?.id },
+      });
 
-      await this?.staffModel?.update(insertQry,
-        {
-          where: { id: staff_data?.id }
-        })
-
-      return Util?.handleCreateSuccessRespone(`Staff with this #${staffId} and Image updated successfully`)
-
+      return Util?.handleCreateSuccessRespone(
+        `Staff with this #${staffId} and Image updated successfully`,
+      );
     } catch (error) {
       if (rollImage) {
-        await this?.staffImgHelper?.unlinkFile(rollImage)
+        await this?.staffImgHelper?.unlinkFile(rollImage);
       }
-      console.log(error)
+      console.log(error);
       return Util?.handleGrpcTryCatchError(Util?.getTryCatchMsg(error));
     }
   }
@@ -232,57 +246,57 @@ export class StaffService {
   // Delete Staff By The Id
   async remove(staffId: string) {
     try {
-      const staff = await Staff.findOne({ where: { staffId } })
+      const staff = await Staff.findOne({ where: { staffId } });
       if (!staff) {
-        return Util?.handleFailResponse(`Staff with this #${staffId} not found`)
+        return Util?.handleFailResponse(
+          `Staff with this #${staffId} not found`,
+        );
       }
 
-      await this?.staffModel?.destroy()
-    
-      return Util?.handleSuccessRespone(Util?.SuccessRespone, `Staff with this #${staffId}  deleted successfully`)
+      await this?.staffModel?.destroy();
 
-
+      return Util?.handleSuccessRespone(
+        Util?.SuccessRespone,
+        `Staff with this #${staffId}  deleted successfully`,
+      );
     } catch (error) {
-      console.log(error)
+      console.log(error);
       return Util?.handleGrpcTryCatchError(Util?.getTryCatchMsg(error));
     }
   }
 
-  // Search Staff by FullName 
+  // Search Staff by FullName
   async searchStaff(keyword: string) {
     try {
       const staffData = await this?.staffModel.findAll({
-
         attributes: {
-          exclude: ['createdAt', 'updatedAt', 'deletedAt']
+          exclude: ['createdAt', 'updatedAt', 'deletedAt'],
         },
 
         where: {
-          fullName: { [Op.like]: `%${keyword}%`, },
+          fullName: { [Op.like]: `%${keyword}%` },
         },
-
       });
 
       if (!staffData || staffData.length === 0) {
         return Util?.handleFailResponse('No matching Staff data found.');
       }
 
-      return Util?.handleSuccessRespone(staffData, "Staffs Data retrieved successfully.")
-
+      return Util?.handleSuccessRespone(
+        staffData,
+        'Staffs Data retrieved successfully.',
+      );
     } catch (error) {
-      console.log(error)
+      console.log(error);
       return Util?.handleGrpcTryCatchError(Util?.getTryCatchMsg(error));
     }
   }
 
-
   async findOneByEmail(email: string): Promise<Staff> {
-    return await this.staffModel.findOne<Staff>({ where: { email } })
+    return await this.staffModel.findOne<Staff>({ where: { email } });
   }
 
   async findOneByPhoneNumber(phoneNumber: string): Promise<Staff> {
-    return await this.staffModel.findOne<Staff>({ where: { phoneNumber } })
+    return await this.staffModel.findOne<Staff>({ where: { phoneNumber } });
   }
-
-
 }

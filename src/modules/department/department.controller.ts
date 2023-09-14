@@ -60,54 +60,39 @@ export class DepartmentController {
     }
   }
 
-  // Get All Departments
-  @UseGuards(AuthGuard('jwt'))
-  @ApiBearerAuth('defaultBearerAuth')
-  @ApiOperation({ summary: 'Get All Departments' })
-  @Public()
-  @ApiQuery({
-    name: 'page',
-    type: 'number',
-    required: false,
-  })
-  @ApiQuery({
-    name: 'size',
-    type: 'number',
-    required: false,
-  })
-  @UseGuards(AtGuard)
-  @Get('getAllDepartments')
-  async findAll(@Query('page') page: number, @Query('size') size: number) {
-    try {
-      let currentPage = Util.Checknegative(page);
-      if (currentPage) {
-        return Util?.handleErrorRespone(
-          'Departments current page cannot be negative',
-        );
-      }
 
-      const { limit, offset } = Util.getPagination(page, size);
-
-      const allDepts = await Department.findAndCountAll({
-        limit,
-        offset,
-        attributes: { exclude: ['createdAt', 'updatedAt', 'deletedAt'] },
-      });
-
-      let result = Util?.getPagingData(allDepts, page, limit);
-      console.log(result);
-
-      const dataResult = { ...result };
-      return Util?.handleSuccessRespone(
-        dataResult,
-        'Departments Data retrieved successfully.',
-      );
-    } catch (error) {
-      console.log(error);
-      return Util?.getTryCatchMsg(error);
-      // return Util?.handleTryCatchError(Util?.getTryCatchMsg(error));
-    }
-  }
+   // Get All Departments
+   @UseGuards(AuthGuard('jwt'))
+   @ApiBearerAuth('defaultBearerAuth')
+   @ApiOperation({ summary: 'Get All Departments' })
+   @Public()
+   @ApiQuery({
+     name: 'page',
+     type: 'number',
+     required: false,
+   })
+   @ApiQuery({
+     name: 'size',
+     type: 'number',
+     required: false,
+   })
+   @UseGuards(AtGuard)
+   @Get('getAllDepartments')
+   async findAll(@Query('page') page: number, @Query('size') size: number) {
+     let ErrorCode: number;
+     try {
+       let staffData = await this.departmentService?.findAll(page, size);
+ 
+       if (staffData?.status_code != HttpStatus.OK) {
+         ErrorCode = staffData?.status_code;
+         throw new Error(staffData?.message);
+       }
+       return staffData;
+     } catch (error) {
+       console.log(error);
+       return Util?.handleRequestError(Util?.getTryCatchMsg(error), ErrorCode);
+     }
+   }
 
   // Get One Department
   @UseGuards(AuthGuard('jwt'))

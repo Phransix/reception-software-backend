@@ -40,25 +40,25 @@ export class StaffController {
   @UseGuards(AtGuard)
   @UseGuards(DoesStaffExist)
   @Post('registerNewStaff')
- async create(@Body() createStaffDto: CreateStaffDto) {
-    let ErrorCode: number
+  async create(@Body() createStaffDto: CreateStaffDto) {
+    let ErrorCode: number;
     try {
       let new_data = await this.staffService.create(createStaffDto);
       if (new_data?.status_code != HttpStatus.CREATED) {
         ErrorCode = new_data?.status_code;
-        throw new Error(new_data?.message)
-    } 
-      return new_data
+        throw new Error(new_data?.message);
+      }
+      return new_data;
     } catch (error) {
       console.log(error);
-      return Util?.handleRequestError(Util?.getTryCatchMsg(error),ErrorCode)
+      return Util?.handleRequestError(Util?.getTryCatchMsg(error), ErrorCode);
     }
   }
 
-  // Get All Staffs
+  // Get All Staff
   @UseGuards(AuthGuard('jwt'))
   @ApiBearerAuth('defaultBearerAuth')
-  @ApiOperation({ summary: 'Get All Staff' })
+  @ApiOperation({ summary: 'Get All Staffs' })
   @Public()
   @ApiQuery({
     name: 'page',
@@ -73,33 +73,18 @@ export class StaffController {
   @UseGuards(AtGuard)
   @Get('getAllStaffs')
   async findAll(@Query('page') page: number, @Query('size') size: number) {
+    let ErrorCode: number;
     try {
-      let currentPage = Util.Checknegative(page);
-      if (currentPage) {
-        return Util?.handleErrorRespone(
-          'Staffs current page cannot be negative',
-        );
+      let staffData = await this.staffService?.findAll(page, size);
+
+      if (staffData?.status_code != HttpStatus.OK) {
+        ErrorCode = staffData?.status_code;
+        throw new Error(staffData?.message);
       }
-
-      const { limit, offset } = Util.getPagination(page, size);
-
-      const allQueries = await Staff?.findAndCountAll({
-        limit,
-        offset,
-        attributes: { exclude: ['createdAt', 'updatedAt', 'deletedAt'] },
-      });
-
-      let result = Util?.getPagingData(allQueries, page, limit);
-      console.log(result);
-
-      const dataResult = { ...result };
-      return Util?.handleSuccessRespone(
-        dataResult,
-        'Staffs Data retrieved successfully.',
-      );
+      return staffData;
     } catch (error) {
       console.log(error);
-      return Util?.getTryCatchMsg(error);
+      return Util?.handleRequestError(Util?.getTryCatchMsg(error), ErrorCode);
     }
   }
 
@@ -111,18 +96,17 @@ export class StaffController {
   @UseGuards(AtGuard)
   @Get(':staffId')
   async findOne(@Param('staffId') staffId: string) {
-    let ErrorCode: number
+    let ErrorCode: number;
     try {
       let staff_data = await this.staffService?.findOne(staffId);
       if (staff_data?.status_code != HttpStatus.OK) {
         ErrorCode = staff_data?.status_code;
-        throw new Error(staff_data?.message)
-    } 
-      return staff_data
-
+        throw new Error(staff_data?.message);
+      }
+      return staff_data;
     } catch (error) {
       console.log(error);
-      return Util?.handleRequestError(Util?.getTryCatchMsg(error),ErrorCode)
+      return Util?.handleRequestError(Util?.getTryCatchMsg(error), ErrorCode);
     }
   }
 
@@ -137,17 +121,20 @@ export class StaffController {
     @Param('staffId') staffId: string,
     @Body() updateStaffDto: UpdateStaffDto,
   ) {
-    let ErrorCode: number
+    let ErrorCode: number;
     try {
-      let staff_update= await this.staffService.update(staffId, updateStaffDto);
+      let staff_update = await this.staffService.update(
+        staffId,
+        updateStaffDto,
+      );
       if (staff_update?.status_code != HttpStatus.OK) {
         ErrorCode = staff_update?.status_code;
-        throw new Error(staff_update?.message)
-    } 
-      return staff_update
+        throw new Error(staff_update?.message);
+      }
+      return staff_update;
     } catch (error) {
       console.log(error);
-      return Util?.handleRequestError(Util?.getTryCatchMsg(error),ErrorCode)
+      return Util?.handleRequestError(Util?.getTryCatchMsg(error), ErrorCode);
     }
   }
 
@@ -162,17 +149,20 @@ export class StaffController {
     @Param('staffId') staffId: string,
     @Body() createStaffImgDto: CreateStaffImgDto,
   ) {
-    let ErrorCode: number
+    let ErrorCode: number;
     try {
-      let staff_update = await this.staffService.updateImg(staffId, createStaffImgDto);
+      let staff_update = await this.staffService.updateImg(
+        staffId,
+        createStaffImgDto,
+      );
       if (staff_update?.status_code != HttpStatus.OK) {
         ErrorCode = staff_update?.status_code;
-        throw new Error(staff_update?.message)
-    } 
-        return staff_update
+        throw new Error(staff_update?.message);
+      }
+      return staff_update;
     } catch (error) {
       console.log(error);
-      return Util?.handleRequestError(Util?.getTryCatchMsg(error),ErrorCode)
+      return Util?.handleRequestError(Util?.getTryCatchMsg(error), ErrorCode);
     }
   }
 
@@ -183,18 +173,18 @@ export class StaffController {
   @Public()
   @UseGuards(AtGuard)
   @Delete(':staffId')
- async remove(@Param('staffId') staffId: string) {
-  let ErrorCode: number
+  async remove(@Param('staffId') staffId: string) {
+    let ErrorCode: number;
     try {
       let staff_delete = await this.staffService.remove(staffId);
       if (staff_delete?.status_code != HttpStatus.OK) {
         ErrorCode = staff_delete?.status_code;
-        throw new Error(staff_delete?.message)
-    } 
-      return staff_delete
+        throw new Error(staff_delete?.message);
+      }
+      return staff_delete;
     } catch (error) {
       console.log(error);
-      return Util?.handleRequestError(Util?.getTryCatchMsg(error),ErrorCode)
+      return Util?.handleRequestError(Util?.getTryCatchMsg(error), ErrorCode);
     }
   }
 
@@ -211,17 +201,21 @@ export class StaffController {
   @UseGuards(AtGuard)
   @Get('staff/search')
   async searchStaff(@Query('keyword') keyword: string) {
-    let ErrorCode: number
+    let ErrorCode: number;
     try {
-      let staff_search = await this?.staffService?.searchStaff(keyword.charAt(0).toUpperCase());
+      let staff_search = await this?.staffService?.searchStaff(
+        keyword.charAt(0).toUpperCase(),
+      );
       if (staff_search?.status_code != HttpStatus.OK) {
         ErrorCode = staff_search?.status_code;
-        throw new Error(staff_search?.message)
-    } 
-      return staff_search
+        throw new Error(staff_search?.message);
+      }
+      return staff_search;
     } catch (error) {
       console.log(error);
-      return Util?.handleRequestError(Util?.getTryCatchMsg(error),ErrorCode)
+      return Util?.handleRequestError(Util?.getTryCatchMsg(error), ErrorCode);
     }
   }
+
+  
 }

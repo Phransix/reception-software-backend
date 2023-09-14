@@ -99,9 +99,8 @@ export class UsersController {
   }
 
   // Get All Users
-  @ApiTags('Users')
-  // @UseGuards(AuthGuard('jwt'))
-  // @ApiBearerAuth('defaultBearerAuth')
+  @UseGuards(AuthGuard('jwt'))
+  @ApiBearerAuth('defaultBearerAuth')
   @ApiOperation({ summary: 'Get All Users' })
   @Public()
   @ApiQuery({
@@ -116,43 +115,19 @@ export class UsersController {
   })
   @UseGuards(AtGuard)
   @Get('getAllUsers')
-  async findAll(
-    @GetCurrentUserId() userId: string,
-    @Query('page') page: number,
-    @Query('size') size: number,
-  ) {
-    console.log(userId);
-
+  async findAll(@Query('page') page: number, @Query('size') size: number) {
+    let ErrorCode: number;
     try {
-      let currentPage = Util.Checknegative(page);
-      if (currentPage) {
-        return Util?.handleErrorRespone(
-          'Users current page cannot be negative',
-        );
+      let staffData = await this.usersService?.findAll(page, size);
+
+      if (staffData?.status_code != HttpStatus.OK) {
+        ErrorCode = staffData?.status_code;
+        throw new Error(staffData?.message);
       }
-
-      const { limit, offset } = Util.getPagination(page, size);
-
-      const allQueries = await User?.findAndCountAll({
-        limit,
-        offset,
-        attributes: { exclude: ['createdAt', 'updatedAt', 'deletedAt'] },
-      });
-
-
-      let result = Util?.getPagingData(allQueries, page, limit);
-      console.log(result);
-
-
-      const dataResult = { ...result };
-
-      return Util?.handleSuccessRespone(
-        dataResult,
-        'Users Data retrieved successfully.',
-      );
+      return staffData;
     } catch (error) {
       console.log(error);
-      return Util?.getTryCatchMsg(error);
+      return Util?.handleRequestError(Util?.getTryCatchMsg(error), ErrorCode);
     }
   }
 
