@@ -72,4 +72,9 @@ export class CreateGuestDto {
     // @MinLength(9)
     readonly phoneNumber: string
 
+    signInDate: Date
+
+    signInTime: string
+
+
 }

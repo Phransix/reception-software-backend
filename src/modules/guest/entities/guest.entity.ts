@@ -73,22 +73,19 @@ export class Guest extends Model<Guest>{
 
     @Column({
         type: DataType.DATEONLY,
-        allowNull: true,
-        defaultValue: null
+        allowNull: true
     })
     signInDate: Date
 
     @Column({
         type: DataType.TIME,
-        allowNull: true,
-        defaultValue: null
+        allowNull: true
     })
     signInTime: string
 
     @Column({
         type: DataType.TIME,
-        allowNull: true,
-        defaultValue: null
+        allowNull: true
     })
     signOutTime: string
 

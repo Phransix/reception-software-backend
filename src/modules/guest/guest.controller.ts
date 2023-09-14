@@ -168,7 +168,6 @@ export class GuestController {
     }
   }
 
-
   @Public()
   @ApiTags('Guest')
   @ApiOperation({ summary: 'Guest Sign Out' })
@@ -177,6 +176,31 @@ export class GuestController {
     let ErrorCode: number
     try {
       const guest = await this.guestService.guestSignOut(guestOpDTO)
+      if (guest?.status_code != HttpStatus.CREATED) {
+        ErrorCode = guest?.status_code;
+        throw new Error(guest?.message)
+      }
+      if (!guest) {
+        throw new HttpException('Guest does not exist', HttpStatus.NOT_FOUND)
+      } else {
+        return guest
+      }
+    } catch (error) {
+      console.log(error)
+      return Util?.handleRequestError(Util?.getTryCatchMsg(error), ErrorCode)
+    }
+
+  }
+
+
+  @Public()
+  @ApiTags('Guest')
+  @ApiOperation({ summary: 'Confirm Guest Sign Out' })
+  @Post('confirmSignOut')
+  async confirmSignOut(@Body() guestOpDTO: guestOpDTO) {
+    let ErrorCode: number
+    try {
+      const guest = await this.guestService.guestConfirmSignOut(guestOpDTO)
       if (guest?.status_code != HttpStatus.CREATED) {
         ErrorCode = guest?.status_code;
         throw new Error(guest?.message)

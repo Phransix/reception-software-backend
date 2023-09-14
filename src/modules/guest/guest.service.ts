@@ -24,23 +24,46 @@ export class GuestService {
       await Abstract?.createData(Guest, createGuestDto)
       const { phoneNumber } = createGuestDto
       const guestData = await this.GuestModel.findOne({ where: { phoneNumber } })
-
+      const currentTime = new Date().toLocaleTimeString();
+      await Guest.update(
+        {
+          signInDate: new Date()
+        }, {
+        where:
+        {
+          phoneNumber: phoneNumber
+        }
+      }
+      );
+      await Guest.update(
+        {
+          signInTime: currentTime
+        },
+        {
+          where:
+          {
+            phoneNumber: phoneNumber
+          }
+        }
+      );
       let guest_data = {
         guestId: guestData?.guestId,
         firstName: guestData?.firstName,
         lastname: guestData?.lastName,
         gender: guestData?.gender,
         countryCode: guestData?.countryCode,
-        phoneNumber: guestData?.phoneNumber
+        phoneNumber: guestData?.phoneNumber,
+        signInTime: guestData?.signInTime,
+        signInDate: guestData?.signInDate
       }
-      return Util?.handleSuccessRespone(guest_data, "Guest Created Successfully")
+      return Util?.handleCustonCreateResponse(guest_data, "Guest Created Successfully")
     } catch (error) {
       console.log(error)
       return Util?.handleGrpcTryCatchError(Util?.getTryCatchMsg(error));
     }
   }
 
-  async findAll(page:number, size: number) {
+  async findAll(page: number, size: number) {
     try {
       let currentPage = Util?.Checknegative(page);
       if (currentPage) {
@@ -56,7 +79,7 @@ export class GuestService {
         offset,
         attributes: { exclude: ['createdAt', 'updatedAt', 'deletedAt'] },
       })
-      
+
       let result = Util?.getPagingData(guestData, page, limit);
       console.log(result);
 
@@ -133,7 +156,7 @@ export class GuestService {
         signInDate: guestNo?.signInDate,
         signInTime: guestNo?.signInTime
       }
-  
+
       if (!guestNo || !cCode) {
         return Util?.handleFailResponse('Invalid phone number or country code')
       } else {
@@ -178,6 +201,33 @@ export class GuestService {
   }
 
   async guestSignOut(guestOpDTO: guestOpDTO) {
+    try {
+      const { phoneNumber, countryCode } = guestOpDTO
+      const guest = await this.GuestModel.findOne({ where: { phoneNumber } })
+      const cCode = await this.GuestModel.findOne({ where: { countryCode } })
+      const currentTime = new Date().toLocaleTimeString();
+      let guest_data = {
+        signOutTime: guest?.signOutTime
+      }
+
+      // Checking validity of phone number and country code
+      if (!guest || !cCode)
+        return Util?.handleFailResponse('Invalid phone number or country code')
+
+      // Checking it guest is signed In
+      if (guest?.visitStatus != 'Signed In')
+        return Util?.handleFailResponse('Guest already signed out, sign in first');
+
+
+      return Util?.handleCustonCreateResponse(guest_data, "Guest Sign Out Success")
+
+    } catch (error) {
+      console.log(error)
+      return Util?.handleGrpcTryCatchError(Util?.getTryCatchMsg(error));
+    }
+  }
+
+  async guestConfirmSignOut(guestOpDTO: guestOpDTO) {
     try {
       const { phoneNumber, countryCode } = guestOpDTO
       const guest = await this.GuestModel.findOne({ where: { phoneNumber } })
@@ -249,9 +299,9 @@ export class GuestService {
         },
         attributes: { exclude: ['createdAt', 'updated', 'deletedAt'] }
       });
-      if (!guestSearch || guestSearch.length === 0) {
-        return Util?.handleFailResponse('No matching data found.');
-      }
+      // if (!guestSearch || guestSearch.length === 0) {
+      //   return Util?.handleFailResponse('No matching data found.');
+      // }
       return Util?.handleSuccessRespone(guestSearch, "Guest Data retrieved Successfully")
     } catch (error) {
       console.log(error)
@@ -274,9 +324,9 @@ export class GuestService {
           ...filter
         },
       });
-      if (!filterCheck || filterCheck.length === 0) {
-        return Util?.handleFailResponse('No matching data found.');
-      }
+      // if (!filterCheck || filterCheck.length === 0) {
+      //   return Util?.handleFailResponse('No matching data found.');
+      // }
       return Util?.handleSuccessRespone(filterCheck, "Guest Data filtered Successfully")
     } catch (error) {
       console.log(error)
@@ -298,9 +348,9 @@ export class GuestService {
           ...filter
         },
       });
-      if (!filterCheck || filterCheck.length === 0) {
-        return Util?.handleFailResponse('No matching data found.');
-      }
+      // if (!filterCheck || filterCheck.length === 0) {
+      //   return Util?.handleFailResponse('No matching data found.');
+      // }
       return Util?.handleSuccessRespone(filterCheck, "Guest Data filtered Successfully")
     } catch (error) {
       console.log(error)
@@ -323,9 +373,9 @@ export class GuestService {
         },
       });
 
-      if (!filterStatus || filterStatus.length === 0) {
-        return Util?.handleFailResponse('No matching data found.');
-      }
+      // if (!filterStatus || filterStatus.length === 0) {
+      //   return Util?.handleFailResponse('No matching data found.');
+      // }
 
       return Util?.handleSuccessRespone(filterStatus, "Guest Data filtered Successfully")
     } catch (error) {

@@ -99,6 +99,7 @@ export class OrganizationController {
         ErrorCode = org?.status_code;
         throw new Error(org?.message);
       }
+      return org
     } catch (error) {
       console.log(error);
       return Util?.handleRequestError(Util?.getTryCatchMsg(error), ErrorCode);

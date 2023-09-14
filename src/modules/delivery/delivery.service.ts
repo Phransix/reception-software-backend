@@ -67,9 +67,9 @@ export class DeliveryService {
         where: { deliveryId },
         attributes: { exclude: ['createdAt', 'updatedAt', 'deletedAt'] }
       });
-      if (!delivery) {
-        return Util?.handleFailResponse('The Delivery data does not exist')
-      }
+      // if (!delivery) {
+      //   return Util?.handleFailResponse('The Delivery data does not exist')
+      // }
       return Util?.handleSuccessRespone(delivery, "Delivery Data retrieved successfully")
     } catch (error) {
       console.log(error)
@@ -142,9 +142,9 @@ export class DeliveryService {
         attributes: { exclude: ['createdAt', 'updatedAt', 'deletedAt'] }
       });
 
-      if (!deliver || deliver.length === 0) {
-        return Util?.handleFailResponse('No matching Enquiry data found.');
-      }
+      // if (!deliver || deliver.length === 0) {
+      //   return Util?.handleFailResponse('No matching Enquiry data found.');
+      // }
       return Util?.handleSuccessRespone(deliver,"Delivery Successfully retrieved")
     } catch (error) {
       console.log(error)
@@ -166,9 +166,9 @@ export class DeliveryService {
           ...filter
         },
       });
-      if (!filterCheck) {
-        return Util?.handleFailResponse('Type not found')
-      }
+      // if (!filterCheck) {
+      //   return Util?.handleFailResponse('Type not found')
+      // }
       return Util?.handleSuccessRespone(filterCheck,"Delivery Successfully retrieved")
     } catch (error) {
       console.log(error)
