@@ -7,6 +7,7 @@ import * as Abstract from '../../utils/abstract'
 import * as Util from '../../utils/index'
 import { guestOpDTO } from 'src/guard/auth/guestOpDTO';
 import { Op, Sequelize } from 'sequelize';
+import { Purpose } from '../purpose/entities/purpose.entity';
 
 
 
@@ -14,7 +15,8 @@ import { Op, Sequelize } from 'sequelize';
 export class GuestService {
 
   constructor(
-    @InjectModel(Guest) private readonly GuestModel: typeof Guest
+    @InjectModel(Guest) private readonly GuestModel: typeof Guest,
+    @InjectModel(Purpose) private readonly PurposeModel: typeof Purpose
   ) { }
 
   // Creating a guest
@@ -205,9 +207,18 @@ export class GuestService {
       const { phoneNumber, countryCode } = guestOpDTO
       const guest = await this.GuestModel.findOne({ where: { phoneNumber } })
       const cCode = await this.GuestModel.findOne({ where: { countryCode } })
+      // const guestPurpose = await this.PurposeModel.findOne({where: { guestId }})
       const currentTime = new Date().toLocaleTimeString();
       let guest_data = {
-        signOutTime: guest?.signOutTime
+          guestId: guest?.guestId,
+          firstName: guest?.firstName,
+          lastname: guest?.lastName,
+          gender: guest?.gender,
+          countryCode: guest?.countryCode,
+          phoneNumber: guest?.phoneNumber,
+          signInDate: guest?.signInDate,
+          signInTime: guest?.signInTime,
+          signOutTime: guest?.signOutTime
       }
 
       // Checking validity of phone number and country code
@@ -218,9 +229,7 @@ export class GuestService {
       if (guest?.visitStatus != 'Signed In')
         return Util?.handleFailResponse('Guest already signed out, sign in first');
 
-
-      return Util?.handleCustonCreateResponse(guest_data, "Guest Sign Out Success")
-
+      return Util?.handleCustonCreateResponse(guest_data,"Confirmed") 
     } catch (error) {
       console.log(error)
       return Util?.handleGrpcTryCatchError(Util?.getTryCatchMsg(error));
