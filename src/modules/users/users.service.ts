@@ -152,21 +152,28 @@ export class UsersService {
   }
 
   // Get All Users
-  async findAll() {
+  async findAll(page: number, size: number) {
     try {
-      const users = await User.findAll({
-        attributes: {
-          exclude: ['password', 'createdAt', 'updatedAt', 'deletedAt'],
-        },
+      let currentPage = Util.Checknegative(page);
+      if (currentPage) {
+        return Util?.handleErrorRespone(
+          'Users current page cannot be negative',
+        );
+      }
+      const { limit, offset } = Util.getPagination(page, size);
+
+      const allQueries = await User.findAndCountAll({
+        limit,
+        offset,
+        attributes: { exclude: ['createdAt', 'updatedAt', 'deletedAt'] },
       });
 
-      // Check if users exist
-      if (!users || users.length === 0) {
-        return { message: 'No users found' };
-      }
+      let result = Util?.getPagingData(allQueries, page, limit);
+      console.log(result);
 
+      const dataResult = { ...result };
       return Util?.handleSuccessRespone(
-        users,
+        dataResult,
         'Users Data retrieved successfully.',
       );
     } catch (error) {

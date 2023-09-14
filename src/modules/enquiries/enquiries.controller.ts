@@ -41,24 +41,24 @@ export class EnquiriesController {
   @UseGuards(AtGuard)
   @Post('creatEnquiry')
   async create(@Body() createEnquiryDto: CreateEnquiryDto) {
-    let ErrorCode: number
+    let ErrorCode: number;
     try {
       let new_Enquiry = await this.enquiriesService.create(createEnquiryDto);
       if (new_Enquiry?.status_code != HttpStatus.CREATED) {
         ErrorCode = new_Enquiry?.status_code;
-        throw new Error(new_Enquiry?.message)
-    } 
+        throw new Error(new_Enquiry?.message);
+      }
       return new_Enquiry;
     } catch (error) {
       console.log(error);
-      return Util?.handleRequestError(Util?.getTryCatchMsg(error),ErrorCode)
+      return Util?.handleRequestError(Util?.getTryCatchMsg(error), ErrorCode);
     }
   }
 
   // Get All Enquiries
   @UseGuards(AuthGuard('jwt'))
   @ApiBearerAuth('defaultBearerAuth')
-  @ApiOperation({ summary: 'Get All Enquiries By Pagination' })
+  @ApiOperation({ summary: 'Get All Enquiries' })
   @Public()
   @ApiQuery({
     name: 'page',
@@ -73,33 +73,18 @@ export class EnquiriesController {
   @UseGuards(AtGuard)
   @Get('getAllEnquiries')
   async findAll(@Query('page') page: number, @Query('size') size: number) {
+    let ErrorCode: number;
     try {
-      let currentPage = Util.Checknegative(page);
-      if (currentPage) {
-        return Util?.handleErrorRespone(
-          'Enquiry current page cannot be negative',
-        );
+      let staffData = await this.enquiriesService?.findAll(page, size);
+
+      if (staffData?.status_code != HttpStatus.OK) {
+        ErrorCode = staffData?.status_code;
+        throw new Error(staffData?.message);
       }
-
-      const { limit, offset } = Util.getPagination(page, size);
-
-      const allQueries = await Enquiry?.findAndCountAll({
-        limit,
-        offset,
-        attributes: { exclude: ['createdAt', 'updatedAt', 'deletedAt'] },
-      });
-
-      let result = Util?.getPagingData(allQueries, page, limit);
-      console.log(result);
-
-      const dataResult = { ...result };
-      return Util?.handleSuccessRespone(
-        dataResult,
-        'Enquiries Data retrieved successfully.',
-      );
+      return staffData;
     } catch (error) {
       console.log(error);
-      return Util?.getTryCatchMsg(error)
+      return Util?.handleRequestError(Util?.getTryCatchMsg(error), ErrorCode);
     }
   }
 
@@ -111,17 +96,17 @@ export class EnquiriesController {
   @UseGuards(AtGuard)
   @Get(':enquiryId')
   async findOne(@Param('enquiryId') enquiryId: string) {
-    let ErrorCode: number
+    let ErrorCode: number;
     try {
       let enquiryData = await this.enquiriesService.findOne(enquiryId);
       if (enquiryData?.status_code != HttpStatus.OK) {
         ErrorCode = enquiryData?.status_code;
-        throw new Error(enquiryData?.message)
-    } 
+        throw new Error(enquiryData?.message);
+      }
       return enquiryData;
     } catch (error) {
       console.log(error);
-      return Util?.handleRequestError(Util?.getTryCatchMsg(error),ErrorCode)
+      return Util?.handleRequestError(Util?.getTryCatchMsg(error), ErrorCode);
     }
   }
 
@@ -136,7 +121,7 @@ export class EnquiriesController {
     @Param('enquiryId') enquiryId: string,
     @Body() updateEnquiryDto: UpdateEnquiryDto,
   ) {
-    let ErrorCode: number
+    let ErrorCode: number;
     try {
       const enquiryUpdate = await this.enquiriesService.update(
         enquiryId,
@@ -144,12 +129,12 @@ export class EnquiriesController {
       );
       if (enquiryUpdate?.status_code != HttpStatus.OK) {
         ErrorCode = enquiryUpdate?.status_code;
-        throw new Error(enquiryUpdate?.message)
-    } 
+        throw new Error(enquiryUpdate?.message);
+      }
       return enquiryUpdate;
     } catch (error) {
       console.log(error);
-      return Util?.handleRequestError(Util?.getTryCatchMsg(error),ErrorCode)
+      return Util?.handleRequestError(Util?.getTryCatchMsg(error), ErrorCode);
     }
   }
 
@@ -162,18 +147,17 @@ export class EnquiriesController {
   @ApiTags('Enquiries')
   @Delete(':enquiryId')
   async remove(@Param('enquiryId') enquiryId: string) {
-    let ErrorCode: number
+    let ErrorCode: number;
     try {
-
       let enquiryDelete = await this.enquiriesService.remove(enquiryId);
       if (enquiryDelete?.status_code != HttpStatus.OK) {
         ErrorCode = enquiryDelete?.status_code;
-        throw new Error(enquiryDelete?.message)
-    } 
+        throw new Error(enquiryDelete?.message);
+      }
       return enquiryDelete;
     } catch (error) {
       console.log(error);
-      return Util?.handleRequestError(Util?.getTryCatchMsg(error),ErrorCode)
+      return Util?.handleRequestError(Util?.getTryCatchMsg(error), ErrorCode);
     }
   }
 
@@ -211,46 +195,123 @@ export class EnquiriesController {
     @Query('page') page: number,
     @Query('size') size: number,
   ) {
-    let ErrorCode:number
+    let ErrorCode: number;
     try {
-      let enquiryData = { startDate, endDate };
-
-      let currentPage = Util?.Checknegative(page);
-      if (currentPage) {
-        return Util?.handleErrorRespone(
-          'Enquiry current page cannot be negative',
-        );
-      }
-      const { limit, offset } = Util?.getPagination(page, size);
-
-      const allQueries = await Enquiry.findAndCountAll({
-        limit,
-        offset,
-        attributes: { exclude: ['createdAt', 'updatedAt', 'deletedAt'] },
-      });
-
-      const result = Util?.getPagingData(allQueries, page, limit);
-
-      const dataResult = {
-        ...enquiryData,
-        where: {
-          pagination:result
-        },
-        
-      };
-
-    //   if (result?.status_code != HttpStatus.OK) {
-    //     ErrorCode = result?.status_code;
-    //     throw new Error(result?.message)
-    // } 
-
-      return Util?.handleSuccessRespone(
-        dataResult,
-        'Enquiries data retrieve successfully',
+      let enquiryData = await this.enquiriesService.findEnquiryByDateRange(
+        startDate,
+        endDate,
+        page,
+        size,
       );
+      if (enquiryData?.status_code != HttpStatus.OK) {
+        ErrorCode = enquiryData?.status_code;
+        throw new Error(enquiryData?.message);
+      }
+      return enquiryData;
     } catch (error) {
       console.log(error);
-      return Util?.handleRequestError(Util?.getTryCatchMsg(error),ErrorCode)
+      return Util?.handleRequestError(Util?.getTryCatchMsg(error), ErrorCode);
+    }
+  }
+
+  // // // Filter and Paginate Enquiries By Purpose
+  // @UseGuards(AuthGuard('jwt'))
+  // @ApiBearerAuth('defaultBearerAuth')
+  // @Public()
+  // @UseGuards(AtGuard)
+  // @ApiOperation({ summary: 'Filter Enquiry By The Purpose' })
+  // @ApiQuery({
+  //   name: 'keyword',
+  //   enum: Purpose,
+  //   required: false,
+  // })
+  // @ApiQuery({
+  //   name: 'page',
+  //   type: 'number',
+  //   required: false,
+  // })
+  // @ApiQuery({
+  //   name: 'size',
+  //   type: 'number',
+  //   required: false,
+  // })
+  // @Get('enquiry/filterPuropse')
+  // async purposefilter(
+  //   @Query('keyword') keyword: string,
+  //   @Query('page') page: number,
+  //   @Query('size') size: number,
+  // ) {
+  //   try {
+  //     let currentPage = Util?.Checknegative(page);
+  //     if (currentPage) {
+  //       return Util?.handleErrorRespone(
+  //         'Enquiry current Page cannot be negative',
+  //       );
+  //     }
+
+  //     // return await this?.enquiriesService?.purposefilter(keyword);
+
+  //     const { limit, offset } = Util?.getPagination(page, size);
+
+  //     let queryOption: any = {
+  //       limit,
+  //       offset,
+  //       attributes: { exclude: ['createdAt', 'updatedAt', 'deletedAt'] },
+  //     };
+
+  //     if (keyword) {
+  //       queryOption = {
+  //         ...queryOption,
+  //         where: {
+  //           purpose: keyword,
+  //         },
+  //       };
+  //     }
+
+  //     const allQueries = await Enquiry?.findAndCountAll(queryOption);
+
+  //     let result = Util?.getPagingData(allQueries, page, limit);
+  //     console.log(result);
+
+  //     const dataResult = { ...result };
+  //     return Util?.handleSuccessRespone(
+  //       dataResult,
+  //       'Enquiries Purpose Data Filtered Successfully.',
+  //     );
+  //   } catch (error) {
+  //     console.log(error);
+  //     return Util?.getTryCatchMsg(error);
+  //   }
+  // }
+
+  // Search Enquiry
+  @UseGuards(AuthGuard('jwt'))
+  @ApiBearerAuth('defaultBearerAuth')
+  @ApiOperation({ summary: 'Search Enquirer Name  From The System' })
+  @Public()
+  @ApiQuery({
+    name: 'keyword',
+    type: 'string',
+    required: false,
+  })
+  @UseGuards(AtGuard)
+  @Get('enquiry/search')
+  async searchEnquiry(@Query('keyword') keyword: string) {
+    let ErrorCode: number;
+    try {
+      let enquirySearch = await this?.enquiriesService?.searchEnquiry(
+        keyword.charAt(0).toUpperCase(),
+      );
+
+      if (enquirySearch?.status_code != HttpStatus.OK) {
+        ErrorCode = enquirySearch?.status_code;
+        throw new Error(enquirySearch?.message);
+      }
+
+      return enquirySearch;
+    } catch (error) {
+      console.log(error);
+      return Util?.handleRequestError(Util?.getTryCatchMsg(error), ErrorCode);
     }
   }
 
@@ -281,83 +342,21 @@ export class EnquiriesController {
     @Query('page') page: number,
     @Query('size') size: number,
   ) {
+    let ErrorCode: number;
     try {
-      let currentPage = Util?.Checknegative(page);
-      if (currentPage) {
-        return Util?.handleErrorRespone(
-          'Enquiry current Page cannot be negative',
-        );
-      }
-
-      // return await this?.enquiriesService?.purposefilter(keyword);
-
-      const { limit, offset } = Util?.getPagination(page, size);
-
-      let queryOption: any = {
-        limit,
-        offset,
-        attributes: { exclude: ['createdAt', 'updatedAt', 'deletedAt'] },
-      };
-
-      if (keyword) {
-        queryOption = {
-          ...queryOption,
-          where: {
-            purpose: keyword,
-          },
-        };
-      }
-
-      const allQueries = await Enquiry?.findAndCountAll(queryOption);
-
-      let result = Util?.getPagingData(allQueries, page, limit);
-      console.log(result);
-
-      const dataResult = { ...result };
-      return Util?.handleSuccessRespone(
-        dataResult,
-        'Enquiries Purpose Data Filtered Successfully.',
+      let enquiryData = await this.enquiriesService.purposefilter(
+        keyword,
+        page,
+        size,
       );
+      if (enquiryData?.status_code != HttpStatus.OK) {
+        ErrorCode = enquiryData?.status_code;
+        throw new Error(enquiryData?.message);
+      }
+      return enquiryData;
     } catch (error) {
       console.log(error);
-      // return Util?.handleFailResponse('Filtering By Purpose failed');
-      return Util?.getTryCatchMsg(error)
-    }
-  }
-
-  // Search Enquiry
-  @UseGuards(AuthGuard('jwt'))
-  @ApiBearerAuth('defaultBearerAuth')
-  @ApiOperation({ summary: 'Search Enquirer Name  From The System' })
-  @Public()
-  @ApiQuery({
-    name: 'keyword',
-    type: 'string',
-    required: false,
-  })
-  @UseGuards(AtGuard)
-  @Get('enquiry/search')
-  async searchEnquiry(
-    @Query('keyword') keyword: string,
-  ) {
-    let ErrorCode: number
-    try {
-
-      let enquirySearch = await this?.enquiriesService?.searchEnquiry(
-        keyword.charAt(0).toUpperCase(),
-      );
-
-      if (enquirySearch?.status_code != HttpStatus.OK) {
-        ErrorCode = enquirySearch?.status_code;
-        throw new Error(enquirySearch?.message)
-    } 
-
-      return enquirySearch
-      
-    } catch (error) {
-      console.log(error);
-      return Util?.handleRequestError(Util?.getTryCatchMsg(error),ErrorCode)
+      return Util?.handleRequestError(Util?.getTryCatchMsg(error), ErrorCode);
     }
   }
 }
-

@@ -110,9 +110,9 @@ export class OrganizationController {
     status: 200,
     description: 'The record has been retrieve successfully.',
   })
-  @UseGuards(AuthGuard('jwt'))
-  @ApiBearerAuth('defaultBearerAuth')
-  @ApiOperation({ summary: 'Get All Organization' })
+  // @UseGuards(AuthGuard('jwt'))
+  // @ApiBearerAuth('defaultBearerAuth')
+  @ApiOperation({ summary: 'Get All Organizations' })
   @Public()
   @ApiQuery({
     name: 'page',
@@ -127,33 +127,18 @@ export class OrganizationController {
   @UseGuards(AtGuard)
   @Get('getAllOrganizations')
   async findAll(@Query('page') page: number, @Query('size') size: number) {
+    let ErrorCode: number;
     try {
-      let currentPage = Util.Checknegative(page);
-      if (currentPage) {
-        return Util?.handleErrorRespone(
-          'Organizations current page cannot be negative',
-        );
+      let staffData = await this.organizationService?.findAll(page, size);
+
+      if (staffData?.status_code != HttpStatus.OK) {
+        ErrorCode = staffData?.status_code;
+        throw new Error(staffData?.message);
       }
-
-      const { limit, offset } = Util.getPagination(page, size);
-
-      const allQueries = await Organization?.findAndCountAll({
-        limit,
-        offset,
-        attributes: { exclude: ['createdAt', 'updatedAt', 'deletedAt'] },
-      });
-
-      let result = Util?.getPagingData(allQueries, page, limit);
-      console.log(result);
-
-      const dataResult = { ...result };
-      return Util?.handleSuccessRespone(
-        dataResult,
-        'Organizations Data retrieved successfully.',
-      );
+      return staffData;
     } catch (error) {
       console.log(error);
-      return Util?.getTryCatchMsg(error);
+      return Util?.handleRequestError(Util?.getTryCatchMsg(error), ErrorCode);
     }
   }
 

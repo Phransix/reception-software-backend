@@ -208,16 +208,28 @@ export class OrganizationService {
   }
 
   // Get All
-  async findAll() {
+  async findAll(page: number, size: number) {
     try {
-      const orgs = await Organization.findAll({
-        attributes: {
-          exclude: ['password', 'createdAt', 'updatedAt', 'deletedAt'],
-        },
+      let currentPage = Util.Checknegative(page);
+      if (currentPage) {
+        return Util?.handleErrorRespone(
+          'Organizations current page cannot be negative',
+        );
+      }
+      const { limit, offset } = Util.getPagination(page, size);
+
+      const allQueries = await Organization.findAndCountAll({
+        limit,
+        offset,
+        attributes: { exclude: ['createdAt', 'updatedAt', 'deletedAt'] },
       });
 
+      let result = Util?.getPagingData(allQueries, page, limit);
+      console.log(result);
+
+      const dataResult = { ...result };
       return Util?.handleSuccessRespone(
-        orgs,
+        dataResult,
         'Organizations Data retrieved successfully.',
       );
     } catch (error) {
