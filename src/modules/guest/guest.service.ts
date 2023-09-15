@@ -8,6 +8,7 @@ import * as Util from '../../utils/index'
 import { guestOpDTO } from 'src/guard/auth/guestOpDTO';
 import { Op, Sequelize } from 'sequelize';
 import { Purpose } from '../purpose/entities/purpose.entity';
+import * as Abs from '../../utils/abstract'
 
 
 
@@ -65,6 +66,7 @@ export class GuestService {
     }
   }
 
+  // Get All Guest
   async findAll(page: number, size: number) {
     try {
       let currentPage = Util?.Checknegative(page);
@@ -96,6 +98,7 @@ export class GuestService {
     }
   }
 
+  // Get Gest By guestId
   async findOne(guestId: string) {
     try {
       const guest = await Guest.findOne({
@@ -112,6 +115,7 @@ export class GuestService {
     }
   }
 
+  // Update Guest By guestId
   async update(guestId: string, updateGuestDto: UpdateGuestDto) {
     try {
       const guest = await Guest.findOne({ where: { guestId } });
@@ -127,6 +131,7 @@ export class GuestService {
     }
   }
 
+  // Remve Guest By guestId
   async remove(guestId: string) {
     try {
       const guest = await Guest.findOne({ where: { guestId } });
@@ -142,6 +147,7 @@ export class GuestService {
     }
   }
 
+  // Guest sign In
   async guestSignIn(guestOpDTO: guestOpDTO) {
     try {
       const { phoneNumber, countryCode } = guestOpDTO
@@ -202,6 +208,7 @@ export class GuestService {
     }
   }
 
+  // Guest sign Out confirmation
   async guestSignOut(guestOpDTO: guestOpDTO) {
     try {
       const { phoneNumber, countryCode } = guestOpDTO
@@ -236,6 +243,7 @@ export class GuestService {
     }
   }
 
+  // Guest sign Out
   async guestConfirmSignOut(guestOpDTO: guestOpDTO) {
     try {
       const { phoneNumber, countryCode } = guestOpDTO
@@ -276,7 +284,7 @@ export class GuestService {
     }
   }
 
-  // Search guest by names
+  // Search guest by firstname
   async searchGuest(keyword: string) {
     try {
       const guest = await this.GuestModel.findAll({
@@ -308,9 +316,6 @@ export class GuestService {
         },
         attributes: { exclude: ['createdAt', 'updated', 'deletedAt'] }
       });
-      // if (!guestSearch || guestSearch.length === 0) {
-      //   return Util?.handleFailResponse('No matching data found.');
-      // }
       return Util?.handleSuccessRespone(guestSearch, "Guest Data retrieved Successfully")
     } catch (error) {
       console.log(error)
@@ -333,9 +338,7 @@ export class GuestService {
           ...filter
         },
       });
-      // if (!filterCheck || filterCheck.length === 0) {
-      //   return Util?.handleFailResponse('No matching data found.');
-      // }
+
       return Util?.handleSuccessRespone(filterCheck, "Guest Data filtered Successfully")
     } catch (error) {
       console.log(error)
@@ -357,9 +360,7 @@ export class GuestService {
           ...filter
         },
       });
-      // if (!filterCheck || filterCheck.length === 0) {
-      //   return Util?.handleFailResponse('No matching data found.');
-      // }
+
       return Util?.handleSuccessRespone(filterCheck, "Guest Data filtered Successfully")
     } catch (error) {
       console.log(error)
@@ -381,10 +382,6 @@ export class GuestService {
           ...filter
         },
       });
-
-      // if (!filterStatus || filterStatus.length === 0) {
-      //   return Util?.handleFailResponse('No matching data found.');
-      // }
 
       return Util?.handleSuccessRespone(filterStatus, "Guest Data filtered Successfully")
     } catch (error) {

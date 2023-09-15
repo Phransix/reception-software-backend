@@ -24,6 +24,7 @@ export class PurposeService {
     }
   }
 
+  // Get All Purposes
   async findAll(page: number, size: number) {
     try {
       let currentPage = Util.Checknegative(page);
@@ -54,6 +55,7 @@ export class PurposeService {
     }
   }
 
+  // Get Purpose By purposeId
   async findOne(purposeId: string) {
     try {
       const purpose = await Purpose.findOne({where: { purposeId },
@@ -69,6 +71,7 @@ export class PurposeService {
     }
   }
 
+  // Update Purpose By purposeId
   async update(purposeId: string, updatePurposeDto: UpdatePurposeDto) {
     try {
       const purpose = await Purpose.findOne({where:{purposeId}})
@@ -84,6 +87,7 @@ export class PurposeService {
         }
   }
 
+  // Remove Purpose By purposeId
   async remove(purposeId: string) {
      try {
       const purpose = await Purpose.findOne({ where: { purposeId } })

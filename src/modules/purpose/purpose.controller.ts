@@ -14,6 +14,7 @@ import { AtGuard } from 'src/common/guards/at.guard';
 export class PurposeController {
   constructor(private readonly purposeService: PurposeService) { }
 
+  // Creating Purpose
   @Public()
   @ApiTags('Purpose')
   @Public()
@@ -35,6 +36,7 @@ export class PurposeController {
   }
 
 
+  // Get All Purposes
   @UseGuards(AuthGuard('jwt'))
   @ApiBearerAuth('defaultBearerAuth')
   @Public()
@@ -73,6 +75,7 @@ export class PurposeController {
   }
 
 
+  // Get Purpose By purposeId
   @Public()
   @ApiTags('Purpose')
   @Public()
@@ -95,6 +98,8 @@ export class PurposeController {
     }
   }
 
+
+    // Update Purpose By purposeId
  @Public()
   @ApiTags('Purpose')
   @Public()
@@ -117,6 +122,8 @@ export class PurposeController {
         }
   }
 
+
+    // Remove Purpose By purposeId
   @Public()
   @ApiTags('Purpose')
   @Public()

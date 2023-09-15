@@ -8,7 +8,6 @@ import { guestOpDTO } from 'src/guard/auth/guestOpDTO';
 import { Public } from 'src/common/decorators/public.decorator';
 import { AuthGuard } from '@nestjs/passport';
 import { AtGuard } from 'src/common/guards';
-import { Guest } from './entities/guest.entity';
 import { DoesGuestExist } from '../../common/guards/doesGuestExist.guard'
 
 
