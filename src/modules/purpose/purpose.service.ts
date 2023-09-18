@@ -5,6 +5,7 @@ import { InjectModel } from '@nestjs/sequelize';
 import { Purpose } from './entities/purpose.entity';
 import * as Abstract from '../../utils/abstract'
 import * as Util from '../../utils/index'
+import { Guest } from '../guest/entities/guest.entity';
 
 @Injectable()
 export class PurposeService {
@@ -24,6 +25,7 @@ export class PurposeService {
     }
   }
 
+  // Get All Purposes
   async findAll(page: number, size: number) {
     try {
       let currentPage = Util.Checknegative(page);
@@ -38,6 +40,14 @@ export class PurposeService {
         limit,
         offset,
         attributes: { exclude: ['createdAt', 'updatedAt', 'deletedAt'] },
+        include: [
+          {
+            model:Guest,
+            attributes: {exclude:['createdAt','updatedAt']},
+            order: [['id','DESC']],
+            as:'guestData'
+          }
+        ]
       });
 
       let result = Util?.getPagingData(allQueries, page, limit);
@@ -54,6 +64,7 @@ export class PurposeService {
     }
   }
 
+  // Get Purpose By purposeId
   async findOne(purposeId: string) {
     try {
       const purpose = await Purpose.findOne({where: { purposeId },
@@ -69,6 +80,7 @@ export class PurposeService {
     }
   }
 
+  // Update Purpose By purposeId
   async update(purposeId: string, updatePurposeDto: UpdatePurposeDto) {
     try {
       const purpose = await Purpose.findOne({where:{purposeId}})
@@ -84,6 +96,7 @@ export class PurposeService {
         }
   }
 
+  // Remove Purpose By purposeId
   async remove(purposeId: string) {
      try {
       const purpose = await Purpose.findOne({ where: { purposeId } })

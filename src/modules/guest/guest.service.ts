@@ -6,8 +6,10 @@ import { Guest } from './entities/guest.entity';
 import * as Abstract from '../../utils/abstract'
 import * as Util from '../../utils/index'
 import { guestOpDTO } from 'src/guard/auth/guestOpDTO';
-import { Op, Sequelize } from 'sequelize';
+import { Op } from 'sequelize';
+import { Sequelize } from 'sequelize-typescript';
 import { Purpose } from '../purpose/entities/purpose.entity';
+import * as Abs from '../../utils/abstract'
 
 
 
@@ -16,7 +18,8 @@ export class GuestService {
 
   constructor(
     @InjectModel(Guest) private readonly GuestModel: typeof Guest,
-    @InjectModel(Purpose) private readonly PurposeModel: typeof Purpose
+    @InjectModel(Purpose) private readonly PurposeModel: typeof Purpose,
+    private readonly sequelize: Sequelize
   ) { }
 
   // Creating a guest
@@ -48,6 +51,17 @@ export class GuestService {
           }
         }
       );
+      await Guest.update(
+        {
+          visitStatus: 'Signed In'
+        },
+        {
+          where:
+          {
+            phoneNumber: phoneNumber
+          }
+        }
+      );
       let guest_data = {
         guestId: guestData?.guestId,
         firstName: guestData?.firstName,
@@ -65,6 +79,7 @@ export class GuestService {
     }
   }
 
+  // Get All Guest
   async findAll(page: number, size: number) {
     try {
       let currentPage = Util?.Checknegative(page);
@@ -96,6 +111,7 @@ export class GuestService {
     }
   }
 
+  // Get Gest By guestId
   async findOne(guestId: string) {
     try {
       const guest = await Guest.findOne({
@@ -112,6 +128,7 @@ export class GuestService {
     }
   }
 
+  // Update Guest By guestId
   async update(guestId: string, updateGuestDto: UpdateGuestDto) {
     try {
       const guest = await Guest.findOne({ where: { guestId } });
@@ -127,6 +144,7 @@ export class GuestService {
     }
   }
 
+  // Remve Guest By guestId
   async remove(guestId: string) {
     try {
       const guest = await Guest.findOne({ where: { guestId } });
@@ -142,6 +160,7 @@ export class GuestService {
     }
   }
 
+  // Guest sign In
   async guestSignIn(guestOpDTO: guestOpDTO) {
     try {
       const { phoneNumber, countryCode } = guestOpDTO
@@ -202,6 +221,7 @@ export class GuestService {
     }
   }
 
+  // Guest sign Out confirmation
   async guestSignOut(guestOpDTO: guestOpDTO) {
     try {
       const { phoneNumber, countryCode } = guestOpDTO
@@ -236,6 +256,7 @@ export class GuestService {
     }
   }
 
+  // Guest sign Out
   async guestConfirmSignOut(guestOpDTO: guestOpDTO) {
     try {
       const { phoneNumber, countryCode } = guestOpDTO
@@ -276,7 +297,7 @@ export class GuestService {
     }
   }
 
-  // Search guest by names
+  // Search guest by firstname
   async searchGuest(keyword: string) {
     try {
       const guest = await this.GuestModel.findAll({
@@ -308,9 +329,6 @@ export class GuestService {
         },
         attributes: { exclude: ['createdAt', 'updated', 'deletedAt'] }
       });
-      // if (!guestSearch || guestSearch.length === 0) {
-      //   return Util?.handleFailResponse('No matching data found.');
-      // }
       return Util?.handleSuccessRespone(guestSearch, "Guest Data retrieved Successfully")
     } catch (error) {
       console.log(error)
@@ -333,9 +351,7 @@ export class GuestService {
           ...filter
         },
       });
-      // if (!filterCheck || filterCheck.length === 0) {
-      //   return Util?.handleFailResponse('No matching data found.');
-      // }
+
       return Util?.handleSuccessRespone(filterCheck, "Guest Data filtered Successfully")
     } catch (error) {
       console.log(error)
@@ -357,9 +373,7 @@ export class GuestService {
           ...filter
         },
       });
-      // if (!filterCheck || filterCheck.length === 0) {
-      //   return Util?.handleFailResponse('No matching data found.');
-      // }
+
       return Util?.handleSuccessRespone(filterCheck, "Guest Data filtered Successfully")
     } catch (error) {
       console.log(error)
@@ -382,10 +396,6 @@ export class GuestService {
         },
       });
 
-      // if (!filterStatus || filterStatus.length === 0) {
-      //   return Util?.handleFailResponse('No matching data found.');
-      // }
-
       return Util?.handleSuccessRespone(filterStatus, "Guest Data filtered Successfully")
     } catch (error) {
       console.log(error)
@@ -397,6 +407,36 @@ export class GuestService {
     return await this.GuestModel.findOne<Guest>({ where: { phoneNumber } })
   }
 
+  // Bulk guest create
+  async bulkGuest (Guest:string, data: any[]){
+    const myModel = this.sequelize.model(Guest);
+    const t = await this.sequelize.transaction();
+    try {
+      const createMultipleGuest = await myModel.bulkCreate(data,{transaction: t})
+      t.commit()
+      return Util?.handleCustonCreateResponse(createMultipleGuest, 'Multiple Guests created successfully')
+    
+    } catch (error) {
+      t.rollback()
+      console.log(error)
+      // throw new Error(`Error bulk creating records in ${Guest}: ${error.message}`);
+      return Util?.handleGrpcTryCatchError(Util?.getTryCatchMsg(error));
+    }
+  }
+
+  // Bulk guest delete
+  async bulkGuestDelete (Guest:string, whereClause: any = {}){
+    const myModel = this.sequelize.model(Guest);
+    try {
+      const deleteMultipleGuest = await myModel.destroy({
+        where: whereClause
+      });
+      return Util?.handleCustonCreateResponse(deleteMultipleGuest, 'Multiple Guests deleted successfully')
+    } catch (error) {
+      console.log(error)
+      return Util?.handleGrpcTryCatchError(Util?.getTryCatchMsg(error));
+    }
+  }
 
 }
 

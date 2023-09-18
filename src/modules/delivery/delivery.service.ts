@@ -8,6 +8,7 @@ import * as Util from '../../utils/index'
 import { Op } from 'sequelize';
 import { deliveryConfirmDTO } from 'src/guard/auth/deliveryConfirmDTO';
 import { Purpose } from '../purpose/entities/purpose.entity';
+import { Unit } from '../unit/entities/unit.entity';
 
 
 @Injectable()
@@ -44,6 +45,13 @@ export class DeliveryService {
         limit,
         offset,
         attributes: { exclude: ['createdAt', 'updatedAt', 'deletedAt'] },
+        include:[
+          {
+            model: Unit,
+            attributes:{exclude:['id','unitId','name','createdAt','updatedAt','deletedAt']},
+            as: 'deliveryUnit'
+          }
+        ]
       });
 
       let result = Util?.getPagingData(allQueries, page, limit);
@@ -120,6 +128,10 @@ export class DeliveryService {
         return Util?.handleFailResponse('Delivery Confirmation Failed')
       }
 
+      if (delivery?.status != 'awaiting_pickup') 
+        return Util?.handleFailResponse('Delivery confirmed already')
+      
+
       await Delivery.update({ status: 'delivered' }, { where: { receipientName: receipientName } })
       return Util?.SuccessRespone('Delivery Confirmation Successful')
 
@@ -142,9 +154,6 @@ export class DeliveryService {
         attributes: { exclude: ['createdAt', 'updatedAt', 'deletedAt'] }
       });
 
-      // if (!deliver || deliver.length === 0) {
-      //   return Util?.handleFailResponse('No matching Enquiry data found.');
-      // }
       return Util?.handleSuccessRespone(deliver,"Delivery Successfully retrieved")
     } catch (error) {
       console.log(error)
@@ -166,9 +175,6 @@ export class DeliveryService {
           ...filter
         },
       });
-      // if (!filterCheck) {
-      //   return Util?.handleFailResponse('Type not found')
-      // }
       return Util?.handleSuccessRespone(filterCheck,"Delivery Successfully retrieved")
     } catch (error) {
       console.log(error)

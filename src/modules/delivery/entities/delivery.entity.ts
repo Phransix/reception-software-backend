@@ -47,7 +47,11 @@ export class Delivery extends Model <Delivery> {
           onDelete: 'CASCADE',
       })
       unitId: string;
-       @BelongsTo(() => Unit)
+       @BelongsTo(() => Unit,{
+        foreignKey: 'unitId',
+        targetKey: 'unitId',
+        as: 'deliveryUnit'
+       })
        unit: Unit
 
       @ForeignKey(() => Organization)
