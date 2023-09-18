@@ -33,7 +33,11 @@ export class Purpose extends Model <Purpose> {
         onDelete: 'CASCADE',
     })
     guestId: string
-    @BelongsTo(() => Guest)
+    @BelongsTo(() => Guest,{
+        foreignKey:'guestId',
+        targetKey: 'guestId',
+        as: 'guestData'
+    })
     guest: Guest
 
     @ForeignKey(() => Organization)

@@ -5,6 +5,7 @@ import { InjectModel } from '@nestjs/sequelize';
 import { Purpose } from './entities/purpose.entity';
 import * as Abstract from '../../utils/abstract'
 import * as Util from '../../utils/index'
+import { Guest } from '../guest/entities/guest.entity';
 
 @Injectable()
 export class PurposeService {
@@ -39,6 +40,14 @@ export class PurposeService {
         limit,
         offset,
         attributes: { exclude: ['createdAt', 'updatedAt', 'deletedAt'] },
+        include: [
+          {
+            model:Guest,
+            attributes: {exclude:['createdAt','updatedAt']},
+            order: [['id','DESC']],
+            as:'guestData'
+          }
+        ]
       });
 
       let result = Util?.getPagingData(allQueries, page, limit);

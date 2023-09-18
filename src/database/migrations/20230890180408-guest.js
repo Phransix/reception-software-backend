@@ -70,8 +70,7 @@ module.exports = {
       },
       signOutTime: {
         type: Sequelize.TIME,
-        allowNull: false,
-        defaultValue: Sequelize.literal('CURRENT_TIMESTAMP'),
+        allowNull: true
       },
       visitStatus: {
         type: Sequelize.ENUM('Signed In', 'Signed Out'),

@@ -6,7 +6,8 @@ import { Guest } from './entities/guest.entity';
 import * as Abstract from '../../utils/abstract'
 import * as Util from '../../utils/index'
 import { guestOpDTO } from 'src/guard/auth/guestOpDTO';
-import { Op, Sequelize } from 'sequelize';
+import { Op } from 'sequelize';
+import { Sequelize } from 'sequelize-typescript';
 import { Purpose } from '../purpose/entities/purpose.entity';
 import * as Abs from '../../utils/abstract'
 
@@ -17,7 +18,8 @@ export class GuestService {
 
   constructor(
     @InjectModel(Guest) private readonly GuestModel: typeof Guest,
-    @InjectModel(Purpose) private readonly PurposeModel: typeof Purpose
+    @InjectModel(Purpose) private readonly PurposeModel: typeof Purpose,
+    private readonly sequelize: Sequelize
   ) { }
 
   // Creating a guest
@@ -41,6 +43,17 @@ export class GuestService {
       await Guest.update(
         {
           signInTime: currentTime
+        },
+        {
+          where:
+          {
+            phoneNumber: phoneNumber
+          }
+        }
+      );
+      await Guest.update(
+        {
+          visitStatus: 'Signed In'
         },
         {
           where:
@@ -394,6 +407,36 @@ export class GuestService {
     return await this.GuestModel.findOne<Guest>({ where: { phoneNumber } })
   }
 
+  // Bulk guest create
+  async bulkGuest (Guest:string, data: any[]){
+    const myModel = this.sequelize.model(Guest);
+    const t = await this.sequelize.transaction();
+    try {
+      const createMultipleGuest = await myModel.bulkCreate(data,{transaction: t})
+      t.commit()
+      return Util?.handleCustonCreateResponse(createMultipleGuest, 'Multiple Guests created successfully')
+    
+    } catch (error) {
+      t.rollback()
+      console.log(error)
+      // throw new Error(`Error bulk creating records in ${Guest}: ${error.message}`);
+      return Util?.handleGrpcTryCatchError(Util?.getTryCatchMsg(error));
+    }
+  }
+
+  // Bulk guest delete
+  async bulkGuestDelete (Guest:string, whereClause: any = {}){
+    const myModel = this.sequelize.model(Guest);
+    try {
+      const deleteMultipleGuest = await myModel.destroy({
+        where: whereClause
+      });
+      return Util?.handleCustonCreateResponse(deleteMultipleGuest, 'Multiple Guests deleted successfully')
+    } catch (error) {
+      console.log(error)
+      return Util?.handleGrpcTryCatchError(Util?.getTryCatchMsg(error));
+    }
+  }
 
 }
 

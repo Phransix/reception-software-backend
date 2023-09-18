@@ -9,6 +9,7 @@ import { Public } from 'src/common/decorators/public.decorator';
 import { AuthGuard } from '@nestjs/passport';
 import { AtGuard } from 'src/common/guards';
 import { DoesGuestExist } from '../../common/guards/doesGuestExist.guard'
+import { Guest } from './entities/guest.entity';
 
 
 @Controller('guest')
@@ -371,5 +372,45 @@ export class GuestController {
     }
   }
 
+  // 
+  // Bulk guest create
+  @Public()
+  @ApiTags('Guest')
+  @Post('bulkGuestCreate/create')
+  async buklCreateGuest (@Body() data: any[]){
+    let ErrorCode: number
+    try {
+      const modelName = 'Guest'
+      const guestResults = await this.guestService.bulkGuest(modelName, data)
+      if (guestResults?.status_code != HttpStatus.CREATED) {
+        ErrorCode = guestResults?.status_code;
+        throw new Error(guestResults?.message)
+    } 
+    return guestResults
+    } catch (error) {
+      console.log(error)
+      return Util?.handleRequestError(Util?.getTryCatchMsg(error), ErrorCode)
+    }
+  }
+
+    // Bulk guest delete
+    @Public()
+    @ApiTags('Guest')
+    @Delete('bulkGuestDelete/delete')
+    async bulkGuestDelete (whereClause: any = {}){
+      let ErrorCode: number
+      try {
+        const modelName = 'Guest'
+        const guestResults = await this.guestService.bulkGuestDelete(modelName, whereClause);
+        if (guestResults?.status_code != HttpStatus.CREATED) {
+          ErrorCode = guestResults?.status_code;
+          throw new Error(guestResults?.message)
+      } 
+      return guestResults
+      } catch (error) {
+        console.log(error)
+        return Util?.handleRequestError(Util?.getTryCatchMsg(error), ErrorCode)
+      }
+    }
 
 }

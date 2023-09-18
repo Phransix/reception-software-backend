@@ -8,6 +8,7 @@ import * as Util from '../../utils/index'
 import { Op } from 'sequelize';
 import { deliveryConfirmDTO } from 'src/guard/auth/deliveryConfirmDTO';
 import { Purpose } from '../purpose/entities/purpose.entity';
+import { Unit } from '../unit/entities/unit.entity';
 
 
 @Injectable()
@@ -44,6 +45,13 @@ export class DeliveryService {
         limit,
         offset,
         attributes: { exclude: ['createdAt', 'updatedAt', 'deletedAt'] },
+        include:[
+          {
+            model: Unit,
+            attributes:{exclude:['id','unitId','name','createdAt','updatedAt','deletedAt']},
+            as: 'deliveryUnit'
+          }
+        ]
       });
 
       let result = Util?.getPagingData(allQueries, page, limit);
