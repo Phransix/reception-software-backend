@@ -7,6 +7,7 @@ import { InjectModel } from '@nestjs/sequelize';
 import * as Util from '../../utils/index';
 import * as Abstract from '../../utils/abstract';
 import { Op } from 'sequelize';
+import { Organization } from '../organization/entities/organization.entity';
 
 @Injectable()
 export class DepartmentService {
@@ -45,6 +46,23 @@ export class DepartmentService {
         limit,
         offset,
         attributes: { exclude: ['createdAt', 'updatedAt', 'deletedAt'] },
+        order: [
+          ['createdAt', 'ASC']
+        ],
+
+        include:[{
+          model: Organization,
+           attributes:{
+            exclude:[
+              "id",
+              "createdAt",
+              "updatedAt",
+              "deletedAt",
+              "isVerified",
+            ]
+           }
+        }],
+
       });
 
       let result = Util?.getPagingData(allQueries, page, limit);
@@ -69,6 +87,18 @@ export class DepartmentService {
         attributes: {
           exclude: ['createdAt', 'updatedAt', 'deletedAt'],
         },
+        include:[{
+          model: Organization,
+           attributes:{
+            exclude:[
+              "id",
+              "createdAt",
+              "updatedAt",
+              "deletedAt",
+              "isVerified",
+            ]
+           }
+        }],
         where: { departmentId },
       });
 
@@ -135,7 +165,21 @@ export class DepartmentService {
         attributes: {
           exclude: ['createdAt', 'updatedAt', 'deletedAt'],
         },
-
+        order: [
+          ['createdAt', 'ASC']
+        ],
+        include:[{
+          model: Organization,
+           attributes:{
+            exclude:[
+              "id",
+              "createdAt",
+              "updatedAt",
+              "deletedAt",
+              "isVerified",
+            ]
+           }
+        }],
         where: {
           departmentName: { [Op.like]: `%${keyword}%` },
         },

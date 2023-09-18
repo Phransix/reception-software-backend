@@ -39,7 +39,7 @@ export class EnquiriesController {
   @ApiOperation({ summary: 'Create New Enquiry' })
   @Public()
   @UseGuards(AtGuard)
-  @Post('creatEnquiry')
+  @Post('createEnquiry')
   async create(@Body() createEnquiryDto: CreateEnquiryDto) {
     let ErrorCode: number;
     try {
@@ -51,6 +51,40 @@ export class EnquiriesController {
       return new_Enquiry;
     } catch (error) {
       console.log(error);
+      return Util?.handleRequestError(Util?.getTryCatchMsg(error), ErrorCode);
+    }
+  }
+
+  // Bulk Create Enquiries
+  @UseGuards(AuthGuard('jwt'))
+  @ApiBearerAuth('defaultBearerAuth')
+  @ApiOperation({ summary: 'Create New Multiple Enquiries' })
+  @Public()
+  @UseGuards(AtGuard)
+  @Post('createBulkEnquiries')
+  async bulkCreate(@Body() createEnquiryDto:CreateEnquiryDto | CreateEnquiryDto[]){
+    let ErrorCode:number
+    try {
+      let new_Enquiries;
+      if(Array.isArray(createEnquiryDto)){
+         // Bulk create if an array of createEnquiryDto is provided
+        new_Enquiries = await this?.enquiriesService?.bulkCreate(createEnquiryDto)
+      }else{
+              // Single create if a single createEnquiryDto is provided
+              const new_Enquiry = await this?.enquiriesService?.create(createEnquiryDto)
+              new_Enquiries = [new_Enquiry]
+      }
+
+          // Check the status code for each created enquiry
+          for (const new_Enquiry of new_Enquiries){
+            if(new_Enquiry?.status_code != HttpStatus.CREATED){
+              ErrorCode = new_Enquiry?.status_code;
+              throw new Error(new_Enquiry?.message)
+            }
+          }
+       return new_Enquiries
+    } catch (error) {
+      console.log(error)
       return Util?.handleRequestError(Util?.getTryCatchMsg(error), ErrorCode);
     }
   }

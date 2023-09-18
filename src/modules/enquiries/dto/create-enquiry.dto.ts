@@ -34,7 +34,7 @@ export class CreateEnquiryDto {
 
     @ApiProperty({
         description: 'The email of the Person ',
-        example: 'kemi@gmail.com'
+        example: 'kemiqals93@gmail.com'
     })
     @IsEmail()
     @Matches(/^[a-zA-Z0-9._%+-]+@.+\.com$/, {

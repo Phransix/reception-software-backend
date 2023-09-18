@@ -111,8 +111,8 @@ export class OrganizationController {
     status: 200,
     description: 'The record has been retrieve successfully.',
   })
-  // @UseGuards(AuthGuard('jwt'))
-  // @ApiBearerAuth('defaultBearerAuth')
+  @UseGuards(AuthGuard('jwt'))
+  @ApiBearerAuth('defaultBearerAuth')
   @ApiOperation({ summary: 'Get All Organizations' })
   @Public()
   @ApiQuery({

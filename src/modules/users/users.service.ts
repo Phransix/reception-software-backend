@@ -167,7 +167,24 @@ export class UsersService {
       const allQueries = await User.findAndCountAll({
         limit,
         offset,
-        attributes: { exclude: ['createdAt', 'updatedAt', 'deletedAt'] },
+        attributes: { exclude: ['password','createdAt', 'updatedAt', 'deletedAt'] },
+        order: [
+          ['createdAt', 'ASC']
+        ],
+
+        include:[{
+          model: Organization,
+           attributes:{
+            exclude:[
+              "id",
+              "createdAt",
+              "updatedAt",
+              "deletedAt",
+              "isVerified",
+            ]
+           }
+        }],
+
       });
 
       let result = Util?.getPagingData(allQueries, page, limit);
@@ -352,7 +369,7 @@ export class UsersService {
         transaction: t,
       });
       t.commit();
-      return Util.handleCreateSuccessRespone('Password Reset Successful');
+      return Util.handleCreateSuccessRespone('Password Reset Successfully');
     } catch (error) {
       t.rollback();
       console.log(error);

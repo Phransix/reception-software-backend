@@ -8,7 +8,7 @@ import * as Util from '../../utils/index';
 import { staffImageUploadProfile } from 'src/helper/staffProfiles';
 import { Op } from 'sequelize';
 import { Organization } from '../organization/entities/organization.entity';
-// import * as fs from 'fs';
+import { Department } from '../department/entities/department.entity';
 const fs = require('fs');
 
 @Injectable()
@@ -70,7 +70,40 @@ export class StaffService {
       const allQueries = await Staff.findAndCountAll({
         limit,
         offset,
-        attributes: { exclude: ['createdAt', 'updatedAt', 'deletedAt'] },
+        attributes: { exclude: ['organizationName','departmentName','createdAt', 'updatedAt', 'deletedAt'] },
+        order: [
+          ['createdAt', 'ASC']
+        ],
+
+        include:[
+          {
+          model: Organization,
+          attributes:{
+            exclude:[
+              "id",
+              "createdAt",
+              "updatedAt",
+              "deletedAt",
+              "isVerified",
+            ]
+          },
+        },
+        {
+          model:Department,
+          attributes:{
+            exclude:[
+              'organizationId',
+              "id",
+              "createdAt",
+              "updatedAt",
+              "deletedAt",
+            ]
+          }
+        },  
+      ]
+
+       
+
       });
 
       let result = Util?.getPagingData(allQueries, page, limit);
@@ -91,9 +124,37 @@ export class StaffService {
   async findOne(staffId: string) {
     try {
       const staff = await Staff.findOne({
-        attributes: {
-          exclude: ['password', 'createdAt', 'updatedAt', 'deletedAt'],
+        attributes: { exclude: ['organizationName','departmentName','createdAt', 'updatedAt', 'deletedAt'] },
+        order: [
+          ['createdAt', 'ASC']
+        ],
+
+        include:[
+          {
+          model: Organization,
+          attributes:{
+            exclude:[
+              "id",
+              "createdAt",
+              "updatedAt",
+              "deletedAt",
+              "isVerified",
+            ]
+          },
         },
+        {
+          model:Department,
+          attributes:{
+            exclude:[
+              'organizationId',
+              "id",
+              "createdAt",
+              "updatedAt",
+              "deletedAt",
+            ]
+          }
+        },  
+      ],
         where: { staffId },
       });
 
@@ -269,9 +330,37 @@ export class StaffService {
   async searchStaff(keyword: string) {
     try {
       const staffData = await this?.staffModel.findAll({
-        attributes: {
-          exclude: ['createdAt', 'updatedAt', 'deletedAt'],
+        attributes: { exclude: ['organizationName','departmentName','createdAt', 'updatedAt', 'deletedAt'] },
+        order: [
+          ['createdAt', 'ASC']
+        ],
+
+        include:[
+          {
+          model: Organization,
+          attributes:{
+            exclude:[
+              "id",
+              "createdAt",
+              "updatedAt",
+              "deletedAt",
+              "isVerified",
+            ]
+          },
         },
+        {
+          model:Department,
+          attributes:{
+            exclude:[
+              'organizationId',
+              "id",
+              "createdAt",
+              "updatedAt",
+              "deletedAt",
+            ]
+          }
+        },  
+      ],
 
         where: {
           fullName: { [Op.like]: `%${keyword}%` },

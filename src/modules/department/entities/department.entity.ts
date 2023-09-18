@@ -21,6 +21,7 @@ export class Department extends Model<Department> {
 })departmentId: string;
 
 
+
 @ForeignKey(() => Organization)
 @Column({
   defaultValue: uuidv4,
@@ -36,8 +37,12 @@ export class Department extends Model<Department> {
     onDelete: 'CASCADE',
 })
 organizationId: string;
- @BelongsTo(() => Organization)
- organization: Organization;
+ @BelongsTo(() => Organization,{
+foreignKey : 'organizationId',
+targetKey : 'organizationId',
+as: 'Organization',
+ })
+ organization :Organization;
 
 
    @Column({

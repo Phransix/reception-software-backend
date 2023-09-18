@@ -41,7 +41,11 @@ export class Enquiry extends Model<Enquiry>{
         onDelete: 'CASCADE',
     })
     organizationId: string;
-     @BelongsTo(() => Organization)
+     @BelongsTo(() => Organization,{
+       foreignKey:'organizationId',
+       targetKey:'organizationId',
+       as:'Organization'
+     })
      organization: Organization
    
    

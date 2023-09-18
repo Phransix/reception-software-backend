@@ -221,7 +221,11 @@ export class OrganizationService {
         limit,
         offset,
         attributes: { exclude: ['createdAt', 'updatedAt', 'deletedAt'] },
+        order: [
+          ['createdAt', 'ASC']
+        ]
       });
+      
 
       let result = Util?.getPagingData(allQueries, page, limit);
       console.log(result);

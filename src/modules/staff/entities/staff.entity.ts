@@ -44,7 +44,11 @@ export class Staff extends Model<Staff>{
     onDelete: 'CASCADE',
   })
   organizationId: string;
-  @BelongsTo(() => Organization)
+  @BelongsTo(() => Organization,{
+    foreignKey:'organizationId',
+    targetKey:'organizationId',
+    as:'Organization'
+  })
   organization: Organization;
 
   @Column({
@@ -69,7 +73,11 @@ export class Staff extends Model<Staff>{
     onDelete: 'CASCADE',
   })
   departmentId: string;
-  @BelongsTo(() => Department)
+  @BelongsTo(() => Department,{
+    foreignKey: 'departmentId',
+    targetKey: 'departmentId',
+    as: 'Department'
+  })
   department: Department;
 
   @Column({

@@ -14,7 +14,13 @@ export class User extends Model<User> {
     throw new Error('Method not implemented.');
   }
  
-
+  @Column({
+    type: DataType.INTEGER,
+    allowNull: false,
+    autoIncrement: true,
+    primaryKey: true,
+})
+id: number
 
   @Column({
     defaultValue: uuidv4,
@@ -23,25 +29,6 @@ export class User extends Model<User> {
     unique: true
   })
   userId: string
-
-    
-  // @ForeignKey(() => Role)
-  //   @Column({
-  //     defaultValue: uuidv4,
-  //       type: DataType.STRING,
-  //       allowNull: false,
-  //       unique: true,
-  //       references: {
-  //         model: {
-  //           tableName: 'Role',
-  //         },
-  //         key: 'roleId',
-  //       },
-  //       onDelete: 'CASCADE',
-  //   })
-  //   roleId: string;
-  //    @BelongsTo(() => Role)
-  //    role: Role
 
 
     @ForeignKey(() => Organization)
@@ -59,8 +46,12 @@ export class User extends Model<User> {
         onDelete: 'CASCADE',
     })
     organizationId: string;
-     @BelongsTo(() => Organization)
-     organization: Organization
+     @BelongsTo(() => Organization,{
+    foreignKey : 'organizationId',
+    targetKey : 'organizationId',
+    as: 'Organization',
+     })
+     organization :Organization;
 
 
   @Column({ type: 'enum', 
@@ -68,6 +59,7 @@ export class User extends Model<User> {
   defaultValue: Role.Admin 
 })
   roleName: Role;
+
 
     @Column({
         type: DataType.STRING,

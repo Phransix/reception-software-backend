@@ -7,6 +7,7 @@ import { InjectModel } from '@nestjs/sequelize';
 import * as Util from '../../utils/index';
 import * as Abstract from '../../utils/abstract';
 import { Op } from 'sequelize';
+import { Organization } from '../organization/entities/organization.entity';
 
 @Injectable()
 export class EnquiriesService {
@@ -27,6 +28,22 @@ export class EnquiriesService {
     }
   }
 
+  // Bulk Create 
+  async bulkCreate(createEnquiryDtos:CreateEnquiryDto[]){
+    try {
+      const createEnquiries = [];
+      for (const createEnquiryDto of createEnquiryDtos){
+        console.log(createEnquiryDto);
+        const createdEnquiry = await Abstract?.createData(Enquiry,createEnquiryDto);
+        createEnquiries.push(createdEnquiry)
+      }
+      return Util?.handleCreateSuccessRespone('Enquiries created successfully.');
+    } catch (error) {
+      console.log(error)
+      return Util?.handleGrpcTryCatchError(Util?.getTryCatchMsg(error));
+    }
+  }
+
   // Get All Enquiries
   async findAll(page: number, size: number) {
     try {
@@ -42,6 +59,21 @@ export class EnquiriesService {
         limit,
         offset,
         attributes: { exclude: ['createdAt', 'updatedAt', 'deletedAt'] },
+        order: [
+          ['createdAt', 'ASC']
+        ],
+        include:[{
+          model:Organization,
+          attributes:{
+            exclude:[
+              'id',
+              'createdAt',
+              'updatedAt',
+              'deletedAt',
+              'isVerified'
+            ]
+          }
+        }]
       });
 
       let result = Util?.getPagingData(allQueries, page, limit);
@@ -62,9 +94,22 @@ export class EnquiriesService {
   async findOne(enquiryId: string) {
     try {
       const enquiry = await Enquiry.findOne({
-        attributes: {
-          exclude: ['createdAt', 'updatedAt', 'deletedAt'],
-        },
+        attributes: { exclude: ['createdAt', 'updatedAt', 'deletedAt'] },
+        order: [
+          ['createdAt', 'ASC']
+        ],
+        include:[{
+          model:Organization,
+          attributes:{
+            exclude:[
+              'id',
+              'createdAt',
+              'updatedAt',
+              'deletedAt',
+              'isVerified'
+            ]
+          }
+        }],
         where: { enquiryId },
       });
 
@@ -138,6 +183,21 @@ export class EnquiriesService {
         limit,
         offset,
         attributes: { exclude: ['createdAt', 'updatedAt', 'deletedAt'] },
+        order: [
+          ['createdAt', 'ASC']
+        ],
+        include:[{
+          model: Organization,
+          attributes:{
+            exclude:[
+              "id",
+              "createdAt",
+              "updatedAt",
+              "deletedAt",
+              "isVerified",
+            ]
+          }
+        }]
       });
 
       const result = Util?.getPagingData(allQueries, page, limit);
@@ -160,34 +220,6 @@ export class EnquiriesService {
   }
 
   // Filter Enquiries By Purpose
-  // async purposefilter(keyword: string) {
-  //   try {
-  //     let filter = {};
-
-  //     if (keyword != null) {
-  //       filter = { purpose: keyword };
-  //     }
-  //     const filterCheck = await this?.enquiryModel.findAll({
-  //       where: {
-  //         ...filter,
-  //       },
-  //     });
-  //     if (!filterCheck) {
-  //       return Util?.handleFailResponse(
-  //         'No matching Enquiry Purpose data found.',
-  //       );
-  //     }
-
-  //     return Util?.handleSuccessRespone(
-  //       filterCheck,
-  //       'Enquiries Purpose Data Filtered Successfully.',
-  //     );
-  //   } catch (error) {
-  //     console.log(error);
-  //     return Util?.handleGrpcTryCatchError(Util?.getTryCatchMsg(error));
-  //   }
-  // }
-
   async purposefilter(keyword: string, page: number, size: number) {
     try {
       let filter = {};
@@ -219,6 +251,21 @@ export class EnquiriesService {
         limit,
         offset,
         attributes: { exclude: ['createdAt', 'updatedAt', 'deletedAt'] },
+        order: [
+          ['createdAt', 'ASC']
+        ],
+        include:[{
+          model: Organization,
+          attributes:{
+            exclude:[
+              "id",
+              "createdAt",
+              "updatedAt",
+              "deletedAt",
+              "isVerified",
+            ]
+          }
+        }]
       };
 
       if (keyword) {
@@ -253,7 +300,21 @@ export class EnquiriesService {
         attributes: {
           exclude: ['createdAt', 'updatedAt', 'deletedAt'],
         },
-
+        order: [
+          ['createdAt', 'ASC']
+        ],
+        include:[{
+          model: Organization,
+          attributes:{
+            exclude:[
+              "id",
+              "createdAt",
+              "updatedAt",
+              "deletedAt",
+              "isVerified",
+            ]
+          }
+        }],
         where: {
           enquirerFullName: { [Op.like]: `%${keyword}%` },
         },
