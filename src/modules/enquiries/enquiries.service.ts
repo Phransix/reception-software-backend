@@ -28,21 +28,7 @@ export class EnquiriesService {
     }
   }
 
-  // Bulk Create 
-  async bulkCreate(createEnquiryDtos:CreateEnquiryDto[]){
-    try {
-      const createEnquiries = [];
-      for (const createEnquiryDto of createEnquiryDtos){
-        console.log(createEnquiryDto);
-        const createdEnquiry = await Abstract?.createData(Enquiry,createEnquiryDto);
-        createEnquiries.push(createdEnquiry)
-      }
-      return Util?.handleCreateSuccessRespone('Enquiries created successfully.');
-    } catch (error) {
-      console.log(error)
-      return Util?.handleGrpcTryCatchError(Util?.getTryCatchMsg(error));
-    }
-  }
+
 
   // Get All Enquiries
   async findAll(page: number, size: number) {
