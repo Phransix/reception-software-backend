@@ -136,12 +136,6 @@ export class Delivery extends Model <Delivery> {
     itemDescription: string
 
     @Column ({
-      type: DataType.DATEONLY,
-      allowNull: false
-  })
-  createdAt: string
-
-    @Column ({
         type: DataType.DATE,
         allowNull: true,
         defaultValue: null

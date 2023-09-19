@@ -169,6 +169,7 @@ export class PurposeController {
         ErrorCode = purpose?.status_code;
         throw new Error(purpose?.message)
       }
+      return purpose
     } catch (error) {
       console.log(error)
       return Util?.handleRequestError(Util?.getTryCatchMsg(error),ErrorCode)
