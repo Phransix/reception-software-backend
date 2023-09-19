@@ -8,6 +8,7 @@ import * as Util from '../../utils/index';
 import * as Abstract from '../../utils/abstract';
 import { Op } from 'sequelize';
 import { Organization } from '../organization/entities/organization.entity';
+// import sequelize from 'sequelize';
 
 @Injectable()
 export class EnquiriesService {
@@ -27,7 +28,6 @@ export class EnquiriesService {
       return Util?.handleGrpcTryCatchError(Util?.getTryCatchMsg(error));
     }
   }
-
 
 
   // Get All Enquiries
@@ -315,4 +315,6 @@ export class EnquiriesService {
       return Util?.handleGrpcTryCatchError(Util?.getTryCatchMsg(error));
     }
   }
+
+
 }
