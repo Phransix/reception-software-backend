@@ -215,75 +215,6 @@ export class EnquiriesController {
     }
   }
 
-  // // // Filter and Paginate Enquiries By Purpose
-  // @UseGuards(AuthGuard('jwt'))
-  // @ApiBearerAuth('defaultBearerAuth')
-  // @Public()
-  // @UseGuards(AtGuard)
-  // @ApiOperation({ summary: 'Filter Enquiry By The Purpose' })
-  // @ApiQuery({
-  //   name: 'keyword',
-  //   enum: Purpose,
-  //   required: false,
-  // })
-  // @ApiQuery({
-  //   name: 'page',
-  //   type: 'number',
-  //   required: false,
-  // })
-  // @ApiQuery({
-  //   name: 'size',
-  //   type: 'number',
-  //   required: false,
-  // })
-  // @Get('enquiry/filterPuropse')
-  // async purposefilter(
-  //   @Query('keyword') keyword: string,
-  //   @Query('page') page: number,
-  //   @Query('size') size: number,
-  // ) {
-  //   try {
-  //     let currentPage = Util?.Checknegative(page);
-  //     if (currentPage) {
-  //       return Util?.handleErrorRespone(
-  //         'Enquiry current Page cannot be negative',
-  //       );
-  //     }
-
-  //     // return await this?.enquiriesService?.purposefilter(keyword);
-
-  //     const { limit, offset } = Util?.getPagination(page, size);
-
-  //     let queryOption: any = {
-  //       limit,
-  //       offset,
-  //       attributes: { exclude: ['createdAt', 'updatedAt', 'deletedAt'] },
-  //     };
-
-  //     if (keyword) {
-  //       queryOption = {
-  //         ...queryOption,
-  //         where: {
-  //           purpose: keyword,
-  //         },
-  //       };
-  //     }
-
-  //     const allQueries = await Enquiry?.findAndCountAll(queryOption);
-
-  //     let result = Util?.getPagingData(allQueries, page, limit);
-  //     console.log(result);
-
-  //     const dataResult = { ...result };
-  //     return Util?.handleSuccessRespone(
-  //       dataResult,
-  //       'Enquiries Purpose Data Filtered Successfully.',
-  //     );
-  //   } catch (error) {
-  //     console.log(error);
-  //     return Util?.getTryCatchMsg(error);
-  //   }
-  // }
 
   // Search Enquiry
   @UseGuards(AuthGuard('jwt'))
@@ -360,4 +291,5 @@ export class EnquiriesController {
       return Util?.handleRequestError(Util?.getTryCatchMsg(error), ErrorCode);
     }
   }
+
 }
