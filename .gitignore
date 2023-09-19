@@ -2,7 +2,7 @@
 /dist
 /node_modules
 /public
-.env
+.env.local
 
 # Logs
 logs

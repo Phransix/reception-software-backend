@@ -215,12 +215,6 @@ async findDeliveryByDateRange(
   } catch (error) {
     console.log(error)
     return Util?.handleRequestError(Util?.getTryCatchMsg(error),ErrorCode)
-=======
-  @ApiTags('Delivery')
-  @Delete(':id')
-  async remove(@Param('id') id: string) {
-    return this.deliveryService.remove(+id);
->>>>>>> production
   }
 }
 
