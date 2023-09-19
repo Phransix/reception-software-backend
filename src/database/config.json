@@ -21,11 +21,11 @@
       }
     },
     "production": {
-      "username": "",
-      "password": "",
+      "username": "tewaa",
+      "password": "n71990GH@#0164",
       "port": 5432,
-      "database": "",
-      "host": "",
+      "database": "reception_db_production",
+      "host": "ec2-34-204-154-168.compute-1.amazonaws.com",
       "dialect": "postgres",
       "pool": {
         "max": 100,

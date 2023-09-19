@@ -19,6 +19,7 @@ export class DeliveryService {
     @InjectModel(Delivery) private readonly DeliveryModel: typeof Delivery
   ) { }
 
+
   // Create Delivery
   async create(createDeliveryDto: CreateDeliveryDto) {
     try {
@@ -62,11 +63,14 @@ export class DeliveryService {
         dataResult,
         'Delivery Data retrieved successfully.',
       );
+
+      const delivery = await Delivery.findAll({paranoid:false})
+      return Util?.handleSuccessRespone(delivery, "Deliveries Data retrieved Successfully")
     } catch (error) {
-      console.log(error);
-      return Util?.handleGrpcTryCatchError(Util?.getTryCatchMsg(error));
+      console.log(error)
+      return Util?.handleFailResponse("Deliveries retrieval failed")
     }
-  }
+  };
 
   // Get Delivery by deliveryId
   async findOne(deliveryId: string) {
@@ -89,11 +93,13 @@ export class DeliveryService {
   async update(deliveryId: string, updateDeliveryDto: UpdateDeliveryDto) {
     try {
       const delivery = await Delivery.findOne({ where: { deliveryId } });
+
       if (!delivery) {
         return Util?.handleFailResponse("Delivery data not found")
       }
       Object.assign(delivery, updateDeliveryDto);
       await delivery.save()
+
       return Util?.handleSuccessRespone(Util?.SuccessRespone, 'Delivery Data successfully updated')
     } catch (error) {
       console.log(error)
