@@ -16,8 +16,13 @@ export class DeliveryService {
 
 
   constructor(
+<<<<<<< HEAD
     @InjectModel(Delivery) private readonly DeliveryModel: typeof Delivery
   ) { }
+=======
+    @InjectModel(Delivery) private readonly DeliveryModel: typeof Delivery,
+    ){}
+>>>>>>> production
 
   // Create Delivery
   async create(createDeliveryDto: CreateDeliveryDto) {
@@ -33,6 +38,7 @@ export class DeliveryService {
   // Get All Delivery
   async findAll(page: number, size: number) {
     try {
+<<<<<<< HEAD
       let currentPage = Util.Checknegative(page);
       if (currentPage) {
         return Util?.handleErrorRespone(
@@ -62,6 +68,23 @@ export class DeliveryService {
         dataResult,
         'Delivery Data retrieved successfully.',
       );
+=======
+      const delivery = await Delivery.findAll({paranoid:false})
+      return Util?.handleSuccessRespone(delivery, "Deliveries Data retrieved Successfully")
+    } catch (error) {
+      console.log(error)
+      return Util?.handleFailResponse("Deliveries retrieval failed")
+    }
+  };
+
+  async findOne(id: number) {
+    try {
+      const delivery = await Delivery.findOne({ where: { id } });
+      if (!delivery) {
+        throw new NotAcceptableException('The Delivery does not exist')
+      }
+      return Util?.handleSuccessRespone(delivery, "Delivery Data retrieved successfully")
+>>>>>>> production
     } catch (error) {
       console.log(error);
       return Util?.handleGrpcTryCatchError(Util?.getTryCatchMsg(error));
@@ -71,6 +94,7 @@ export class DeliveryService {
   // Get Delivery by deliveryId
   async findOne(deliveryId: string) {
     try {
+<<<<<<< HEAD
       const delivery = await Delivery.findOne({
         where: { deliveryId },
         attributes: { exclude: ['createdAt', 'updatedAt', 'deletedAt'] }
@@ -89,18 +113,26 @@ export class DeliveryService {
   async update(deliveryId: string, updateDeliveryDto: UpdateDeliveryDto) {
     try {
       const delivery = await Delivery.findOne({ where: { deliveryId } });
+=======
+      const delivery = await Delivery.findOne({ where: { id } });
+>>>>>>> production
       if (!delivery) {
         return Util?.handleFailResponse("Delivery data not found")
       }
       Object.assign(delivery, updateDeliveryDto);
       await delivery.save()
+<<<<<<< HEAD
       return Util?.handleSuccessRespone(Util?.SuccessRespone, 'Delivery Data successfully updated')
+=======
+      return Util?.handleSuccessRespone(Util?.SuccessRespone, 'Delivery Data successfullt updated')
+>>>>>>> production
     } catch (error) {
       console.log(error)
       return Util?.handleGrpcTryCatchError(Util?.getTryCatchMsg(error));
     }
   };
 
+<<<<<<< HEAD
 
   // Remove Delivery By deliveryId 
   async remove(deliveryId: string) {
@@ -110,6 +142,18 @@ export class DeliveryService {
         return Util?.handleFailResponse("Delivery Data does not exist")
       }
       await delivery.destroy()
+=======
+  async remove(id: number) {
+    // return `This action removes a #${id} delivery`;
+    try {
+      const delivery = await Delivery.findByPk(id);
+      if (!delivery) {
+        throw new NotAcceptableException("Delivery Data doen not exist")
+      }
+      // Object.assign(delivery)
+      // delivery.deletedAt = new Date()
+      await delivery.save()
+>>>>>>> production
       return Util?.handleSuccessRespone(Util?.SuccessRespone, "Delivery Data deleted Successfully")
 
     } catch (error) {

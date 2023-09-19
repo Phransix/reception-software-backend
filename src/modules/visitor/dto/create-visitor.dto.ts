@@ -1,0 +1,77 @@
+import { ApiProperty } from '@nestjs/swagger';
+import { IsDateString, IsEnum, IsNotEmpty, IsString, MaxLength, MinLength } from 'class-validator'
+
+enum Status {
+    ACTIVE = 'active',
+    INACTIVE = 'inactive',
+}
+
+enum purposeStatus {
+    PERSONAL = 'personal',
+    UNOFFICIAL = 'unofficial',
+}
+
+export class CreateVisitorDto {
+
+    @ApiProperty({
+        description: 'The Id of the Visitor',
+        example: '1'
+    })
+    @IsNotEmpty()
+    readonly organizationId: string;
+
+    @ApiProperty({
+        description: 'The name of the Visitor',
+        example: 'Kingsley'
+    })
+    @IsString()
+    @IsNotEmpty()
+    readonly visitor: string;
+
+    @ApiProperty({
+        description: 'The phonenumber of the Visitor',
+        example: '0254698745'
+    })
+    @IsNotEmpty()
+    @MinLength(10)
+    @MaxLength(10)
+    readonly phoneNumber: string;
+
+    @ApiProperty({
+        description: "The purpose of the visit",
+        example: 'personal'
+    })
+    @IsString()
+    @IsNotEmpty()
+    @IsEnum(purposeStatus,{
+        message: 'state the purpose'
+    })
+    readonly purpose: string;
+
+    @ApiProperty({
+        description: "The name of the host",
+        example: 'Kwame Atoapoma'
+    })
+    @IsString()
+    @IsNotEmpty()
+    readonly host: string;
+        
+    @ApiProperty({
+        description: "The status of the visit",
+        example: 'active'
+    })
+    @IsNotEmpty()
+    @IsEnum(Status, {
+        message: 'The visitor status must be either active or inactive',
+    })
+    readonly visitStatus: string;
+
+    @ApiProperty({
+        description: "The date and time of delivery",
+        example: '2023-08-20'
+    })
+    @IsNotEmpty()
+    @IsDateString()
+    readonly date: string;
+
+}
