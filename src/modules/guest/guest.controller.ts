@@ -374,6 +374,8 @@ export class GuestController {
 
   // 
   // Bulk guest create
+  @UseGuards(AuthGuard('jwt'))
+  @ApiBearerAuth('defaultBearerAuth')
   @Public()
   @ApiTags('Guest')
   @Post('bulkGuestCreate/create')
@@ -394,6 +396,8 @@ export class GuestController {
   }
 
     // Bulk guest delete
+    @UseGuards(AuthGuard('jwt'))
+    @ApiBearerAuth('defaultBearerAuth')
     @Public()
     @ApiTags('Guest')
     @Delete('bulkGuestDelete/delete')
