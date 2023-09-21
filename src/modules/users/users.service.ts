@@ -108,6 +108,7 @@ export class UsersService {
         return Util?.handleFailResponse('Oraganiazation account not verified');
       console.log(org?.isVerified);
 
+      
       //  Check the Role of the User
       const user_role = await User.findOne({
         where: { roleName: user?.roleName },
