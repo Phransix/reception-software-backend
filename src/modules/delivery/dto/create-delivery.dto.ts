@@ -1,5 +1,5 @@
 import { ApiProperty } from "@nestjs/swagger";
-import { IsEnum, IsNotEmpty, IsString, Matches, IsEmail} from "class-validator";
+import { IsEnum, IsNotEmpty, IsString, Matches, IsEmail, MinLength, MaxLength} from "class-validator";
 
 export enum Delivery_type {
     FOOD = 'food',
@@ -10,6 +10,12 @@ export enum Delivery_type {
 enum Status {
     DELIVERED = 'delivered',
     NOT_DELIVERED = 'awaiting_pickup'
+}
+
+enum itemUnit {
+    PIECE = 'pc(s)',
+    PACKS = 'pk(s)',
+    BOX = 'bx(s)'
 }
 
 export class CreateDeliveryDto {
@@ -23,13 +29,6 @@ export class CreateDeliveryDto {
     })
     @IsNotEmpty()
     readonly organizationId: string;
-
-    @ApiProperty({
-        description: 'The Id of the unit',
-        example: '0ebf89e0-1606-4f8a-ad7c-39f4a3424028'
-    })
-    // @IsNotEmpty()
-    readonly unitId: string;
 
     @ApiProperty({
         description: 'The sender of the Delivery',
@@ -51,31 +50,22 @@ export class CreateDeliveryDto {
         description: "The sender/'s phone  number",
         example: '0546987415'
     })
-    @IsString()
     @IsNotEmpty()
+    @MinLength(10)
+    @MaxLength(10)
     readonly receipientPhoneNumber: string;
 
     @ApiProperty({
         description: "The senders'/s email address",
         example: 'ansah@gmail.com'
     })
-    // @IsString()
+    @IsString()
     @IsEmail()
-    // @IsNotEmpty()
+    @IsNotEmpty()
     @Matches(/^[a-zA-Z0-9._%+-]+@.+\.com$/, {
         message: 'Invalid Format, must be a valid email with the .com',
      })
     readonly email: string;
-
-    @ApiProperty({
-        description: "The status of delivery",
-        example: 'awaiting_pickup'
-    })
-    @IsString()
-    @IsEnum(Status, {
-        message: 'Choose the type of status: delivered or awaiting_pickup'
-    })
-    readonly status: string;
 
     @ApiProperty({
         description: "The type of delivery",
@@ -91,29 +81,33 @@ export class CreateDeliveryDto {
         description: "The quantity of delivery",
         example: '2'
     })
-    // @IsString()
-    // @IsNotEmpty()
+    @IsNotEmpty()
     readonly itemQuantity: string
 
     @ApiProperty({
-        description: "The item name of delivery",
-        example: '2'
+        description: "The status of delivery",
+        example: 'pc(s)'
     })
-    // @IsString()
-    // @IsNotEmpty()
-    readonly itemName: string
-
-    @ApiProperty({
-        description: "The title of the delivery",
-        example: 'Any important detail of the delivery'
+    @IsString()
+    @IsEnum(itemUnit, {
+        message: 'Choose the unit of the item'
     })
-    // @IsString()
-    readonly documentTitle: string;
+    readonly unit: string;
 
     @ApiProperty({
         description: "The Description of the delivery",
         example: 'Any important detail of the delivery'
     })
-    // @IsString()
+    @IsString()
     readonly itemDescription: string;
+
+    @ApiProperty({
+        description: "The status of delivery",
+        example: 'awaiting_pickup'
+    })
+    @IsString()
+    @IsEnum(Status, {
+        message: 'Choose the type of status: delivered or awaiting_pickup'
+    })
+    readonly status: string;
 }
