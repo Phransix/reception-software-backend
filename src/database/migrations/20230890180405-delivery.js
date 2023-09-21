@@ -23,18 +23,6 @@ module.exports = {
         allowNull: false,
         unique: true
       },
-      unitId: {
-        type: Sequelize.UUID,
-        defaultValue: Sequelize.UUIDV4,
-        allowNull: true,
-        references: {
-          model: {
-            tableName: 'Units',
-          },
-          key: 'unitId'
-        },
-        onDelete: 'CASCADE'
-      },
       organizationId: {
         type: Sequelize.UUID,
         allowNull: false,
@@ -66,11 +54,27 @@ module.exports = {
       },
       type: {
         type: Sequelize.ENUM('document', 'food', 'other'),
-        allowNull: true,
-        defaultValue: 'other',
+        allowNull: false,
+        defaultValue: null,
         validate: {
           isIn: [['document', 'food', 'other']]
         }
+      },
+      itemQuantity: {
+        type: Sequelize.STRING,
+        allowNull: false
+      },
+      unit: {
+        type: Sequelize.ENUM('pc(s)', 'bx(s)', 'pck(s)'),
+        allowNull: true,
+        defaultValue: null,
+        validate: {
+          isIn: [['pc(c)', 'bx(s)', 'pck(s)']]
+        }
+      },
+      itemDescription: {
+        type: Sequelize.STRING,
+        allowNull: false,
       },
       status: {
         type: Sequelize.ENUM('delivered', 'awaiting_pickup'),
@@ -79,22 +83,6 @@ module.exports = {
         validate: {
           isIn: [['delivered', 'awaiting_pickup']]
         }
-      },
-      documentTitle: {
-        type: Sequelize.STRING,
-        allowNull: true
-      },
-      itemQuantity: {
-        type: Sequelize.STRING,
-        allowNull: true
-      },
-      itemName: {
-        type: Sequelize.STRING,
-        allowNull: true,
-      },
-      itemDescription: {
-        type: Sequelize.STRING,
-        allowNull: true,
       },
       createdAt: {
         type: Sequelize.DATE,

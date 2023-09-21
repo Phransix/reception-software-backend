@@ -29,7 +29,6 @@ import { DepartmentModule } from './modules/department/department.module';
 import { StaffModule } from './modules/staff/staff.module';
 import { AuthPassService } from './guard/auth/authPass.service';
 import { PasswordService } from './guard/passwordhash.service';
-import { UnitModule } from './modules/unit/unit.module';
 import { PurposeModule } from './modules/purpose/purpose.module';
 import { MulterModule } from '@nestjs/platform-express';
 import { imageUploadProfile } from './helper/usersProfile';
@@ -37,9 +36,6 @@ import { staffImageUploadProfile } from './helper/staffProfiles';
 import { orgImageUploadProfile } from './helper/organizationsProfile';
 import { ResetPasswordService } from './helper/ResetPassHelper';
 import { OverviewModule } from './modules/overview/overview.module';
-
-
-
 
 
 
@@ -118,7 +114,6 @@ import { OverviewModule } from './modules/overview/overview.module';
     GuestModule,
     DepartmentModule,
     StaffModule,
-    UnitModule,
     PurposeModule,
     OverviewModule,
   ],

@@ -1,7 +1,6 @@
 import { BelongsTo, Column, DataType, ForeignKey, HasMany, Model, Table } from "sequelize-typescript";
 import { Guest } from "src/modules/guest/entities/guest.entity";
 import { Organization } from "src/modules/organization/entities/organization.entity";
-import { Unit } from "src/modules/unit/entities/unit.entity";
 import { CreateDeliveryDto } from "../dto/create-delivery.dto";
 import moment from "moment";
 const { v4: uuidv4 } = require('uuid');
@@ -31,28 +30,6 @@ export class Delivery extends Model <Delivery> {
         unique: true
       })
       deliveryId: string
-
-      @ForeignKey(() => Unit)
-      @Column({
-        defaultValue: uuidv4,
-          type: DataType.STRING,
-          allowNull: true,
-          unique:true,
-          references: {
-            model: {
-              tableName: 'Units',
-            },
-            key: 'unitId',
-          },
-          onDelete: 'CASCADE',
-      })
-      unitId: string;
-       @BelongsTo(() => Unit,{
-        foreignKey: 'unitId',
-        targetKey: 'unitId',
-        as: 'deliveryUnit'
-       })
-       unit: Unit
 
       @ForeignKey(() => Organization)
       @Column({
@@ -113,25 +90,20 @@ export class Delivery extends Model <Delivery> {
 
     @Column({
         type: DataType.STRING,
-        allowNull: true
+        allowNull: false
     })
     itemQuantity: string
 
     @Column({
-        type: DataType.STRING,
-        allowNull: true
+      type: DataType.ENUM,
+      values: ['pc(c)','bx(s)','pck(s)'],
+      allowNull: false,
     })
-    documentTitle: string
+    unit: string
 
     @Column({
         type: DataType.STRING,
-        allowNull: true
-    })
-    itemName: string
-
-    @Column({
-        type: DataType.STRING,
-        allowNull: true
+        allowNull: false
     })
     itemDescription: string
 
@@ -141,6 +113,5 @@ export class Delivery extends Model <Delivery> {
         defaultValue: null
     })
     deletedAt: Date
-    
-
+  
 }
