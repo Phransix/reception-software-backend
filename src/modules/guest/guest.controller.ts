@@ -374,8 +374,12 @@ export class GuestController {
 
   // 
   // Bulk guest create
+  @UseGuards(AtGuard)
   @UseGuards(AuthGuard('jwt'))
   @ApiBearerAuth('defaultBearerAuth')
+  @Public()
+  @ApiTags('Guest')
+  @ApiOperation({ summary: 'Create Multiple Guests' })
   @Public()
   @ApiTags('Guest')
   @Post('bulkGuestCreate/create')
@@ -396,10 +400,12 @@ export class GuestController {
   }
 
     // Bulk guest delete
+    @UseGuards(AtGuard)
     @UseGuards(AuthGuard('jwt'))
     @ApiBearerAuth('defaultBearerAuth')
     @Public()
     @ApiTags('Guest')
+    @ApiOperation({ summary: 'Delete Multiple Guests' })
     @Delete('bulkGuestDelete/delete')
     async bulkGuestDelete (whereClause: any = {}){
       let ErrorCode: number

@@ -36,6 +36,7 @@ import { imageUploadProfile } from './helper/usersProfile';
 import { staffImageUploadProfile } from './helper/staffProfiles';
 import { orgImageUploadProfile } from './helper/organizationsProfile';
 import { ResetPasswordService } from './helper/ResetPassHelper';
+import { OverviewModule } from './modules/overview/overview.module';
 
 
 
@@ -119,6 +120,7 @@ import { ResetPasswordService } from './helper/ResetPassHelper';
     StaffModule,
     UnitModule,
     PurposeModule,
+    OverviewModule,
   ],
 
   controllers: [AppController],

@@ -6,6 +6,8 @@ import { Purpose } from './entities/purpose.entity';
 import * as Abstract from '../../utils/abstract'
 import * as Util from '../../utils/index'
 import { Guest } from '../guest/entities/guest.entity';
+import { Department } from '../department/entities/department.entity';
+import { Staff } from '../staff/entities/staff.entity';
 
 @Injectable()
 export class PurposeService {
@@ -43,9 +45,21 @@ export class PurposeService {
         include: [
           {
             model:Guest,
-            attributes: {exclude:['createdAt','updatedAt']},
+            attributes: {exclude:['id','guestId','organizationId','createdAt','updatedAt','deletedAt']},
             order: [['id','DESC']],
             as:'guestData'
+          },
+          {
+            model:Department,
+            attributes: {exclude: ['id','organizationId','departmentId','createdAt', 'updatedAt', 'deletedAt']},
+            order: [['id', 'DESC']],
+            as: 'departmentData'
+          },
+          {
+            model:Staff,
+            attributes: {exclude: ['id','departmentId','organizationId','staffId','organizationName','departmentName','createdAt', 'updatedAt', 'deletedAt']},
+            order: [['id', 'DESC']],
+            as: 'staffData'
           }
         ]
       });
