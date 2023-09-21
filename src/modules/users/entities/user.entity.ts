@@ -56,7 +56,7 @@ id: number
 
   @Column({ type: 'enum', 
   values: Object.values(Role), 
-  defaultValue: Role.Admin 
+  defaultValue: Role?.Receptionist 
 })
   roleName: Role;
 

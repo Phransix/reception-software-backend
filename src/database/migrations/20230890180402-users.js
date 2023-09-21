@@ -43,7 +43,7 @@ module.exports = {
         type: Sequelize.ENUM('Admin', 'Receptionist'),
         allowNull: false,
         required:true,
-        defaultValue: 'Admin',
+        defaultValue: 'Receptionist',
         validate: {
           isIn: [['Admin', 'Receptionist']] 
         }
