@@ -80,7 +80,11 @@ export class Purpose extends Model <Purpose> {
         onDelete: 'CASCADE',
     })
     departmentId: string
-    @BelongsTo(() => Department)
+    @BelongsTo(() => Department, {
+        foreignKey:'departmentId',
+        targetKey: 'departmentId',
+        as: 'departmentData'
+    })
     department: Department
 
     @ForeignKey(() => Staff)
@@ -98,7 +102,12 @@ export class Purpose extends Model <Purpose> {
         onDelete: 'CASCADE',
     })
     staffId: string
-    @BelongsTo(() => Staff)
+    @BelongsTo(() => Staff, {
+        foreignKey:'staffId',
+        targetKey: 'staffId',
+        as: 'staffData'
+    }
+    )
     staff: Staff
 
 }

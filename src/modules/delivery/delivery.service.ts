@@ -45,7 +45,7 @@ export class DeliveryService {
       const allQueries = await Delivery.findAndCountAll({
         limit,
         offset,
-        attributes: { exclude: ['createdAt', 'updatedAt', 'deletedAt'] },
+        attributes: { exclude: ['updatedAt', 'deletedAt'] },
         include:[
           {
             model: Unit,
