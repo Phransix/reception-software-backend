@@ -20,7 +20,7 @@ import { Sequelize } from 'sequelize-typescript';
 import { User } from 'src/modules/users/entities/user.entity';
 import { EmailService } from 'src/helper/EmailHelper';
 import { verifyEmailToken } from '../../utils/index';
-import { Role } from '../role/entities/role.entity';
+// import { Role } from '../role/entities/role.entity';
 import { AuthPassService } from 'src/guard/auth/authPass.service';
 import * as argon from 'argon2';
 import { orgImageUploadProfile } from 'src/helper/organizationsProfile';
@@ -30,13 +30,14 @@ const fs = require('fs');
 import { JwtService } from '@nestjs/jwt';
 import { ConfigService } from '@nestjs/config';
 import { LogOutDTO } from 'src/guard/auth/logoutDto';
+import { Role } from "src/modules/role/role.enum";
 
 @Injectable()
 export class OrganizationService {
   constructor(
     @InjectModel(Organization) private organizationModel: typeof Organization,
     @InjectModel(User) private user: typeof User,
-    @InjectModel(Role) private role: typeof Role,
+    // @InjectModel(Role) private role: typeof Role,
     private sequelize: Sequelize,
     private emailService: EmailService,
     private readonly authPassService: AuthPassService,
@@ -64,13 +65,13 @@ export class OrganizationService {
         { ...createOrganizationDto },
         { transaction: t },
       );
-      let role = await this?.role?.findOne({ where: { name: 'Admin' } });
+      let role = await Role?.Admin 
 
       if (!role) throw new ForbiddenException('Role Not Found');
 
       let org_data = {
         organizationId: organization?.organizationId,
-        name: role?.name,
+        roleName: Role.Admin,
         fullName: createOrganizationDto?.fullName,
         email: organization?.email,
         phoneNumber: createOrganizationDto?.phoneNumber,
@@ -81,7 +82,6 @@ export class OrganizationService {
 
       let mail_data = {
         organizationId: organization?.organizationId,
-        roleId: role?.roleId,
         fullName: createOrganizationDto?.fullName,
         email: organization?.email,
         phoneNumber: createOrganizationDto?.phoneNumber,

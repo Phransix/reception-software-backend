@@ -15,17 +15,6 @@ module.exports = {
           allowNull: false,
           unique: true
       },
-      // roleId: {
-      //   type: Sequelize.UUID,
-      //   allowNull: false,
-      //   references: {
-      //     model:{
-      //       tableName: 'Roles',
-      //     },
-      //     key:'roleId'
-      //   },
-      //   onDelete: 'CASCADE'
-      // },
 
       organizationId: {
         type: Sequelize.UUID,

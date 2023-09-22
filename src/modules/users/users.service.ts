@@ -48,8 +48,10 @@ export class UsersService {
   ) {}
 
   //  Register New User
-  async create(createUserDto: CreateUserDto) {
+  async create(createUserDto: CreateUserDto,userId) {
     try {
+      let user = await this?.userModel.findOne({where:{userId}})
+      console.log(user?.organizationId)
       var image_matches = createUserDto.profilePhoto?.match(
         /^data:([A-Za-z-+\/]+);base64,(.+)$/,
       );
@@ -155,8 +157,10 @@ export class UsersService {
   }
 
   // Get All Users
-  async findAll(page: number, size: number) {
+  async findAll(page: number, size: number, userId:any) {
     try {
+      console.log(userId);
+      
       let currentPage = Util.Checknegative(page);
       if (currentPage) {
         return Util?.handleErrorRespone(
@@ -165,9 +169,22 @@ export class UsersService {
       }
       const { limit, offset } = Util.getPagination(page, size);
 
+
+      let user = await this?.userModel.findOne({where:{userId}})
+      console.log(user?.organizationId)
+      if(!user)
+      return Util?.handleErrorRespone('User not found');
+
+      let get_org = await this?.orgModel.findOne({where:{organizationId:user?.organizationId}})
+
+      if(!get_org)
+      return Util?.handleErrorRespone('organization not found');
+
+   
       const allQueries = await User.findAndCountAll({
         limit,
         offset,
+        where:{organizationId:get_org?.organizationId},
         attributes: { exclude: ['password','createdAt', 'updatedAt', 'deletedAt'] },
         order: [
           ['createdAt', 'ASC']
@@ -211,8 +228,13 @@ export class UsersService {
         },
         where: { userId },
       });
+      console.log(user?.organizationId)
       if (!user) {
         throw new Error('User not found.');
+      }
+      let get_org = await this?.orgModel.findOne({where:{organizationId:user?.organizationId}})
+      if(!get_org){
+      return Util?.handleErrorRespone('organization not found');
       }
 
       return Util?.handleSuccessRespone(user, 'User retrieve successfully.');
