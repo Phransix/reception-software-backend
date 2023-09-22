@@ -77,14 +77,14 @@ export class StaffController {
   async findAll(
     @Query('page') page: number,
      @Query('size') size: number,
-    @GetCurrentStaffId() staffId : string
+    // @GetCurrentStaffId() staffId : string
      ) {
     let ErrorCode: number;
     try {
       let staffData = await this.staffService?.findAll(
         page, 
         size,
-        staffId
+        // staffId
         );
 
       if (staffData?.status_code != HttpStatus.OK) {
@@ -212,13 +212,13 @@ export class StaffController {
   @Get('staff/search')
   async searchStaff(
     @Query('keyword') keyword: string,
-    @GetCurrentUserId() staffId : string
+    // @GetCurrentUserId() staffId : string
     ) {
     let ErrorCode: number;
     try {
       let staff_search = await this?.staffService?.searchStaff(
         keyword.charAt(0).toUpperCase(),
-        staffId
+        // staffId
       );
       if (staff_search?.status_code != HttpStatus.OK) {
         ErrorCode = staff_search?.status_code;

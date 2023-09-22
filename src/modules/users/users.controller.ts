@@ -132,10 +132,10 @@ export class UsersController {
         userId,
       );
 
-      // if (staffData?.status_code != HttpStatus.OK) {
-      //   ErrorCode = staffData?.status_code;
-      //   throw new Error(staffData?.message);
-      // }
+      if (staffData?.status_code != HttpStatus.OK) {
+        ErrorCode = staffData?.status_code;
+        throw new Error(staffData?.message);
+      }
       return staffData;
     } catch (error) {
       console.log(error);
