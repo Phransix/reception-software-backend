@@ -218,11 +218,7 @@ export class EnquiriesService {
           ...filter,
         },
       });
-      if (!filterCheck) {
-        return Util?.handleFailResponse(
-          'No matching Enquiry Purpose data found.',
-        );
-      }
+     
 
       let currentPage = Util?.Checknegative(page);
       if (currentPage) {
@@ -315,6 +311,77 @@ export class EnquiriesService {
       return Util?.handleGrpcTryCatchError(Util?.getTryCatchMsg(error));
     }
   }
+
+
+    // Filter Enquiries By OrganizationId
+    async filterByOrganizationId(keyword: string, page: number, size: number) {
+      try {
+        let filter = {};
+  
+        if (keyword != null) {
+          filter = {organizationId : keyword };
+        }
+        const filterCheck = await this?.enquiryModel.findAll({
+          where: {
+            ...filter,
+          },
+        });
+       
+  
+        let currentPage = Util?.Checknegative(page);
+        if (currentPage) {
+          return Util?.handleErrorRespone(
+            'Enquiry current Page cannot be negative',
+          );
+        }
+  
+        const { limit, offset } = Util?.getPagination(page, size);
+  
+        let queryOption: any = {
+          limit,
+          offset,
+          attributes: { exclude: ['createdAt', 'updatedAt', 'deletedAt'] },
+          order: [
+            ['createdAt', 'ASC']
+          ],
+          include:[{
+            model: Organization,
+            attributes:{
+              exclude:[
+                "id",
+                "createdAt",
+                "updatedAt",
+                "deletedAt",
+                "isVerified",
+              ]
+            }
+          }]
+        };
+  
+        if (keyword) {
+          queryOption = {
+            ...queryOption,
+            where: {
+              purpose: keyword,
+            },
+          };
+        }
+  
+        const allQueries = await Enquiry?.findAndCountAll(queryOption);
+  
+        let result = Util?.getPagingData(allQueries, page, limit);
+        console.log(result);
+  
+        const dataResult = { ...result };
+        return Util?.handleSuccessRespone(
+          dataResult,
+          'Enquiries Purpose Data Filtered Successfully.',
+        );
+      } catch (error) {
+        console.log(error);
+        return Util?.handleGrpcTryCatchError(Util?.getTryCatchMsg(error));
+      }
+    }
 
 
 }

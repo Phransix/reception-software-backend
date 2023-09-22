@@ -9,12 +9,15 @@ import { staffImageUploadProfile } from 'src/helper/staffProfiles';
 import { Op } from 'sequelize';
 import { Organization } from '../organization/entities/organization.entity';
 import { Department } from '../department/entities/department.entity';
+import { User } from '../users/entities/user.entity';
 const fs = require('fs');
 
 @Injectable()
 export class StaffService {
   constructor(
     @InjectModel(Staff) private staffModel: typeof Staff,
+    @InjectModel(User) private userModel: typeof User,
+    @InjectModel(Organization) private orgModel: typeof Organization,
     private staffImgHelper: staffImageUploadProfile,
   ) {}
 
@@ -59,6 +62,8 @@ export class StaffService {
   // Get All Staffs
   async findAll(page: number, size: number) {
     try {
+      // console.log(staffId)
+      // return false
       let currentPage = Util.Checknegative(page);
       if (currentPage) {
         return Util?.handleErrorRespone(
@@ -67,9 +72,21 @@ export class StaffService {
       }
       const { limit, offset } = Util.getPagination(page, size);
 
+      // let staff = await this?.staffModel?.findOne({where:{staffId}})
+      // console.log(staff?.organizationId)
+      // if(!staff){
+      // return Util?.CustomhandleNotFoundResponse('Staff not found');
+      // }
+      // let get_org = await this?.orgModel.findOne({where:{organizationId:staff?.organizationId}})
+
+      // if(!get_org)
+      // return Util?.CustomhandleNotFoundResponse('organization not found');
+
+
       const allQueries = await Staff.findAndCountAll({
         limit,
         offset,
+        // where:{organizationId:get_org?.organizationId},
         attributes: { exclude: ['organizationName','departmentName','createdAt', 'updatedAt', 'deletedAt'] },
         order: [
           ['createdAt', 'ASC']
@@ -329,7 +346,20 @@ export class StaffService {
   // Search Staff by FullName
   async searchStaff(keyword: string) {
     try {
+      // console.log(staffId)
+
+      // let staff = await this?.staffModel?.findOne({where:{staffId}})
+      // console.log(staff?.organizationId)
+      // if(!staff){
+      // return Util?.handleErrorRespone('Staff not found');
+      // }
+      // let get_org = await this?.orgModel.findOne({where:{organizationId:staff?.organizationId}})
+
+      // if(!get_org)
+      // return Util?.handleErrorRespone('organization not found');
+
       const staffData = await this?.staffModel.findAll({
+      
         attributes: { exclude: ['organizationName','departmentName','createdAt', 'updatedAt', 'deletedAt'] },
         order: [
           ['createdAt', 'ASC']
@@ -364,7 +394,9 @@ export class StaffService {
 
         where: {
           fullName: { [Op.like]: `%${keyword}%` },
+          // organizationId:get_org?.organizationId
         },
+        
       });
 
       return Util?.handleSuccessRespone(

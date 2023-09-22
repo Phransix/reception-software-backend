@@ -38,10 +38,10 @@ import {
   ForgotPasswordDto,
   ResetPasswordDto,
 } from '../organization/dto/create-organization.dto';
-import { RolesGuard } from 'src/common/guards/roles.guard';
+// import { RolesGuard } from 'src/common/guards/roles.guard';
 import { LogOutDTO } from 'src/guard/auth/logoutDto';
-import * as jwt from 'jsonwebtoken'
-import { log } from 'console';
+// import * as jwt from 'jsonwebtoken';
+// import { log } from 'console';
 
 @ApiTags('Users')
 @Controller('users')
@@ -60,20 +60,21 @@ export class UsersController {
   @Public()
   @UseGuards(DoesUserExist)
   @Post('registerNewUser')
-  async createDelivery(
-    @GetCurrentUserId() UserId : string,
-    @Body() createUserDto: CreateUserDto) {
-    let ErrorCode: number
+  async createUser(
+    @GetCurrentUserId() userId: string,
+    @Body() createUserDto: CreateUserDto,
+  ) {
+    let ErrorCode: number;
     try {
-      let new_user = await this.usersService.create(createUserDto,UserId);
-      if ((new_user)?.status_code != HttpStatus.CREATED) {
-        ErrorCode = ( new_user)?.status_code;
-        throw new Error(( new_user)?.message)
-    } 
+      let new_user = await this.usersService.create(createUserDto, userId);
+      if (new_user?.status_code != HttpStatus.CREATED) {
+        ErrorCode = new_user?.status_code;
+        throw new Error(new_user?.message);
+      }
       return new_user;
     } catch (error) {
-      console.log(error)
-      return Util?.handleRequestError(Util?.getTryCatchMsg(error),ErrorCode)
+      console.log(error);
+      return Util?.handleRequestError(Util?.getTryCatchMsg(error), ErrorCode);
     }
   }
 
@@ -87,18 +88,17 @@ export class UsersController {
   @Public()
   @Post('login')
   async login(@Body() loginDto: LoginDTO) {
-    let ErrorCode: number
+    let ErrorCode: number;
     try {
-      let user = await this.usersService.login(loginDto); 
+      let user = await this.usersService.login(loginDto);
       if (user?.status_code != HttpStatus.CREATED) {
-          ErrorCode = user?.status_code;
-          throw new Error(user?.message)
-      } 
-        return user;
-    
+        ErrorCode = user?.status_code;
+        throw new Error(user?.message);
+      }
+      return user;
     } catch (error) {
-      console.log(error)
-      return Util?.handleRequestError(Util?.getTryCatchMsg(error),ErrorCode)
+      console.log(error);
+      return Util?.handleRequestError(Util?.getTryCatchMsg(error), ErrorCode);
     }
   }
 
@@ -119,10 +119,18 @@ export class UsersController {
   })
   @UseGuards(AtGuard)
   @Get('getAllUsers')
-  async findAll(@Query('page') page: number, @Query('size') size: number) {
+  async findAll(
+    @Query('page') page: number,
+    @Query('size') size: number,
+   @GetCurrentUserId() userId : string
+  ) {
     let ErrorCode: number;
     try {
-      let staffData = await this.usersService?.findAll(page, size);
+      let staffData = await this.usersService?.findAll(
+        page,
+        size,
+        userId,
+      );
 
       if (staffData?.status_code != HttpStatus.OK) {
         ErrorCode = staffData?.status_code;
@@ -143,22 +151,19 @@ export class UsersController {
   @UseGuards(AtGuard)
   @Get(':userId')
   async findOne(@Param('userId') userId: string) {
-    let ErrorCode: number
+    let ErrorCode: number;
     try {
       let userData = await this.usersService.findOne(userId);
       if (userData?.status_code != HttpStatus.OK) {
         ErrorCode = userData?.status_code;
-        throw new Error(userData?.message)
-    } 
-      return userData
-
+        throw new Error(userData?.message);
+      }
+      return userData;
     } catch (error) {
       console.log(error);
-      return Util?.handleRequestError(Util?.getTryCatchMsg(error),ErrorCode)
+      return Util?.handleRequestError(Util?.getTryCatchMsg(error), ErrorCode);
     }
   }
-
-
 
   // Update User By The Id
   @ApiTags('Users')
@@ -172,17 +177,17 @@ export class UsersController {
     @Param('userId') userId: string,
     @Body() updateUserDto: UpdateUserDto,
   ) {
-    let ErrorCode: number
+    let ErrorCode: number;
     try {
       const userUpdate = await this.usersService.update(userId, updateUserDto);
-      if ((userUpdate)?.status_code != HttpStatus.OK) {
-        ErrorCode = ( userUpdate)?.status_code;
-        throw new Error(( userUpdate)?.message)
-    } 
+      if (userUpdate?.status_code != HttpStatus.OK) {
+        ErrorCode = userUpdate?.status_code;
+        throw new Error(userUpdate?.message);
+      }
       return userUpdate;
     } catch (error) {
       console.log(error);
-      return Util?.handleRequestError(Util?.getTryCatchMsg(error),ErrorCode)
+      return Util?.handleRequestError(Util?.getTryCatchMsg(error), ErrorCode);
     }
   }
 
@@ -198,20 +203,20 @@ export class UsersController {
     @Param('userId') userId: string,
     @Body() createUserImgDto: CreateUserImgDto,
   ) {
-    let ErrorCode: number
+    let ErrorCode: number;
     try {
       const userUpdateImg = await this.usersService.updateImg(
         userId,
         createUserImgDto,
       );
-      if ((userUpdateImg)?.status_code != HttpStatus.OK) {
-        ErrorCode = ( userUpdateImg)?.status_code;
-        throw new Error(( userUpdateImg)?.message)
-    } 
+      if (userUpdateImg?.status_code != HttpStatus.OK) {
+        ErrorCode = userUpdateImg?.status_code;
+        throw new Error(userUpdateImg?.message);
+      }
       return userUpdateImg;
     } catch (error) {
       console.log(error);
-      return Util?.handleRequestError(Util?.getTryCatchMsg(error),ErrorCode)
+      return Util?.handleRequestError(Util?.getTryCatchMsg(error), ErrorCode);
     }
   }
 
@@ -227,20 +232,20 @@ export class UsersController {
     @Param('userId') userId: string,
     @Body() changePassDTO: ChangePassDTO,
   ) {
-    let ErrorCode: number
+    let ErrorCode: number;
     try {
       const userPass = await this.usersService.changePass(
         userId,
         changePassDTO,
       );
-      if ((userPass)?.status_code != HttpStatus.OK) {
-        ErrorCode = ( userPass)?.status_code;
-        throw new Error(( userPass)?.message)
-    } 
+      if (userPass?.status_code != HttpStatus.OK) {
+        ErrorCode = userPass?.status_code;
+        throw new Error(userPass?.message);
+      }
       return userPass;
     } catch (error) {
       console.log(error);
-      return Util?.handleRequestError(Util?.getTryCatchMsg(error),ErrorCode)
+      return Util?.handleRequestError(Util?.getTryCatchMsg(error), ErrorCode);
     }
   }
 
@@ -250,17 +255,17 @@ export class UsersController {
   @ApiOperation({ summary: 'Forgot Customer Password' })
   @Post('forgot-password')
   async forgotPassword(@Body() data: ForgotPasswordDto) {
-    let ErrorCode: number
+    let ErrorCode: number;
     try {
       let res = await this.usersService.forgetPassword(data);
-      if ((res)?.status_code != HttpStatus.CREATED) {
-        ErrorCode = ( res)?.status_code;
-        throw new Error(( res)?.message)
-    } 
+      if (res?.status_code != HttpStatus.CREATED) {
+        ErrorCode = res?.status_code;
+        throw new Error(res?.message);
+      }
       return res;
     } catch (error) {
       console.log(error);
-      return Util?.handleRequestError(Util?.getTryCatchMsg(error),ErrorCode)
+      return Util?.handleRequestError(Util?.getTryCatchMsg(error), ErrorCode);
     }
   }
 
@@ -274,17 +279,17 @@ export class UsersController {
     @Param('token') token: string,
     @Body() data: ResetPasswordDto,
   ) {
-    let ErrorCode: number
+    let ErrorCode: number;
     try {
       let res = await this.usersService.resetPassword(token, data);
-      if ((res)?.status_code != HttpStatus.CREATED) {
-        ErrorCode = ( res)?.status_code;
-        throw new Error(( res)?.message)
-    } 
+      if (res?.status_code != HttpStatus.CREATED) {
+        ErrorCode = res?.status_code;
+        throw new Error(res?.message);
+      }
       return res;
     } catch (error) {
       console.log(error);
-      return Util?.handleRequestError(Util?.getTryCatchMsg(error),ErrorCode)
+      return Util?.handleRequestError(Util?.getTryCatchMsg(error), ErrorCode);
     }
   }
 
@@ -297,19 +302,17 @@ export class UsersController {
   @UseGuards(AtGuard)
   @Delete(':userId')
   async remove(@Param('userId') userId: string) {
-    let ErrorCode: number
+    let ErrorCode: number;
     try {
-     
       let user_delete = await this.usersService.remove(userId);
       if (user_delete?.status_code != HttpStatus.OK) {
         ErrorCode = user_delete?.status_code;
-        throw new Error(user_delete?.message)
-    } 
-      return user_delete
-     
+        throw new Error(user_delete?.message);
+      }
+      return user_delete;
     } catch (error) {
       console.log(error);
-      return Util?.handleRequestError(Util?.getTryCatchMsg(error),ErrorCode);
+      return Util?.handleRequestError(Util?.getTryCatchMsg(error), ErrorCode);
     }
   }
 
@@ -332,19 +335,16 @@ export class UsersController {
   @Public()
   @Post('logout')
   async logout(@Body() logoutDto: LogOutDTO) {
-    let ErrorCode: number
+    let ErrorCode: number;
     try {
       const user = await this.usersService.logout(logoutDto);
       if (user?.status_code != HttpStatus.CREATED) {
         ErrorCode = user?.status_code;
-        throw new Error(user?.message)
-    } 
+        throw new Error(user?.message);
+      }
     } catch (error) {
       console.log(error);
-      return Util?.handleRequestError(Util?.getTryCatchMsg(error),ErrorCode)
+      return Util?.handleRequestError(Util?.getTryCatchMsg(error), ErrorCode);
     }
   }
-
-
-
 }

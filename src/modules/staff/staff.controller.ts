@@ -26,6 +26,8 @@ import { CreateStaffImgDto } from './dto/create-staffImg.dto';
 import { Staff } from './entities/staff.entity';
 import * as Util from '../../utils/index';
 import { DoesStaffExist } from 'src/common/guards/doesStaffExist.guard';
+import { GetCurrentUserId } from 'src/common/decorators/get-current-user-id.decorator';
+import { GetCurrentStaffId } from 'src/common/decorators/get-current-staff-id.decorator';
 
 @ApiTags('Staff')
 @Controller('staff')
@@ -72,10 +74,18 @@ export class StaffController {
   })
   @UseGuards(AtGuard)
   @Get('getAllStaffs')
-  async findAll(@Query('page') page: number, @Query('size') size: number) {
+  async findAll(
+    @Query('page') page: number,
+     @Query('size') size: number,
+    // @GetCurrentStaffId() staffId : string
+     ) {
     let ErrorCode: number;
     try {
-      let staffData = await this.staffService?.findAll(page, size);
+      let staffData = await this.staffService?.findAll(
+        page, 
+        size,
+        // staffId
+        );
 
       if (staffData?.status_code != HttpStatus.OK) {
         ErrorCode = staffData?.status_code;
@@ -200,11 +210,15 @@ export class StaffController {
   })
   @UseGuards(AtGuard)
   @Get('staff/search')
-  async searchStaff(@Query('keyword') keyword: string) {
+  async searchStaff(
+    @Query('keyword') keyword: string,
+    // @GetCurrentUserId() staffId : string
+    ) {
     let ErrorCode: number;
     try {
       let staff_search = await this?.staffService?.searchStaff(
         keyword.charAt(0).toUpperCase(),
+        // staffId
       );
       if (staff_search?.status_code != HttpStatus.OK) {
         ErrorCode = staff_search?.status_code;
