@@ -8,6 +8,7 @@ import * as Util from '../../utils/index';
 import * as Abstract from '../../utils/abstract';
 import { Op } from 'sequelize';
 import { Organization } from '../organization/entities/organization.entity';
+import { User } from '../users/entities/user.entity';
 // import sequelize from 'sequelize';
 
 @Injectable()
@@ -15,6 +16,8 @@ export class EnquiriesService {
   constructor(
     private sequelize: Sequelize,
     @InjectModel(Enquiry) private readonly enquiryModel: typeof Enquiry,
+    @InjectModel(User) private userModel: typeof User,
+    @InjectModel(Organization) private orgModel: typeof Organization,
   ) {}
 
   // Create Enquiry
@@ -31,7 +34,7 @@ export class EnquiriesService {
 
 
   // Get All Enquiries
-  async findAll(page: number, size: number) {
+  async findAll(page: number, size: number,userId:any) {
     try {
       let currentPage = Util.Checknegative(page);
       if (currentPage) {
@@ -41,9 +44,20 @@ export class EnquiriesService {
       }
       const { limit, offset } = Util.getPagination(page, size);
 
+      let user = await this?.userModel.findOne({where:{userId}})
+      console.log(user?.organizationId)
+      if(!user)
+      return Util?.CustomhandleNotFoundResponse('User not found');
+
+      let get_org = await this?.orgModel.findOne({where:{organizationId:user?.organizationId}})
+
+      if(!get_org)
+      return Util?.CustomhandleNotFoundResponse('organization not found');
+
       const allQueries = await Enquiry.findAndCountAll({
         limit,
         offset,
+        where:{organizationId:get_org?.organizationId},
         attributes: { exclude: ['createdAt', 'updatedAt', 'deletedAt'] },
         order: [
           ['createdAt', 'ASC']
@@ -77,8 +91,19 @@ export class EnquiriesService {
   }
 
   // Get Enquiry by The Id
-  async findOne(enquiryId: string) {
+  async findOne(enquiryId: string,userId:any) {
     try {
+
+      let user = await this?.userModel.findOne({where:{userId}})
+      console.log(user?.organizationId)
+      if(!user)
+      return Util?.CustomhandleNotFoundResponse('User not found');
+
+      let get_org = await this?.orgModel.findOne({where:{organizationId:user?.organizationId}})
+
+      if(!get_org)
+      return Util?.CustomhandleNotFoundResponse('organization not found');
+
       const enquiry = await Enquiry.findOne({
         attributes: { exclude: ['createdAt', 'updatedAt', 'deletedAt'] },
         order: [
@@ -96,11 +121,11 @@ export class EnquiriesService {
             ]
           }
         }],
-        where: { enquiryId },
+        where: { enquiryId,organizationId:get_org?.organizationId },
       });
 
       if (!enquiry) {
-        return Util?.handleFailResponse('Enquiry not found');
+        return Util?.CustomhandleNotFoundResponse('Enquiry not found');
       }
 
       return Util?.handleSuccessRespone(
@@ -114,11 +139,22 @@ export class EnquiriesService {
   }
 
   // Update Enquiy
-  async update(enquiryId: string, updateEnquiryDto: UpdateEnquiryDto) {
+  async update(enquiryId: string, updateEnquiryDto: UpdateEnquiryDto,userId:any) {
     try {
-      const enquiry = await Enquiry.findOne({ where: { enquiryId } });
+
+      let user = await this?.userModel.findOne({where:{userId}})
+      console.log(user?.organizationId)
+      if(!user)
+      return Util?.CustomhandleNotFoundResponse('User not found');
+
+      let get_org = await this?.orgModel.findOne({where:{organizationId:user?.organizationId}})
+
+      if(!get_org)
+      return Util?.CustomhandleNotFoundResponse('organization not found');
+
+      const enquiry = await Enquiry.findOne({ where: { enquiryId ,organizationId:get_org?.organizationId} });
       if (!enquiry) {
-        return Util?.handleFailResponse('Enquiry not found');
+        return Util?.CustomhandleNotFoundResponse('Enquiry not found');
       }
 
       Object.assign(enquiry, updateEnquiryDto);
@@ -131,11 +167,22 @@ export class EnquiriesService {
   }
 
   // Delete Enquiry
-  async remove(enquiryId: string) {
+  async remove(enquiryId: string,userId:any) {
     try {
-      const enquiry = await Enquiry.findOne({ where: { enquiryId } });
+
+      let user = await this?.userModel.findOne({where:{userId}})
+      console.log(user?.organizationId)
+      if(!user)
+      return Util?.CustomhandleNotFoundResponse('User not found');
+
+      let get_org = await this?.orgModel.findOne({where:{organizationId:user?.organizationId}})
+
+      if(!get_org)
+      return Util?.CustomhandleNotFoundResponse('organization not found');
+
+      const enquiry = await Enquiry.findOne({ where: { enquiryId, organizationId:get_org?.organizationId } });
       if (!enquiry) {
-        return Util?.handleFailResponse('Enquiry not found');
+        return Util?.CustomhandleNotFoundResponse('Enquiry not found');
       }
 
       Object.assign(enquiry);
@@ -153,6 +200,7 @@ export class EnquiriesService {
     endDate: Date,
     page: number,
     size: number,
+    userId:any
   ) {
     try {
       let enquiryData = { startDate, endDate };
@@ -165,9 +213,20 @@ export class EnquiriesService {
       }
       const { limit, offset } = Util?.getPagination(page, size);
 
+      let user = await this?.userModel.findOne({where:{userId}})
+      console.log(user?.organizationId)
+      if(!user)
+      return Util?.CustomhandleNotFoundResponse('User not found');
+
+      let get_org = await this?.orgModel.findOne({where:{organizationId:user?.organizationId}})
+
+      if(!get_org)
+      return Util?.CustomhandleNotFoundResponse('organization not found');
+
       const allQueries = await Enquiry.findAndCountAll({
         limit,
         offset,
+        where:{organizationId:get_org?.organizationId},
         attributes: { exclude: ['createdAt', 'updatedAt', 'deletedAt'] },
         order: [
           ['createdAt', 'ASC']
@@ -206,16 +265,33 @@ export class EnquiriesService {
   }
 
   // Filter Enquiries By Purpose
-  async purposefilter(keyword: string, page: number, size: number) {
+  async purposefilter(
+    keyword: string,
+     page: number, 
+     size: number,
+     userId:any
+     ) {
     try {
       let filter = {};
 
       if (keyword != null) {
         filter = { purpose: keyword };
       }
+
+      let user = await this?.userModel.findOne({where:{userId}})
+      console.log(user?.organizationId)
+      if(!user)
+      return Util?.CustomhandleNotFoundResponse('User not found');
+
+      let get_org = await this?.orgModel.findOne({where:{organizationId:user?.organizationId}})
+
+      if(!get_org)
+      return Util?.CustomhandleNotFoundResponse('organization not found');
+
       const filterCheck = await this?.enquiryModel.findAll({
         where: {
           ...filter,
+          organizationId:get_org?.organizationId
         },
       });
      
@@ -276,8 +352,19 @@ export class EnquiriesService {
   }
 
   // Search Enquiry Data by Full Name
-  async searchEnquiry(keyword: string) {
+  async searchEnquiry(keyword: string,userId:any) {
     try {
+
+      let user = await this?.userModel.findOne({where:{userId}})
+      console.log(user?.organizationId)
+      if(!user)
+      return Util?.CustomhandleNotFoundResponse('User not found');
+
+      let get_org = await this?.orgModel.findOne({where:{organizationId:user?.organizationId}})
+
+      if(!get_org)
+      return Util?.CustomhandleNotFoundResponse('organization not found');
+
       const enquiryData = await this?.enquiryModel.findAll({
         attributes: {
           exclude: ['createdAt', 'updatedAt', 'deletedAt'],
@@ -299,6 +386,7 @@ export class EnquiriesService {
         }],
         where: {
           enquirerFullName: { [Op.like]: `%${keyword}%` },
+          organizationId:get_org?.organizationId
         },
       });
 

@@ -50,8 +50,17 @@ export class UsersService {
   //  Register New User
   async create(createUserDto: CreateUserDto,userId) {
     try {
+     
       let user = await this?.userModel.findOne({where:{userId}})
       console.log(user?.organizationId)
+      if(!user)
+      return Util?.CustomhandleNotFoundResponse('User not found');
+
+      let get_org = await this?.orgModel.findOne({where:{organizationId:user?.organizationId}})
+
+      if(!get_org)
+      return Util?.CustomhandleNotFoundResponse('organization not found');
+
       var image_matches = createUserDto.profilePhoto?.match(
         /^data:([A-Za-z-+\/]+);base64,(.+)$/,
       );
@@ -173,12 +182,12 @@ export class UsersService {
       let user = await this?.userModel.findOne({where:{userId}})
       console.log(user?.organizationId)
       if(!user)
-      return Util?.handleErrorRespone('User not found');
+      return Util?.CustomhandleNotFoundResponse('User not found');
 
       let get_org = await this?.orgModel.findOne({where:{organizationId:user?.organizationId}})
 
       if(!get_org)
-      return Util?.handleErrorRespone('organization not found');
+      return Util?.CustomhandleNotFoundResponse('organization not found');
 
    
       const allQueries = await User.findAndCountAll({
@@ -234,7 +243,7 @@ export class UsersService {
       }
       let get_org = await this?.orgModel.findOne({where:{organizationId:user?.organizationId}})
       if(!get_org){
-      return Util?.handleErrorRespone('organization not found');
+      return Util?.CustomhandleNotFoundResponse('organization not found');
       }
 
       return Util?.handleSuccessRespone(user, 'User retrieve successfully.');
@@ -252,7 +261,7 @@ export class UsersService {
       const user = await this.userModel.findOne({ where: { userId } });
       if (!user) {
         // throw new Error('User not found.');
-        return Util?.handleFailResponse('User  not found');
+        return Util?.CustomhandleNotFoundResponse('User  not found');
       }
 
       var image_matches = updateUserDto.profilePhoto?.match(

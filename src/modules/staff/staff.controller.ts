@@ -27,7 +27,6 @@ import { Staff } from './entities/staff.entity';
 import * as Util from '../../utils/index';
 import { DoesStaffExist } from 'src/common/guards/doesStaffExist.guard';
 import { GetCurrentUserId } from 'src/common/decorators/get-current-user-id.decorator';
-import { GetCurrentStaffId } from 'src/common/decorators/get-current-staff-id.decorator';
 
 @ApiTags('Staff')
 @Controller('staff')
@@ -42,10 +41,13 @@ export class StaffController {
   @UseGuards(AtGuard)
   @UseGuards(DoesStaffExist)
   @Post('registerNewStaff')
-  async create(@Body() createStaffDto: CreateStaffDto) {
+  async create(
+    @GetCurrentUserId() userId: string,
+    @Body() createStaffDto: CreateStaffDto
+    ) {
     let ErrorCode: number;
     try {
-      let new_data = await this.staffService.create(createStaffDto);
+      let new_data = await this.staffService.create(createStaffDto,userId);
       if (new_data?.status_code != HttpStatus.CREATED) {
         ErrorCode = new_data?.status_code;
         throw new Error(new_data?.message);
@@ -77,14 +79,14 @@ export class StaffController {
   async findAll(
     @Query('page') page: number,
      @Query('size') size: number,
-    // @GetCurrentStaffId() staffId : string
+     @GetCurrentUserId() userId : string
      ) {
     let ErrorCode: number;
     try {
       let staffData = await this.staffService?.findAll(
         page, 
         size,
-        // staffId
+        userId
         );
 
       if (staffData?.status_code != HttpStatus.OK) {
@@ -105,10 +107,13 @@ export class StaffController {
   @Public()
   @UseGuards(AtGuard)
   @Get(':staffId')
-  async findOne(@Param('staffId') staffId: string) {
+  async findOne(
+    @GetCurrentUserId() userId : string,
+    @Param('staffId') staffId: string
+    ) {
     let ErrorCode: number;
     try {
-      let staff_data = await this.staffService?.findOne(staffId);
+      let staff_data = await this.staffService?.findOne(staffId,userId);
       if (staff_data?.status_code != HttpStatus.OK) {
         ErrorCode = staff_data?.status_code;
         throw new Error(staff_data?.message);
@@ -128,6 +133,7 @@ export class StaffController {
   @UseGuards(AtGuard)
   @Patch(':staffId')
   async update(
+    @GetCurrentUserId() userId : string,
     @Param('staffId') staffId: string,
     @Body() updateStaffDto: UpdateStaffDto,
   ) {
@@ -136,6 +142,7 @@ export class StaffController {
       let staff_update = await this.staffService.update(
         staffId,
         updateStaffDto,
+        userId
       );
       if (staff_update?.status_code != HttpStatus.OK) {
         ErrorCode = staff_update?.status_code;
@@ -156,6 +163,7 @@ export class StaffController {
   @UseGuards(AtGuard)
   @Patch(':staffId/profilePhoto')
   async updateImg(
+    @GetCurrentUserId() userId : string,
     @Param('staffId') staffId: string,
     @Body() createStaffImgDto: CreateStaffImgDto,
   ) {
@@ -164,6 +172,7 @@ export class StaffController {
       let staff_update = await this.staffService.updateImg(
         staffId,
         createStaffImgDto,
+        userId
       );
       if (staff_update?.status_code != HttpStatus.OK) {
         ErrorCode = staff_update?.status_code;
@@ -183,10 +192,13 @@ export class StaffController {
   @Public()
   @UseGuards(AtGuard)
   @Delete(':staffId')
-  async remove(@Param('staffId') staffId: string) {
+  async remove(
+    @GetCurrentUserId() userId : string,
+    @Param('staffId') staffId: string
+    ) {
     let ErrorCode: number;
     try {
-      let staff_delete = await this.staffService.remove(staffId);
+      let staff_delete = await this.staffService.remove(staffId,userId);
       if (staff_delete?.status_code != HttpStatus.OK) {
         ErrorCode = staff_delete?.status_code;
         throw new Error(staff_delete?.message);
@@ -212,13 +224,13 @@ export class StaffController {
   @Get('staff/search')
   async searchStaff(
     @Query('keyword') keyword: string,
-    // @GetCurrentUserId() staffId : string
+    @GetCurrentUserId() userId : string,
     ) {
     let ErrorCode: number;
     try {
       let staff_search = await this?.staffService?.searchStaff(
         keyword.charAt(0).toUpperCase(),
-        // staffId
+        userId
       );
       if (staff_search?.status_code != HttpStatus.OK) {
         ErrorCode = staff_search?.status_code;

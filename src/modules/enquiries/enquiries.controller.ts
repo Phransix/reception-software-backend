@@ -24,9 +24,10 @@ import {
 import { AuthGuard } from '@nestjs/passport';
 import { Public } from 'src/common/decorators/public.decorator';
 import { AtGuard } from 'src/common/guards';
-import { size } from 'lodash';
-import { where } from 'sequelize';
-import { type } from 'os';
+import { GetCurrentUserId } from 'src/common/decorators/get-current-user-id.decorator';
+// import { size } from 'lodash';
+// import { where } from 'sequelize';
+// import { type } from 'os';
 
 @ApiTags('Enquiries')
 @Controller('enquiries')
@@ -73,10 +74,14 @@ export class EnquiriesController {
   })
   @UseGuards(AtGuard)
   @Get('getAllEnquiries')
-  async findAll(@Query('page') page: number, @Query('size') size: number) {
+  async findAll(
+    @GetCurrentUserId() userId : string,
+    @Query('page') page: number,
+     @Query('size') size: number
+     ) {
     let ErrorCode: number;
     try {
-      let staffData = await this.enquiriesService?.findAll(page, size);
+      let staffData = await this.enquiriesService?.findAll(page, size,userId);
 
       if (staffData?.status_code != HttpStatus.OK) {
         ErrorCode = staffData?.status_code;
@@ -96,10 +101,13 @@ export class EnquiriesController {
   @Public()
   @UseGuards(AtGuard)
   @Get(':enquiryId')
-  async findOne(@Param('enquiryId') enquiryId: string) {
+  async findOne(
+    @GetCurrentUserId() userId : string,
+    @Param('enquiryId') enquiryId: string
+    ) {
     let ErrorCode: number;
     try {
-      let enquiryData = await this.enquiriesService.findOne(enquiryId);
+      let enquiryData = await this.enquiriesService.findOne(enquiryId,userId);
       if (enquiryData?.status_code != HttpStatus.OK) {
         ErrorCode = enquiryData?.status_code;
         throw new Error(enquiryData?.message);
@@ -119,6 +127,7 @@ export class EnquiriesController {
   @UseGuards(AtGuard)
   @Patch(':enquiryId')
   async update(
+    @GetCurrentUserId() userId : string,
     @Param('enquiryId') enquiryId: string,
     @Body() updateEnquiryDto: UpdateEnquiryDto,
   ) {
@@ -127,6 +136,7 @@ export class EnquiriesController {
       const enquiryUpdate = await this.enquiriesService.update(
         enquiryId,
         updateEnquiryDto,
+        userId
       );
       if (enquiryUpdate?.status_code != HttpStatus.OK) {
         ErrorCode = enquiryUpdate?.status_code;
@@ -147,10 +157,13 @@ export class EnquiriesController {
   @UseGuards(AtGuard)
   @ApiTags('Enquiries')
   @Delete(':enquiryId')
-  async remove(@Param('enquiryId') enquiryId: string) {
+  async remove(
+    @GetCurrentUserId() userId : string,
+    @Param('enquiryId') enquiryId: string
+    ) {
     let ErrorCode: number;
     try {
-      let enquiryDelete = await this.enquiriesService.remove(enquiryId);
+      let enquiryDelete = await this.enquiriesService.remove(enquiryId,userId);
       if (enquiryDelete?.status_code != HttpStatus.OK) {
         ErrorCode = enquiryDelete?.status_code;
         throw new Error(enquiryDelete?.message);
@@ -195,6 +208,7 @@ export class EnquiriesController {
     @Query('endDate') endDate: Date,
     @Query('page') page: number,
     @Query('size') size: number,
+    @GetCurrentUserId() userId : string
   ) {
     let ErrorCode: number;
     try {
@@ -203,6 +217,7 @@ export class EnquiriesController {
         endDate,
         page,
         size,
+        userId
       );
       if (enquiryData?.status_code != HttpStatus.OK) {
         ErrorCode = enquiryData?.status_code;
@@ -228,11 +243,15 @@ export class EnquiriesController {
   })
   @UseGuards(AtGuard)
   @Get('enquiry/search')
-  async searchEnquiry(@Query('keyword') keyword: string) {
+  async searchEnquiry(
+    @GetCurrentUserId() userId : string,
+    @Query('keyword') keyword: string
+    ) {
     let ErrorCode: number;
     try {
       let enquirySearch = await this?.enquiriesService?.searchEnquiry(
         keyword.charAt(0).toUpperCase(),
+        userId
       );
 
       if (enquirySearch?.status_code != HttpStatus.OK) {
@@ -273,6 +292,7 @@ export class EnquiriesController {
     @Query('keyword') keyword: string,
     @Query('page') page: number,
     @Query('size') size: number,
+    @GetCurrentUserId() userId : string
   ) {
     let ErrorCode: number;
     try {
@@ -280,6 +300,7 @@ export class EnquiriesController {
         keyword,
         page,
         size,
+        userId
       );
       if (enquiryData?.status_code != HttpStatus.OK) {
         ErrorCode = enquiryData?.status_code;
