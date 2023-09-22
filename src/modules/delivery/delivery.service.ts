@@ -8,6 +8,8 @@ import * as Util from '../../utils/index'
 import { Op } from 'sequelize';
 import { deliveryConfirmDTO } from 'src/guard/auth/deliveryConfirmDTO';
 import { Purpose } from '../purpose/entities/purpose.entity';
+import { User } from '../users/entities/user.entity';
+import { Organization } from '../organization/entities/organization.entity';
 
 
 @Injectable()
@@ -15,7 +17,9 @@ export class DeliveryService {
 
 
   constructor(
-    @InjectModel(Delivery) private readonly DeliveryModel: typeof Delivery
+    @InjectModel(Delivery) private readonly DeliveryModel: typeof Delivery,
+    @InjectModel(User) private readonly UserModel: typeof User,
+    @InjectModel(Organization) private readonly OrgModel: typeof Organization
   ) { }
 
 
@@ -33,6 +37,7 @@ export class DeliveryService {
   // Get All Delivery
   async findAll(page: number, size: number) {
     try {
+      // console.log(deliveryId)
       let currentPage = Util.Checknegative(page);
       if (currentPage) {
         return Util?.handleErrorRespone(
@@ -41,9 +46,22 @@ export class DeliveryService {
       }
       const { limit, offset } = Util.getPagination(page, size);
 
+      // let deliver = await this?.DeliveryModel.findOne({where:{deliveryId}})
+      // console.log(deliver?.organizationId)
+      // if(!deliver)
+      // return Util?.handleErrorRespone('User not found');
+
+      // let get_org = await this?.OrgModel.findOne({where:{organizationId:deliver?.organizationId}})
+
+      // if(!get_org)
+      // return Util?.handleErrorRespone('organization not found');
+
       const allQueries = await Delivery.findAndCountAll({
         limit,
         offset,
+        where: {
+          // organizationId:get_org?.organizationId
+        },
         attributes: { exclude: ['updatedAt', 'deletedAt'] },
       });
 
@@ -55,9 +73,6 @@ export class DeliveryService {
         dataResult,
         'Delivery Data retrieved successfully.',
       );
-
-      const delivery = await Delivery.findAll({paranoid:false})
-      return Util?.handleSuccessRespone(delivery, "Deliveries Data retrieved Successfully")
     } catch (error) {
       console.log(error)
       return Util?.handleFailResponse("Deliveries retrieval failed")

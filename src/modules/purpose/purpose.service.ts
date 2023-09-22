@@ -41,7 +41,7 @@ export class PurposeService {
       const allQueries = await Purpose.findAndCountAll({
         limit,
         offset,
-        attributes: { exclude: ['createdAt', 'updatedAt', 'deletedAt'] },
+        attributes: { exclude: ['updatedAt', 'deletedAt'] },
         include: [
           {
             model:Guest,

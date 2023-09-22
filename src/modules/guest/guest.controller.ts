@@ -230,10 +230,13 @@ export class GuestController {
   @ApiTags('Guest')
   @ApiOperation({ summary: 'Get Guest Name By Firstname Search' })
   @Get('guest/search')
-  async searchGuest(@Query('keyword') keyword: string) {
+  async searchGuest(
+    @Query('keyword') keyword: string,
+    @Query('organizationId') organizationId: string
+    ){
     let ErrorCode: number
     try {
-      const guest = await this.guestService.searchGuest(keyword.charAt(0).toUpperCase());
+      const guest = await this.guestService.searchGuest(keyword.charAt(0).toUpperCase(),organizationId);
       if (guest?.status_code != HttpStatus.OK) {
         ErrorCode = guest?.status_code;
         throw new Error(guest?.message)

@@ -9,13 +9,19 @@ import { deliveryConfirmDTO } from 'src/guard/auth/deliveryConfirmDTO';
 import { Public } from 'src/common/decorators/public.decorator';
 import { AtGuard } from 'src/common/guards';
 import { AuthGuard } from '@nestjs/passport';
+import { GetCurrentUser } from 'src/common/decorators';
+import { InjectModel } from '@nestjs/sequelize';
+import { User } from '../users/entities/user.entity';
 
 
 
 @Controller('delivery')
 export class DeliveryController {
   userService: any;
-  constructor(private readonly deliveryService: DeliveryService) { }
+  constructor(
+    private readonly deliveryService: DeliveryService
+    // @InjectModel(User) private readonly UserModel: typeof User,
+    ) { }
 
   // Create Delivery
   @UseGuards(AuthGuard('jwt'))
@@ -62,6 +68,7 @@ export class DeliveryController {
   async findAll(
     @Query('page') page?: number,
     @Query('size') size?: number,
+    @GetCurrentUser() deliveryId?: string
   ) {
       let ErrorCode: number;
       try {

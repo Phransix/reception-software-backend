@@ -77,7 +77,7 @@ export class Delivery extends Model <Delivery> {
     @Column({
         type: DataType.ENUM,
         values: ['delivered','awaiting_pickup'],
-        allowNull: false,
+        allowNull: true,
     })
     status: string;
 

@@ -7,10 +7,10 @@ export enum Delivery_type {
     OTHER = 'other'
 }
 
-enum Status {
-    DELIVERED = 'delivered',
-    NOT_DELIVERED = 'awaiting_pickup'
-}
+// enum Status {
+//     DELIVERED = 'delivered',
+//     NOT_DELIVERED = 'awaiting_pickup'
+// }
 
 enum itemUnit {
     PIECE = 'pc(s)',
@@ -39,20 +39,20 @@ export class CreateDeliveryDto {
     readonly from: string;
 
     @ApiProperty({
-        description: 'The receipient the Delivery',
+        description: 'The receipient ofthe Delivery',
         example: 'Ansah'
     })
-    @IsString()
-    @IsNotEmpty()
+    // @IsString()
+    // @IsNotEmpty()
     readonly receipientName: string;
 
     @ApiProperty({
         description: "The sender/'s phone  number",
         example: '0546987415'
     })
-    @IsNotEmpty()
-    @MinLength(10)
-    @MaxLength(10)
+    // @IsNotEmpty()
+    // @MinLength(10)
+    // @MaxLength(10)
     readonly receipientPhoneNumber: string;
 
     @ApiProperty({
@@ -101,13 +101,13 @@ export class CreateDeliveryDto {
     @IsString()
     readonly itemDescription: string;
 
-    @ApiProperty({
-        description: "The status of delivery",
-        example: 'awaiting_pickup'
-    })
-    @IsString()
-    @IsEnum(Status, {
-        message: 'Choose the type of status: delivered or awaiting_pickup'
-    })
-    readonly status: string;
+    // @ApiProperty({
+    //     description: "The status of delivery",
+    //     example: 'awaiting_pickup'
+    // })
+    // @IsString()
+    // @IsEnum(Status, {
+    //     message: 'Choose the type of status: delivered or awaiting_pickup'
+    // })
+    // readonly status: string;
 }

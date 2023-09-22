@@ -10,6 +10,7 @@ import { Op } from 'sequelize';
 import { Sequelize } from 'sequelize-typescript';
 import { Purpose } from '../purpose/entities/purpose.entity';
 import * as Abs from '../../utils/abstract'
+import { Organization } from '../organization/entities/organization.entity';
 
 
 
@@ -19,6 +20,7 @@ export class GuestService {
   constructor(
     @InjectModel(Guest) private readonly GuestModel: typeof Guest,
     @InjectModel(Purpose) private readonly PurposeModel: typeof Purpose,
+    @InjectModel(Organization) private readonly OrganizationModel: typeof Organization,
     private readonly sequelize: Sequelize
   ) { }
 
@@ -298,19 +300,17 @@ export class GuestService {
   }
 
   // Search guest by firstname
-  async searchGuest(keyword: string) {
+  async searchGuest(keyword: string,organizationId: string) {
     try {
       const guest = await this.GuestModel.findAll({
         where: {
           firstName: {
             [Op.like]: `%${keyword}%`,
           },
+          organizationId:organizationId
         },
       });
-      if (!guest || guest.length === 0) {
-        return Util?.handleFailResponse('No matching data found.');
-      }
-      return Util?.handleSuccessRespone(guest, "Guest name change Success")
+      return Util?.handleSuccessRespone(guest, "Guest Search Success")
     } catch (error) {
       console.log(error)
       return Util?.handleGrpcTryCatchError(Util?.getTryCatchMsg(error));

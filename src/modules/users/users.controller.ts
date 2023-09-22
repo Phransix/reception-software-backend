@@ -60,10 +60,12 @@ export class UsersController {
   @Public()
   @UseGuards(DoesUserExist)
   @Post('registerNewUser')
-  async createDelivery(@Body() createUserDto: CreateUserDto) {
+  async createDelivery(
+    @GetCurrentUserId() UserId : string,
+    @Body() createUserDto: CreateUserDto) {
     let ErrorCode: number
     try {
-      let new_user = await this.usersService.create(createUserDto);
+      let new_user = await this.usersService.create(createUserDto,UserId);
       if ((new_user)?.status_code != HttpStatus.CREATED) {
         ErrorCode = ( new_user)?.status_code;
         throw new Error(( new_user)?.message)

@@ -48,8 +48,12 @@ export class UsersService {
   ) {}
 
   //  Register New User
-  async create(createUserDto: CreateUserDto) {
+  async create(createUserDto: CreateUserDto,userId) {
     try {
+
+    
+      let user = await this?.userModel?.findOne({where:{userId}})
+      console.log(user?.organizationId)
       var image_matches = createUserDto.profilePhoto?.match(
         /^data:([A-Za-z-+\/]+);base64,(.+)$/,
       );
@@ -73,6 +77,7 @@ export class UsersService {
         profilePhoto: user_image,
         password: hash,
       };
+    
 
       await this.userModel?.create({ ...insertQry });
 
