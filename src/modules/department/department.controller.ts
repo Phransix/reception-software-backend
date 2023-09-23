@@ -26,6 +26,7 @@ import { AuthGuard } from '@nestjs/passport';
 import { AtGuard } from 'src/common/guards';
 import { Department } from './entities/department.entity';
 import { DoesDeptExist } from 'src/common/guards/doesDeptExist.guard';
+import { GetCurrentUserId } from 'src/common/decorators/get-current-user-id.decorator';
 
 @ApiTags('Department')
 @Controller('department')
@@ -78,10 +79,18 @@ export class DepartmentController {
    })
    @UseGuards(AtGuard)
    @Get('getAllDepartments')
-   async findAll(@Query('page') page: number, @Query('size') size: number) {
+   async findAll(
+    @GetCurrentUserId() userId : string,
+    @Query('page') page: number,
+     @Query('size') size: number
+     ) {
      let ErrorCode: number;
      try {
-       let deptData = await this.departmentService?.findAll(page, size);
+       let deptData = await this.departmentService?.findAll(
+        page,
+         size,
+         userId
+         );
  
        if (deptData?.status_code != HttpStatus.OK) {
          ErrorCode = deptData?.status_code;
@@ -101,10 +110,13 @@ export class DepartmentController {
   @Public()
   @UseGuards(AtGuard)
   @Get(':departmentId')
-  async findOne(@Param('departmentId') departmentId: string) {
+  async findOne(
+    @GetCurrentUserId() userId : string,
+    @Param('departmentId') departmentId: string
+    ) {
     let ErrorCode: number
     try {
-      let deptData = await this.departmentService.findOne(departmentId);
+      let deptData = await this.departmentService.findOne(departmentId,userId);
       if (deptData?.status_code != HttpStatus.OK) {
         ErrorCode = deptData?.status_code;
         throw new Error(deptData?.message)
@@ -125,12 +137,13 @@ export class DepartmentController {
   @UseGuards(DoesDeptExist)
   @Patch(':departmentId')
   async update(
+    @GetCurrentUserId() userId : string,
     @Param('departmentId') departmentId: string,
     @Body() updateDepartmentDto: UpdateDepartmentDto,
   ) {
     let ErrorCode: number
     try {
-      let deptUpdate = await this.departmentService.update(departmentId, updateDepartmentDto);
+      let deptUpdate = await this.departmentService.update( departmentId, updateDepartmentDto,userId);
       if (deptUpdate?.status_code != HttpStatus.OK) {
         ErrorCode = deptUpdate?.status_code;
         throw new Error(deptUpdate?.message)
@@ -149,10 +162,13 @@ export class DepartmentController {
   @Public()
   @UseGuards(AtGuard)
   @Delete(':departmentId')
-  async remove(@Param('departmentId') departmentId: string) {
+  async remove(
+    @GetCurrentUserId() userId : string,
+    @Param('departmentId') departmentId: string
+    ) {
     let ErrorCode: number
     try {
-      let deptRemove = await this.departmentService.remove(departmentId);
+      let deptRemove = await this.departmentService.remove(departmentId,userId);
       if (deptRemove?.status_code != HttpStatus.OK) {
         ErrorCode = deptRemove?.status_code;
         throw new Error(deptRemove?.message)
@@ -176,11 +192,15 @@ export class DepartmentController {
   })
   @UseGuards(AtGuard)
   @Get('department/search')
-  async searchDepartment(@Query('keyword') keyword: string) {
+  async searchDepartment(
+    @GetCurrentUserId() userId : string,
+    @Query('keyword') keyword: string
+    ) {
     let ErrorCode: number
     try {
       let deptSearch = await this?.departmentService?.searchDepartment(
         keyword.charAt(0).toUpperCase(),
+        userId
       );
       if (deptSearch?.status_code != HttpStatus.OK) {
         ErrorCode = deptSearch?.status_code;

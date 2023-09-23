@@ -3,9 +3,11 @@ import { DepartmentService } from './department.service';
 import { DepartmentController } from './department.controller';
 import { SequelizeModule } from '@nestjs/sequelize';
 import { Department } from './entities/department.entity';
+import { Organization } from '../organization/entities/organization.entity';
+import { User } from '../users/entities/user.entity';
 
 @Module({
-  imports : [SequelizeModule.forFeature([Department])],
+  imports : [SequelizeModule.forFeature([Department,Organization,User])],
   controllers: [DepartmentController],
   providers: [DepartmentService]
 })

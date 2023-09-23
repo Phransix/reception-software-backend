@@ -8,6 +8,7 @@ import * as Util from '../../utils/index';
 import * as Abstract from '../../utils/abstract';
 import { Op } from 'sequelize';
 import { Organization } from '../organization/entities/organization.entity';
+import { User } from '../users/entities/user.entity';
 
 @Injectable()
 export class DepartmentService {
@@ -15,6 +16,8 @@ export class DepartmentService {
     private sequelize: Sequelize,
     @InjectModel(Department)
     private readonly departmentModel: typeof Department,
+    @InjectModel(User) private userModel: typeof User,
+    @InjectModel(Organization) private orgModel: typeof Organization,
   ) {}
 
   // Create New Department
@@ -32,7 +35,7 @@ export class DepartmentService {
   }
 
   // Get All Departments
-  async findAll(page: number, size: number) {
+  async findAll(page: number, size: number, userId:any) {
     try {
       let currentPage = Util.Checknegative(page);
       if (currentPage) {
@@ -42,9 +45,20 @@ export class DepartmentService {
       }
       const { limit, offset } = Util.getPagination(page, size);
 
+      let user = await this?.userModel.findOne({where:{userId}})
+      console.log(user?.organizationId)
+      if(!user)
+      return Util?.CustomhandleNotFoundResponse('User not found');
+
+      let get_org = await this?.orgModel.findOne({where:{organizationId:user?.organizationId}})
+
+      if(!get_org)
+      return Util?.CustomhandleNotFoundResponse('organization not found');
+
       const allQueries = await Department.findAndCountAll({
         limit,
         offset,
+        where:{organizationId:get_org?.organizationId},
         attributes: { exclude: ['createdAt', 'updatedAt', 'deletedAt'] },
         order: [
           ['createdAt', 'ASC']
@@ -81,8 +95,19 @@ export class DepartmentService {
   }
 
   // Get One Department By The departmentId
-  async findOne(departmentId: string) {
+  async findOne(departmentId: string, userId:any) {
     try {
+
+      let user = await this?.userModel.findOne({where:{userId}})
+      console.log(user?.organizationId)
+      if(!user)
+      return Util?.CustomhandleNotFoundResponse('User not found');
+
+      let get_org = await this?.orgModel.findOne({where:{organizationId:user?.organizationId}})
+
+      if(!get_org)
+      return Util?.CustomhandleNotFoundResponse('organization not found');
+
       const data = await Department.findOne({
         attributes: {
           exclude: ['createdAt', 'updatedAt', 'deletedAt'],
@@ -99,11 +124,11 @@ export class DepartmentService {
             ]
            }
         }],
-        where: { departmentId },
+        where: { departmentId ,organizationId:get_org?.organizationId},
       });
 
       if (!data) {
-        return Util?.handleFailResponse('Department not found');
+        return Util?.CustomhandleNotFoundResponse('Department not found');
       }
       return Util?.handleSuccessRespone(
         data,
@@ -116,13 +141,24 @@ export class DepartmentService {
   }
 
   // Update Department By The departmentId
-  async update(departmentId: string, updateDepartmentDto: UpdateDepartmentDto) {
+  async update(departmentId: string, updateDepartmentDto: UpdateDepartmentDto,userId:any) {
     try {
-      const data = await Department.findOne({ where: { departmentId } });
+
+      let user = await this?.userModel.findOne({where:{userId}})
+      console.log(user?.organizationId)
+      if(!user)
+      return Util?.CustomhandleNotFoundResponse('User not found');
+
+      let get_org = await this?.orgModel.findOne({where:{organizationId:user?.organizationId}})
+
+      if(!get_org)
+      return Util?.CustomhandleNotFoundResponse('organization not found');
+
+      const data = await Department.findOne({ where: { departmentId ,organizationId:get_org?.organizationId} });
       if (!data) {
         // throw new Error('Department not found.');
-        return Util?.handleFailResponse(
-          `Department with this #${departmentId} not found`,
+        return Util?.CustomhandleNotFoundResponse(
+          'Department with this #${departmentId} not found',
         );
       }
 
@@ -138,12 +174,23 @@ export class DepartmentService {
   }
 
   // Delete Department By The DepartmentId
-  async remove(departmentId: string) {
+  async remove(departmentId: string,userId:any) {
     try {
-      const data = await Department.findOne({ where: { departmentId } });
+
+      let user = await this?.userModel.findOne({where:{userId}})
+      console.log(user?.organizationId)
+      if(!user)
+      return Util?.CustomhandleNotFoundResponse('User not found');
+
+      let get_org = await this?.orgModel.findOne({where:{organizationId:user?.organizationId}})
+
+      if(!get_org)
+      return Util?.CustomhandleNotFoundResponse('organization not found');
+
+      const data = await Department.findOne({ where: { departmentId  ,organizationId:get_org?.organizationId} });
       if (!data) {
-        return Util?.handleFailResponse(
-          `Department with this #${departmentId} not found`,
+        return Util?.CustomhandleNotFoundResponse(
+          'Department with this #${departmentId} not found',
         );
       }
 
@@ -159,8 +206,21 @@ export class DepartmentService {
   }
 
   // Search Department By  Name
-  async searchDepartment(keyword: string) {
+  async searchDepartment(keyword: string,userId:any) {
     try {
+
+
+      let user = await this?.userModel.findOne({where:{userId}})
+      console.log(user?.organizationId)
+      if(!user)
+      return Util?.CustomhandleNotFoundResponse('User not found');
+
+      let get_org = await this?.orgModel.findOne({where:{organizationId:user?.organizationId}})
+
+      if(!get_org)
+      return Util?.CustomhandleNotFoundResponse('organization not found');
+
+
       const deptData = await this?.departmentModel.findAll({
         attributes: {
           exclude: ['createdAt', 'updatedAt', 'deletedAt'],
@@ -182,6 +242,7 @@ export class DepartmentService {
         }],
         where: {
           departmentName: { [Op.like]: `%${keyword}%` },
+          organizationId:get_org?.organizationId,
         },
       });
 
