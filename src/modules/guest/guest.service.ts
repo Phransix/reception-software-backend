@@ -30,53 +30,9 @@ export class GuestService {
   async create(createGuestDto: CreateGuestDto) {
     try {
 
-      // console.log(userId)
-      // let user = await this?.UserModel.findOne({where:{userId}})
-      // console.log(user?.organizationId)
-      // if(!user)
-      // return Util?.handleErrorRespone('User not found');
-
-      // let get_org = await this?.OrgModel.findOne({where:{organizationId:user?.organizationId}})
-
-      // if(!get_org)
-      // return Util?.handleErrorRespone('organization not found');
-
       await Abstract?.createData(Guest, createGuestDto)
       const { phoneNumber } = createGuestDto
       const guestData = await this.GuestModel.findOne({ where: { phoneNumber } })
-      // const currentTime = new Date().toLocaleTimeString();
-      // await Guest.update(
-      //   {
-      //     signInDate: new Date()
-      //   }, {
-      //   where:
-      //   {
-      //     phoneNumber: phoneNumber
-      //   }
-      // }
-      // );
-      // await Guest.update(
-      //   {
-      //     signInTime: currentTime
-      //   },
-      //   {
-      //     where:
-      //     {
-      //       phoneNumber: phoneNumber
-      //     }
-      //   }
-      // );
-      // await Guest.update(
-      //   {
-      //     visitStatus: 'Signed In'
-      //   },
-      //   {
-      //     where:
-      //     {
-      //       phoneNumber: phoneNumber
-      //     }
-      //   }
-      // );
       let guest_data = {
         guestId: guestData?.guestId,
         firstName: guestData?.firstName,
@@ -225,7 +181,7 @@ export class GuestService {
 
   // Guest sign In
   async guestSignIn(guestOpDTO: guestOpDTO) {
-    
+
     try {
       const { phoneNumber, countryCode } = guestOpDTO
       const guestNo = await this.GuestModel.findOne({ where: { phoneNumber } })
