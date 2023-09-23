@@ -240,7 +240,7 @@ export class PurposeController {
     @Public()
     @UseGuards(AtGuard)
     @ApiTags('Purpose')
-    @ApiOperation({ summary: 'Get Guest Name By Firstname Search' })
+    @ApiOperation({ summary: 'Get Guest Name By Firstname or Lastname Search' })
     @Get('guest/search')
     async searchGuest(
       @Query('keyword') keyword: string,
@@ -265,7 +265,6 @@ export class PurposeController {
   @Public()
   @ApiTags('Purpose')
   @ApiOperation({ summary: 'Guest Sign Out' })
-  @ApiOperation({ summary: 'Get Guest Name By Firstname or Lastname Search' })
   @Post('guestSignOut')
   async signOut(@Body() guestOpDTO: guestOpDTO
   ) {
