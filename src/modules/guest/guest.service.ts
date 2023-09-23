@@ -225,6 +225,7 @@ export class GuestService {
 
   // Guest sign In
   async guestSignIn(guestOpDTO: guestOpDTO) {
+    
     try {
       const { phoneNumber, countryCode } = guestOpDTO
       const guestNo = await this.GuestModel.findOne({ where: { phoneNumber } })
