@@ -240,7 +240,7 @@ export class PurposeController {
     @Public()
     @UseGuards(AtGuard)
     @ApiTags('Purpose')
-    @ApiOperation({ summary: 'Get Guest Name By Firstname or Lastname Search' })
+    @ApiOperation({ summary: 'Get Guest Name By Firstname or Lastname' })
     @Get('guest/search')
     async searchGuest(
       @Query('keyword') keyword: string,
