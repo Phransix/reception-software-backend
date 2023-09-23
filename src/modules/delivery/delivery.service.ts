@@ -35,9 +35,9 @@ export class DeliveryService {
   }
 
   // Get All Delivery
-  async findAll(page: number, size: number) {
+  async findAll(page: number, size: number, userId:any) {
     try {
-      // console.log(deliveryId)
+      console.log(userId)
       let currentPage = Util.Checknegative(page);
       if (currentPage) {
         return Util?.handleErrorRespone(
@@ -45,22 +45,22 @@ export class DeliveryService {
         );
       }
       const { limit, offset } = Util.getPagination(page, size);
+      let user = await this?.UserModel.findOne({where:{userId}})
+      console.log(user?.organizationId)
+      if(!user)
+      return Util?.handleErrorRespone('User not found');
 
-      // let deliver = await this?.DeliveryModel.findOne({where:{deliveryId}})
-      // console.log(deliver?.organizationId)
-      // if(!deliver)
-      // return Util?.handleErrorRespone('User not found');
+      let get_org = await this?.OrgModel.findOne({where:{organizationId:user?.organizationId}})
 
-      // let get_org = await this?.OrgModel.findOne({where:{organizationId:deliver?.organizationId}})
-
-      // if(!get_org)
-      // return Util?.handleErrorRespone('organization not found');
+      if(!get_org)
+      return Util?.handleErrorRespone('organization not found');
+   
 
       const allQueries = await Delivery.findAndCountAll({
         limit,
         offset,
         where: {
-          // organizationId:get_org?.organizationId
+          organizationId:get_org?.organizationId
         },
         attributes: { exclude: ['updatedAt', 'deletedAt'] },
       });
@@ -73,6 +73,7 @@ export class DeliveryService {
         dataResult,
         'Delivery Data retrieved successfully.',
       );
+
     } catch (error) {
       console.log(error)
       return Util?.handleFailResponse("Deliveries retrieval failed")
@@ -80,15 +81,22 @@ export class DeliveryService {
   };
 
   // Get Delivery by deliveryId
-  async findOne(deliveryId: string) {
+  async findOne(deliveryId: string, userId:any) {
     try {
+      console.log(userId)
+      let user = await this?.UserModel.findOne({where:{userId}})
+      console.log(user?.organizationId)
+      if(!user)
+      return Util?.handleErrorRespone('User not found');
+
+      let get_org = await this?.OrgModel.findOne({where:{organizationId:user?.organizationId}})
+
+      if(!get_org)
+      return Util?.handleErrorRespone('organization not found');
       const delivery = await Delivery.findOne({
-        where: { deliveryId },
+        where: { deliveryId , organizationId:get_org?.organizationId},
         attributes: { exclude: ['createdAt', 'updatedAt', 'deletedAt'] }
       });
-      // if (!delivery) {
-      //   return Util?.handleFailResponse('The Delivery data does not exist')
-      // }
       return Util?.handleSuccessRespone(delivery, "Delivery Data retrieved successfully")
     } catch (error) {
       console.log(error)
@@ -97,9 +105,19 @@ export class DeliveryService {
   }
 
   // Update Delivery By deliveryId
-  async update(deliveryId: string, updateDeliveryDto: UpdateDeliveryDto) {
+  async update(deliveryId: string, updateDeliveryDto: UpdateDeliveryDto, userId:any) {
     try {
-      const delivery = await Delivery.findOne({ where: { deliveryId } });
+      console.log(userId)
+      let user = await this?.UserModel.findOne({where:{userId}})
+      console.log(user?.organizationId)
+      if(!user)
+      return Util?.handleErrorRespone('User not found');
+
+      let get_org = await this?.OrgModel.findOne({where:{organizationId:user?.organizationId}})
+
+      if(!get_org)
+      return Util?.handleErrorRespone('organization not found');
+      const delivery = await Delivery.findOne({ where: { deliveryId,organizationId:get_org?.organizationId } });
 
       if (!delivery) {
         return Util?.handleFailResponse("Delivery data not found")
@@ -116,9 +134,21 @@ export class DeliveryService {
 
 
   // Remove Delivery By deliveryId 
-  async remove(deliveryId: string) {
+  async remove(deliveryId: string, userId:any) {
     try {
-      const delivery = await Delivery.findOne({ where: { deliveryId } });
+
+      console.log(userId)
+      let user = await this?.UserModel.findOne({where:{userId}})
+      console.log(user?.organizationId)
+      if(!user)
+      return Util?.handleErrorRespone('User not found');
+
+      let get_org = await this?.OrgModel.findOne({where:{organizationId:user?.organizationId}})
+
+      if(!get_org)
+      return Util?.handleErrorRespone('organization not found');
+
+      const delivery = await Delivery.findOne({ where: { deliveryId, organizationId:get_org?.organizationId } });
       if (!delivery) {
         return Util?.handleFailResponse("Delivery Data does not exist")
       }
@@ -132,11 +162,23 @@ export class DeliveryService {
   }
 
   // Confirm Delivery
-  async deliveryConfirm(deliveryConfirmDTO: deliveryConfirmDTO) {
+  async deliveryConfirm(deliveryConfirmDTO: deliveryConfirmDTO, userId:any) {
     try {
+
+      console.log(userId)
+      let user = await this?.UserModel.findOne({where:{userId}})
+      console.log(user?.organizationId)
+      if(!user)
+      return Util?.handleErrorRespone('User not found');
+
+      let get_org = await this?.OrgModel.findOne({where:{organizationId:user?.organizationId}})
+
+      if(!get_org)
+      return Util?.handleErrorRespone('organization not found');
+
       const { receipientName } = deliveryConfirmDTO
 
-      const delivery = await this.DeliveryModel.findOne({ where: { receipientName } })
+      const delivery = await this.DeliveryModel.findOne({ where: { receipientName,organizationId:get_org?.organizationId  } })
       if (!delivery) {
         return Util?.handleFailResponse('Delivery Confirmation Failed')
       }
@@ -155,14 +197,26 @@ export class DeliveryService {
   }
 
   // Filter By Date Range
-  async findByDateRange(startDate: Date, endDate: Date) {
+  async findByDateRange(startDate: Date, endDate: Date, userId:any) {
     try {
+      console.log(userId)
+      let user = await this?.UserModel.findOne({where:{userId}})
+      console.log(user?.organizationId)
+      if(!user)
+      return Util?.handleErrorRespone('User not found');
+
+      let get_org = await this?.OrgModel.findOne({where:{organizationId:user?.organizationId}})
+
+      if(!get_org)
+      return Util?.handleErrorRespone('organization not found');
+
       const deliver = await Delivery.findAll({
         where: {
           createdAt:
           {
             [Op.between]: [startDate, endDate],
-          }
+          },
+          organizationId:get_org?.organizationId
         },
         attributes: { exclude: ['createdAt', 'updatedAt', 'deletedAt'] }
       });
@@ -175,8 +229,18 @@ export class DeliveryService {
   }
 
   // Filter delivery by type
-  async deliveryType(keyword: string) {
+  async deliveryType(keyword: string, userId:any) {
     try {
+      console.log(userId)
+      let user = await this?.UserModel.findOne({where:{userId}})
+      console.log(user?.organizationId)
+      if(!user)
+      return Util?.handleErrorRespone('User not found');
+
+      let get_org = await this?.OrgModel.findOne({where:{organizationId:user?.organizationId}})
+
+      if(!get_org)
+      return Util?.handleErrorRespone('organization not found');
       let filter = {}
 
       if (keyword != null) {
@@ -185,7 +249,8 @@ export class DeliveryService {
 
       const filterCheck = await this.DeliveryModel.findAll({
         where: {
-          ...filter
+          ...filter,
+          organizationId:get_org?.organizationId
         },
       });
       return Util?.handleSuccessRespone(filterCheck,"Delivery Successfully retrieved")

@@ -58,8 +58,6 @@ export class CreateGuestDto {
         example: '+233'
     })
     @IsNotEmpty()
-    // @MaxLength(4)
-    // @MinLength(4)
     readonly countryCode: string
 
     @ApiProperty({
@@ -68,14 +66,9 @@ export class CreateGuestDto {
     })
     
     @IsNotEmpty()
-    // @MaxLength(9)
-    // @MinLength(9)
     @IsMobilePhone()
     readonly phoneNumber: string
 
-    signInDate: Date
-
-    signInTime: string
 
 
 }

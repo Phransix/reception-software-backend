@@ -9,11 +9,9 @@ import { deliveryConfirmDTO } from 'src/guard/auth/deliveryConfirmDTO';
 import { Public } from 'src/common/decorators/public.decorator';
 import { AtGuard } from 'src/common/guards';
 import { AuthGuard } from '@nestjs/passport';
-import { GetCurrentUser } from 'src/common/decorators';
 import { InjectModel } from '@nestjs/sequelize';
 import { User } from '../users/entities/user.entity';
-
-
+import { GetCurrentUserId } from 'src/common/decorators/get-current-user-id.decorator';
 
 @Controller('delivery')
 export class DeliveryController {
@@ -31,7 +29,9 @@ export class DeliveryController {
   @ApiTags('Delivery')
   @ApiOperation({ summary: 'Create New Delivery' })
   @Post('createDelivery')
-  async createDelivery(@Body() createDeliveryDto: CreateDeliveryDto) {
+  async createDelivery(
+    @Body() createDeliveryDto: CreateDeliveryDto
+    ) {
     let ErrorCode: number
     try {
       let new_Delivery = await this.deliveryService.create(createDeliveryDto);
@@ -68,11 +68,11 @@ export class DeliveryController {
   async findAll(
     @Query('page') page?: number,
     @Query('size') size?: number,
-    @GetCurrentUser() deliveryId?: string
+    @GetCurrentUserId() userId?: string
   ) {
       let ErrorCode: number;
       try {
-        let deliveryData = await this.deliveryService?.findAll(page, size);
+        let deliveryData = await this.deliveryService?.findAll(page, size, userId);
   
         if (deliveryData?.status_code != HttpStatus.OK) {
           ErrorCode = deliveryData?.status_code;
@@ -93,10 +93,13 @@ export class DeliveryController {
   @ApiTags('Delivery')
   @ApiOperation({ summary: 'Get All Delivery By deliveryId' })
   @Get(':deliveryId')
-  async findOne(@Param('deliveryId') deliveryId: string) {
+  async findOne(
+    @Param('deliveryId') deliveryId: string,
+    @GetCurrentUserId() userId : string
+    ) {
     let ErrorCode: number
     try {
-      let delivery = await this.deliveryService.findOne(deliveryId);
+      let delivery = await this.deliveryService.findOne(deliveryId,userId);
       if (delivery?.status_code != HttpStatus.OK) {
         ErrorCode = delivery?.status_code;
         throw new Error(delivery?.message)
@@ -117,10 +120,14 @@ export class DeliveryController {
   @ApiTags('Delivery')
   @ApiOperation({ summary: 'Update Delivery By deliveryId' })
   @Patch(':deliveryId')
-  async update(@Param('deliveryId') deliveryId: string, @Body() updateDeliveryDto: UpdateDeliveryDto) {
+  async update(
+    @Param('deliveryId') deliveryId: string,
+    @Body() updateDeliveryDto: UpdateDeliveryDto,
+    @GetCurrentUserId() userId : string
+    ) {
     let ErrorCode: number
     try {
-      const delivery_Update = await this.deliveryService.update(deliveryId, updateDeliveryDto)
+      const delivery_Update = await this.deliveryService.update(deliveryId, updateDeliveryDto,userId)
       if (delivery_Update?.status_code != HttpStatus.OK) {
         ErrorCode = delivery_Update?.status_code;
         throw new Error(delivery_Update?.message)
@@ -142,11 +149,14 @@ export class DeliveryController {
   @ApiTags('Delivery')
   @ApiOperation({ summary: 'Remove Delivery By deliveryId' })
   @Delete(':deliveryId')
-  async remove(@Param('deliveryId') deliveryId: string) {
+  async remove(
+    @Param('deliveryId') deliveryId: string,
+    @GetCurrentUserId() userId : string
+    ) {
   let ErrorCode: number
     try {
 
-      const delivery = await this.deliveryService.remove(deliveryId)
+      const delivery = await this.deliveryService.remove(deliveryId,userId)
       if (delivery?.status_code != HttpStatus.OK) {
         ErrorCode = delivery?.status_code;
         throw new Error(delivery?.message)
@@ -168,10 +178,13 @@ export class DeliveryController {
 @ApiTags('Delivery')
 @ApiOperation({ summary: 'Confirm Delivery By Receptionist' })
 @Post('deliveryConfirmation')
-async staffConfirm(@Body() deliveryConfirmDTO: deliveryConfirmDTO) {
+async staffConfirm(
+  @Body() deliveryConfirmDTO: deliveryConfirmDTO,
+  @GetCurrentUserId() userId : string
+  ) {
   let ErrorCode: number
   try {
-    const deliveryTo = await this.deliveryService.deliveryConfirm(deliveryConfirmDTO)
+    const deliveryTo = await this.deliveryService.deliveryConfirm(deliveryConfirmDTO,userId)
     if (deliveryTo?.status_code != HttpStatus.CREATED) {
       ErrorCode = deliveryTo?.status_code;
       throw new Error(deliveryTo?.message)
@@ -210,10 +223,11 @@ async staffConfirm(@Body() deliveryConfirmDTO: deliveryConfirmDTO) {
 async findDeliveryByDateRange(
   @Query('startDate') startDate: Date,
   @Query('endDate') endDate: Date,
+  @GetCurrentUserId() userId : string
 ) {
   let ErrorCode: number
   try {
-    const deliver = await this.deliveryService.findByDateRange(startDate, endDate)
+    const deliver = await this.deliveryService.findByDateRange(startDate, endDate,userId)
     if (deliver?.status_code != HttpStatus.OK) {
       ErrorCode = deliver?.status_code;
       throw new Error(deliver?.message)
@@ -239,11 +253,12 @@ async findDeliveryByDateRange(
 @ApiOperation({summary: 'Filter Delivery By Type'})
 @Get('delivery/filterType')
 async deliveryTypeFilter (
-  @Query('keyword') keyword: string
+  @Query('keyword') keyword: string,
+  @GetCurrentUserId() userId : string
 ) {
   let ErrorCode: number
   try {
-    const delivery = await this.deliveryService.deliveryType(keyword)
+    const delivery = await this.deliveryService.deliveryType(keyword,userId)
     if (delivery?.status_code != HttpStatus.OK) {
       ErrorCode = delivery?.status_code;
       throw new Error(delivery?.message)

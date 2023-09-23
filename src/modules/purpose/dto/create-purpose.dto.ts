@@ -48,4 +48,8 @@ export class CreatePurposeDto {
     })
     // @IsNotEmpty()
     readonly staffId: string
+
+    signInDate: Date
+
+    signInTime: string
 }

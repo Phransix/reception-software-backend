@@ -8,13 +8,20 @@ import * as Util from '../../utils/index'
 import { Guest } from '../guest/entities/guest.entity';
 import { Department } from '../department/entities/department.entity';
 import { Staff } from '../staff/entities/staff.entity';
+import { Op } from 'sequelize';
+import { Organization } from '../organization/entities/organization.entity';
+import { User } from '../users/entities/user.entity';
+import { guestOpDTO } from 'src/guard/auth/guestOpDTO';
 
 @Injectable()
 export class PurposeService {
 
-  constructor (
-    @InjectModel(Purpose) private readonly PurposeModel: typeof Purpose
-  ){ }
+  constructor(
+    @InjectModel(Purpose) private readonly PurposeModel: typeof Purpose,
+    @InjectModel(Organization) private readonly OrgModel: typeof Organization,
+    @InjectModel(User) private readonly UserModel: typeof User,
+    @InjectModel(Guest) private readonly GuestModel: typeof Guest,
+  ) { }
 
   // Create Purpose
   async create(createPurposeDto: CreatePurposeDto) {
@@ -28,8 +35,11 @@ export class PurposeService {
   }
 
   // Get All Purposes
-  async findAll(page: number, size: number) {
+  async findAll(page: number, size: number, userId: any) {
     try {
+
+      console.log(userId)
+
       let currentPage = Util.Checknegative(page);
       if (currentPage) {
         return Util?.handleErrorRespone(
@@ -38,26 +48,38 @@ export class PurposeService {
       }
       const { limit, offset } = Util.getPagination(page, size);
 
+      let user = await this?.UserModel.findOne({ where: { userId } })
+      console.log(user?.organizationId)
+      if (!user)
+        return Util?.handleErrorRespone('User not found');
+      let get_org = await this?.OrgModel.findOne({ where: { organizationId: user?.organizationId } })
+
+      if (!get_org)
+        return Util?.handleErrorRespone('organization not found');
+
       const allQueries = await Purpose.findAndCountAll({
         limit,
         offset,
+        where: {
+          organizationId: get_org?.organizationId
+        },
         attributes: { exclude: ['updatedAt', 'deletedAt'] },
         include: [
           {
-            model:Guest,
-            attributes: {exclude:['id','guestId','organizationId','createdAt','updatedAt','deletedAt']},
-            order: [['id','DESC']],
-            as:'guestData'
+            model: Guest,
+            attributes: { exclude: ['id', 'guestId', 'organizationId', 'createdAt', 'updatedAt', 'deletedAt'] },
+            order: [['id', 'DESC']],
+            as: 'guestData'
           },
           {
-            model:Department,
-            attributes: {exclude: ['id','organizationId','departmentId','createdAt', 'updatedAt', 'deletedAt']},
+            model: Department,
+            attributes: { exclude: ['id', 'organizationId', 'departmentId', 'createdAt', 'updatedAt', 'deletedAt'] },
             order: [['id', 'DESC']],
             as: 'departmentData'
           },
           {
-            model:Staff,
-            attributes: {exclude: ['id','departmentId','organizationId','staffId','organizationName','departmentName','createdAt', 'updatedAt', 'deletedAt']},
+            model: Staff,
+            attributes: { exclude: ['id', 'departmentId', 'organizationId', 'staffId', 'organizationName', 'departmentName', 'createdAt', 'updatedAt', 'deletedAt'] },
             order: [['id', 'DESC']],
             as: 'staffData'
           }
@@ -79,25 +101,50 @@ export class PurposeService {
   }
 
   // Get Purpose By purposeId
-  async findOne(purposeId: string) {
+  async findOne(purposeId: string, userId: any) {
     try {
-      const purpose = await Purpose.findOne({where: { purposeId },
-        attributes: {exclude:['createdAt','updatedAt']}
+
+      console.log(userId)
+      let user = await this?.UserModel.findOne({ where: { userId } })
+      console.log(user?.organizationId)
+      if (!user)
+        return Util?.handleErrorRespone('User not found');
+
+      let get_org = await this?.OrgModel.findOne({ where: { organizationId: user?.organizationId } })
+
+      if (!get_org)
+        return Util?.handleErrorRespone('organization not found');
+
+      const purpose = await Purpose.findOne({
+        where: { purposeId, organizationId: get_org?.organizationId },
+        attributes: { exclude: ['createdAt', 'updatedAt'] }
       });
       if (!purpose) {
         throw new NotAcceptableException('The Purpose data not exist')
       }
-      return Util?.handleSuccessRespone(purpose,'Purpose Data retrieved Successfully')
+      return Util?.handleSuccessRespone(purpose, 'Purpose Data retrieved Successfully')
     } catch (error) {
       console.log(error)
-      return Util?.handleGrpcReqError(Util?.getTryCatchMsg(error)) 
+      return Util?.handleGrpcReqError(Util?.getTryCatchMsg(error))
     }
   }
 
   // Update Purpose By purposeId
-  async update(purposeId: string, updatePurposeDto: UpdatePurposeDto) {
+  async update(purposeId: string, updatePurposeDto: UpdatePurposeDto, userId: any) {
     try {
-      const purpose = await Purpose.findOne({where:{purposeId}})
+
+      console.log(userId)
+      let user = await this?.UserModel.findOne({ where: { userId } })
+      console.log(user?.organizationId)
+      if (!user)
+        return Util?.handleErrorRespone('User not found');
+
+      let get_org = await this?.OrgModel.findOne({ where: { organizationId: user?.organizationId } })
+
+      if (!get_org)
+        return Util?.handleErrorRespone('organization not found');
+
+      const purpose = await Purpose.findOne({ where: { purposeId, organizationId: get_org?.organizationId } })
       if (!purpose) {
         throw new NotAcceptableException("Purpose Data does not exist")
       }
@@ -107,38 +154,63 @@ export class PurposeService {
     } catch (error) {
       console.log(error)
       return Util?.handleGrpcReqError(Util?.getTryCatchMsg(error))
-        }
+    }
   }
 
   // Remove Purpose By purposeId
-  async remove(purposeId: string) {
-     try {
-      const purpose = await Purpose.findOne({ where: { purposeId } })
+  async remove(purposeId: string, userId: any) {
+    try {
+
+      console.log(userId)
+      let user = await this?.UserModel.findOne({ where: { userId } })
+      console.log(user?.organizationId)
+      if (!user)
+        return Util?.handleErrorRespone('User not found');
+
+      let get_org = await this?.OrgModel.findOne({ where: { organizationId: user?.organizationId } })
+
+      if (!get_org)
+        return Util?.handleErrorRespone('organization not found');
+
+      const purpose = await Purpose.findOne({ where: { purposeId, organizationId: get_org?.organizationId } })
       if (!purpose) {
         throw new NotAcceptableException("Purpose Data does not exist")
       }
       await purpose.destroy()
-      return Util?.handleSuccessRespone(Util?.SuccessRespone,"Purpose Data deleted successfully")
-     } catch (error) {
+      return Util?.handleSuccessRespone(Util?.SuccessRespone, "Purpose Data deleted successfully")
+    } catch (error) {
       console.log(error)
       return Util?.handleGrpcReqError(Util?.getTryCatchMsg(error))
-         }
+    }
   }
 
   // Filter by Official and Personal Visits
-  async guestPurpose (keyword: string){
+  async guestPurpose(keyword: string, userId: any) {
     try {
-    let filter = {}
 
-    if(keyword != null){
-     filter = {purpose : keyword}
-    }
-    // console.log(filter);
-    
-    
+      console.log(userId)
+      let user = await this?.UserModel.findOne({ where: { userId } })
+      console.log(user?.organizationId)
+      if (!user)
+        return Util?.handleErrorRespone('User not found');
+
+      let get_org = await this?.OrgModel.findOne({ where: { organizationId: user?.organizationId } })
+
+      if (!get_org)
+        return Util?.handleErrorRespone('organization not found');
+
+      let filter = {}
+
+      if (keyword != null) {
+        filter = { purpose: keyword }
+      }
+      // console.log(filter);
+
+
       const filterCheck = await this.PurposeModel.findAll({
         where: {
-         ...filter
+          ...filter,
+          organizationId: get_org?.organizationId
         },
       });
       if (!filterCheck) {
@@ -148,7 +220,204 @@ export class PurposeService {
     } catch (error) {
       console.log(error)
       return Util?.handleGrpcReqError(Util?.getTryCatchMsg(error))
-        }
+    }
   }
+
+  // Filter By Date Range
+  async findByDateRange(startDate: Date, endDate: Date, userId: any) {
+    try {
+
+      console.log(userId)
+      let user = await this?.UserModel.findOne({ where: { userId } })
+      console.log(user?.organizationId)
+      if (!user)
+        return Util?.handleErrorRespone('User not found');
+
+      let get_org = await this?.OrgModel.findOne({ where: { organizationId: user?.organizationId } })
+
+      if (!get_org)
+        return Util?.handleErrorRespone('organization not found');
+
+      const purpose = await Purpose.findAll({
+        where: {
+          createdAt:
+          {
+            [Op.between]: [startDate, endDate],
+          },
+          organizationId: get_org?.organizationId
+        },
+        attributes: { exclude: ['createdAt', 'updatedAt', 'deletedAt'] },
+        include: [
+          {
+            model: Guest,
+            attributes: { exclude: ['id', 'guestId', 'organizationId', 'createdAt', 'updatedAt', 'deletedAt'] },
+            order: [['id', 'DESC']],
+            as: 'guestData'
+          },
+          {
+            model: Department,
+            attributes: { exclude: ['id', 'organizationId', 'departmentId', 'createdAt', 'updatedAt', 'deletedAt'] },
+            order: [['id', 'DESC']],
+            as: 'departmentData'
+          },
+          {
+            model: Staff,
+            attributes: { exclude: ['id', 'departmentId', 'organizationId', 'staffId', 'organizationName', 'departmentName', 'createdAt', 'updatedAt', 'deletedAt'] },
+            order: [['id', 'DESC']],
+            as: 'staffData'
+          }
+        ]
+      });
+
+      return Util?.handleSuccessRespone(purpose, "Delivery Successfully retrieved")
+    } catch (error) {
+      console.log(error)
+      return Util?.handleGrpcTryCatchError(Util?.getTryCatchMsg(error));
+    }
+  }
+
+  // Search guest by firstname
+  async searchGuest(keyword: string, userId: any) {
+    try {
+
+      console.log(userId)
+      let user = await this?.UserModel.findOne({ where: { userId } })
+      console.log(user?.organizationId)
+      if (!user)
+        return Util?.handleErrorRespone('User not found');
+
+      let get_org = await this?.OrgModel.findOne({ where: { organizationId: user?.organizationId } })
+
+      if (!get_org)
+        return Util?.handleErrorRespone('organization not found');
+
+      const guest = await this.PurposeModel.findAll({
+
+        include: [
+          {
+            model: Guest,
+            attributes: { exclude: ['id', 'guestId', 'organizationId', 'createdAt', 'updatedAt', 'deletedAt'] },
+            order: [['id', 'DESC']],
+            as: 'guestData',
+            where: {
+              [Op.or]:[
+                {
+                  firstName: {
+                    [Op.like]: `%${keyword}%`,
+                  },
+                },
+                {
+                  lastName: {
+                    [Op.like]: `%${keyword}%`,
+                  },
+                }
+              ],
+              organizationId: get_org?.organizationId
+            },
+          },
+        ]
+      });
+      return Util?.handleSuccessRespone(guest, "Guest Search Success")
+    } catch (error) {
+      console.log(error)
+      return Util?.handleGrpcTryCatchError(Util?.getTryCatchMsg(error));
+    }
+  }
+
+  // Guest sign Out
+  async guestSignOut(guestOpDTO: guestOpDTO) {
+    try {
+
+      const { phoneNumber, countryCode } = guestOpDTO
+      const guest = await this.GuestModel.findOne({where:{phoneNumber:phoneNumber}});
+      const cCode = await this.GuestModel.findOne({ where: { countryCode } })
+  
+      const currentTime = new Date().toLocaleTimeString();
+
+      if (!guest) 
+      return Util?.handleFailResponse('Guest not found')
+
+      if(!guest || !cCode)
+      return Util?.handleFailResponse('Invalid phone number or country code')
+
+      const purpose = await this.PurposeModel.findOne(
+        {
+          where:{
+            guestId:guest?.guestId
+          }
+          // order:['id','desc']
+      });
+  
+      if(!purpose)
+      return Util?.handleFailResponse('Purpose not found')
+
+      if (purpose?.isLogOut != false){
+        return Util?.handleFailResponse('Guest already logout')
+      };
+
+      console.log(phoneNumber);
+      // return
+      await Purpose.update({ isLogOut:true},
+        { where: { guestId : guest?.guestId } }
+        )
+      await Purpose.update( { visitStatus: 'Signed Out'}, 
+      { where: { guestId : guest?.guestId } }
+       )
+       await Purpose.update( { signOutTime: currentTime}, 
+       { where: { guestId : guest?.guestId } }
+        )
+        let guest_data = {
+          guestId: guest?.guestId,
+          firstName: guest?.firstName,
+          lastname: guest?.lastName,
+          gender: guest?.gender,
+          countryCode: guest?.countryCode,
+          phoneNumber: guest?.phoneNumber,
+          signInDate: purpose?.signInDate,
+          signInTime: purpose?.signInTime,
+          signOutTime: purpose?.signOutTime
+      }
+      return Util?.handleCustonCreateResponse(guest_data,'Logout successful');
+    } catch (error) {
+      console.log(error)
+      return Util?.handleGrpcTryCatchError(Util?.getTryCatchMsg(error));
+    }
+  }
+
+  // Filter Guest by Gender
+  async genderFilter(keyword: string, userId: any) {
+    try {
+
+      console.log(userId)
+      let user = await this?.UserModel.findOne({ where: { userId } })
+      console.log(user?.organizationId)
+      if (!user)
+        return Util?.handleErrorRespone('User not found');
+
+      let get_org = await this?.OrgModel.findOne({ where: { organizationId: user?.organizationId } })
+
+      if (!get_org)
+        return Util?.handleErrorRespone('organization not found');
+
+      let filter = {}
+
+      if (keyword != null) {
+        filter = { visitStatus: keyword }
+      }
+
+      const filterCheck = await this.PurposeModel.findAll({
+        where: {
+          ...filter,
+          organizationId: get_org?.organizationId
+        },
+      });
+
+      return Util?.handleSuccessRespone(filterCheck, "Guest Data filtered Successfully")
+    } catch (error) {
+      console.log(error)
+      return Util?.handleGrpcTryCatchError(Util?.getTryCatchMsg(error));
+    }
+  }
+
 }
 

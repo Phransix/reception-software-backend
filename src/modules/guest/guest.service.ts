@@ -11,6 +11,7 @@ import { Sequelize } from 'sequelize-typescript';
 import { Purpose } from '../purpose/entities/purpose.entity';
 import * as Abs from '../../utils/abstract'
 import { Organization } from '../organization/entities/organization.entity';
+import { User } from '../users/entities/user.entity';
 
 
 
@@ -20,7 +21,8 @@ export class GuestService {
   constructor(
     @InjectModel(Guest) private readonly GuestModel: typeof Guest,
     @InjectModel(Purpose) private readonly PurposeModel: typeof Purpose,
-    @InjectModel(Organization) private readonly OrganizationModel: typeof Organization,
+    @InjectModel(Organization) private readonly OrgModel: typeof Organization,
+    @InjectModel(User) private readonly UserModel: typeof User,
     private readonly sequelize: Sequelize
   ) { }
 
@@ -28,42 +30,53 @@ export class GuestService {
   async create(createGuestDto: CreateGuestDto) {
     try {
 
+      // console.log(userId)
+      // let user = await this?.UserModel.findOne({where:{userId}})
+      // console.log(user?.organizationId)
+      // if(!user)
+      // return Util?.handleErrorRespone('User not found');
+
+      // let get_org = await this?.OrgModel.findOne({where:{organizationId:user?.organizationId}})
+
+      // if(!get_org)
+      // return Util?.handleErrorRespone('organization not found');
+
       await Abstract?.createData(Guest, createGuestDto)
       const { phoneNumber } = createGuestDto
       const guestData = await this.GuestModel.findOne({ where: { phoneNumber } })
-      const currentTime = new Date().toLocaleTimeString();
-      await Guest.update(
-        {
-          signInDate: new Date()
-        }, {
-        where:
-        {
-          phoneNumber: phoneNumber
-        }
-      }
-      );
-      await Guest.update(
-        {
-          signInTime: currentTime
-        },
-        {
-          where:
-          {
-            phoneNumber: phoneNumber
-          }
-        }
-      );
-      await Guest.update(
-        {
-          visitStatus: 'Signed In'
-        },
-        {
-          where:
-          {
-            phoneNumber: phoneNumber
-          }
-        }
-      );
+      // const currentTime = new Date().toLocaleTimeString();
+      // await Guest.update(
+      //   {
+      //     signInDate: new Date()
+      //   }, {
+      //   where:
+      //   {
+      //     phoneNumber: phoneNumber
+      //   }
+      // }
+      // );
+      // await Guest.update(
+      //   {
+      //     signInTime: currentTime
+      //   },
+      //   {
+      //     where:
+      //     {
+      //       phoneNumber: phoneNumber
+      //     }
+      //   }
+      // );
+      // await Guest.update(
+      //   {
+      //     visitStatus: 'Signed In'
+      //   },
+      //   {
+      //     where:
+      //     {
+      //       phoneNumber: phoneNumber
+      //     }
+      //   }
+      // );
       let guest_data = {
         guestId: guestData?.guestId,
         firstName: guestData?.firstName,
@@ -71,8 +84,6 @@ export class GuestService {
         gender: guestData?.gender,
         countryCode: guestData?.countryCode,
         phoneNumber: guestData?.phoneNumber,
-        signInTime: guestData?.signInTime,
-        signInDate: guestData?.signInDate
       }
       return Util?.handleCustonCreateResponse(guest_data, "Guest Created Successfully")
     } catch (error) {
@@ -82,8 +93,10 @@ export class GuestService {
   }
 
   // Get All Guest
-  async findAll(page: number, size: number) {
+  async findAll(page: number, size: number,userId:any) {
     try {
+      console.log(userId)
+
       let currentPage = Util?.Checknegative(page);
       if (currentPage) {
         return Util?.handleErrorRespone(
@@ -93,9 +106,21 @@ export class GuestService {
 
       const { limit, offset } = Util?.getPagination(page, size);
 
+      let user = await this?.UserModel.findOne({where:{userId}})
+      console.log(user?.organizationId)
+      if(!user)
+      return Util?.handleErrorRespone('User not found');
+      let get_org = await this?.OrgModel.findOne({where:{organizationId:user?.organizationId}})
+
+      if(!get_org)
+      return Util?.handleErrorRespone('organization not found');
+
       const guestData = await Guest.findAndCountAll({
         limit,
         offset,
+        where: {
+          organizationId:get_org?.organizationId
+        },
         attributes: { exclude: ['createdAt', 'updatedAt', 'deletedAt'] },
       })
 
@@ -114,10 +139,22 @@ export class GuestService {
   }
 
   // Get Gest By guestId
-  async findOne(guestId: string) {
+  async findOne(guestId: string,userId:any) {
     try {
+
+      console.log(userId)
+      let user = await this?.UserModel.findOne({where:{userId}})
+      console.log(user?.organizationId)
+      if(!user)
+      return Util?.handleErrorRespone('User not found');
+
+      let get_org = await this?.OrgModel.findOne({where:{organizationId:user?.organizationId}})
+
+      if(!get_org)
+      return Util?.handleErrorRespone('organization not found');
+
       const guest = await Guest.findOne({
-        where: { guestId },
+        where: { guestId, organizationId:get_org?.organizationId },
         attributes: { exclude: ['createdAt', 'updatedAt'] }
       });
       if (!guest) {
@@ -131,9 +168,21 @@ export class GuestService {
   }
 
   // Update Guest By guestId
-  async update(guestId: string, updateGuestDto: UpdateGuestDto) {
+  async update(guestId: string, updateGuestDto: UpdateGuestDto,userId:any) {
     try {
-      const guest = await Guest.findOne({ where: { guestId } });
+
+      console.log(userId)
+      let user = await this?.UserModel.findOne({where:{userId}})
+      console.log(user?.organizationId)
+      if(!user)
+      return Util?.handleErrorRespone('User not found');
+
+      let get_org = await this?.OrgModel.findOne({where:{organizationId:user?.organizationId}})
+
+      if(!get_org)
+      return Util?.handleErrorRespone('organization not found');
+
+      const guest = await Guest.findOne({ where: { guestId,organizationId:get_org?.organizationId } });
       if (!guest) {
         return Util?.handleFailResponse('Guest data not found')
       }
@@ -147,9 +196,21 @@ export class GuestService {
   }
 
   // Remve Guest By guestId
-  async remove(guestId: string) {
+  async remove(guestId: string, userId:any) {
     try {
-      const guest = await Guest.findOne({ where: { guestId } });
+
+      console.log(userId)
+      let user = await this?.UserModel.findOne({where:{userId}})
+      console.log(user?.organizationId)
+      if(!user)
+      return Util?.handleErrorRespone('User not found');
+
+      let get_org = await this?.OrgModel.findOne({where:{organizationId:user?.organizationId}})
+
+      if(!get_org)
+      return Util?.handleErrorRespone('organization not found');
+
+      const guest = await Guest.findOne({ where: { guestId, organizationId:get_org?.organizationId  } });
       if (!guest) {
         return Util?.handleFailResponse("Guest Data does not exist")
       }
@@ -175,243 +236,37 @@ export class GuestService {
         lastname: guestNo?.lastName,
         gender: guestNo?.gender,
         countryCode: guestNo?.countryCode,
-        phoneNumber: guestNo?.phoneNumber,
-        signInDate: guestNo?.signInDate,
-        signInTime: guestNo?.signInTime
+        phoneNumber: guestNo?.phoneNumber
       }
 
       if (!guestNo || !cCode) {
         return Util?.handleFailResponse('Invalid phone number or country code')
-      } else {
-        await Guest.update(
-          {
-            signInDate: new Date()
-          }, {
-          where:
-          {
-            phoneNumber: phoneNumber
-          }
-        }
-        );
-        await Guest.update(
-          {
-            signInTime: currentTime
-          },
-          {
-            where:
-            {
-              phoneNumber: phoneNumber
-            }
-          }
-        );
-        await Guest.update(
-          {
-            visitStatus: 'Signed In'
-          },
-          {
-            where:
-            {
-              phoneNumber: phoneNumber
-            }
-          }
-        );
-        return Util?.handleCustonCreateResponse(guest_data, "Guest Sign In Success")
       }
+      
+      return Util?.handleCustonCreateResponse(guest_data, "Guest Sign In Success")
     } catch (error) {
       console.log(error)
       return Util?.handleGrpcTryCatchError(Util?.getTryCatchMsg(error));
     }
-  }
-
-  // Guest sign Out confirmation
-  async guestSignOut(guestOpDTO: guestOpDTO) {
-    try {
-      const { phoneNumber, countryCode } = guestOpDTO
-      const guest = await this.GuestModel.findOne({ where: { phoneNumber } })
-      const cCode = await this.GuestModel.findOne({ where: { countryCode } })
-      // const guestPurpose = await this.PurposeModel.findOne({where: { guestId }})
-      const currentTime = new Date().toLocaleTimeString();
-      let guest_data = {
-          guestId: guest?.guestId,
-          firstName: guest?.firstName,
-          lastname: guest?.lastName,
-          gender: guest?.gender,
-          countryCode: guest?.countryCode,
-          phoneNumber: guest?.phoneNumber,
-          signInDate: guest?.signInDate,
-          signInTime: guest?.signInTime,
-          signOutTime: guest?.signOutTime
-      }
-
-      // Checking validity of phone number and country code
-      if (!guest || !cCode)
-        return Util?.handleFailResponse('Invalid phone number or country code')
-
-      // Checking it guest is signed In
-      if (guest?.visitStatus != 'Signed In')
-        return Util?.handleFailResponse('Guest already signed out, sign in first');
-
-      return Util?.handleCustonCreateResponse(guest_data,"Confirmed") 
-    } catch (error) {
-      console.log(error)
-      return Util?.handleGrpcTryCatchError(Util?.getTryCatchMsg(error));
-    }
-  }
-
-  // Guest sign Out
-  async guestConfirmSignOut(guestOpDTO: guestOpDTO) {
-    try {
-      const { phoneNumber, countryCode } = guestOpDTO
-      const guest = await this.GuestModel.findOne({ where: { phoneNumber } })
-      const cCode = await this.GuestModel.findOne({ where: { countryCode } })
-      const currentTime = new Date().toLocaleTimeString();
-      let guest_data = {
-        signOutTime: guest?.signOutTime
-      }
-      if (!guest || !cCode) {
-        return Util?.handleFailResponse('Invalid phone number or country code')
-      } else {
-        await Guest.update(
-          {
-            signOutTime: currentTime
-          },
-          {
-            where: {
-              phoneNumber: phoneNumber
-            }
-          }
-        );
-        await Guest.update(
-          {
-            visitStatus: 'Signed Out'
-          },
-          {
-            where: {
-              phoneNumber: phoneNumber
-            }
-          }
-        )
-        return Util?.handleCustonCreateResponse(guest_data, "Guest Sign Out Success")
-      }
-    } catch (error) {
-      console.log(error)
-      return Util?.handleGrpcTryCatchError(Util?.getTryCatchMsg(error));
-    }
-  }
-
-  // Search guest by firstname
-  async searchGuest(keyword: string,organizationId: string) {
-    try {
-      const guest = await this.GuestModel.findAll({
-        where: {
-          firstName: {
-            [Op.like]: `%${keyword}%`,
-          },
-          organizationId:organizationId
-        },
-      });
-      return Util?.handleSuccessRespone(guest, "Guest Search Success")
-    } catch (error) {
-      console.log(error)
-      return Util?.handleGrpcTryCatchError(Util?.getTryCatchMsg(error));
-    }
-  }
-
-  // Search by Custom Date Range
-  async customGuestSearch(startDate: Date, endDate: Date) {
-    try {
-      const guestSearch = await Guest.findAll({
-        where: {
-          createdAt:
-          {
-            [Op.between]: [startDate, endDate],
-          }
-        },
-        attributes: { exclude: ['createdAt', 'updated', 'deletedAt'] }
-      });
-      return Util?.handleSuccessRespone(guestSearch, "Guest Data retrieved Successfully")
-    } catch (error) {
-      console.log(error)
-      return Util?.handleGrpcTryCatchError(Util?.getTryCatchMsg(error));
-    }
-  }
-
-
-  // Filter Guest by Gender
-  async genderFilter(keyword: string) {
-    try {
-      let filter = {}
-
-      if (keyword != null) {
-        filter = { gender: keyword }
-      }
-
-      const filterCheck = await this.GuestModel.findAll({
-        where: {
-          ...filter
-        },
-      });
-
-      return Util?.handleSuccessRespone(filterCheck, "Guest Data filtered Successfully")
-    } catch (error) {
-      console.log(error)
-      return Util?.handleGrpcTryCatchError(Util?.getTryCatchMsg(error));
-    }
-  }
-
-  // Filter Guest by Organizationid
-  async orgGuestFilter(keyword: string) {
-    try {
-      let filter = {}
-
-      if (keyword != null) {
-        filter = { organizationId: keyword }
-      }
-
-      const filterCheck = await this.GuestModel.findAll({
-        where: {
-          ...filter
-        },
-      });
-
-      return Util?.handleSuccessRespone(filterCheck, "Guest Data filtered Successfully")
-    } catch (error) {
-      console.log(error)
-      return Util?.handleGrpcTryCatchError(Util?.getTryCatchMsg(error));
-    }
-  }
-
-  // Filter Guest By visit status
-  async guestVisitStatus(keyword: string) {
-    try {
-      let filter = {}
-
-      if (keyword != null) {
-        filter = { visitStatus: keyword }
-      }
-
-      const filterStatus = await this.GuestModel.findAll({
-        where: {
-          ...filter
-        },
-      });
-
-      return Util?.handleSuccessRespone(filterStatus, "Guest Data filtered Successfully")
-    } catch (error) {
-      console.log(error)
-      return Util?.handleGrpcTryCatchError(Util?.getTryCatchMsg(error));
-    }
-  }
-
-  async findOneByPhoneNumber(phoneNumber: string): Promise<Guest> {
-    return await this.GuestModel.findOne<Guest>({ where: { phoneNumber } })
   }
 
   // Bulk guest create
-  async bulkGuest (Guest:string, data: any[]){
+  async bulkGuest (Guest:string, data: any[], userId:any){
     const myModel = this.sequelize.model(Guest);
     const t = await this.sequelize.transaction();
     try {
+
+      console.log(userId)
+      let user = await this?.UserModel.findOne({where:{userId}})
+      console.log(user?.organizationId)
+      if(!user)
+      return Util?.handleErrorRespone('User not found');
+
+      let get_org = await this?.OrgModel.findOne({where:{organizationId:user?.organizationId}})
+
+      if(!get_org)
+      return Util?.handleErrorRespone('organization not found');
+
       const createMultipleGuest = await myModel.bulkCreate(data,{transaction: t})
       t.commit()
       return Util?.handleCustonCreateResponse(createMultipleGuest, 'Multiple Guests created successfully')
@@ -425,9 +280,21 @@ export class GuestService {
   }
 
   // Bulk guest delete
-  async bulkGuestDelete (Guest:string, whereClause: any = {}){
+  async bulkGuestDelete (Guest:string, whereClause: any = {},userId:any){
     const myModel = this.sequelize.model(Guest);
     try {
+
+      console.log(userId)
+      let user = await this?.UserModel.findOne({where:{userId}})
+      console.log(user?.organizationId)
+      if(!user)
+      return Util?.handleErrorRespone('User not found');
+
+      let get_org = await this?.OrgModel.findOne({where:{organizationId:user?.organizationId}})
+
+      if(!get_org)
+      return Util?.handleErrorRespone('organization not found');
+
       const deleteMultipleGuest = await myModel.destroy({
         where: whereClause
       });
@@ -436,6 +303,13 @@ export class GuestService {
       console.log(error)
       return Util?.handleGrpcTryCatchError(Util?.getTryCatchMsg(error));
     }
+  }
+
+
+  
+
+  async findOneByPhoneNumber(phoneNumber: string): Promise<Guest> {
+    return await this.GuestModel.findOne<Guest>({ where: { phoneNumber } })
   }
 
 }

@@ -76,6 +76,32 @@ module.exports = {
         },
         onDelete: 'CASCADE'
       },
+      signInDate: {
+        type: Sequelize.DATEONLY,
+        allowNull: true,
+        defaultValue: Sequelize.literal('CURRENT_TIMESTAMP'),
+      },
+      signInTime: {
+        type: Sequelize.TIME,
+        allowNull: true,
+        defaultValue: Sequelize.literal('CURRENT_TIMESTAMP'),
+      },
+      signOutTime: {
+        type: Sequelize.TIME,
+        allowNull: true
+      },
+      visitStatus: {
+        type: Sequelize.ENUM('Signed In', 'Signed Out'),
+        allowNull: true,
+        defaultValue: 'Signed In',
+        validate: {
+          isIn: [['Signed In','Signed Out']]
+        }
+      },
+      isLogOut: {
+        type: Sequelize.BOOLEAN,
+        defaultValue: false
+      },
       createdAt: {
         type: Sequelize.DATE,
         allowNull: false,

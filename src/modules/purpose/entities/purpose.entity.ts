@@ -110,4 +110,36 @@ export class Purpose extends Model <Purpose> {
     )
     staff: Staff
 
+    @Column({
+        type: DataType.DATEONLY,
+        allowNull: true
+    })
+    signInDate: Date
+
+    @Column({
+        type: DataType.TIME,
+        allowNull: true
+    })
+    signInTime: string
+
+    @Column({
+        type: DataType.TIME,
+        allowNull: true
+    })
+    signOutTime: string
+
+    @Column({
+        type: DataType.ENUM,
+        values: ['Signed In', 'Signed Out'],
+        allowNull: true,
+    })
+    visitStatus: string;
+
+    @Column({
+        type: DataType.BOOLEAN,
+        allowNull: true,
+        defaultValue: false
+      })
+      isLogOut: boolean;
+
 }

@@ -101,13 +101,4 @@ export class CreateDeliveryDto {
     @IsString()
     readonly itemDescription: string;
 
-    // @ApiProperty({
-    //     description: "The status of delivery",
-    //     example: 'awaiting_pickup'
-    // })
-    // @IsString()
-    // @IsEnum(Status, {
-    //     message: 'Choose the type of status: delivered or awaiting_pickup'
-    // })
-    // readonly status: string;
 }

@@ -10,6 +10,7 @@ import { AuthGuard } from '@nestjs/passport';
 import { AtGuard } from 'src/common/guards';
 import { DoesGuestExist } from '../../common/guards/doesGuestExist.guard'
 import { Guest } from './entities/guest.entity';
+import { GetCurrentUserId } from 'src/common/decorators/get-current-user-id.decorator';
 
 
 @Controller('guest')
@@ -21,7 +22,10 @@ export class GuestController {
   @UseGuards(DoesGuestExist)
   @ApiOperation({ summary: 'Create New Guest' })
   @Post('createGuest')
-  async create(@Body() createGuestDto: CreateGuestDto) {
+  async create(
+    @Body() createGuestDto: CreateGuestDto,
+    // @GetCurrentUserId() userId?: string
+    ) {
     let ErrorCode: number
     try {
       let guest = await this.guestService.create(createGuestDto);
@@ -57,10 +61,11 @@ export class GuestController {
   async findAll(
     @Query('page') page: number,
     @Query('size') size: number,
+    @GetCurrentUserId() userId?: string
   ) {
     let ErrorCode: number;
     try {
-      let guesData = await this.guestService?.findAll(page, size);
+      let guesData = await this.guestService?.findAll(page, size,userId);
 
       if (guesData?.status_code != HttpStatus.OK) {
         ErrorCode = guesData?.status_code;
@@ -82,10 +87,13 @@ export class GuestController {
   @ApiTags('Guest')
   @ApiOperation({ summary: 'Get Guest By guestId' })
   @Get(':guestId')
-  async findOne(@Param('guestId') guestId: string) {
+  async findOne(
+    @Param('guestId') guestId: string,
+    @GetCurrentUserId() userId?: string
+    ) {
     let ErrorCode: number
     try {
-      let guest = await this.guestService.findOne(guestId);
+      let guest = await this.guestService.findOne(guestId,userId);
       if (guest?.status_code != HttpStatus.OK) {
         ErrorCode = guest?.status_code;
         throw new Error(guest?.message)
@@ -105,10 +113,14 @@ export class GuestController {
   @ApiTags('Guest')
   @ApiOperation({ summary: 'Update Guest By guestId' })
   @Patch(':guestId')
-  async update(@Param('guestId') guestId: string, @Body() updateGuestDto: UpdateGuestDto) {
+  async update(
+    @Param('guestId') guestId: string, 
+    @Body() updateGuestDto: UpdateGuestDto,
+    @GetCurrentUserId() userId : string
+    ) {
     let ErrorCode: number
     try {
-      const guest = await this.guestService.update(guestId, updateGuestDto)
+      const guest = await this.guestService.update(guestId, updateGuestDto,userId)
       if (guest?.status_code != HttpStatus.OK) {
         ErrorCode = guest?.status_code;
         throw new Error(guest?.message)
@@ -127,11 +139,14 @@ export class GuestController {
   @ApiTags('Guest')
   @ApiOperation({ summary: 'Remove Guest By guestId' })
   @Delete(':guestId')
-  async remove(@Param('guestId') guestId: string) {
+  async remove(
+    @Param('guestId') guestId: string,
+    @GetCurrentUserId() userId : string
+    ) {
     let ErrorCode: number
     try {
 
-      const guest = await this.guestService.remove(guestId)
+      const guest = await this.guestService.remove(guestId,userId)
       if (guest?.status_code != HttpStatus.OK) {
         ErrorCode = guest?.status_code;
         throw new Error(guest?.message)
@@ -149,7 +164,8 @@ export class GuestController {
   @ApiTags('Guest')
   @ApiOperation({ summary: 'Guest Sign In' })
   @Post('guestSignIn')
-  async signIn(@Body() guestOpDTO: guestOpDTO) {
+  async signIn(@Body() guestOpDTO: guestOpDTO,
+  ) {
     let ErrorCode: number
     try {
       const guest = await this.guestService.guestSignIn(guestOpDTO)
@@ -168,214 +184,6 @@ export class GuestController {
     }
   }
 
-  @Public()
-  @ApiTags('Guest')
-  @ApiOperation({ summary: 'Guest Sign Out' })
-  @Post('guestSignOut')
-  async signOut(@Body() guestOpDTO: guestOpDTO) {
-    let ErrorCode: number
-    try {
-      const guest = await this.guestService.guestSignOut(guestOpDTO)
-      if (guest?.status_code != HttpStatus.CREATED) {
-        ErrorCode = guest?.status_code;
-        throw new Error(guest?.message)
-      }
-      if (!guest) {
-        throw new HttpException('Guest does not exist', HttpStatus.NOT_FOUND)
-      } else {
-        return guest
-      }
-    } catch (error) {
-      console.log(error)
-      return Util?.handleRequestError(Util?.getTryCatchMsg(error), ErrorCode)
-    }
-
-  }
-
-
-  @Public()
-  @ApiTags('Guest')
-  @ApiOperation({ summary: 'Confirm Guest Sign Out' })
-  @Post('confirmSignOut')
-  async confirmSignOut(@Body() guestOpDTO: guestOpDTO) {
-    let ErrorCode: number
-    try {
-      const guest = await this.guestService.guestConfirmSignOut(guestOpDTO)
-      if (guest?.status_code != HttpStatus.CREATED) {
-        ErrorCode = guest?.status_code;
-        throw new Error(guest?.message)
-      }
-      if (!guest) {
-        throw new HttpException('Guest does not exist', HttpStatus.NOT_FOUND)
-      } else {
-        return guest
-      }
-    } catch (error) {
-      console.log(error)
-      return Util?.handleRequestError(Util?.getTryCatchMsg(error), ErrorCode)
-    }
-
-  }
-
-  // Search Guest by Firstnames
-  @UseGuards(AuthGuard('jwt'))
-  @ApiBearerAuth('defaultBearerAuth')
-  @ApiQuery({
-    name: 'keyword',
-    type: String,
-    required: false
-  })
-  @Public()
-  @UseGuards(AtGuard)
-  @ApiTags('Guest')
-  @ApiOperation({ summary: 'Get Guest Name By Firstname Search' })
-  @Get('guest/search')
-  async searchGuest(
-    @Query('keyword') keyword: string,
-    @Query('organizationId') organizationId: string
-    ){
-    let ErrorCode: number
-    try {
-      const guest = await this.guestService.searchGuest(keyword.charAt(0).toUpperCase(),organizationId);
-      if (guest?.status_code != HttpStatus.OK) {
-        ErrorCode = guest?.status_code;
-        throw new Error(guest?.message)
-      }
-      return guest
-    } catch (error) {
-      console.log(error)
-      return Util?.handleRequestError(Util?.getTryCatchMsg(error), ErrorCode)
-    }
-
-  }
-
-  // Search guest by custom range
-  @UseGuards(AuthGuard('jwt'))
-  @ApiBearerAuth('defaultBearerAuth')
-  @ApiQuery({
-    name: 'startDate',
-    type: Date,
-    required: false
-  })
-
-  @ApiQuery({
-    name: 'endDate',
-    type: Date,
-    required: false
-  })
-  @Public()
-  @UseGuards(AtGuard)
-  @ApiTags('Guest')
-  @ApiOperation({ summary: 'Search Guest by Custom Date Range' })
-  @Get('guest/filterGuest')
-  async findGuestByDateRange(
-    @Query('startDate') startDate: Date,
-    @Query('endDate') endDate: Date
-  ) {
-    let ErrorCode: number
-    try {
-      const guestSearch = await this.guestService.customGuestSearch(startDate, endDate)
-      if (guestSearch?.status_code != HttpStatus.OK) {
-        ErrorCode = guestSearch?.status_code;
-        throw new Error(guestSearch?.message)
-      }
-      return guestSearch
-    } catch (error) {
-      console.log(error)
-      return Util?.handleRequestError(Util?.getTryCatchMsg(error), ErrorCode)
-    }
-  }
-
-  // Filter Guest by Gender
-  @UseGuards(AuthGuard('jwt'))
-  @ApiBearerAuth('defaultBearerAuth')
-  @ApiQuery({
-    name: 'keyword',
-    enum: Gender,
-    required: false
-  })
-  @Public()
-  @UseGuards(AtGuard)
-  @ApiTags('Guest')
-  @ApiOperation({ summary: 'Filter Guest Gender' })
-  @Get('guest/filterGender')
-  async guestGender(
-    @Query('keyword') keyword: string
-  ) {
-    let ErrorCode: number
-    try {
-      const guest = await this.guestService.genderFilter(keyword)
-      if (guest?.status_code != HttpStatus.OK) {
-        ErrorCode = guest?.status_code;
-        throw new Error(guest?.message)
-    } 
-    return guest
-    } catch (error) {
-      console.log(error)
-      return Util?.handleRequestError(Util?.getTryCatchMsg(error), ErrorCode)
-    }
-  }
-
-
-  // Filter Guest by organization
-  @UseGuards(AuthGuard('jwt'))
-  @ApiBearerAuth('defaultBearerAuth')
-  @Public()
-  @UseGuards(AtGuard)
-  @ApiTags('Guest')
-  @ApiOperation({ summary: 'Filter Guest by OrganizationId' })
-  @Get('guest/filterOrgGuest')
-  async orgGuest(
-    @Query('keyword') keyword: string,
-  ) {
-    let ErrorCode: number
-    try {
-
-      const guest = await this.guestService.orgGuestFilter(keyword)
-
-      if (guest?.status_code != HttpStatus.OK) {
-        ErrorCode = guest?.status_code;
-        throw new Error(guest?.message)
-    } 
-    return guest
-    } catch (error) {
-      console.log(error)
-      return Util?.handleRequestError(Util?.getTryCatchMsg(error), ErrorCode)
-    }
-  }
-
-
-  // Filter by Guest Visit Status
-  @UseGuards(AuthGuard('jwt'))
-  @ApiBearerAuth('defaultBearerAuth')
-  @ApiQuery({
-    name: 'keyword',
-    enum: status,
-    required: false
-  })
-  @Public()
-  @UseGuards(AtGuard)
-  @ApiTags('Guest')
-  @ApiOperation({ summary: 'Filter Guest By Status' })
-  @Get('guest/filterStatus')
-  async filterGuestStatus(
-    @Query('keyword') keyword: string
-  ) {
-    let ErrorCode: number
-    try {
-      const guest = await this.guestService.guestVisitStatus(keyword)
-      if (guest?.status_code != HttpStatus.OK) {
-        ErrorCode = guest?.status_code;
-        throw new Error(guest?.message)
-    } 
-    return guest
-    } catch (error) {
-      console.log(error)
-      return Util?.handleRequestError(Util?.getTryCatchMsg(error), ErrorCode)
-    }
-  }
-
-  // 
   // Bulk guest create
   @UseGuards(AtGuard)
   @UseGuards(AuthGuard('jwt'))
@@ -386,11 +194,14 @@ export class GuestController {
   @Public()
   @ApiTags('Guest')
   @Post('bulkGuestCreate/create')
-  async buklCreateGuest (@Body() data: any[]){
+  async buklCreateGuest (
+    @Body() data: any[],
+    @GetCurrentUserId() userId : string
+    ){
     let ErrorCode: number
     try {
       const modelName = 'Guest'
-      const guestResults = await this.guestService.bulkGuest(modelName, data)
+      const guestResults = await this.guestService.bulkGuest(modelName, data,userId)
       if (guestResults?.status_code != HttpStatus.CREATED) {
         ErrorCode = guestResults?.status_code;
         throw new Error(guestResults?.message)
@@ -410,11 +221,14 @@ export class GuestController {
     @ApiTags('Guest')
     @ApiOperation({ summary: 'Delete Multiple Guests' })
     @Delete('bulkGuestDelete/delete')
-    async bulkGuestDelete (whereClause: any = {}){
+    async bulkGuestDelete (
+      whereClause: any = {},
+      @GetCurrentUserId() userId : string
+      ){
       let ErrorCode: number
       try {
         const modelName = 'Guest'
-        const guestResults = await this.guestService.bulkGuestDelete(modelName, whereClause);
+        const guestResults = await this.guestService.bulkGuestDelete(modelName, whereClause,userId);
         if (guestResults?.status_code != HttpStatus.CREATED) {
           ErrorCode = guestResults?.status_code;
           throw new Error(guestResults?.message)
