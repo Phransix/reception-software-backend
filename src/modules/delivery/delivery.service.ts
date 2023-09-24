@@ -180,7 +180,7 @@ export class DeliveryService {
 
       const delivery = await this.DeliveryModel.findOne({ where: { receipientName,organizationId:get_org?.organizationId  } })
       if (!delivery) {
-        return Util?.handleFailResponse('Delivery Confirmation Failed')
+        return Util?.handleFailResponse('Receipient not found')
       }
 
       if (delivery?.status != 'awaiting_pickup') 
