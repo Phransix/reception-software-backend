@@ -1,6 +1,6 @@
 import { Controller, Get, Post, Body, Patch, Param, Delete, Query, HttpException, HttpStatus, UseGuards } from '@nestjs/common';
 import { DeliveryService } from './delivery.service';
-import { CreateDeliveryDto, Delivery_type } from './dto/create-delivery.dto';
+import { CreateDeliveryDto, Delivery_type, Status } from './dto/create-delivery.dto';
 import { UpdateDeliveryDto } from './dto/update-delivery.dto';
 import * as Util from '../../utils/index'
 import { ApiBearerAuth, ApiOperation, ApiQuery, ApiTags } from '@nestjs/swagger';
@@ -270,5 +270,38 @@ async deliveryTypeFilter (
   }
 
 }
+
+// Filter delivery by status
+@UseGuards(AuthGuard('jwt'))
+@ApiBearerAuth('defaultBearerAuth')
+@ApiQuery({
+  name: 'keyword',
+  enum: Status,
+  required: false
+})
+@Public()
+@UseGuards(AtGuard)
+@ApiTags('Delivery')
+@ApiOperation({summary: 'Filter Delivery By Status'})
+@Get('delivery/filterStatus')
+async deliveryStatusFilter (
+  @Query('keyword') keyword: string,
+  @GetCurrentUserId() userId : string
+) {
+  let ErrorCode: number
+  try {
+    const delivery = await this.deliveryService.deliveryStatus(keyword,userId)
+    if (delivery?.status_code != HttpStatus.OK) {
+      ErrorCode = delivery?.status_code;
+      throw new Error(delivery?.message)
+  } 
+  return delivery
+  } catch (error) {
+    console.log(error)
+    return Util?.handleRequestError(Util?.getTryCatchMsg(error),ErrorCode)
+  }
+
+}
+
 
 }

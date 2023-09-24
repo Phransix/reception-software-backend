@@ -260,4 +260,36 @@ export class DeliveryService {
     }
   }
 
+    // Filter delivery by status
+    async deliveryStatus(keyword: string, userId:any) {
+      try {
+        console.log(userId)
+        let user = await this?.UserModel.findOne({where:{userId}})
+        console.log(user?.organizationId)
+        if(!user)
+        return Util?.handleErrorRespone('User not found');
+  
+        let get_org = await this?.OrgModel.findOne({where:{organizationId:user?.organizationId}})
+  
+        if(!get_org)
+        return Util?.handleErrorRespone('organization not found');
+        let filter = {}
+  
+        if (keyword != null) {
+          filter = { status: keyword }
+        }
+  
+        const filterCheck = await this.DeliveryModel.findAll({
+          where: {
+            ...filter,
+            organizationId:get_org?.organizationId
+          },
+        });
+        return Util?.handleSuccessRespone(filterCheck,"Delivery Status Successfully retrieved")
+      } catch (error) {
+        console.log(error)
+        return Util?.handleGrpcTryCatchError(Util?.getTryCatchMsg(error));
+      }
+    }
+
 }
