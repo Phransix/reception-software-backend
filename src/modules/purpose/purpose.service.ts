@@ -373,6 +373,7 @@ export class PurposeService {
           gender: guest?.gender,
           countryCode: guest?.countryCode,
           phoneNumber: guest?.phoneNumber,
+          guestPurpose: purpose?.purpose,
           signInDate: purpose?.signInDate,
           signInTime: purpose?.signInTime,
           signOutTime: purpose?.signOutTime
