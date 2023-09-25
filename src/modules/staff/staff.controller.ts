@@ -42,7 +42,7 @@ export class StaffController {
   @UseGuards(DoesStaffExist)
   @Post('registerNewStaff')
   async create(
-    @GetCurrentUserId() userId: string,
+    @GetCurrentUserId() userId : string,
     @Body() createStaffDto: CreateStaffDto
     ) {
     let ErrorCode: number;

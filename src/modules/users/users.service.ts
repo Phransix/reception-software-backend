@@ -186,10 +186,9 @@ export class UsersService {
       return Util?.CustomhandleNotFoundResponse('User not found');
 
       let get_org = await this?.orgModel.findOne({where:{organizationId:user?.organizationId}})
-
+     
       if(!get_org)
       return Util?.CustomhandleNotFoundResponse('organization not found');
-
    
       const allQueries = await User.findAndCountAll({
         limit,
