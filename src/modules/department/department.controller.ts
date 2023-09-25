@@ -34,11 +34,7 @@ export class DepartmentController {
   constructor(private readonly departmentService: DepartmentService) {}
 
   // Create New Department
-  @ApiResponse({
-    status: 201,
-    description: 'The record has been successfully created.',
-  })
-  @ApiResponse({ status: 403, description: 'Forbidden.' })
+  
   @UseGuards(AuthGuard('jwt'))
   @ApiBearerAuth('defaultBearerAuth')
   @ApiOperation({ summary: 'Create New Department' })
@@ -46,10 +42,13 @@ export class DepartmentController {
   @UseGuards(AtGuard)
   @UseGuards(DoesDeptExist)
   @Post('createNewDepartment')
-  async create(@Body() createDepartmentDto: CreateDepartmentDto) {
+  async create(
+    @GetCurrentUserId() userId : string,
+    @Body() createDepartmentDto: CreateDepartmentDto
+    ) {
     let ErrorCode: number
     try {
-      let newDepart = await this.departmentService.create(createDepartmentDto);
+      let newDepart = await this.departmentService.create(createDepartmentDto,userId);
       if (newDepart?.status_code != HttpStatus.CREATED) {
         ErrorCode = newDepart?.status_code;
         throw new Error(newDepart?.message)

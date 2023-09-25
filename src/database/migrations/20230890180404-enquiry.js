@@ -61,6 +61,11 @@ module.exports = {
           'Events')
       },
 
+      description: {
+        allowNull: false,
+        type: Sequelize.STRING,
+      },
+
       createdAt: {
         type: Sequelize.DATE,
         allowNull: false,

@@ -22,7 +22,7 @@ export class EnquiriesService {
   ) {}
 
   // Create Enquiry
-  async createEnquiry(createEnquiryDto: CreateEnquiryDto,userId: string) {
+  async createEnquiry(createEnquiryDto: CreateEnquiryDto,userId:any) {
     try {
 
       let user = await this?.userModel.findOne({where:{userId}})
@@ -33,14 +33,15 @@ export class EnquiriesService {
       let get_org = await this?.orgModel.findOne({where:{organizationId:user?.organizationId}})
       if(!get_org)
       return Util?.CustomhandleNotFoundResponse('organization not found');
-     
-      const enquiry = await Enquiry?.create({
-            ...createEnquiryDto,
-            organizationId:get_org?.organizationId
-          })
-          await enquiry.save();
 
-      return Util?.handleCreateSuccessRespone('Enquriry created successfully.');
+      const enquiry = await Enquiry?.create({
+        ...createEnquiryDto,
+        organizationId:get_org?.organizationId
+      })
+      await enquiry.save();
+      return Util?.handleCreateSuccessRespone(
+        'Enquiry created successfully.',
+      );
     } catch (error) {
       console.log(error);
       return Util?.handleGrpcTryCatchError(Util?.getTryCatchMsg(error));

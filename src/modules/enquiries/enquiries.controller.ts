@@ -48,7 +48,7 @@ export class EnquiriesController {
     let ErrorCode: number;
     try {
       let new_Enquiry = await this.enquiriesService.createEnquiry(createEnquiryDto,userId);
-      if (new_Enquiry?.status_code != HttpStatus.OK) {
+      if (new_Enquiry?.status_code != HttpStatus.CREATED) {
         ErrorCode = new_Enquiry?.status_code;
         throw new Error(new_Enquiry?.message);
       }
@@ -84,13 +84,13 @@ export class EnquiriesController {
      ) {
     let ErrorCode: number;
     try {
-      let staffData = await this.enquiriesService?.findAll(page, size,userId);
+      let enquiryData = await this.enquiriesService?.findAll(page, size,userId);
 
-      if (staffData?.status_code != HttpStatus.OK) {
-        ErrorCode = staffData?.status_code;
-        throw new Error(staffData?.message);
+      if (enquiryData?.status_code != HttpStatus.OK) {
+        ErrorCode = enquiryData?.status_code;
+        throw new Error(enquiryData?.message);
       }
-      return staffData;
+      return enquiryData;
     } catch (error) {
       console.log(error);
       return Util?.handleRequestError(Util?.getTryCatchMsg(error), ErrorCode);
