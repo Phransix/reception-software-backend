@@ -315,6 +315,18 @@ export class PurposeService {
               organizationId: get_org?.organizationId
             },
           },
+          {
+            model: Department,
+            attributes: { exclude: ['id', 'organizationId', 'departmentId', 'createdAt', 'updatedAt', 'deletedAt'] },
+            order: [['id', 'DESC']],
+            as: 'departmentData'
+          },
+          {
+            model: Staff,
+            attributes: { exclude: ['id', 'departmentId', 'organizationId', 'staffId', 'organizationName', 'departmentName', 'createdAt', 'updatedAt', 'deletedAt'] },
+            order: [['id', 'DESC']],
+            as: 'staffData'
+          }
         ]
       });
       return Util?.handleSuccessRespone(guest, "Guest Search Success")
