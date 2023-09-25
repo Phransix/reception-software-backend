@@ -9,6 +9,7 @@ import * as Abstract from '../../utils/abstract';
 import { Op } from 'sequelize';
 import { Organization } from '../organization/entities/organization.entity';
 import { User } from '../users/entities/user.entity';
+import { error } from 'console';
 // import sequelize from 'sequelize';
 
 @Injectable()
@@ -21,17 +22,45 @@ export class EnquiriesService {
   ) {}
 
   // Create Enquiry
-  async create(createEnquiryDto: CreateEnquiryDto) {
-    try {
-      console.log(createEnquiryDto);
-      await Abstract?.createData(Enquiry, createEnquiryDto);
-      return Util?.handleCreateSuccessRespone('Enquiry created successfully.');
-    } catch (error) {
-      console.log(error);
-      return Util?.handleGrpcTryCatchError(Util?.getTryCatchMsg(error));
-    }
-  }
+  // async create(createEnquiryDto: CreateEnquiryDto) {
+  //   try {
+  //     console.log(createEnquiryDto);
+  //     await Abstract?.createData(Enquiry, createEnquiryDto);
+  //     return Util?.handleCreateSuccessRespone('Enqureturn Util?.handleGrpcReqError(Util?.getTryCatchMsg(error))iry created successfully.');
+  //   } catch (error) {
+  //     console.log(error);
+  //     return Util?.handleGrpcTryCatchError(Util?.getTryCatchMsg(error));
+  //   }
+  // }
 
+  async createEnquiry( createEnquiryDto:CreateEnquiryDto,userId: string){
+    try {
+
+      let user = await this?.userModel.findOne({where:{userId}})
+    if(!user){
+      return Util?.CustomhandleNotFoundResponse('User not found');
+    }
+
+    let get_org = await this?.orgModel.findOne({where:{organizationId:user?.organizationId}})
+
+    if(!get_org)
+    return Util?.CustomhandleNotFoundResponse('organization not found');
+
+    const enquiry = await Enquiry?.create({
+      ...createEnquiryDto,
+      organizationId:get_org?.organizationId
+    })
+
+    await enquiry.save();
+
+    return Util?.handleCreateSuccessRespone('Enquiry created successfully.');
+      
+    } catch (error) {
+      console.log(error)
+      return Util?.handleGrpcReqError(Util?.getTryCatchMsg(error))
+    }
+    
+  }
 
   // Get All Enquiries
   async findAll(page: number, size: number,userId:any) {
@@ -58,7 +87,7 @@ export class EnquiriesService {
         limit,
         offset,
         where:{organizationId:get_org?.organizationId},
-        attributes: { exclude: ['createdAt', 'updatedAt', 'deletedAt'] },
+        attributes: { exclude: [ 'updatedAt', 'deletedAt'] },
         order: [
           ['createdAt', 'ASC']
         ],
@@ -227,7 +256,7 @@ export class EnquiriesService {
         limit,
         offset,
         where:{organizationId:get_org?.organizationId},
-        attributes: { exclude: ['createdAt', 'updatedAt', 'deletedAt'] },
+        attributes: { exclude: [ 'updatedAt', 'deletedAt'] },
         order: [
           ['createdAt', 'ASC']
         ],
@@ -308,7 +337,7 @@ export class EnquiriesService {
       let queryOption: any = {
         limit,
         offset,
-        attributes: { exclude: ['createdAt', 'updatedAt', 'deletedAt'] },
+        attributes: { exclude: [ 'updatedAt', 'deletedAt'] },
         order: [
           ['createdAt', 'ASC']
         ],
@@ -367,7 +396,7 @@ export class EnquiriesService {
 
       const enquiryData = await this?.enquiryModel.findAll({
         attributes: {
-          exclude: ['createdAt', 'updatedAt', 'deletedAt'],
+          exclude: [ 'updatedAt', 'deletedAt'],
         },
         order: [
           ['createdAt', 'ASC']
@@ -401,75 +430,75 @@ export class EnquiriesService {
   }
 
 
-    // Filter Enquiries By OrganizationId
-    async filterByOrganizationId(keyword: string, page: number, size: number) {
-      try {
-        let filter = {};
+    // // Filter Enquiries By OrganizationId
+    // async filterByOrganizationId(keyword: string, page: number, size: number) {
+    //   try {
+    //     let filter = {};
   
-        if (keyword != null) {
-          filter = {organizationId : keyword };
-        }
-        const filterCheck = await this?.enquiryModel.findAll({
-          where: {
-            ...filter,
-          },
-        });
+    //     if (keyword != null) {
+    //       filter = {organizationId : keyword };
+    //     }
+    //     const filterCheck = await this?.enquiryModel.findAll({
+    //       where: {
+    //         ...filter,
+    //       },
+    //     });
        
   
-        let currentPage = Util?.Checknegative(page);
-        if (currentPage) {
-          return Util?.handleErrorRespone(
-            'Enquiry current Page cannot be negative',
-          );
-        }
+    //     let currentPage = Util?.Checknegative(page);
+    //     if (currentPage) {
+    //       return Util?.handleErrorRespone(
+    //         'Enquiry current Page cannot be negative',
+    //       );
+    //     }
   
-        const { limit, offset } = Util?.getPagination(page, size);
+    //     const { limit, offset } = Util?.getPagination(page, size);
   
-        let queryOption: any = {
-          limit,
-          offset,
-          attributes: { exclude: ['createdAt', 'updatedAt', 'deletedAt'] },
-          order: [
-            ['createdAt', 'ASC']
-          ],
-          include:[{
-            model: Organization,
-            attributes:{
-              exclude:[
-                "id",
-                "createdAt",
-                "updatedAt",
-                "deletedAt",
-                "isVerified",
-              ]
-            }
-          }]
-        };
+    //     let queryOption: any = {
+    //       limit,
+    //       offset,
+    //       attributes: { exclude: ['createdAt', 'updatedAt', 'deletedAt'] },
+    //       order: [
+    //         ['createdAt', 'ASC']
+    //       ],
+    //       include:[{
+    //         model: Organization,
+    //         attributes:{
+    //           exclude:[
+    //             "id",
+    //             "createdAt",
+    //             "updatedAt",
+    //             "deletedAt",
+    //             "isVerified",
+    //           ]
+    //         }
+    //       }]
+    //     };
   
-        if (keyword) {
-          queryOption = {
-            ...queryOption,
-            where: {
-              purpose: keyword,
-            },
-          };
-        }
+    //     if (keyword) {
+    //       queryOption = {
+    //         ...queryOption,
+    //         where: {
+    //           purpose: keyword,
+    //         },
+    //       };
+    //     }
   
-        const allQueries = await Enquiry?.findAndCountAll(queryOption);
+    //     const allQueries = await Enquiry?.findAndCountAll(queryOption);
   
-        let result = Util?.getPagingData(allQueries, page, limit);
-        console.log(result);
+    //     let result = Util?.getPagingData(allQueries, page, limit);
+    //     console.log(result);
   
-        const dataResult = { ...result };
-        return Util?.handleSuccessRespone(
-          dataResult,
-          'Enquiries Purpose Data Filtered Successfully.',
-        );
-      } catch (error) {
-        console.log(error);
-        return Util?.handleGrpcTryCatchError(Util?.getTryCatchMsg(error));
-      }
-    }
+    //     const dataResult = { ...result };
+    //     return Util?.handleSuccessRespone(
+    //       dataResult,
+    //       'Enquiries Purpose Data Filtered Successfully.',
+    //     );
+    //   } catch (error) {
+    //     console.log(error);
+    //     return Util?.handleGrpcTryCatchError(Util?.getTryCatchMsg(error));
+    //   }
+    // }
 
 
 }
