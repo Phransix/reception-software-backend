@@ -132,8 +132,6 @@ export class StaffService {
         },  
       ]
 
-       
-
       });
 
       let result = Util?.getPagingData(allQueries, page, limit);
