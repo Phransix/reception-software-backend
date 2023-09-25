@@ -66,7 +66,7 @@ export class UsersController {
   ) {
     let ErrorCode: number;
     try {
-      let new_user = await this.usersService.create(createUserDto, userId);
+      let new_user = await this.usersService.create(createUserDto,userId);
       if (new_user?.status_code != HttpStatus.CREATED) {
         ErrorCode = new_user?.status_code;
         throw new Error(new_user?.message);
@@ -334,14 +334,18 @@ export class UsersController {
   @ApiOperation({ summary: 'Organization/User Logout' })
   @Public()
   @Post('logout')
-  async logout(@Body() logoutDto: LogOutDTO) {
+  async logout(
+    @GetCurrentUserId() userId : string,
+    @Body() logoutDto: LogOutDTO
+    ) {
     let ErrorCode: number;
     try {
-      const user = await this.usersService.logout(logoutDto);
+      const user = await this.usersService.logout(logoutDto,userId);
       if (user?.status_code != HttpStatus.CREATED) {
         ErrorCode = user?.status_code;
         throw new Error(user?.message);
       }
+      return user
     } catch (error) {
       console.log(error);
       return Util?.handleRequestError(Util?.getTryCatchMsg(error), ErrorCode);

@@ -61,6 +61,12 @@ export class CreateEnquiryDto {
      })
     readonly purpose: string;
 
+    @ApiProperty({
+        description: 'Description about the enquiry',
+        example: 'write short message on the enquiry'
+    })
+    @IsNotEmpty()
+    readonly description: string;
 
 }
 

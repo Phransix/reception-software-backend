@@ -86,6 +86,12 @@ export class Enquiry extends Model<Enquiry>{
   })
   purpose: string;
 
+  @Column({
+    type: DataType.STRING,
+    allowNull:false
+  })
+  description:string
+
 
 
      @Column({

@@ -22,7 +22,7 @@ export class StaffService {
   ) {}
 
   // Create New Staff
-  async create(createStaffDto: CreateStaffDto,userId) {
+  async create(createStaffDto: CreateStaffDto,userId:any) {
     try {
 
       let user = await this?.userModel.findOne({where:{userId}})
@@ -62,9 +62,12 @@ export class StaffService {
       };
       console.log(insertQry);
 
-      await this.staffModel?.create({ 
-        ...insertQry },);
-      // await Abstract?.createData(Staff,createStaffDto);
+     const new_staff = await this.staffModel?.create({ 
+        ...insertQry,
+        organizationId:get_org?.organizationId
+       });
+       await new_staff.save();
+    
       return Util?.handleCreateSuccessRespone('Staff Created Successfully');
     } catch (error) {
       console.log(error);

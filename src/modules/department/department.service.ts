@@ -21,10 +21,23 @@ export class DepartmentService {
   ) {}
 
   // Create New Department
-  async create(createDepartmentDto: CreateDepartmentDto) {
+  async create(createDepartmentDto: CreateDepartmentDto,userId:any) {
     try {
-      console.log(createDepartmentDto);
-      await Abstract?.createData(Department, createDepartmentDto);
+
+      let user = await this?.userModel.findOne({where:{userId}})
+      console.log(userId)
+      if(!user)
+      return Util?.CustomhandleNotFoundResponse('User not found');
+
+      let get_org = await this?.orgModel.findOne({where:{organizationId:user?.organizationId}})
+      if(!get_org)
+      return Util?.CustomhandleNotFoundResponse('organization not found');
+
+      const enquiry = await Department?.create({
+        ...createDepartmentDto,
+        organizationId:get_org?.organizationId
+      })
+      await enquiry.save();
       return Util?.handleCreateSuccessRespone(
         'Department created successfully.',
       );

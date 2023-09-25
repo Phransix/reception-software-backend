@@ -48,18 +48,18 @@ export class UsersService {
   ) {}
 
   //  Register New User
-  async create(createUserDto: CreateUserDto,userId) {
+  async create(createUserDto: CreateUserDto, userId: any) {
     try {
-     
-      let user = await this?.userModel.findOne({where:{userId}})
-      console.log(user?.organizationId)
-      if(!user)
-      return Util?.CustomhandleNotFoundResponse('User not found');
+      let user = await this?.userModel.findOne({ where: { userId } });
+      console.log(user?.organizationId);
+      if (!user) return Util?.CustomhandleNotFoundResponse('User not found');
 
-      let get_org = await this?.orgModel.findOne({where:{organizationId:user?.organizationId}})
+      let get_org = await this?.orgModel.findOne({
+        where: { organizationId: user?.organizationId },
+      });
 
-      if(!get_org)
-      return Util?.CustomhandleNotFoundResponse('organization not found');
+      if (!get_org)
+        return Util?.CustomhandleNotFoundResponse('organization not found');
 
       var image_matches = createUserDto.profilePhoto?.match(
         /^data:([A-Za-z-+\/]+);base64,(.+)$/,
@@ -75,7 +75,6 @@ export class UsersService {
       const hash = await argon.hash(createUserDto.password);
 
       let insertQry = {
-        // roleId: createUserDto?.roleId,
         roleName: createUserDto?.roleName,
         organizationId: createUserDto?.organizationId,
         fullName: createUserDto?.fullName,
@@ -84,9 +83,12 @@ export class UsersService {
         profilePhoto: user_image,
         password: hash,
       };
-    
 
-      await this.userModel?.create({ ...insertQry });
+      const enquiry = await User?.create({
+        ...insertQry,
+        organizationId: get_org?.organizationId,
+      });
+      await enquiry.save();
 
       return Util?.handleCreateSuccessRespone('User Created Successfully');
     } catch (error) {
@@ -120,7 +122,6 @@ export class UsersService {
         return Util?.handleFailResponse('Oraganiazation account not verified');
       console.log(org?.isVerified);
 
-      
       //  Check the Role of the User
       const user_role = await User.findOne({
         where: { roleName: user?.roleName },
@@ -167,10 +168,10 @@ export class UsersService {
   }
 
   // Get All Users
-  async findAll(page: number, size: number, userId:any) {
+  async findAll(page: number, size: number, userId: any) {
     try {
       console.log(userId);
-      
+
       let currentPage = Util.Checknegative(page);
       if (currentPage) {
         return Util?.handleErrorRespone(
@@ -179,39 +180,40 @@ export class UsersService {
       }
       const { limit, offset } = Util.getPagination(page, size);
 
+      let user = await this?.userModel.findOne({ where: { userId } });
+      console.log(user?.organizationId);
+      if (!user) return Util?.CustomhandleNotFoundResponse('User not found');
 
-      let user = await this?.userModel.findOne({where:{userId}})
-      console.log(user?.organizationId)
-      if(!user)
-      return Util?.CustomhandleNotFoundResponse('User not found');
+      let get_org = await this?.orgModel.findOne({
+        where: { organizationId: user?.organizationId },
+      });
 
-      let get_org = await this?.orgModel.findOne({where:{organizationId:user?.organizationId}})
-     
-      if(!get_org)
-      return Util?.CustomhandleNotFoundResponse('organization not found');
-   
+      if (!get_org)
+        return Util?.CustomhandleNotFoundResponse('organization not found');
+
       const allQueries = await User.findAndCountAll({
         limit,
         offset,
-        where:{organizationId:get_org?.organizationId},
-        attributes: { exclude: ['password','createdAt', 'updatedAt', 'deletedAt'] },
-        order: [
-          ['createdAt', 'ASC']
+        where: { organizationId: get_org?.organizationId },
+        attributes: {
+          exclude: ['password', 'createdAt', 'updatedAt', 'deletedAt'],
+        },
+        order: [['createdAt', 'ASC']],
+
+        include: [
+          {
+            model: Organization,
+            attributes: {
+              exclude: [
+                'id',
+                'createdAt',
+                'updatedAt',
+                'deletedAt',
+                'isVerified',
+              ],
+            },
+          },
         ],
-
-        include:[{
-          model: Organization,
-           attributes:{
-            exclude:[
-              "id",
-              "createdAt",
-              "updatedAt",
-              "deletedAt",
-              "isVerified",
-            ]
-           }
-        }],
-
       });
 
       let result = Util?.getPagingData(allQueries, page, limit);
@@ -237,13 +239,9 @@ export class UsersService {
         },
         where: { userId },
       });
-      console.log(user?.organizationId)
+      console.log(user?.organizationId);
       if (!user) {
         throw new Error('User not found.');
-      }
-      let get_org = await this?.orgModel.findOne({where:{organizationId:user?.organizationId}})
-      if(!get_org){
-      return Util?.CustomhandleNotFoundResponse('organization not found');
       }
 
       return Util?.handleSuccessRespone(user, 'User retrieve successfully.');
@@ -503,18 +501,32 @@ export class UsersService {
   }
 
   // Logout Organization
-  async logout(logout: LogOutDTO) {
-    const { password } = logout;
+  async logout(logout: LogOutDTO, userId:any) {
     try {
-      const user = await User.findOne();
+    
+      // return false
+      // const user = await User.findOne();
+      // if (!user) {
+      //   return null; // User not found
+      // }
 
-      if (!user) {
-        return null; // User not found
-      }
+      let user = await this?.userModel.findOne({ where: { userId } });
+      console.log(userId);
+      if (!user) return Util?.CustomhandleNotFoundResponse('User not found');
+     
+      let get_org = await this?.orgModel.findOne({
+        where: { organizationId: user?.organizationId },
+      });
+      if (!get_org)
+        return Util?.CustomhandleNotFoundResponse('organization not found');
 
-      const passwordMatches = await argon.verify(user.password, password);
+      // Compare Password
+      const passwordMatches = await argon.verify(
+        user?.password,
+        logout?.password,
+      );
       if (!passwordMatches) {
-        return Util.handleFailResponse('Invalid password');
+        return Util.handleFailResponse('Invalid  password');
       }
 
       if (user?.isLogin === false)
@@ -524,7 +536,12 @@ export class UsersService {
 
       await User.update(
         { isLogin: false },
-        { where: { password: user?.password } },
+        {
+          where: {
+            password: user?.password,
+            organizationId: get_org?.organizationId,
+          },
+        },
       );
 
       return Util?.handleCreateSuccessRespone('Logout successful');
@@ -534,7 +551,62 @@ export class UsersService {
     }
   }
 
+  // async logout(logout: LogOutDTO,userId: string) {
+  //   try {
 
+  //     const { password } = logout
+
+  //     // const user = await this?.userModel?.findOne({ where: { password } })
+
+  //     // if (!user)
+  //     //   return Util?.handleFailResponse('Invalid User Password')
+  //     //   console.log(password);
+
+  //       // const passwordMatches = await argon.verify(user?.password, password);
+  //       // if (!passwordMatches) {
+  //       //   return Util.handleFailResponse('Invalid password');
+  //       // }
+
+  //       let user = await this?.userModel.findOne({where:{userId}})
+  //       console.log(userId)
+  //       if(!user)
+  //       return Util?.CustomhandleNotFoundResponse('User not found');
+
+  //       let get_org = await this?.orgModel.findOne({where:{organizationId:user?.organizationId}})
+  //       if(!get_org)
+  //       return Util?.CustomhandleNotFoundResponse('organization not found');
+
+  //         // Compare Passwword
+
+  //         const passwordMatches = await argon.verify(
+  //           user.password,
+  //           logout?.password,
+  //         );
+  //         if (!passwordMatches) {
+  //           return Util.handleFailResponse('Invalid  password');
+  //         }
+
+  //       // const match = await argon.verify(user.password, password);
+  //       // if (!match) {
+  //       //   return Util?.handleFailResponse('Invalid Password');
+  //       // }
+
+  //       if (user?.isLogin === false)
+  //       return Util?.handleFailResponse(
+  //         'Organization/User account already logout ',
+  //       );
+
+  //     // return
+  //     await User.update({ isLogin: false },
+  //       { where: { password: user?.password } }
+  //     )
+
+  //     return Util?.handleCreateSuccessRespone('Logout successful');
+  //   } catch (error) {
+  //     console.log(error)
+  //     return Util?.handleGrpcTryCatchError(Util?.getTryCatchMsg(error));
+  //   }
+  // }
 
   async getTokens(user_id: string, email: string, role: string) {
     const jwtPayload = {
