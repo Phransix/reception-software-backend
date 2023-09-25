@@ -1,6 +1,6 @@
-import { Controller, Get, Post, Body, Patch, Param, Delete, HttpException, HttpStatus, UseGuards, Query } from '@nestjs/common';
+import { Controller, Get, Post, Body, Patch, Param, Delete, HttpStatus, UseGuards, Query } from '@nestjs/common';
 import { GuestService } from './guest.service';
-import { CreateGuestDto, Gender, status } from './dto/create-guest.dto';
+import { CreateGuestDto } from './dto/create-guest.dto';
 import { UpdateGuestDto } from './dto/update-guest.dto';
 import { ApiBearerAuth, ApiOperation, ApiQuery, ApiTags } from '@nestjs/swagger';
 import * as Util from '../../utils/index'
@@ -9,7 +9,6 @@ import { Public } from 'src/common/decorators/public.decorator';
 import { AuthGuard } from '@nestjs/passport';
 import { AtGuard } from 'src/common/guards';
 import { DoesGuestExist } from '../../common/guards/doesGuestExist.guard'
-import { Guest } from './entities/guest.entity';
 import { GetCurrentUserId } from 'src/common/decorators/get-current-user-id.decorator';
 
 
@@ -17,19 +16,23 @@ import { GetCurrentUserId } from 'src/common/decorators/get-current-user-id.deco
 export class GuestController {
   constructor(private readonly guestService: GuestService) { }
 
+  // Create Guest
   @ApiTags('Guest')
   @Public()
+  @UseGuards(AtGuard)
+  @UseGuards(AuthGuard('jwt'))
+  @ApiBearerAuth('defaultBearerAuth')
   @UseGuards(DoesGuestExist)
   @ApiOperation({ summary: 'Create New Guest' })
   @Post('createGuest')
   async create(
     @Body() createGuestDto: CreateGuestDto,
-    // @GetCurrentUserId() userId: string
-    ) {
+    @GetCurrentUserId() userId: string
+  ) {
     let ErrorCode: number
     try {
-      let guest = await this.guestService.create(createGuestDto);
-      if (guest?.status_code != HttpStatus.CREATED) {
+      let guest = await this.guestService.create(createGuestDto, userId);
+      if (guest && 'status_code' in guest && guest.status_code != HttpStatus.CREATED) {
         ErrorCode = guest?.status_code;
         throw new Error(guest?.message)
       }
@@ -41,6 +44,8 @@ export class GuestController {
   }
 
 
+  // Get all Guests
+  @UseGuards(AtGuard)
   @UseGuards(AuthGuard('jwt'))
   @ApiBearerAuth('defaultBearerAuth')
   @Public()
@@ -65,7 +70,7 @@ export class GuestController {
   ) {
     let ErrorCode: number;
     try {
-      let guesData = await this.guestService?.findAll(page, size,userId);
+      let guesData = await this.guestService?.findAll(page, size, userId);
 
       if (guesData?.status_code != HttpStatus.OK) {
         ErrorCode = guesData?.status_code;
@@ -79,7 +84,7 @@ export class GuestController {
 
   }
 
-
+// Get Guest by GuestId
   @UseGuards(AuthGuard('jwt'))
   @ApiBearerAuth('defaultBearerAuth')
   @Public()
@@ -90,10 +95,10 @@ export class GuestController {
   async findOne(
     @Param('guestId') guestId: string,
     @GetCurrentUserId() userId: string
-    ) {
+  ) {
     let ErrorCode: number
     try {
-      let guest = await this.guestService.findOne(guestId,userId);
+      let guest = await this.guestService.findOne(guestId, userId);
       if (guest?.status_code != HttpStatus.OK) {
         ErrorCode = guest?.status_code;
         throw new Error(guest?.message)
@@ -106,6 +111,7 @@ export class GuestController {
     }
   }
 
+  // Update Guest By GuestId
   @UseGuards(AuthGuard('jwt'))
   @ApiBearerAuth('defaultBearerAuth')
   @Public()
@@ -114,13 +120,13 @@ export class GuestController {
   @ApiOperation({ summary: 'Update Guest By guestId' })
   @Patch(':guestId')
   async update(
-    @Param('guestId') guestId: string, 
+    @Param('guestId') guestId: string,
     @Body() updateGuestDto: UpdateGuestDto,
-    @GetCurrentUserId() userId : string
-    ) {
+    @GetCurrentUserId() userId: string
+  ) {
     let ErrorCode: number
     try {
-      const guest = await this.guestService.update(guestId, updateGuestDto,userId)
+      const guest = await this.guestService.update(guestId, updateGuestDto, userId)
       if (guest?.status_code != HttpStatus.OK) {
         ErrorCode = guest?.status_code;
         throw new Error(guest?.message)
@@ -132,6 +138,7 @@ export class GuestController {
     }
   }
 
+  // Delete Guest By GuestId
   @UseGuards(AuthGuard('jwt'))
   @ApiBearerAuth('defaultBearerAuth')
   @Public()
@@ -141,12 +148,12 @@ export class GuestController {
   @Delete(':guestId')
   async remove(
     @Param('guestId') guestId: string,
-    @GetCurrentUserId() userId : string
-    ) {
+    @GetCurrentUserId() userId: string
+  ) {
     let ErrorCode: number
     try {
 
-      const guest = await this.guestService.remove(guestId,userId)
+      const guest = await this.guestService.remove(guestId, userId)
       if (guest?.status_code != HttpStatus.OK) {
         ErrorCode = guest?.status_code;
         throw new Error(guest?.message)
@@ -159,18 +166,21 @@ export class GuestController {
     }
   }
 
-// Guest sign In
+  // Guest sign In
+  @UseGuards(AtGuard)
+  @UseGuards(AuthGuard('jwt'))
+  @ApiBearerAuth('defaultBearerAuth')
   @Public()
   @ApiTags('Guest')
   @ApiOperation({ summary: 'Guest Sign In' })
   @Post('guestSignIn')
   async signIn(
     @Body() guestOpDTO: guestOpDTO,
-    // @GetCurrentUserId() userId: string,
+    @GetCurrentUserId() userId: string
   ) {
     let ErrorCode: number
     try {
-      const guest = await this.guestService.guestSignIn(guestOpDTO)
+      const guest = await this.guestService.guestSignIn(guestOpDTO, userId)
       if (guest?.status_code != HttpStatus.CREATED) {
         ErrorCode = guest?.status_code;
         throw new Error(guest?.message)
@@ -196,50 +206,50 @@ export class GuestController {
   @Public()
   @ApiTags('Guest')
   @Post('bulkGuestCreate/create')
-  async buklCreateGuest (
+  async buklCreateGuest(
     @Body() data: any[],
-    @GetCurrentUserId() userId : string
-    ){
+    @GetCurrentUserId() userId: string
+  ) {
     let ErrorCode: number
     try {
       const modelName = 'Guest'
-      const guestResults = await this.guestService.bulkGuest(modelName, data,userId)
+      const guestResults = await this.guestService.bulkGuest(modelName, data, userId)
       if (guestResults?.status_code != HttpStatus.CREATED) {
         ErrorCode = guestResults?.status_code;
         throw new Error(guestResults?.message)
-    } 
-    return guestResults
+      }
+      return guestResults
     } catch (error) {
       console.log(error)
       return Util?.handleRequestError(Util?.getTryCatchMsg(error), ErrorCode)
     }
   }
 
-    // Bulk guest delete
-    @UseGuards(AtGuard)
-    @UseGuards(AuthGuard('jwt'))
-    @ApiBearerAuth('defaultBearerAuth')
-    @Public()
-    @ApiTags('Guest')
-    @ApiOperation({ summary: 'Delete Multiple Guests' })
-    @Delete('bulkGuestDelete/delete')
-    async bulkGuestDelete (
-      whereClause: any = {},
-      @GetCurrentUserId() userId : string
-      ){
-      let ErrorCode: number
-      try {
-        const modelName = 'Guest'
-        const guestResults = await this.guestService.bulkGuestDelete(modelName, whereClause,userId);
-        if (guestResults?.status_code != HttpStatus.CREATED) {
-          ErrorCode = guestResults?.status_code;
-          throw new Error(guestResults?.message)
-      } 
-      return guestResults
-      } catch (error) {
-        console.log(error)
-        return Util?.handleRequestError(Util?.getTryCatchMsg(error), ErrorCode)
+  // Bulk guest delete
+  @UseGuards(AtGuard)
+  @UseGuards(AuthGuard('jwt'))
+  @ApiBearerAuth('defaultBearerAuth')
+  @Public()
+  @ApiTags('Guest')
+  @ApiOperation({ summary: 'Delete Multiple Guests' })
+  @Delete('bulkGuestDelete/delete')
+  async bulkGuestDelete(
+    whereClause: any = {},
+    @GetCurrentUserId() userId: string
+  ) {
+    let ErrorCode: number
+    try {
+      const modelName = 'Guest'
+      const guestResults = await this.guestService.bulkGuestDelete(modelName, whereClause, userId);
+      if (guestResults?.status_code != HttpStatus.CREATED) {
+        ErrorCode = guestResults?.status_code;
+        throw new Error(guestResults?.message)
       }
+      return guestResults
+    } catch (error) {
+      console.log(error)
+      return Util?.handleRequestError(Util?.getTryCatchMsg(error), ErrorCode)
     }
+  }
 
 }

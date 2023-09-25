@@ -3,7 +3,6 @@ import { CreatePurposeDto } from './dto/create-purpose.dto';
 import { UpdatePurposeDto } from './dto/update-purpose.dto';
 import { InjectModel } from '@nestjs/sequelize';
 import { Purpose } from './entities/purpose.entity';
-import * as Abstract from '../../utils/abstract'
 import * as Util from '../../utils/index'
 import { Guest } from '../guest/entities/guest.entity';
 import { Department } from '../department/entities/department.entity';
@@ -24,39 +23,26 @@ export class PurposeService {
   ) { }
 
   // Create Purpose
-  // async createPurpose(createPurposeDto: CreatePurposeDto, userId:any) {
-  //   try {
-      
-  //     let user = await this?.UserModel.findOne({where:{userId}})
-  //     console.log(userId)
-  //     if(!user)
-  //     return Util?.CustomhandleNotFoundResponse('User not found');
-
-  //     let get_org = await this?.OrgModel.findOne({where:{organizationId:user?.organizationId}})
-  //     if(!get_org)
-  //     return Util?.CustomhandleNotFoundResponse('organization not found');
-
-  //     const purpose = await this.PurposeModel.create({
-  //       ...createPurposeDto,
-  //       organizationId:get_org?.organizationId
-  //     })
-  //     await purpose.save()
-  //     return Util?.handleCreateSuccessRespone("Purpose Created Successfully")
-  //   } catch (error) {
-  //     console.log(error)
-  //     return Util?.handleGrpcReqError(Util?.getTryCatchMsg(error))
-  //   }
-  // }
-
-  async create(createPurposeDto: CreatePurposeDto) {
+  async createPurpose(createPurposeDto: CreatePurposeDto, userId: any) {
     try {
-      console.log(createPurposeDto);
-      await Abstract?.createData(Purpose, createPurposeDto);
-      return Util?.handleCreateSuccessRespone(
-        'Purpose created successfully.',
-      );
+
+      let user = await this?.UserModel.findOne({ where: { userId } })
+      console.log(userId)
+      if (!user)
+        return Util?.CustomhandleNotFoundResponse('User not found');
+
+      let get_org = await this?.OrgModel.findOne({ where: { organizationId: user?.organizationId } })
+      if (!get_org)
+        return Util?.CustomhandleNotFoundResponse('organization not found');
+
+      const purpose = await Purpose?.create({
+        ...createPurposeDto,
+        organizationId: get_org?.organizationId
+      })
+      await purpose.save()
+      return Util?.handleCreateSuccessRespone("Purpose Created Successfully")
     } catch (error) {
-      console.log(error);
+      console.log(error)
       return Util?.handleGrpcTryCatchError(Util?.getTryCatchMsg(error));
     }
   }
@@ -364,12 +350,31 @@ export class PurposeService {
   }
 
   // Guest sign Out
-  async guestSignOut(guestOpDTO: guestOpDTO) {
+  async guestSignOut(guestOpDTO: guestOpDTO, userId: any) {
     try {
 
+      let user = await this?.UserModel.findOne({ where: { userId } })
+      console.log(userId)
+      if (!user)
+        return Util?.CustomhandleNotFoundResponse('User not found');
+
+      let get_org = await this?.OrgModel.findOne({ where: { organizationId: user?.organizationId } })
+      if (!get_org)
+        return Util?.CustomhandleNotFoundResponse('organization not found');
+
       const { phoneNumber, countryCode } = guestOpDTO
-      const guest = await this.GuestModel.findOne({ where: { phoneNumber: phoneNumber } });
-      const cCode = await this.GuestModel.findOne({ where: { countryCode } })
+      const guest = await this.GuestModel.findOne({
+        where: {
+          phoneNumber: phoneNumber,
+          organizationId: get_org?.organizationId
+        }
+      });
+      const cCode = await this.GuestModel.findOne({
+        where: {
+          countryCode,
+          organizationId: get_org?.organizationId
+        }
+      })
 
       const currentTime = new Date().toLocaleTimeString();
 
@@ -382,7 +387,8 @@ export class PurposeService {
       const purpose = await this.PurposeModel.findOne(
         {
           where: {
-            guestId: guest?.guestId
+            guestId: guest?.guestId,
+            organizationId: get_org?.organizationId
           }
         });
 
@@ -415,12 +421,32 @@ export class PurposeService {
   }
 
   // Confirm Guest Signout
-  async guestConfirmSignOut(guestOpDTO: guestOpDTO) {
+  async guestConfirmSignOut(guestOpDTO: guestOpDTO, userId: any) {
     try {
 
+      let user = await this?.UserModel.findOne({ where: { userId } })
+      console.log(userId)
+      if (!user)
+        return Util?.CustomhandleNotFoundResponse('User not found');
+
+      let get_org = await this?.OrgModel.findOne({ where: { organizationId: user?.organizationId } })
+      if (!get_org)
+        return Util?.CustomhandleNotFoundResponse('organization not found');
+
       const { phoneNumber, countryCode } = guestOpDTO
-      const guest = await this.GuestModel.findOne({ where: { phoneNumber: phoneNumber } });
-      const cCode = await this.GuestModel.findOne({ where: { countryCode } })
+      const guest = await this.GuestModel.findOne({
+        where: {
+          phoneNumber: phoneNumber,
+          organizationId: get_org?.organizationId
+        }
+      });
+      const cCode = await this.GuestModel.findOne({
+        where: {
+          countryCode,
+          organizationId: get_org?.organizationId
+        }
+      }
+      )
 
       const currentTime = new Date().toLocaleTimeString();
 
