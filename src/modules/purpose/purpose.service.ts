@@ -24,29 +24,43 @@ export class PurposeService {
   ) { }
 
   // Create Purpose
-  async createPurpose(createPurposeDto: CreatePurposeDto, userId:string) {
-    try {
+  // async createPurpose(createPurposeDto: CreatePurposeDto, userId:any) {
+  //   try {
       
-      let user = await this?.UserModel.findOne({where:{userId}})
-      console.log(userId)
-      if(!user)
-      return Util?.CustomhandleNotFoundResponse('User not found');
+  //     let user = await this?.UserModel.findOne({where:{userId}})
+  //     console.log(userId)
+  //     if(!user)
+  //     return Util?.CustomhandleNotFoundResponse('User not found');
 
-      let get_org = await this?.OrgModel.findOne({where:{organizationId:user?.organizationId}})
-      if(!get_org)
-      return Util?.CustomhandleNotFoundResponse('organization not found');
+  //     let get_org = await this?.OrgModel.findOne({where:{organizationId:user?.organizationId}})
+  //     if(!get_org)
+  //     return Util?.CustomhandleNotFoundResponse('organization not found');
 
-      const purpose = await this.PurposeModel.create({
-        ...createPurposeDto,
-        organizationId:get_org?.organizationId
-      })
-      await purpose.save()
-      return Util?.handleCreateSuccessRespone("Purpose Created Successfully")
+  //     const purpose = await this.PurposeModel.create({
+  //       ...createPurposeDto,
+  //       organizationId:get_org?.organizationId
+  //     })
+  //     await purpose.save()
+  //     return Util?.handleCreateSuccessRespone("Purpose Created Successfully")
+  //   } catch (error) {
+  //     console.log(error)
+  //     return Util?.handleGrpcReqError(Util?.getTryCatchMsg(error))
+  //   }
+  // }
+
+  async create(createPurposeDto: CreatePurposeDto) {
+    try {
+      console.log(createPurposeDto);
+      await Abstract?.createData(Purpose, createPurposeDto);
+      return Util?.handleCreateSuccessRespone(
+        'Purpose created successfully.',
+      );
     } catch (error) {
-      console.log(error)
-      return Util?.handleGrpcReqError(Util?.getTryCatchMsg(error))
+      console.log(error);
+      return Util?.handleGrpcTryCatchError(Util?.getTryCatchMsg(error));
     }
   }
+
 
   // Get All Purposes
   async findAll(page: number, size: number, userId: string) {

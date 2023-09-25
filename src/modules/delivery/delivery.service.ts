@@ -23,27 +23,36 @@ export class DeliveryService {
   ) { }
 
   // Create Delivery
-  async create(createDeliveryDto: CreateDeliveryDto, userId:string) {
+  // async create(createDeliveryDto: CreateDeliveryDto, userId:any) {
+  //   try {
+  //     console.log(userId)
+  //     let user = await this?.UserModel.findOne({where:{userId}})
+  //     if(!user)
+  //     return Util?.CustomhandleNotFoundResponse('User not found');
+
+  //     let get_org = await this?.OrgModel.findOne({where:{organizationId:user?.organizationId}})
+  //     if(!get_org)
+  //     return Util?.CustomhandleNotFoundResponse('organization not found');
+
+  //     const delivery = await this.DeliveryModel.create({...createDeliveryDto,organizationId:get_org?.organizationId})
+  //     await delivery.save()
+  //     return Util?.handleCreateSuccessRespone("Delivery Created Successfully")
+  //   } catch (error) {
+  //     console.log(error)
+  //     return Util?.handleGrpcReqError(Util?.getTryCatchMsg(error))
+  //   }
+  // }
+
+  async create(createDeliveryDto: CreateDeliveryDto) {
     try {
-      
-      let user = await this?.UserModel.findOne({where:{userId}})
-      console.log(userId)
-      if(!user)
-      return Util?.CustomhandleNotFoundResponse('User not found');
-
-      let get_org = await this?.OrgModel.findOne({where:{organizationId:user?.organizationId}})
-      if(!get_org)
-      return Util?.CustomhandleNotFoundResponse('organization not found');
-
-      const delivery = await this.DeliveryModel.create({
-        ...createDeliveryDto,
-        organizationId:get_org?.organizationId
-      })
-      await delivery.save()
-      return Util?.handleCreateSuccessRespone("Delivery Created Successfully")
+      console.log(createDeliveryDto);
+      await Abstract?.createData(Delivery, createDeliveryDto);
+      return Util?.handleCreateSuccessRespone(
+        'Delivery created successfully.',
+      );
     } catch (error) {
-      console.log(error)
-      return Util?.handleGrpcReqError(Util?.getTryCatchMsg(error))
+      console.log(error);
+      return Util?.handleGrpcTryCatchError(Util?.getTryCatchMsg(error));
     }
   }
 

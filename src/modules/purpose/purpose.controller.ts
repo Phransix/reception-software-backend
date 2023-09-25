@@ -25,11 +25,11 @@ export class PurposeController {
   @Post('createPurpose')
   async create(
     @Body() createPurposeDto: CreatePurposeDto,
-    @GetCurrentUserId() userId : string,
+    // @GetCurrentUserId() userId : string,
     ) {
     let ErrorCode: number
     try {
-      let purpose =  await this.purposeService.createPurpose(createPurposeDto,userId);
+      let purpose =  await this.purposeService.create(createPurposeDto);
       if (purpose && 'status_code' in purpose && purpose.status_code !== HttpStatus.CREATED) {
         ErrorCode = purpose?.status_code;
         throw new Error(purpose?.message)

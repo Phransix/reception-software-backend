@@ -27,48 +27,62 @@ export class GuestService {
   ) { }
 
   // Creating a guest
-  async create(createGuestDto: CreateGuestDto,userId:string) {
+  // async create(createGuestDto: CreateGuestDto,userId:any) {
+  //   try {
+
+  //     console.log(userId)
+
+  //     let user = await this?.UserModel.findOne({where:{userId}})
+  //     if(!user)
+  //     return Util?.CustomhandleNotFoundResponse('User not found');
+
+  //     let get_org = await this?.OrgModel.findOne({where:{organizationId:user?.organizationId}})
+  //     if(!get_org)
+  //     return Util?.CustomhandleNotFoundResponse('organization not found');
+
+  //     const guest = await Guest.create({
+  //       ...createGuestDto,
+  //       organizationId:get_org?.organizationId
+  //     })
+  //     await guest.save();
+  //     const { phoneNumber } = createGuestDto
+  //     const guestData = await this.GuestModel.findOne({ 
+  //       where: { 
+  //         phoneNumber,
+  //         organizationId:get_org?.organizationId 
+  //       } 
+  //     })
+  //     let guest_data = {
+  //       guestId: guestData?.guestId,
+  //       firstName: guestData?.firstName,
+  //       lastname: guestData?.lastName,
+  //       gender: guestData?.gender,
+  //       countryCode: guestData?.countryCode,
+  //       phoneNumber: guestData?.phoneNumber,
+  //     }
+  //     return Util?.handleCustonCreateResponse(guest_data, "Guest Created Successfully")
+  //   } catch (error) {
+  //     console.log(error)
+  //     return Util?.handleGrpcTryCatchError(Util?.getTryCatchMsg(error));
+  //   }
+  // }
+
+  async create(createGuestDto: CreateGuestDto) {
     try {
-
-      let user = await this?.UserModel.findOne({where:{userId}})
-      console.log(userId)
-      if(!user)
-      return Util?.CustomhandleNotFoundResponse('User not found');
-
-      let get_org = await this?.OrgModel.findOne({where:{organizationId:user?.organizationId}})
-      if(!get_org)
-      return Util?.CustomhandleNotFoundResponse('organization not found');
-
-      await Abstract?.createData(Guest, createGuestDto)
-      const guest = await Guest.create({
-        ...createGuestDto,
-        organizationId:get_org?.organizationId
-      })
-      await guest.save();
-      const { phoneNumber } = createGuestDto
-      const guestData = await this.GuestModel.findOne({ 
-        where: { 
-          phoneNumber,
-          organizationId:get_org?.organizationId 
-        } 
-      })
-      let guest_data = {
-        guestId: guestData?.guestId,
-        firstName: guestData?.firstName,
-        lastname: guestData?.lastName,
-        gender: guestData?.gender,
-        countryCode: guestData?.countryCode,
-        phoneNumber: guestData?.phoneNumber,
-      }
-      return Util?.handleCustonCreateResponse(guest_data, "Guest Created Successfully")
+      console.log(createGuestDto);
+      await Abstract?.createData(Guest, createGuestDto);
+      return Util?.handleCreateSuccessRespone(
+        'Guest created successfully.',
+      );
     } catch (error) {
-      console.log(error)
+      console.log(error);
       return Util?.handleGrpcTryCatchError(Util?.getTryCatchMsg(error));
     }
   }
 
+
   // Get All Guest
-  async findAll(page: number, size: number,userId:any) {
+  async findAll(page: number, size: number,userId:string) {
     try {
       console.log(userId)
 
@@ -143,7 +157,7 @@ export class GuestService {
   }
 
   // Update Guest By guestId
-  async update(guestId: string, updateGuestDto: UpdateGuestDto,userId:any) {
+  async update(guestId: string, updateGuestDto: UpdateGuestDto,userId:string) {
     try {
 
       console.log(userId)
@@ -170,8 +184,8 @@ export class GuestService {
     }
   }
 
-  // Remve Guest By guestId
-  async remove(guestId: string, userId:any) {
+  // Remove Guest By guestId
+  async remove(guestId: string, userId:string) {
     try {
 
       console.log(userId)
@@ -202,10 +216,29 @@ export class GuestService {
   async guestSignIn(guestOpDTO: guestOpDTO) {
 
     try {
+      
+      // console.log(userId)
+      // let user = await this?.UserModel.findOne({where:{userId}})
+      // if(!user)
+      // return Util?.CustomhandleNotFoundResponse('User not found');
+
+      // let get_org = await this?.OrgModel.findOne({where:{organizationId:user?.organizationId}})
+      // if(!get_org)
+      // return Util?.CustomhandleNotFoundResponse('organization not found');
+
       const { phoneNumber, countryCode } = guestOpDTO
-      const guestNo = await this.GuestModel.findOne({ where: { phoneNumber } })
-      const cCode = await this.GuestModel.findOne({ where: { countryCode } })
-      const currentTime = new Date().toLocaleTimeString();
+      const guestNo = await this.GuestModel.findOne({ 
+        where: { 
+          phoneNumber,
+          // organizationId:get_org?.organizationId 
+        } 
+      })
+      const cCode = await this.GuestModel.findOne({ 
+        where: { 
+          countryCode,
+          // organizationId:get_org?.organizationId 
+        }
+       })
       let guest_data = {
         guestId: guestNo?.guestId,
         firstName: guestNo?.firstName,
@@ -250,7 +283,6 @@ export class GuestService {
     } catch (error) {
       t.rollback()
       console.log(error)
-      // throw new Error(`Error bulk creating records in ${Guest}: ${error.message}`);
       return Util?.handleGrpcTryCatchError(Util?.getTryCatchMsg(error));
     }
   }

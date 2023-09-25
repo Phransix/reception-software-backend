@@ -1,5 +1,5 @@
 import { ApiProperty } from "@nestjs/swagger";
-import { IsEnum, IsNotEmpty, IsString, Matches, IsEmail, MinLength, MaxLength} from "class-validator";
+import { IsEnum, IsNotEmpty, IsString, Matches, IsEmail, MinLength, MaxLength, IsMobilePhone} from "class-validator";
 
 export enum Delivery_type {
     FOOD = 'food',
@@ -50,9 +50,10 @@ export class CreateDeliveryDto {
         description: "The sender/'s phone  number",
         example: '0546987415'
     })
-    // @IsNotEmpty()
-    // @MinLength(10)
-    // @MaxLength(10)
+    @IsNotEmpty()
+    @MinLength(10)
+    @MaxLength(10)
+    @IsMobilePhone()
     readonly receipientPhoneNumber: string;
 
     @ApiProperty({

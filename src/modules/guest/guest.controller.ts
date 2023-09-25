@@ -24,11 +24,11 @@ export class GuestController {
   @Post('createGuest')
   async create(
     @Body() createGuestDto: CreateGuestDto,
-    @GetCurrentUserId() userId?: string
+    // @GetCurrentUserId() userId: string
     ) {
     let ErrorCode: number
     try {
-      let guest = await this.guestService.create(createGuestDto,userId);
+      let guest = await this.guestService.create(createGuestDto);
       if (guest?.status_code != HttpStatus.CREATED) {
         ErrorCode = guest?.status_code;
         throw new Error(guest?.message)
@@ -61,7 +61,7 @@ export class GuestController {
   async findAll(
     @Query('page') page: number,
     @Query('size') size: number,
-    @GetCurrentUserId() userId?: string
+    @GetCurrentUserId() userId: string
   ) {
     let ErrorCode: number;
     try {
@@ -89,7 +89,7 @@ export class GuestController {
   @Get(':guestId')
   async findOne(
     @Param('guestId') guestId: string,
-    @GetCurrentUserId() userId?: string
+    @GetCurrentUserId() userId: string
     ) {
     let ErrorCode: number
     try {
@@ -159,12 +159,14 @@ export class GuestController {
     }
   }
 
-
+// Guest sign In
   @Public()
   @ApiTags('Guest')
   @ApiOperation({ summary: 'Guest Sign In' })
   @Post('guestSignIn')
-  async signIn(@Body() guestOpDTO: guestOpDTO,
+  async signIn(
+    @Body() guestOpDTO: guestOpDTO,
+    // @GetCurrentUserId() userId: string,
   ) {
     let ErrorCode: number
     try {
