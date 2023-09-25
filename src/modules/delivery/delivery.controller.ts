@@ -39,7 +39,7 @@ export class DeliveryController {
         ErrorCode = new_Delivery?.status_code;
         throw new Error(new_Delivery?.message)
     } 
-      return Util?.handleCreateSuccessRespone("Delivery created successfully")
+      return new_Delivery
     } catch (error) {
       console.log(error)
       return Util?.handleRequestError(Util?.getTryCatchMsg(error),ErrorCode)
@@ -302,6 +302,5 @@ async deliveryStatusFilter (
   }
 
 }
-
 
 }
