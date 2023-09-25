@@ -18,7 +18,6 @@ export class DeliveryController {
   userService: any;
   constructor(
     private readonly deliveryService: DeliveryService
-    // @InjectModel(User) private readonly UserModel: typeof User,
     ) { }
 
   // Create Delivery

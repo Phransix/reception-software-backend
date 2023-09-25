@@ -204,7 +204,6 @@ export class PurposeService {
       if (keyword != null) {
         filter = { purpose: keyword }
       }
-      // console.log(filter);
 
 
       const filterCheck = await this.PurposeModel.findAll({
@@ -357,7 +356,6 @@ export class PurposeService {
           where: {
             guestId: guest?.guestId
           }
-          // order:['id','desc']
         });
 
       if (!purpose)
@@ -406,7 +404,6 @@ export class PurposeService {
           where: {
             guestId: guest?.guestId
           }
-          // order:['id','desc']
         });
       // Checking if guest is signed In
       if (purpose?.visitStatus != 'Signed In')
