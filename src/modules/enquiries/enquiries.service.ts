@@ -264,9 +264,7 @@ export class EnquiriesService {
 
       const dataResult = {
         ...enquiryData,
-        where: {
-          pagination: result,
-        },
+           result
       };
 
       return Util?.handleSuccessRespone(
