@@ -41,11 +41,14 @@ export class EnquiriesController {
   @Public()
   @UseGuards(AtGuard)
   @Post('createEnquiry')
-  async create(@Body() createEnquiryDto: CreateEnquiryDto,userId:string) {
+  async create(
+    @GetCurrentUserId() userId : string,
+    @Body() createEnquiryDto: CreateEnquiryDto,
+  ) {
     let ErrorCode: number;
     try {
       let new_Enquiry = await this.enquiriesService.createEnquiry(createEnquiryDto,userId);
-      if ( new_Enquiry && 'status_code' in new_Enquiry && new_Enquiry.status_code !== HttpStatus.CREATED) {
+      if (new_Enquiry?.status_code != HttpStatus.OK) {
         ErrorCode = new_Enquiry?.status_code;
         throw new Error(new_Enquiry?.message);
       }

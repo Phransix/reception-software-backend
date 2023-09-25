@@ -22,45 +22,31 @@ export class EnquiriesService {
   ) {}
 
   // Create Enquiry
-  // async create(createEnquiryDto: CreateEnquiryDto) {
-  //   try {
-  //     console.log(createEnquiryDto);
-  //     await Abstract?.createData(Enquiry, createEnquiryDto);
-  //     return Util?.handleCreateSuccessRespone('Enqureturn Util?.handleGrpcReqError(Util?.getTryCatchMsg(error))iry created successfully.');
-  //   } catch (error) {
-  //     console.log(error);
-  //     return Util?.handleGrpcTryCatchError(Util?.getTryCatchMsg(error));
-  //   }
-  // }
-
-  async createEnquiry( createEnquiryDto:CreateEnquiryDto,userId: string){
+  async createEnquiry(createEnquiryDto: CreateEnquiryDto,userId: string) {
     try {
 
       let user = await this?.userModel.findOne({where:{userId}})
-    if(!user){
+      console.log(userId)
+      if(!user)
       return Util?.CustomhandleNotFoundResponse('User not found');
-    }
 
-    let get_org = await this?.orgModel.findOne({where:{organizationId:user?.organizationId}})
+      let get_org = await this?.orgModel.findOne({where:{organizationId:user?.organizationId}})
+      if(!get_org)
+      return Util?.CustomhandleNotFoundResponse('organization not found');
+     
+      const enquiry = await Enquiry?.create({
+            ...createEnquiryDto,
+            organizationId:get_org?.organizationId
+          })
+          await enquiry.save();
 
-    if(!get_org)
-    return Util?.CustomhandleNotFoundResponse('organization not found');
-
-    const enquiry = await Enquiry?.create({
-      ...createEnquiryDto,
-      organizationId:get_org?.organizationId
-    })
-
-    await enquiry.save();
-
-    return Util?.handleCreateSuccessRespone('Enquiry created successfully.');
-      
+      return Util?.handleCreateSuccessRespone('Enquriry created successfully.');
     } catch (error) {
-      console.log(error)
-      return Util?.handleGrpcReqError(Util?.getTryCatchMsg(error))
+      console.log(error);
+      return Util?.handleGrpcTryCatchError(Util?.getTryCatchMsg(error));
     }
-    
   }
+
 
   // Get All Enquiries
   async findAll(page: number, size: number,userId:any) {
