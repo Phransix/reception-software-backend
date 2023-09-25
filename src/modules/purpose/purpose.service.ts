@@ -300,7 +300,7 @@ export class PurposeService {
             order: [['id', 'DESC']],
             as: 'guestData',
             where: {
-              [Op.or]:[
+              [Op.or]: [
                 {
                   firstName: {
                     [Op.like]: `%${keyword}%`,
@@ -329,61 +329,107 @@ export class PurposeService {
     try {
 
       const { phoneNumber, countryCode } = guestOpDTO
-      const guest = await this.GuestModel.findOne({where:{phoneNumber:phoneNumber}});
+      const guest = await this.GuestModel.findOne({ where: { phoneNumber: phoneNumber } });
       const cCode = await this.GuestModel.findOne({ where: { countryCode } })
-  
+
       const currentTime = new Date().toLocaleTimeString();
 
-      if (!guest) 
-      return Util?.handleFailResponse('Guest not found')
+      if (!guest)
+        return Util?.handleFailResponse('Guest not found')
 
-      if(!guest || !cCode)
-      return Util?.handleFailResponse('Invalid phone number or country code')
+      if (!guest || !cCode)
+        return Util?.handleFailResponse('Invalid phone number or country code')
 
       const purpose = await this.PurposeModel.findOne(
         {
-          where:{
-            guestId:guest?.guestId
+          where: {
+            guestId: guest?.guestId
           }
           // order:['id','desc']
-      });
-  
-      if(!purpose)
-      return Util?.handleFailResponse('Purpose not found')
+        });
 
-      if (purpose?.isLogOut != false){
+      if (!purpose)
+        return Util?.handleFailResponse('Purpose not found')
+
+      if (purpose?.isLogOut != false) {
         return Util?.handleFailResponse('Guest already logout')
       };
 
       console.log(phoneNumber);
       // return
-      await Purpose.update({ isLogOut:true},
-        { where: { guestId : guest?.guestId } }
-        )
-      await Purpose.update( { visitStatus: 'Signed Out'}, 
-      { where: { guestId : guest?.guestId } }
-       )
-       await Purpose.update( { signOutTime: currentTime}, 
-       { where: { guestId : guest?.guestId } }
-        )
-        let guest_data = {
-          guestId: guest?.guestId,
-          firstName: guest?.firstName,
-          lastname: guest?.lastName,
-          gender: guest?.gender,
-          countryCode: guest?.countryCode,
-          phoneNumber: guest?.phoneNumber,
-          guestPurpose: purpose?.purpose,
-          signInDate: purpose?.signInDate,
-          signInTime: purpose?.signInTime,
-          signOutTime: purpose?.signOutTime
+      await Purpose.update({ isLogOut: true },
+        { where: { guestId: guest?.guestId } }
+      )
+      await Purpose.update({ visitStatus: 'Signed Out' },
+        { where: { guestId: guest?.guestId } }
+      )
+      await Purpose.update({ signOutTime: currentTime },
+        { where: { guestId: guest?.guestId } }
+      )
+      let guest_data = {
+        guestId: guest?.guestId,
+        firstName: guest?.firstName,
+        lastname: guest?.lastName,
+        gender: guest?.gender,
+        countryCode: guest?.countryCode,
+        phoneNumber: guest?.phoneNumber,
+        guestPurpose: purpose?.purpose,
+        signInDate: purpose?.signInDate,
+        signInTime: purpose?.signInTime,
+        signOutTime: purpose?.signOutTime
       }
-      return Util?.handleCustonCreateResponse(guest_data,'Logout successful');
+      return Util?.handleCustonCreateResponse(guest_data, 'Logout successful');
     } catch (error) {
       console.log(error)
       return Util?.handleGrpcTryCatchError(Util?.getTryCatchMsg(error));
     }
   }
+
+  // Confirm Guest Signout
+  async guestConfirmSignOut(guestOpDTO: guestOpDTO) {
+    try {
+
+      const { phoneNumber, countryCode } = guestOpDTO
+      const guest = await this.GuestModel.findOne({ where: { phoneNumber: phoneNumber } });
+      const cCode = await this.GuestModel.findOne({ where: { countryCode } })
+
+      const currentTime = new Date().toLocaleTimeString();
+
+      if (!guest || !cCode)
+        return Util?.handleFailResponse('Invalid phone number or country code')
+
+      const purpose = await this.PurposeModel.findOne(
+        {
+          where: {
+            guestId: guest?.guestId
+          }
+          // order:['id','desc']
+        });
+      // Checking if guest is signed In
+      if (purpose?.visitStatus != 'Signed In')
+        return Util?.handleFailResponse('Guest already signed out, sign in first');
+
+      console.log(phoneNumber);
+
+      let guest_data = {
+        guestId: guest?.guestId,
+        firstName: guest?.firstName,
+        lastname: guest?.lastName,
+        gender: guest?.gender,
+        countryCode: guest?.countryCode,
+        phoneNumber: guest?.phoneNumber,
+        guestPurpose: purpose?.purpose,
+        signInDate: purpose?.signInDate,
+        signInTime: purpose?.signInTime,
+        signOutTime: purpose?.signOutTime
+      }
+      return Util?.handleCustonCreateResponse(guest_data, 'Logout Confirmation Successful');
+    } catch (error) {
+      console.log(error)
+      return Util?.handleGrpcTryCatchError(Util?.getTryCatchMsg(error));
+    }
+  }
+
 
   // Filter Guest by Gender
   async genderFilter(keyword: string, userId: any) {
