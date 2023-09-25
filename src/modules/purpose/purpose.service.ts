@@ -367,15 +367,15 @@ export class PurposeService {
         { where: { guestId: guest?.guestId } }
       )
       let guest_data = {
-        guestId: guest?.guestId,
-        firstName: guest?.firstName,
-        lastname: guest?.lastName,
-        gender: guest?.gender,
-        countryCode: guest?.countryCode,
-        phoneNumber: guest?.phoneNumber,
-        guestPurpose: purpose?.purpose,
-        signInDate: purpose?.signInDate,
-        signInTime: purpose?.signInTime,
+        // guestId: guest?.guestId,
+        // firstName: guest?.firstName,
+        // lastname: guest?.lastName,
+        // gender: guest?.gender,
+        // countryCode: guest?.countryCode,
+        // phoneNumber: guest?.phoneNumber,
+        // guestPurpose: purpose?.purpose,
+        // signInDate: purpose?.signInDate,
+        // signInTime: purpose?.signInTime,
         signOutTime: purpose?.signOutTime
       }
       return Util?.handleCustonCreateResponse(guest_data, 'Logout successful');
