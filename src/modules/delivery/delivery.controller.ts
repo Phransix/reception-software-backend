@@ -29,12 +29,13 @@ export class DeliveryController {
   @ApiOperation({ summary: 'Create New Delivery' })
   @Post('createDelivery')
   async createDelivery(
-    @Body() createDeliveryDto: CreateDeliveryDto
+    @Body() createDeliveryDto: CreateDeliveryDto,
+    @GetCurrentUserId() userId : string,
     ) {
     let ErrorCode: number
     try {
-      let new_Delivery = await this.deliveryService.create(createDeliveryDto);
-      if (new_Delivery?.status_code != HttpStatus.CREATED) {
+      let new_Delivery = await this.deliveryService.create(createDeliveryDto,userId);
+      if (new_Delivery && 'status_code' in new_Delivery && new_Delivery.status_code != HttpStatus.CREATED) {
         ErrorCode = new_Delivery?.status_code;
         throw new Error(new_Delivery?.message)
     } 

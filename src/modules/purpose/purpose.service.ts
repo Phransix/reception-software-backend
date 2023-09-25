@@ -24,10 +24,10 @@ export class PurposeService {
   ) { }
 
   // Create Purpose
-  async createPurpose(createPurposeDto: CreatePurposeDto, userId:any) {
+  async createPurpose(createPurposeDto: CreatePurposeDto, userId:string) {
     try {
       
-      let user = await this?.PurposeModel.findOne({where:{userId}})
+      let user = await this?.UserModel.findOne({where:{userId}})
       console.log(userId)
       if(!user)
       return Util?.CustomhandleNotFoundResponse('User not found');
@@ -42,7 +42,6 @@ export class PurposeService {
       })
       await purpose.save()
       return Util?.handleCreateSuccessRespone("Purpose Created Successfully")
-
     } catch (error) {
       console.log(error)
       return Util?.handleGrpcReqError(Util?.getTryCatchMsg(error))
@@ -50,7 +49,7 @@ export class PurposeService {
   }
 
   // Get All Purposes
-  async findAll(page: number, size: number, userId: any) {
+  async findAll(page: number, size: number, userId: string) {
     try {
 
       console.log(userId)
@@ -116,7 +115,7 @@ export class PurposeService {
   }
 
   // Get Purpose By purposeId
-  async findOne(purposeId: string, userId: any) {
+  async findOne(purposeId: string, userId: string) {
     try {
 
       console.log(userId)
@@ -145,7 +144,7 @@ export class PurposeService {
   }
 
   // Update Purpose By purposeId
-  async update(purposeId: string, updatePurposeDto: UpdatePurposeDto, userId: any) {
+  async update(purposeId: string, updatePurposeDto: UpdatePurposeDto, userId: string) {
     try {
 
       console.log(userId)
@@ -173,7 +172,7 @@ export class PurposeService {
   }
 
   // Remove Purpose By purposeId
-  async remove(purposeId: string, userId: any) {
+  async remove(purposeId: string, userId: string) {
     try {
 
       console.log(userId)
@@ -200,7 +199,7 @@ export class PurposeService {
   }
 
   // Filter by Official and Personal Visits
-  async guestPurpose(keyword: string, userId: any) {
+  async guestPurpose(keyword: string, userId: string) {
     try {
 
       console.log(userId)
@@ -238,7 +237,7 @@ export class PurposeService {
   }
 
   // Filter By Date Range
-  async findByDateRange(startDate: Date, endDate: Date, userId: any) {
+  async findByDateRange(startDate: Date, endDate: Date, userId: string) {
     try {
 
       console.log(userId)
@@ -291,7 +290,7 @@ export class PurposeService {
   }
 
   // Search guest by firstname
-  async searchGuest(keyword: string, userId: any) {
+  async searchGuest(keyword: string, userId: string) {
     try {
 
       console.log(userId)
@@ -447,7 +446,7 @@ export class PurposeService {
 
 
   // Filter Guest by Gender
-  async genderFilter(keyword: string, userId: any) {
+  async genderFilter(keyword: string, userId: string) {
     try {
 
       console.log(userId)

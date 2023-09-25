@@ -22,15 +22,28 @@ export class DeliveryService {
     @InjectModel(Organization) private readonly OrgModel: typeof Organization
   ) { }
 
-
   // Create Delivery
-  async create(createDeliveryDto: CreateDeliveryDto) {
+  async create(createDeliveryDto: CreateDeliveryDto, userId:string) {
     try {
-      await Abstract?.createData(Delivery, createDeliveryDto);
-      return Util?.handleCreateSuccessRespone("Delivery Created Successfully");
+      
+      let user = await this?.UserModel.findOne({where:{userId}})
+      console.log(userId)
+      if(!user)
+      return Util?.CustomhandleNotFoundResponse('User not found');
+
+      let get_org = await this?.OrgModel.findOne({where:{organizationId:user?.organizationId}})
+      if(!get_org)
+      return Util?.CustomhandleNotFoundResponse('organization not found');
+
+      const delivery = await this.DeliveryModel.create({
+        ...createDeliveryDto,
+        organizationId:get_org?.organizationId
+      })
+      await delivery.save()
+      return Util?.handleCreateSuccessRespone("Delivery Created Successfully")
     } catch (error) {
-      console.error(error)
-      return Util?.handleGrpcTryCatchError(Util?.getTryCatchMsg(error));
+      console.log(error)
+      return Util?.handleGrpcReqError(Util?.getTryCatchMsg(error))
     }
   }
 

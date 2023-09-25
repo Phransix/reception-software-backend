@@ -29,7 +29,7 @@ export class PurposeController {
     ) {
     let ErrorCode: number
     try {
-      let purpose =  await this.purposeService.create(createPurposeDto,userId);
+      let purpose =  await this.purposeService.createPurpose(createPurposeDto,userId);
       if (purpose && 'status_code' in purpose && purpose.status_code !== HttpStatus.CREATED) {
         ErrorCode = purpose?.status_code;
         throw new Error(purpose?.message)

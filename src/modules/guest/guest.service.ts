@@ -27,12 +27,31 @@ export class GuestService {
   ) { }
 
   // Creating a guest
-  async create(createGuestDto: CreateGuestDto) {
+  async create(createGuestDto: CreateGuestDto,userId:string) {
     try {
 
+      let user = await this?.UserModel.findOne({where:{userId}})
+      console.log(userId)
+      if(!user)
+      return Util?.CustomhandleNotFoundResponse('User not found');
+
+      let get_org = await this?.OrgModel.findOne({where:{organizationId:user?.organizationId}})
+      if(!get_org)
+      return Util?.CustomhandleNotFoundResponse('organization not found');
+
       await Abstract?.createData(Guest, createGuestDto)
+      const guest = await Guest.create({
+        ...createGuestDto,
+        organizationId:get_org?.organizationId
+      })
+      await guest.save();
       const { phoneNumber } = createGuestDto
-      const guestData = await this.GuestModel.findOne({ where: { phoneNumber } })
+      const guestData = await this.GuestModel.findOne({ 
+        where: { 
+          phoneNumber,
+          organizationId:get_org?.organizationId 
+        } 
+      })
       let guest_data = {
         guestId: guestData?.guestId,
         firstName: guestData?.firstName,

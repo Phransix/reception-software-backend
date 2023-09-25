@@ -24,11 +24,11 @@ export class GuestController {
   @Post('createGuest')
   async create(
     @Body() createGuestDto: CreateGuestDto,
-    // @GetCurrentUserId() userId?: string
+    @GetCurrentUserId() userId?: string
     ) {
     let ErrorCode: number
     try {
-      let guest = await this.guestService.create(createGuestDto);
+      let guest = await this.guestService.create(createGuestDto,userId);
       if (guest?.status_code != HttpStatus.CREATED) {
         ErrorCode = guest?.status_code;
         throw new Error(guest?.message)
