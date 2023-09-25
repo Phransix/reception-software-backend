@@ -24,10 +24,25 @@ export class PurposeService {
   ) { }
 
   // Create Purpose
-  async create(createPurposeDto: CreatePurposeDto) {
+  async createPurpose(createPurposeDto: CreatePurposeDto, userId:any) {
     try {
-      await Abstract?.createData(Purpose, createPurposeDto)
+      
+      let user = await this?.PurposeModel.findOne({where:{userId}})
+      console.log(userId)
+      if(!user)
+      return Util?.CustomhandleNotFoundResponse('User not found');
+
+      let get_org = await this?.OrgModel.findOne({where:{organizationId:user?.organizationId}})
+      if(!get_org)
+      return Util?.CustomhandleNotFoundResponse('organization not found');
+
+      const purpose = await this.PurposeModel.create({
+        ...createPurposeDto,
+        organizationId:get_org?.organizationId
+      })
+      await purpose.save()
       return Util?.handleCreateSuccessRespone("Purpose Created Successfully")
+
     } catch (error) {
       console.log(error)
       return Util?.handleGrpcReqError(Util?.getTryCatchMsg(error))
