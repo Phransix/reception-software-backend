@@ -49,7 +49,7 @@ module.exports = {
       },
       email: {
         type: Sequelize.STRING,
-        allowNull: true,
+        allowNull: false,
         unique: true
       },
       type: {
@@ -66,7 +66,7 @@ module.exports = {
       },
       unit: {
         type: Sequelize.ENUM('pc(s)', 'bx(s)', 'pck(s)'),
-        allowNull: true,
+        allowNull: false,
         defaultValue: null,
         validate: {
           isIn: [['pc(c)', 'bx(s)', 'pck(s)']]

@@ -7,10 +7,10 @@ export enum Delivery_type {
     OTHER = 'other'
 }
 
-// enum Status {
-//     DELIVERED = 'delivered',
-//     NOT_DELIVERED = 'awaiting_pickup'
-// }
+export enum Status {
+    DELIVERED = 'delivered',
+    NOT_DELIVERED = 'awaiting_pickup'
+}
 
 enum itemUnit {
     PIECE = 'pc(s)',

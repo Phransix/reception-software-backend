@@ -283,6 +283,28 @@ export class PurposeController {
 
   }
 
+    // Guest ConfirmSignOut
+    @Public()
+    @ApiTags('Purpose')
+    @ApiOperation({ summary: 'Confirm Guest Sign Out' })
+    @Post('guestConfirmSignOut')
+    async signOutConfirm(@Body() guestOpDTO: guestOpDTO
+    ) {
+      let ErrorCode: number
+      try {
+        const purpose = await this.purposeService.guestConfirmSignOut(guestOpDTO)
+        if (purpose?.status_code != HttpStatus.CREATED) {
+          ErrorCode = purpose?.status_code;
+          throw new Error(purpose?.message)
+        }
+        return purpose
+      } catch (error) {
+        console.log(error)
+        return Util?.handleRequestError(Util?.getTryCatchMsg(error), ErrorCode)
+      }
+  
+    }
+
     // Filter by Guest Visit Status
   @UseGuards(AuthGuard('jwt'))
   @ApiBearerAuth('defaultBearerAuth')
