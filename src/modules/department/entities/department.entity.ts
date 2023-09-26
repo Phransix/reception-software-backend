@@ -58,6 +58,13 @@ as: 'Organization',
    })
    departmentRoomNum: string;
 
+
+   @Column({
+    type: DataType.STRING,
+    allowNull: true
+   })
+   profilePhoto: string;
+
    @HasMany(() => Staff)
    staff: Staff[]
 

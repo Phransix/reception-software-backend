@@ -44,6 +44,10 @@ module.exports = {
       departmentRoomNum: {
         type: Sequelize.STRING
       },
+
+      profilePhoto: {
+        type: Sequelize.STRING
+      },
     
       createdAt: {
         type: Sequelize.DATE,
