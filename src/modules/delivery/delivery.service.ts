@@ -8,6 +8,7 @@ import { Op } from 'sequelize';
 import { deliveryConfirmDTO } from 'src/guard/auth/deliveryConfirmDTO';
 import { User } from '../users/entities/user.entity';
 import { Organization } from '../organization/entities/organization.entity';
+import { Staff } from '../staff/entities/staff.entity';
 
 
 @Injectable()
@@ -17,7 +18,8 @@ export class DeliveryService {
   constructor(
     @InjectModel(Delivery) private readonly DeliveryModel: typeof Delivery,
     @InjectModel(User) private readonly UserModel: typeof User,
-    @InjectModel(Organization) private readonly OrgModel: typeof Organization
+    @InjectModel(Organization) private readonly OrgModel: typeof Organization,
+    @InjectModel(Staff) private readonly StaffModel: typeof Staff
   ) { }
 
   // Create Delivery
