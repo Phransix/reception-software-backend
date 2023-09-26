@@ -362,7 +362,7 @@ export class StaffService {
       await this?.staffModel?.update(insertQry, {
         where: { 
           id: staff_data?.id,
-          // organizationId:get_org?.organizationId
+          organizationId:get_org?.organizationId
          },
       });
 
