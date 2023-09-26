@@ -172,6 +172,7 @@ export class UsersService {
     try {
       console.log(userId);
 
+
       let currentPage = Util.Checknegative(page);
       if (currentPage) {
         return Util?.handleErrorRespone(
@@ -233,18 +234,27 @@ export class UsersService {
   // Get User By Id
   async findOne(userId: string) {
     try {
-      const user = await User.findOne({
+      console.log(userId)
+
+      let user = await this?.userModel.findOne({where:{userId}})
+      console.log(user?.organizationId)
+      if(!user)
+      return Util?.CustomhandleNotFoundResponse('User not found');
+
+      let get_org = await this?.orgModel.findOne({where:{organizationId:user?.organizationId}})
+
+      if(!get_org)
+      return Util?.CustomhandleNotFoundResponse('organization not found');
+
+      const userdata = await User.findOne({
         attributes: {
           exclude: ['password', 'createdAt', 'updatedAt', 'deletedAt'],
         },
-        where: { userId },
+        where: { userId,organizationId:get_org?.organizationId },
       });
-      console.log(user?.organizationId);
-      if (!user) {
-        throw new Error('User not found.');
-      }
+    
 
-      return Util?.handleSuccessRespone(user, 'User retrieve successfully.');
+      return Util?.handleSuccessRespone(userdata, 'User retrieve successfully.');
     } catch (error) {
       console.log(error);
       return Util?.handleGrpcTryCatchError(Util?.getTryCatchMsg(error));
@@ -256,11 +266,16 @@ export class UsersService {
     let rollImage = '';
 
     try {
-      const user = await this.userModel.findOne({ where: { userId } });
-      if (!user) {
-        // throw new Error('User not found.');
-        return Util?.CustomhandleNotFoundResponse('User  not found');
-      }
+
+      let user = await this?.userModel.findOne({where:{userId}})
+      console.log(user?.organizationId)
+      if(!user)
+      return Util?.CustomhandleNotFoundResponse('User not found');
+
+      let get_org = await this?.orgModel.findOne({where:{organizationId:user?.organizationId}})
+
+      if(!get_org)
+      return Util?.CustomhandleNotFoundResponse('organization not found');
 
       var image_matches = updateUserDto.profilePhoto?.match(
         /^data:([A-Za-z-+\/]+);base64,(.+)$/,
@@ -295,7 +310,7 @@ export class UsersService {
       };
 
       await this?.userModel?.update(insertQry, {
-        where: { id: user?.id },
+        where: { id: user?.id ,organizationId:get_org?.organizationId},
       });
 
       return Util?.SuccessRespone('User updated successfully');
@@ -413,10 +428,17 @@ export class UsersService {
     // let InsertImg = '';
 
     try {
-      const user_data = await this.userModel.findOne({ where: { userId } });
-      if (!user_data) {
-        return Util?.handleFailResponse(`User with this #${userId} not found`);
-      }
+      
+      let user_data = await this?.userModel.findOne({where:{userId}})
+      console.log(user_data?.organizationId)
+      if(!user_data)
+      return Util?.CustomhandleNotFoundResponse('User not found');
+
+      let get_org = await this?.orgModel.findOne({where:{organizationId:user_data?.organizationId}})
+
+      if(!get_org)
+      return Util?.CustomhandleNotFoundResponse('organization not found');
+
 
       if (
         createUserImgDto?.profilePhoto == null ||
@@ -456,7 +478,7 @@ export class UsersService {
       };
 
       await this?.userModel?.update(insertQrys, {
-        where: { id: user_data?.id },
+        where: { id: user_data?.id ,organizationId:get_org?.organizationId},
       });
 
       return Util?.SuccessRespone(
@@ -501,25 +523,20 @@ export class UsersService {
   }
 
   // Logout Organization
-  async logout(logout: LogOutDTO, userId:any) {
+  async logout(logout: LogOutDTO,userId:any) {
     try {
     
-      // return false
-      // const user = await User.findOne();
-      // if (!user) {
-      //   return null; // User not found
-      // }
+      
+      let user = await this?.userModel.findOne({where:{userId}})
+      console.log(user?.organizationId)
+      if(!user)
+      return Util?.CustomhandleNotFoundResponse('User not found');
 
-      let user = await this?.userModel.findOne({ where: { userId } });
-      console.log(userId);
-      if (!user) return Util?.CustomhandleNotFoundResponse('User not found');
-     
-      let get_org = await this?.orgModel.findOne({
-        where: { organizationId: user?.organizationId },
-      });
-      if (!get_org)
-        return Util?.CustomhandleNotFoundResponse('organization not found');
+      let get_org = await this?.orgModel.findOne({where:{organizationId:user?.organizationId}})
 
+      if(!get_org)
+      return Util?.CustomhandleNotFoundResponse('organization not found');
+      
       // Compare Password
       const passwordMatches = await argon.verify(
         user?.password,
@@ -539,7 +556,7 @@ export class UsersService {
         {
           where: {
             password: user?.password,
-            organizationId: get_org?.organizationId,
+            organizationId:get_org?.organizationId
           },
         },
       );
@@ -551,62 +568,6 @@ export class UsersService {
     }
   }
 
-  // async logout(logout: LogOutDTO,userId: string) {
-  //   try {
-
-  //     const { password } = logout
-
-  //     // const user = await this?.userModel?.findOne({ where: { password } })
-
-  //     // if (!user)
-  //     //   return Util?.handleFailResponse('Invalid User Password')
-  //     //   console.log(password);
-
-  //       // const passwordMatches = await argon.verify(user?.password, password);
-  //       // if (!passwordMatches) {
-  //       //   return Util.handleFailResponse('Invalid password');
-  //       // }
-
-  //       let user = await this?.userModel.findOne({where:{userId}})
-  //       console.log(userId)
-  //       if(!user)
-  //       return Util?.CustomhandleNotFoundResponse('User not found');
-
-  //       let get_org = await this?.orgModel.findOne({where:{organizationId:user?.organizationId}})
-  //       if(!get_org)
-  //       return Util?.CustomhandleNotFoundResponse('organization not found');
-
-  //         // Compare Passwword
-
-  //         const passwordMatches = await argon.verify(
-  //           user.password,
-  //           logout?.password,
-  //         );
-  //         if (!passwordMatches) {
-  //           return Util.handleFailResponse('Invalid  password');
-  //         }
-
-  //       // const match = await argon.verify(user.password, password);
-  //       // if (!match) {
-  //       //   return Util?.handleFailResponse('Invalid Password');
-  //       // }
-
-  //       if (user?.isLogin === false)
-  //       return Util?.handleFailResponse(
-  //         'Organization/User account already logout ',
-  //       );
-
-  //     // return
-  //     await User.update({ isLogin: false },
-  //       { where: { password: user?.password } }
-  //     )
-
-  //     return Util?.handleCreateSuccessRespone('Logout successful');
-  //   } catch (error) {
-  //     console.log(error)
-  //     return Util?.handleGrpcTryCatchError(Util?.getTryCatchMsg(error));
-  //   }
-  // }
 
   async getTokens(user_id: string, email: string, role: string) {
     const jwtPayload = {

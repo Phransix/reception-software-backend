@@ -323,7 +323,6 @@ export class UsersController {
   @ApiOperation({ summary: 'Restore User Data By userId' })
   @Public()
   @UseGuards(AtGuard)
-  @ApiTags('Users')
   @Post(':userId/restore')
   async restoreUser(@Param('userId') userId: string) {
     return this.usersService.restoreUser(userId);
@@ -331,12 +330,15 @@ export class UsersController {
 
   // Logout Users
   @ApiTags('Users')
+  @UseGuards(AuthGuard('jwt'))
+  @ApiBearerAuth('defaultBearerAuth')
   @ApiOperation({ summary: 'Organization/User Logout' })
   @Public()
+  @UseGuards(AtGuard)
   @Post('logout')
   async logout(
     @GetCurrentUserId() userId : string,
-    @Body() logoutDto: LogOutDTO
+    @Body() logoutDto: LogOutDTO,
     ) {
     let ErrorCode: number;
     try {
