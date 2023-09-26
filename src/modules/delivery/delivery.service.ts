@@ -3,11 +3,9 @@ import { CreateDeliveryDto } from './dto/create-delivery.dto';
 import { UpdateDeliveryDto } from './dto/update-delivery.dto';
 import { InjectModel } from '@nestjs/sequelize';
 import { Delivery } from './entities/delivery.entity';
-import * as Abstract from '../../utils/abstract'
 import * as Util from '../../utils/index'
 import { Op } from 'sequelize';
 import { deliveryConfirmDTO } from 'src/guard/auth/deliveryConfirmDTO';
-import { Purpose } from '../purpose/entities/purpose.entity';
 import { User } from '../users/entities/user.entity';
 import { Organization } from '../organization/entities/organization.entity';
 
@@ -22,20 +20,33 @@ export class DeliveryService {
     @InjectModel(Organization) private readonly OrgModel: typeof Organization
   ) { }
 
-
   // Create Delivery
-  async create(createDeliveryDto: CreateDeliveryDto) {
+  async create(createDeliveryDto: CreateDeliveryDto, userId: any) {
     try {
-      await Abstract?.createData(Delivery, createDeliveryDto);
-      return Util?.handleCreateSuccessRespone("Delivery Created Successfully");
+      let user = await this?.UserModel.findOne({ where: { userId } })
+      console.log(userId)
+      if (!user)
+        return Util?.CustomhandleNotFoundResponse('User not found');
+
+      let get_org = await this?.OrgModel.findOne({ where: { organizationId: user?.organizationId } })
+      if (!get_org)
+        return Util?.CustomhandleNotFoundResponse('organization not found');
+
+      const delivery = await this.DeliveryModel.create({
+        ...createDeliveryDto,
+        organizationId: get_org?.organizationId
+      })
+      await delivery.save();
+      return Util?.handleCreateSuccessRespone("Delivery Created Successfully")
     } catch (error) {
-      console.error(error)
+      console.log(error)
       return Util?.handleGrpcTryCatchError(Util?.getTryCatchMsg(error));
     }
   }
 
+
   // Get All Delivery
-  async findAll(page: number, size: number, userId:any) {
+  async findAll(page: number, size: number, userId: any) {
     try {
       console.log(userId)
       let currentPage = Util.Checknegative(page);
@@ -45,22 +56,22 @@ export class DeliveryService {
         );
       }
       const { limit, offset } = Util.getPagination(page, size);
-      let user = await this?.UserModel.findOne({where:{userId}})
+      let user = await this?.UserModel.findOne({ where: { userId } })
       console.log(user?.organizationId)
-      if(!user)
-      return Util?.handleErrorRespone('User not found');
+      if (!user)
+        return Util?.handleErrorRespone('User not found');
 
-      let get_org = await this?.OrgModel.findOne({where:{organizationId:user?.organizationId}})
+      let get_org = await this?.OrgModel.findOne({ where: { organizationId: user?.organizationId } })
 
-      if(!get_org)
-      return Util?.handleErrorRespone('organization not found');
-   
+      if (!get_org)
+        return Util?.handleErrorRespone('organization not found');
+
 
       const allQueries = await Delivery.findAndCountAll({
         limit,
         offset,
         where: {
-          organizationId:get_org?.organizationId
+          organizationId: get_org?.organizationId
         },
         attributes: { exclude: ['updatedAt', 'deletedAt'] },
       });
@@ -76,25 +87,25 @@ export class DeliveryService {
 
     } catch (error) {
       console.log(error)
-      return Util?.handleFailResponse("Deliveries retrieval failed")
+      return Util?.handleGrpcTryCatchError(Util?.getTryCatchMsg(error));
     }
   };
 
   // Get Delivery by deliveryId
-  async findOne(deliveryId: string, userId:any) {
+  async findOne(deliveryId: string, userId: any) {
     try {
       console.log(userId)
-      let user = await this?.UserModel.findOne({where:{userId}})
+      let user = await this?.UserModel.findOne({ where: { userId } })
       console.log(user?.organizationId)
-      if(!user)
-      return Util?.handleErrorRespone('User not found');
+      if (!user)
+        return Util?.handleErrorRespone('User not found');
 
-      let get_org = await this?.OrgModel.findOne({where:{organizationId:user?.organizationId}})
+      let get_org = await this?.OrgModel.findOne({ where: { organizationId: user?.organizationId } })
 
-      if(!get_org)
-      return Util?.handleErrorRespone('organization not found');
+      if (!get_org)
+        return Util?.handleErrorRespone('organization not found');
       const delivery = await Delivery.findOne({
-        where: { deliveryId , organizationId:get_org?.organizationId},
+        where: { deliveryId, organizationId: get_org?.organizationId },
         attributes: { exclude: ['createdAt', 'updatedAt', 'deletedAt'] }
       });
       return Util?.handleSuccessRespone(delivery, "Delivery Data retrieved successfully")
@@ -105,19 +116,19 @@ export class DeliveryService {
   }
 
   // Update Delivery By deliveryId
-  async update(deliveryId: string, updateDeliveryDto: UpdateDeliveryDto, userId:any) {
+  async update(deliveryId: string, updateDeliveryDto: UpdateDeliveryDto, userId: any) {
     try {
       console.log(userId)
-      let user = await this?.UserModel.findOne({where:{userId}})
+      let user = await this?.UserModel.findOne({ where: { userId } })
       console.log(user?.organizationId)
-      if(!user)
-      return Util?.handleErrorRespone('User not found');
+      if (!user)
+        return Util?.handleErrorRespone('User not found');
 
-      let get_org = await this?.OrgModel.findOne({where:{organizationId:user?.organizationId}})
+      let get_org = await this?.OrgModel.findOne({ where: { organizationId: user?.organizationId } })
 
-      if(!get_org)
-      return Util?.handleErrorRespone('organization not found');
-      const delivery = await Delivery.findOne({ where: { deliveryId,organizationId:get_org?.organizationId } });
+      if (!get_org)
+        return Util?.handleErrorRespone('organization not found');
+      const delivery = await Delivery.findOne({ where: { deliveryId, organizationId: get_org?.organizationId } });
 
       if (!delivery) {
         return Util?.handleFailResponse("Delivery data not found")
@@ -134,21 +145,21 @@ export class DeliveryService {
 
 
   // Remove Delivery By deliveryId 
-  async remove(deliveryId: string, userId:any) {
+  async remove(deliveryId: string, userId: any) {
     try {
 
       console.log(userId)
-      let user = await this?.UserModel.findOne({where:{userId}})
+      let user = await this?.UserModel.findOne({ where: { userId } })
       console.log(user?.organizationId)
-      if(!user)
-      return Util?.handleErrorRespone('User not found');
+      if (!user)
+        return Util?.handleErrorRespone('User not found');
 
-      let get_org = await this?.OrgModel.findOne({where:{organizationId:user?.organizationId}})
+      let get_org = await this?.OrgModel.findOne({ where: { organizationId: user?.organizationId } })
 
-      if(!get_org)
-      return Util?.handleErrorRespone('organization not found');
+      if (!get_org)
+        return Util?.handleErrorRespone('organization not found');
 
-      const delivery = await Delivery.findOne({ where: { deliveryId, organizationId:get_org?.organizationId } });
+      const delivery = await Delivery.findOne({ where: { deliveryId, organizationId: get_org?.organizationId } });
       if (!delivery) {
         return Util?.handleFailResponse("Delivery Data does not exist")
       }
@@ -162,30 +173,30 @@ export class DeliveryService {
   }
 
   // Confirm Delivery
-  async deliveryConfirm(deliveryConfirmDTO: deliveryConfirmDTO, userId:any) {
+  async deliveryConfirm(deliveryConfirmDTO: deliveryConfirmDTO, userId: any) {
     try {
 
       console.log(userId)
-      let user = await this?.UserModel.findOne({where:{userId}})
+      let user = await this?.UserModel.findOne({ where: { userId } })
       console.log(user?.organizationId)
-      if(!user)
-      return Util?.handleErrorRespone('User not found');
+      if (!user)
+        return Util?.handleErrorRespone('User not found');
 
-      let get_org = await this?.OrgModel.findOne({where:{organizationId:user?.organizationId}})
+      let get_org = await this?.OrgModel.findOne({ where: { organizationId: user?.organizationId } })
 
-      if(!get_org)
-      return Util?.handleErrorRespone('organization not found');
+      if (!get_org)
+        return Util?.handleErrorRespone('organization not found');
 
       const { receipientName } = deliveryConfirmDTO
 
-      const delivery = await this.DeliveryModel.findOne({ where: { receipientName,organizationId:get_org?.organizationId  } })
+      const delivery = await this.DeliveryModel.findOne({ where: { receipientName, organizationId: get_org?.organizationId } })
       if (!delivery) {
         return Util?.handleFailResponse('Receipient not found')
       }
 
-      if (delivery?.status != 'awaiting_pickup') 
+      if (delivery?.status != 'awaiting_pickup')
         return Util?.handleFailResponse('Delivery confirmed already')
-      
+
 
       await Delivery.update({ status: 'delivered' }, { where: { receipientName: receipientName } })
       return Util?.SuccessRespone('Delivery Confirmation Successful')
@@ -197,18 +208,18 @@ export class DeliveryService {
   }
 
   // Filter By Date Range
-  async findByDateRange(startDate: Date, endDate: Date, userId:any) {
+  async findByDateRange(startDate: Date, endDate: Date, userId: any) {
     try {
       console.log(userId)
-      let user = await this?.UserModel.findOne({where:{userId}})
+      let user = await this?.UserModel.findOne({ where: { userId } })
       console.log(user?.organizationId)
-      if(!user)
-      return Util?.handleErrorRespone('User not found');
+      if (!user)
+        return Util?.handleErrorRespone('User not found');
 
-      let get_org = await this?.OrgModel.findOne({where:{organizationId:user?.organizationId}})
+      let get_org = await this?.OrgModel.findOne({ where: { organizationId: user?.organizationId } })
 
-      if(!get_org)
-      return Util?.handleErrorRespone('organization not found');
+      if (!get_org)
+        return Util?.handleErrorRespone('organization not found');
 
       const deliver = await Delivery.findAll({
         where: {
@@ -216,12 +227,12 @@ export class DeliveryService {
           {
             [Op.between]: [startDate, endDate],
           },
-          organizationId:get_org?.organizationId
+          organizationId: get_org?.organizationId
         },
         attributes: { exclude: ['createdAt', 'updatedAt', 'deletedAt'] }
       });
 
-      return Util?.handleSuccessRespone(deliver,"Delivery Successfully retrieved")
+      return Util?.handleSuccessRespone(deliver, "Delivery Successfully retrieved")
     } catch (error) {
       console.log(error)
       return Util?.handleGrpcTryCatchError(Util?.getTryCatchMsg(error));
@@ -229,18 +240,18 @@ export class DeliveryService {
   }
 
   // Filter delivery by type
-  async deliveryType(keyword: string, userId:any) {
+  async deliveryType(keyword: string, userId: any) {
     try {
       console.log(userId)
-      let user = await this?.UserModel.findOne({where:{userId}})
+      let user = await this?.UserModel.findOne({ where: { userId } })
       console.log(user?.organizationId)
-      if(!user)
-      return Util?.handleErrorRespone('User not found');
+      if (!user)
+        return Util?.handleErrorRespone('User not found');
 
-      let get_org = await this?.OrgModel.findOne({where:{organizationId:user?.organizationId}})
+      let get_org = await this?.OrgModel.findOne({ where: { organizationId: user?.organizationId } })
 
-      if(!get_org)
-      return Util?.handleErrorRespone('organization not found');
+      if (!get_org)
+        return Util?.handleErrorRespone('organization not found');
       let filter = {}
 
       if (keyword != null) {
@@ -250,46 +261,46 @@ export class DeliveryService {
       const filterCheck = await this.DeliveryModel.findAll({
         where: {
           ...filter,
-          organizationId:get_org?.organizationId
+          organizationId: get_org?.organizationId
         },
       });
-      return Util?.handleSuccessRespone(filterCheck,"Delivery Successfully retrieved")
+      return Util?.handleSuccessRespone(filterCheck, "Delivery Successfully retrieved")
     } catch (error) {
       console.log(error)
       return Util?.handleGrpcTryCatchError(Util?.getTryCatchMsg(error));
     }
   }
 
-    // Filter delivery by status
-    async deliveryStatus(keyword: string, userId:any) {
-      try {
-        console.log(userId)
-        let user = await this?.UserModel.findOne({where:{userId}})
-        console.log(user?.organizationId)
-        if(!user)
+  // Filter delivery by status
+  async deliveryStatus(keyword: string, userId: any) {
+    try {
+      console.log(userId)
+      let user = await this?.UserModel.findOne({ where: { userId } })
+      console.log(user?.organizationId)
+      if (!user)
         return Util?.handleErrorRespone('User not found');
-  
-        let get_org = await this?.OrgModel.findOne({where:{organizationId:user?.organizationId}})
-  
-        if(!get_org)
+
+      let get_org = await this?.OrgModel.findOne({ where: { organizationId: user?.organizationId } })
+
+      if (!get_org)
         return Util?.handleErrorRespone('organization not found');
-        let filter = {}
-  
-        if (keyword != null) {
-          filter = { status: keyword }
-        }
-  
-        const filterCheck = await this.DeliveryModel.findAll({
-          where: {
-            ...filter,
-            organizationId:get_org?.organizationId
-          },
-        });
-        return Util?.handleSuccessRespone(filterCheck,"Delivery Status Successfully retrieved")
-      } catch (error) {
-        console.log(error)
-        return Util?.handleGrpcTryCatchError(Util?.getTryCatchMsg(error));
+      let filter = {}
+
+      if (keyword != null) {
+        filter = { status: keyword }
       }
+
+      const filterCheck = await this.DeliveryModel.findAll({
+        where: {
+          ...filter,
+          organizationId: get_org?.organizationId
+        },
+      });
+      return Util?.handleSuccessRespone(filterCheck, "Delivery Status Successfully retrieved")
+    } catch (error) {
+      console.log(error)
+      return Util?.handleGrpcTryCatchError(Util?.getTryCatchMsg(error));
     }
+  }
 
 }

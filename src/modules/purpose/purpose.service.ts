@@ -3,7 +3,6 @@ import { CreatePurposeDto } from './dto/create-purpose.dto';
 import { UpdatePurposeDto } from './dto/update-purpose.dto';
 import { InjectModel } from '@nestjs/sequelize';
 import { Purpose } from './entities/purpose.entity';
-import * as Abstract from '../../utils/abstract'
 import * as Util from '../../utils/index'
 import { Guest } from '../guest/entities/guest.entity';
 import { Department } from '../department/entities/department.entity';
@@ -24,18 +23,33 @@ export class PurposeService {
   ) { }
 
   // Create Purpose
-  async create(createPurposeDto: CreatePurposeDto) {
+  async createPurpose(createPurposeDto: CreatePurposeDto, userId: any) {
     try {
-      await Abstract?.createData(Purpose, createPurposeDto)
+
+      let user = await this?.UserModel.findOne({ where: { userId } })
+      console.log(userId)
+      if (!user)
+        return Util?.CustomhandleNotFoundResponse('User not found');
+
+      let get_org = await this?.OrgModel.findOne({ where: { organizationId: user?.organizationId } })
+      if (!get_org)
+        return Util?.CustomhandleNotFoundResponse('organization not found');
+
+      const purpose = await Purpose?.create({
+        ...createPurposeDto,
+        organizationId: get_org?.organizationId
+      })
+      await purpose.save()
       return Util?.handleCreateSuccessRespone("Purpose Created Successfully")
     } catch (error) {
       console.log(error)
-      return Util?.handleGrpcReqError(Util?.getTryCatchMsg(error))
+      return Util?.handleGrpcTryCatchError(Util?.getTryCatchMsg(error));
     }
   }
 
+
   // Get All Purposes
-  async findAll(page: number, size: number, userId: any) {
+  async findAll(page: number, size: number, userId: string) {
     try {
 
       console.log(userId)
@@ -101,7 +115,7 @@ export class PurposeService {
   }
 
   // Get Purpose By purposeId
-  async findOne(purposeId: string, userId: any) {
+  async findOne(purposeId: string, userId: string) {
     try {
 
       console.log(userId)
@@ -130,7 +144,7 @@ export class PurposeService {
   }
 
   // Update Purpose By purposeId
-  async update(purposeId: string, updatePurposeDto: UpdatePurposeDto, userId: any) {
+  async update(purposeId: string, updatePurposeDto: UpdatePurposeDto, userId: string) {
     try {
 
       console.log(userId)
@@ -158,7 +172,7 @@ export class PurposeService {
   }
 
   // Remove Purpose By purposeId
-  async remove(purposeId: string, userId: any) {
+  async remove(purposeId: string, userId: string) {
     try {
 
       console.log(userId)
@@ -185,7 +199,7 @@ export class PurposeService {
   }
 
   // Filter by Official and Personal Visits
-  async guestPurpose(keyword: string, userId: any) {
+  async guestPurpose(keyword: string, userId: string) {
     try {
 
       console.log(userId)
@@ -204,7 +218,6 @@ export class PurposeService {
       if (keyword != null) {
         filter = { purpose: keyword }
       }
-      // console.log(filter);
 
 
       const filterCheck = await this.PurposeModel.findAll({
@@ -224,7 +237,7 @@ export class PurposeService {
   }
 
   // Filter By Date Range
-  async findByDateRange(startDate: Date, endDate: Date, userId: any) {
+  async findByDateRange(startDate: Date, endDate: Date, userId: string) {
     try {
 
       console.log(userId)
@@ -277,7 +290,7 @@ export class PurposeService {
   }
 
   // Search guest by firstname
-  async searchGuest(keyword: string, userId: any) {
+  async searchGuest(keyword: string, userId: string) {
     try {
 
       console.log(userId)
@@ -337,12 +350,31 @@ export class PurposeService {
   }
 
   // Guest sign Out
-  async guestSignOut(guestOpDTO: guestOpDTO) {
+  async guestSignOut(guestOpDTO: guestOpDTO, userId: any) {
     try {
 
+      let user = await this?.UserModel.findOne({ where: { userId } })
+      console.log(userId)
+      if (!user)
+        return Util?.CustomhandleNotFoundResponse('User not found');
+
+      let get_org = await this?.OrgModel.findOne({ where: { organizationId: user?.organizationId } })
+      if (!get_org)
+        return Util?.CustomhandleNotFoundResponse('organization not found');
+
       const { phoneNumber, countryCode } = guestOpDTO
-      const guest = await this.GuestModel.findOne({ where: { phoneNumber: phoneNumber } });
-      const cCode = await this.GuestModel.findOne({ where: { countryCode } })
+      const guest = await this.GuestModel.findOne({
+        where: {
+          phoneNumber: phoneNumber,
+          organizationId: get_org?.organizationId
+        }
+      });
+      const cCode = await this.GuestModel.findOne({
+        where: {
+          countryCode,
+          organizationId: get_org?.organizationId
+        }
+      })
 
       const currentTime = new Date().toLocaleTimeString();
 
@@ -355,9 +387,9 @@ export class PurposeService {
       const purpose = await this.PurposeModel.findOne(
         {
           where: {
-            guestId: guest?.guestId
+            guestId: guest?.guestId,
+            organizationId: get_org?.organizationId
           }
-          // order:['id','desc']
         });
 
       if (!purpose)
@@ -389,12 +421,32 @@ export class PurposeService {
   }
 
   // Confirm Guest Signout
-  async guestConfirmSignOut(guestOpDTO: guestOpDTO) {
+  async guestConfirmSignOut(guestOpDTO: guestOpDTO, userId: any) {
     try {
 
+      let user = await this?.UserModel.findOne({ where: { userId } })
+      console.log(userId)
+      if (!user)
+        return Util?.CustomhandleNotFoundResponse('User not found');
+
+      let get_org = await this?.OrgModel.findOne({ where: { organizationId: user?.organizationId } })
+      if (!get_org)
+        return Util?.CustomhandleNotFoundResponse('organization not found');
+
       const { phoneNumber, countryCode } = guestOpDTO
-      const guest = await this.GuestModel.findOne({ where: { phoneNumber: phoneNumber } });
-      const cCode = await this.GuestModel.findOne({ where: { countryCode } })
+      const guest = await this.GuestModel.findOne({
+        where: {
+          phoneNumber: phoneNumber,
+          organizationId: get_org?.organizationId
+        }
+      });
+      const cCode = await this.GuestModel.findOne({
+        where: {
+          countryCode,
+          organizationId: get_org?.organizationId
+        }
+      }
+      )
 
       const currentTime = new Date().toLocaleTimeString();
 
@@ -406,7 +458,6 @@ export class PurposeService {
           where: {
             guestId: guest?.guestId
           }
-          // order:['id','desc']
         });
       // Checking if guest is signed In
       if (purpose?.visitStatus != 'Signed In')
@@ -435,7 +486,7 @@ export class PurposeService {
 
 
   // Filter Guest by Gender
-  async genderFilter(keyword: string, userId: any) {
+  async genderFilter(keyword: string, userId: string) {
     try {
 
       console.log(userId)
