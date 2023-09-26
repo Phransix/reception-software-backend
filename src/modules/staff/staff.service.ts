@@ -289,7 +289,7 @@ export class StaffService {
       });
 
       return Util?.SuccessRespone(
-        `Staff with this #${staffId} updated successfully`,
+        'Staff with this #${staffId} updated successfully',
       );
     } catch (error) {
       if (rollImage) {
@@ -366,7 +366,7 @@ export class StaffService {
          },
       });
 
-      return Util?.handleCreateSuccessRespone(
+      return Util?.SuccessRespone(
         'Staff with this #${staffId}  Image updated successfully',
       );
     } catch (error) {
@@ -395,7 +395,7 @@ export class StaffService {
       const staff = await Staff.findOne({ where: { staffId ,organizationId:get_org?.organizationId} });
       if (!staff) {
         return Util?.handleFailResponse(
-          `Staff with this #${staffId} not found`,
+          'Staff with this #${staffId} not found',
         );
       }
 
@@ -403,7 +403,7 @@ export class StaffService {
 
       return Util?.handleSuccessRespone(
         Util?.SuccessRespone,
-        `Staff with this #${staffId}  deleted successfully`,
+        'Staff with this #${staffId}  deleted successfully',
       );
     } catch (error) {
       console.log(error);

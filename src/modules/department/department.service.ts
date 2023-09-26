@@ -238,7 +238,7 @@ export class DepartmentService {
        )
       
       return Util?.SuccessRespone(
-        `Department with this #${departmentId} updated successfully`,
+        'Department with this #${departmentId} updated successfully',
       );
     } catch (error) {
       if (rollImage) {
@@ -317,7 +317,7 @@ export class DepartmentService {
           organizationId:get_org?.organizationId
         }}
       );
-      return Util?.handleCreateSuccessRespone(
+      return Util?.SuccessRespone(
         'Staff with this id, Image updated successfully',
       );
       
