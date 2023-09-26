@@ -80,12 +80,12 @@ export class CreateStaffDto {
     @MaxLength(10)
     readonly phoneNumber: string;
 
-    @ApiProperty({
-        description: 'The gender type of the Staff',
-        example: 'male'
-    })
-    @IsNotEmpty()
-    readonly gender: string;
+    // @ApiProperty({
+    //     description: 'The gender type of the Staff',
+    //     example: 'male'
+    // })
+    // @IsNotEmpty()
+    // readonly gender: string;
 
 
     @ApiProperty({

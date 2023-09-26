@@ -27,6 +27,7 @@ import { AtGuard } from 'src/common/guards';
 import { Department } from './entities/department.entity';
 import { DoesDeptExist } from 'src/common/guards/doesDeptExist.guard';
 import { GetCurrentUserId } from 'src/common/decorators/get-current-user-id.decorator';
+import { CreateDepartImgDto } from './dto/create-departImage.dto';
 
 @ApiTags('Department')
 @Controller('department')
@@ -153,6 +154,36 @@ export class DepartmentController {
       return Util?.handleRequestError(Util?.getTryCatchMsg(error),ErrorCode)
     }
   }
+
+    // Update Department Profile Photo
+    @UseGuards(AuthGuard('jwt'))
+    @ApiBearerAuth('defaultBearerAuth')
+    @ApiOperation({ summary: 'Update Department Image By departmentId' })
+    @Public()
+    @UseGuards(AtGuard)
+    @Patch(':departmentId/profilePhoto')
+    async updateDeptImage(
+      @GetCurrentUserId() userId : string,
+      @Param('departmentId') departmentId: string,
+      @Body() createDepartImageDto:CreateDepartImgDto,
+    ) {
+      let ErrorCode: number;
+      try {
+        let dept_update = await this.departmentService.updateDeptImage(
+          departmentId,
+          createDepartImageDto,
+          userId
+        );
+        if (dept_update?.status_code != HttpStatus.OK) {
+          ErrorCode = dept_update?.status_code;
+          throw new Error(dept_update?.message);
+        }
+        return dept_update;
+      } catch (error) {
+        console.log(error);
+        return Util?.handleRequestError(Util?.getTryCatchMsg(error), ErrorCode);
+      }
+    }
 
   // Delete Department
   @UseGuards(AuthGuard('jwt'))

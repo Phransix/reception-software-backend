@@ -56,7 +56,7 @@ export class StaffService {
         fullName: createStaffDto?.fullName,
         email: createStaffDto?.email,
         phoneNumber: createStaffDto?.phoneNumber,
-        gender: createStaffDto?.gender,
+        // gender: createStaffDto?.gender,
         role: createStaffDto?.role,
         profilePhoto: staff_image,
       };
@@ -277,14 +277,14 @@ export class StaffService {
         fullName: updateStaffDto?.fullName,
         email: updateStaffDto?.email,
         phoneNumber: updateStaffDto?.phoneNumber,
-        gender: updateStaffDto?.gender,
+        // gender: updateStaffDto?.gender,
         role: updateStaffDto?.role,
         profilePhoto: staff_image,
       };
 
       await this?.staffModel?.update(insertQry, {
         where: { 
-          id: staff_data?.id 
+          staffId: staff_data?.staffId
         },
       });
 
@@ -361,13 +361,13 @@ export class StaffService {
       };
       await this?.staffModel?.update(insertQry, {
         where: { 
-          id: staff_data?.id,
+          staffId: staff_data?.staffId,
           organizationId:get_org?.organizationId
          },
       });
 
       return Util?.handleCreateSuccessRespone(
-        `Staff with this #${staffId} and Image updated successfully`,
+        'Staff with this #${staffId}  Image updated successfully',
       );
     } catch (error) {
       if (rollImage) {

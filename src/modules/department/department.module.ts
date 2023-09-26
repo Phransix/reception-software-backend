@@ -5,10 +5,11 @@ import { SequelizeModule } from '@nestjs/sequelize';
 import { Department } from './entities/department.entity';
 import { Organization } from '../organization/entities/organization.entity';
 import { User } from '../users/entities/user.entity';
+import { deptProfileUpload } from 'src/helper/departmentProfile';
 
 @Module({
   imports : [SequelizeModule.forFeature([Department,Organization,User])],
   controllers: [DepartmentController],
-  providers: [DepartmentService]
+  providers: [DepartmentService,deptProfileUpload]
 })
 export class DepartmentModule {}

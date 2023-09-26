@@ -119,12 +119,12 @@ export class Staff extends Model<Staff>{
       phoneNumber: string;
 
      
-      @Column({
-        allowNull:true,
-        type: DataType.ENUM,
-        values: [ 'male', 'female', ]
-    })
-    gender: string;
+    //   @Column({
+    //     allowNull:true,
+    //     type: DataType.ENUM,
+    //     values: [ 'male', 'female', ]
+    // })
+    // gender: string;
 
       @Column({
         type: DataType.STRING,

@@ -9,6 +9,9 @@ import * as Abstract from '../../utils/abstract';
 import { Op } from 'sequelize';
 import { Organization } from '../organization/entities/organization.entity';
 import { User } from '../users/entities/user.entity';
+import { deptProfileUpload } from 'src/helper/departmentProfile';
+import { CreateDepartImgDto } from './dto/create-departImage.dto';
+const fs = require('fs');
 
 @Injectable()
 export class DepartmentService {
@@ -16,6 +19,7 @@ export class DepartmentService {
     private sequelize: Sequelize,
     @InjectModel(Department)
     private readonly departmentModel: typeof Department,
+    private readonly deptImageHelper: deptProfileUpload,
     @InjectModel(User) private userModel: typeof User,
     @InjectModel(Organization) private orgModel: typeof Organization,
   ) {}
@@ -33,11 +37,30 @@ export class DepartmentService {
       if(!get_org)
       return Util?.CustomhandleNotFoundResponse('organization not found');
 
-      const enquiry = await Department?.create({
-        ...createDepartmentDto,
+      var image_matches = createDepartmentDto?.profilePhoto?.match(
+        /^data:([A-Za-z-+\/]+);base64,(.+)$/,
+      );
+      if(!image_matches){
+        return Util?.handleFailResponse('Invalid Input file');
+      }
+
+      let dept_image = await this?.deptImageHelper?.uploadDeptImage(
+        createDepartmentDto?.profilePhoto
+      )
+
+      const insertQry ={
+        organizationId: createDepartmentDto?.organizationId,
+        departmentName: createDepartmentDto?.departmentName,
+        departmentRoomNumber: createDepartmentDto?.departmentRoomNum,
+        profilePhoto: dept_image
+      }
+      console.log(insertQry);
+
+      const new_dept = await Department?.create({
+        ...insertQry,
         organizationId:get_org?.organizationId
       })
-      await enquiry.save();
+      await new_dept.save();
       return Util?.handleCreateSuccessRespone(
         'Department created successfully.',
       );
@@ -155,6 +178,7 @@ export class DepartmentService {
 
   // Update Department By The departmentId
   async update(departmentId: string, updateDepartmentDto: UpdateDepartmentDto,userId:any) {
+    let rollImage = ""
     try {
 
       let user = await this?.userModel.findOne({where:{userId}})
@@ -167,20 +191,140 @@ export class DepartmentService {
       if(!get_org)
       return Util?.CustomhandleNotFoundResponse('organization not found');
 
-      const data = await Department.findOne({ where: { departmentId ,organizationId:get_org?.organizationId} });
-      if (!data) {
-        // throw new Error('Department not found.');
+      const dept_data = await Department.findOne({ where: { departmentId ,organizationId:get_org?.organizationId} });
+      if (!dept_data) {
         return Util?.CustomhandleNotFoundResponse(
           'Department with this #${departmentId} not found',
         );
       }
 
-      Object.assign(data, updateDepartmentDto);
-      await data.save();
+      var image_matches = updateDepartmentDto?.profilePhoto?.match(
+        /^data:([A-Za-z-+\/]+);base64,(.+)$/,
+      );
+      if (!image_matches) {
+        return Util?.handleFailResponse('Invalid Input file');
+      }
+
+      let dept_image = await this?.deptImageHelper?.uploadDeptImage(
+        updateDepartmentDto?.profilePhoto,
+      );
+      rollImage = dept_image;
+
+        // Delete the old profile photo if it exists in the directorate
+        let front_path = dept_data?.profilePhoto;
+
+      if (front_path != null) {
+        fs.access(front_path, fs.F_OK, async (err) => {
+          if (err) {
+            console.error(err);
+            return;
+          }
+          await this?.deptImageHelper.unlinkFile(front_path);
+        });
+      }
+
+       let insertQry = {
+        organizationId: updateDepartmentDto?.organizationId,
+        departmentName: updateDepartmentDto?.departmentName,
+        departmentRoomNumber: updateDepartmentDto?.departmentRoomNum,
+        profilePhoto: dept_image
+       }   
+
+       await this?.departmentModel.update(
+          insertQry,
+        {where:{
+          departmentId:dept_data?.departmentId
+        }}
+       )
+      
       return Util?.SuccessRespone(
         `Department with this #${departmentId} updated successfully`,
       );
     } catch (error) {
+      if (rollImage) {
+        await this?.deptImageHelper?.unlinkFile(rollImage);
+      }
+      console.log(error);
+      return Util?.handleGrpcTryCatchError(Util?.getTryCatchMsg(error));
+    }
+  }
+
+  // Update Department Profile Photo By The departmentId
+  async updateDeptImage(departmentId:string,createDepartImageDto:CreateDepartImgDto,userId:any){
+    let rollImage = '';
+    try {
+
+      let user = await this?.userModel.findOne({where:{userId}})
+      console.log(user?.organizationId)
+      if(!user)
+      return Util?.CustomhandleNotFoundResponse('User not found');
+
+      let get_org = await this?.orgModel.findOne({where:{organizationId:user?.organizationId}})
+
+      if(!get_org)
+      return Util?.CustomhandleNotFoundResponse('organization not found');
+
+      const dept_data = await this?.departmentModel?.findOne({where:{departmentId, organizationId:get_org?.organizationId}})
+      if(!dept_data){
+        return Util?.CustomhandleNotFoundResponse(
+          'Department with this #${staffId} not found',
+        );
+      }
+
+      if (
+        createDepartImageDto?.profilePhoto == null ||
+        createDepartImageDto?.profilePhoto == undefined ||
+        createDepartImageDto?.profilePhoto == ''
+      ) {
+        return Util?.handleFailResponse('File Can not be empty');
+      }
+
+      var image_matches = createDepartImageDto?.profilePhoto?.match(
+        /^data:([A-Za-z-+\/]+);base64,(.+)$/,
+      );
+      if (!image_matches) {
+        return Util?.handleFailResponse('Invalid Input file');
+      }
+
+      let dept_image = await this?.deptImageHelper?.uploadDeptImage(
+        createDepartImageDto?.profilePhoto
+      )
+
+      rollImage = dept_image;
+
+
+      // Delete the old profile photo if it exists in the directorate
+      let front_path = dept_data?.profilePhoto;
+
+      if (front_path != null) {
+        fs.access(front_path, fs.F_OK, async (err) => {
+          if (err) {
+            console.error(err);
+            return;
+          }
+          await this?.deptImageHelper?.unlinkFile(front_path);
+        });
+      }
+
+      let insertQry = {
+        profilePhoto: dept_image
+      };
+
+      await this?.departmentModel?.update(
+        insertQry,
+        {where:{
+          departmentId:dept_data?.departmentId,
+          organizationId:get_org?.organizationId
+        }}
+      );
+      return Util?.handleCreateSuccessRespone(
+        'Staff with this id, Image updated successfully',
+      );
+      
+    } catch (error) {
+      if (rollImage) {
+        await this?.deptImageHelper?.unlinkFile(rollImage);
+      }
       console.log(error);
       return Util?.handleGrpcTryCatchError(Util?.getTryCatchMsg(error));
     }
