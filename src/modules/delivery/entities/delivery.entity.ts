@@ -1,8 +1,5 @@
 import { BelongsTo, Column, DataType, ForeignKey, HasMany, Model, Table } from "sequelize-typescript";
-import { Guest } from "src/modules/guest/entities/guest.entity";
 import { Organization } from "src/modules/organization/entities/organization.entity";
-import { CreateDeliveryDto } from "../dto/create-delivery.dto";
-import moment from "moment";
 const { v4: uuidv4 } = require('uuid');
 
 
@@ -97,7 +94,7 @@ export class Delivery extends Model <Delivery> {
     @Column({
       type: DataType.ENUM,
       values: ['pc(c)','bx(s)','pck(s)'],
-      allowNull: false,
+      allowNull: true,
     })
     unit: string
 

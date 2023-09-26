@@ -81,19 +81,49 @@ export class PurposeService {
         include: [
           {
             model: Guest,
-            attributes: { exclude: ['id', 'guestId', 'organizationId', 'createdAt', 'updatedAt', 'deletedAt'] },
+            attributes: { 
+              exclude: [
+                'id',
+                'guestId',
+                'organizationId',
+                'createdAt',
+                'updatedAt',
+                'deletedAt'
+              ]
+             },
             order: [['id', 'DESC']],
             as: 'guestData'
           },
           {
             model: Department,
-            attributes: { exclude: ['id', 'organizationId', 'departmentId', 'createdAt', 'updatedAt', 'deletedAt'] },
+            attributes: { 
+              exclude: [
+                'id',
+                'organizationId',
+                'departmentId',
+                'createdAt',
+                'updatedAt',
+                'deletedAt'
+              ]
+             },
             order: [['id', 'DESC']],
             as: 'departmentData'
           },
           {
             model: Staff,
-            attributes: { exclude: ['id', 'departmentId', 'organizationId', 'staffId', 'organizationName', 'departmentName', 'createdAt', 'updatedAt', 'deletedAt'] },
+            attributes: { 
+              exclude: [
+                'id',
+                'departmentId',
+                'organizationId',
+                'staffId',
+                'organizationName',
+                'departmentName',
+                'createdAt',
+                'updatedAt',
+                'deletedAt'
+              ]
+             },
             order: [['id', 'DESC']],
             as: 'staffData'
           }
@@ -139,13 +169,34 @@ export class PurposeService {
         include: [
           {
             model: Guest,
-            attributes: { exclude: ['id', 'guestId', 'organizationId', 'createdAt', 'updatedAt', 'deletedAt'] },
+            attributes: { 
+              exclude: [
+                'id',
+                'guestId',
+                'organizationId',
+                'createdAt',
+                'updatedAt',
+                'deletedAt'
+              ]
+             },
             order: [['id', 'DESC']],
             as: 'guestData'
           },
           {
             model: Staff,
-            attributes: { exclude: ['id', 'departmentId', 'organizationId', 'staffId', 'organizationName', 'departmentName', 'createdAt', 'updatedAt', 'deletedAt'] },
+            attributes: { 
+              exclude: [
+                'id',
+                'departmentId',
+                'organizationId',
+                'staffId',
+                'organizationName',
+                'departmentName',
+                'createdAt',
+                'updatedAt',
+                'deletedAt'
+              ]
+             },
             order: [['id', 'DESC']],
             as: 'staffData'
           }
@@ -237,7 +288,6 @@ export class PurposeService {
         filter = { purpose: keyword }
       }
 
-
       const filterCheck = await this.PurposeModel.findAll({
         where: {
           ...filter,
@@ -281,19 +331,49 @@ export class PurposeService {
         include: [
           {
             model: Guest,
-            attributes: { exclude: ['id', 'guestId', 'organizationId', 'createdAt', 'updatedAt', 'deletedAt'] },
+            attributes: { 
+              exclude: [
+                'id',
+                'guestId',
+                'organizationId',
+                'createdAt',
+                'updatedAt',
+                'deletedAt'
+              ]
+             },
             order: [['id', 'DESC']],
             as: 'guestData'
           },
           {
             model: Department,
-            attributes: { exclude: ['id', 'organizationId', 'departmentId', 'createdAt', 'updatedAt', 'deletedAt'] },
+            attributes: { 
+              exclude: [
+                'id',
+                'organizationId',
+                'departmentId',
+                'createdAt',
+                'updatedAt',
+                'deletedAt'
+              ]
+             },
             order: [['id', 'DESC']],
             as: 'departmentData'
           },
           {
             model: Staff,
-            attributes: { exclude: ['id', 'departmentId', 'organizationId', 'staffId', 'organizationName', 'departmentName', 'createdAt', 'updatedAt', 'deletedAt'] },
+            attributes: { 
+              exclude: [
+                'id',
+                'departmentId',
+                'organizationId',
+                'staffId',
+                'organizationName',
+                'departmentName',
+                'createdAt',
+                'updatedAt',
+                'deletedAt'
+              ]
+             },
             order: [['id', 'DESC']],
             as: 'staffData'
           }
@@ -327,7 +407,16 @@ export class PurposeService {
         include: [
           {
             model: Guest,
-            attributes: { exclude: ['id', 'guestId', 'organizationId', 'createdAt', 'updatedAt', 'deletedAt'] },
+            attributes: { 
+              exclude: [
+                'id',
+                'guestId',
+                'organizationId',
+                'createdAt',
+                'updatedAt',
+                'deletedAt'
+              ]
+             },
             order: [['id', 'DESC']],
             as: 'guestData',
             where: {
@@ -348,13 +437,34 @@ export class PurposeService {
           },
           {
             model: Department,
-            attributes: { exclude: ['id', 'organizationId', 'departmentId', 'createdAt', 'updatedAt', 'deletedAt'] },
+            attributes: { 
+              exclude: [
+                'id',
+                'organizationId',
+                'departmentId',
+                'createdAt',
+                'updatedAt',
+                'deletedAt'
+              ]
+             },
             order: [['id', 'DESC']],
             as: 'departmentData'
           },
           {
             model: Staff,
-            attributes: { exclude: ['id', 'departmentId', 'organizationId', 'staffId', 'organizationName', 'departmentName', 'createdAt', 'updatedAt', 'deletedAt'] },
+            attributes: { 
+              exclude: [
+                'id',
+                'departmentId',
+                'organizationId',
+                'staffId',
+                'organizationName',
+                'departmentName',
+                'createdAt',
+                'updatedAt',
+                'deletedAt'
+              ]
+             },
             order: [['id', 'DESC']],
             as: 'staffData'
           }

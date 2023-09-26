@@ -5,11 +5,10 @@ import { SequelizeModule } from '@nestjs/sequelize';
 import { Delivery } from './entities/delivery.entity';
 import { Organization } from '../organization/entities/organization.entity';
 import { User } from '../users/entities/user.entity';
-import { Staff } from '../staff/entities/staff.entity';
 
 
 @Module({
-  imports: [SequelizeModule.forFeature([Delivery,Organization,User,Staff])],
+  imports: [SequelizeModule.forFeature([Delivery,Organization,User])],
   controllers: [DeliveryController],
   providers: [DeliveryService]
 })

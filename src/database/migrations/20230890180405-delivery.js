@@ -66,7 +66,7 @@ module.exports = {
       },
       unit: {
         type: Sequelize.ENUM('pc(s)', 'bx(s)', 'pck(s)'),
-        allowNull: false,
+        allowNull: true,
         defaultValue: null,
         validate: {
           isIn: [['pc(c)', 'bx(s)', 'pck(s)']]

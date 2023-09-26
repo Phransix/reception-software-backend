@@ -1,4 +1,4 @@
-import { BadRequestException, Injectable, } from '@nestjs/common';
+import { Injectable, } from '@nestjs/common';
 import { CreateGuestDto } from './dto/create-guest.dto';
 import { UpdateGuestDto } from './dto/update-guest.dto';
 import { InjectModel } from '@nestjs/sequelize';
