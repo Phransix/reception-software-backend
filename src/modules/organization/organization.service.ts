@@ -315,8 +315,8 @@ export class OrganizationService {
       await this?.organizationModel?.update(insertQry, {
         where: { organizationId: org?.organizationId },
       });
-      return Util?.handleCreateSuccessRespone(
-        `Organization with this #${organizationId} updated successfully`,
+      return Util?.SuccessRespone(
+        'Organization  updated successfully',
       );
     } catch (error) {
       // if (rollImage) {
@@ -340,7 +340,7 @@ export class OrganizationService {
       });
       if (!org_data) {
         return Util?.handleFailResponse(
-          `Organization with this #${organizationId} not found`,
+          'Organization with this organizationId not found',
         );
       }
 
@@ -385,8 +385,8 @@ export class OrganizationService {
         where: { id: org_data?.id },
       });
 
-      return Util?.handleCreateSuccessRespone(
-        `Organization with this #${organizationId} and Image updated successfully`,
+      return Util?.SuccessRespone(
+        'Organization with this organizationId, Image updated successfully',
       );
     } catch (error) {
       if (rollImage) {
@@ -406,8 +406,7 @@ export class OrganizationService {
       }
         await this?.organizationModel?.destroy()
 
-      return Util?.handleSuccessRespone(
-        Util?.SuccessRespone,
+      return Util?.SuccessRespone(
         'Organization deleted successfully.',
       );
     } catch (error) {
