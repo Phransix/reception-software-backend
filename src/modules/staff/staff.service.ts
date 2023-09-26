@@ -221,8 +221,7 @@ export class StaffService {
 
   // Update Staff By The Id
   async update(staffId: string, updateStaffDto: UpdateStaffDto,userId:any) {
-    let rollImage = '';
-
+  
     try {
 
       let user = await this?.userModel.findOne({where:{userId}})
@@ -243,43 +242,16 @@ export class StaffService {
         );
       }
 
-      var image_matches = updateStaffDto?.profilePhoto?.match(
-        /^data:([A-Za-z-+\/]+);base64,(.+)$/,
-      );
-      if (!image_matches) {
-        return Util?.handleFailResponse('Invalid Input file');
-      }
-
-      let staff_image = await this?.staffImgHelper?.uploadStaffImage(
-        updateStaffDto?.profilePhoto,
-      );
-      rollImage = staff_image;
-
-      // Delete the old profile photo if it exists in the directorate
-      let front_path = staff_data?.profilePhoto;
-
-      if (front_path != null) {
-        fs.access(front_path, fs.F_OK, async (err) => {
-          if (err) {
-            console.error(err);
-            return;
-          }
-          await this.staffImgHelper.unlinkFile(front_path);
-        });
-      }
-
       let insertQry = {
-        organizationId: updateStaffDto?.organizationId,
+      
         organizationName: updateStaffDto?.organizationName,
-        departmentId: updateStaffDto?.departmentId,
         departmentName: updateStaffDto?.departmentName,
         title: updateStaffDto?.title,
         fullName: updateStaffDto?.fullName,
         email: updateStaffDto?.email,
         phoneNumber: updateStaffDto?.phoneNumber,
-        // gender: updateStaffDto?.gender,
         role: updateStaffDto?.role,
-        profilePhoto: staff_image,
+        
       };
 
       await this?.staffModel?.update(insertQry, {
@@ -292,9 +264,6 @@ export class StaffService {
         'Staff with this #${staffId} updated successfully',
       );
     } catch (error) {
-      if (rollImage) {
-        await this?.staffImgHelper?.unlinkFile(rollImage);
-      }
       console.log(error);
       return Util?.handleGrpcTryCatchError(Util?.getTryCatchMsg(error));
     }

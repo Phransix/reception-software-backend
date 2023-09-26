@@ -270,7 +270,7 @@ export class OrganizationService {
     organizationId: string,
     updateOrganizationDto: UpdateOrganizationDto,
   ) {
-    // let rollImage = '';
+ 
     try {
       const org = await Organization.findOne({ where: { organizationId } });
       if (!org) {
@@ -279,39 +279,12 @@ export class OrganizationService {
         );
       }
 
-      // var image_matches = updateOrganizationDto?.profilePhoto?.match(
-      //   /^data:([A-Za-z-+\/]+);base64,(.+)$/,
-      // );
-      // if (!image_matches) {
-      //   return Util?.handleFailResponse('Invalid Input file');
-      // }
-
-      // let orgProfile = await this?.imgHelper?.uploadOrganizationImage(
-      //   updateOrganizationDto?.profilePhoto,
-      // );
-      // rollImage = orgProfile;
-
-      // Delete the old profile photo if it exists in the directorate
-      // let front_path = org?.profilePhoto;
-      // if (front_path != null) {
-      //   fs.access(front_path, fs.F_OK, async (err) => {
-      //     if (err) {
-      //       console.error(err);
-      //       return;
-      //     }
-      //     await this.imgHelper.unlinkFile(front_path);
-      //   });
-      // }
-
       let insertQry = {
         organizationName: updateOrganizationDto?.organizationName,
         email: updateOrganizationDto?.email,
         phoneNumber: updateOrganizationDto?.phoneNumber,
-        // profilePhoto: orgProfile,
       };
-      // console.log(insertQry)
 
-      // return false
       await this?.organizationModel?.update(insertQry, {
         where: { organizationId: org?.organizationId },
       });
@@ -319,9 +292,6 @@ export class OrganizationService {
         'Organization  updated successfully',
       );
     } catch (error) {
-      // if (rollImage) {
-      //   await this?.imgHelper?.unlinkFile(rollImage);
-      // }
       console.log(error)
       return Util?.handleGrpcTryCatchError(Util?.getTryCatchMsg(error));
     }

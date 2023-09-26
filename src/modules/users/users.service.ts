@@ -263,8 +263,7 @@ export class UsersService {
 
   // Update User by Id
   async update(userId: string, updateUserDto: UpdateUserDto) {
-    let rollImage = '';
-
+   
     try {
 
       let user = await this?.userModel.findOne({where:{userId}})
@@ -277,36 +276,11 @@ export class UsersService {
       if(!get_org)
       return Util?.CustomhandleNotFoundResponse('organization not found');
 
-      var image_matches = updateUserDto.profilePhoto?.match(
-        /^data:([A-Za-z-+\/]+);base64,(.+)$/,
-      );
-      if (!image_matches) {
-        return Util?.handleFailResponse('Invalid Input file');
-      }
-
-      let user_image = await this?.imagehelper?.uploadUserImage(
-        updateUserDto.profilePhoto,
-      );
-      rollImage = user_image;
-
-      // Delete the old profile photo if it exists in the directorate
-      let front_path = user?.profilePhoto;
-      if (front_path != null) {
-        fs.access(front_path, fs.F_OK, async (err) => {
-          if (err) {
-            console.error(err);
-            return;
-          }
-          await this.imagehelper.unlinkFile(front_path);
-        });
-      }
-
       let insertQry = {
         roleName: updateUserDto?.roleName,
         fullName: updateUserDto?.fullName,
         email: updateUserDto?.email,
         phoneNumber: updateUserDto?.phoneNumber,
-        profilePhoto: user_image,
       };
 
       await this?.userModel?.update(insertQry, {
@@ -315,9 +289,7 @@ export class UsersService {
 
       return Util?.SuccessRespone('User updated successfully');
     } catch (error) {
-      if (rollImage) {
-        await this.imagehelper.unlinkFile(rollImage);
-      }
+     
       console.log(error);
       return Util?.handleGrpcTryCatchError(Util?.getTryCatchMsg(error));
     }
