@@ -130,8 +130,26 @@ export class PurposeService {
         return Util?.handleErrorRespone('organization not found');
 
       const purpose = await Purpose.findOne({
-        where: { purposeId, organizationId: get_org?.organizationId },
-        attributes: { exclude: ['createdAt', 'updatedAt'] }
+        where: 
+        { 
+          purposeId,
+          organizationId: get_org?.organizationId
+         },
+        attributes: { exclude: ['createdAt', 'updatedAt'] },
+        include: [
+          {
+            model: Guest,
+            attributes: { exclude: ['id', 'guestId', 'organizationId', 'createdAt', 'updatedAt', 'deletedAt'] },
+            order: [['id', 'DESC']],
+            as: 'guestData'
+          },
+          {
+            model: Staff,
+            attributes: { exclude: ['id', 'departmentId', 'organizationId', 'staffId', 'organizationName', 'departmentName', 'createdAt', 'updatedAt', 'deletedAt'] },
+            order: [['id', 'DESC']],
+            as: 'staffData'
+          }
+        ]
       });
       if (!purpose) {
         throw new NotAcceptableException('The Purpose data not exist')
