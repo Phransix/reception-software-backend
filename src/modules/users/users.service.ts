@@ -61,16 +61,7 @@ export class UsersService {
       if (!get_org)
         return Util?.CustomhandleNotFoundResponse('organization not found');
 
-      var image_matches = createUserDto.profilePhoto?.match(
-        /^data:([A-Za-z-+\/]+);base64,(.+)$/,
-      );
-      if (!image_matches) {
-        return Util?.handleFailResponse('Invalid Input file');
-      }
-
-      let user_image = await this?.imagehelper?.uploadUserImage(
-        createUserDto.profilePhoto,
-      );
+      
 
       const hash = await argon.hash(createUserDto.password);
 
@@ -80,7 +71,7 @@ export class UsersService {
         fullName: createUserDto?.fullName,
         email: createUserDto?.email,
         phoneNumber: createUserDto?.phoneNumber,
-        profilePhoto: user_image,
+        profilePhoto: createUserDto?.profilePhoto,
         password: hash,
       };
 
