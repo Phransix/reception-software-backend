@@ -226,44 +226,6 @@ export class DeliveryService {
     }
   }
 
-  // async confirmDelivery(deliveryId:string,userId: string, updateDeliveryStatus: UpdateDeliveryStatus) {
-  //   try {
-  //     let user_data = await this?.UserModel.findOne({where:{userId}})
-  //     console.log(user_data?.organizationId)
-  //     if(!user_data)
-  //     return Util?.CustomhandleNotFoundResponse('User not found');
-
-  //     let get_org = await this?.OrgModel.findOne({where:{organizationId:user_data?.organizationId}})
-
-  //     if(!get_org)
-
-  //     return Util?.CustomhandleNotFoundResponse('organization not found');
-
-  //     const confirmDelivery = await this.DeliveryModel.findOne({
-  //       where: {
-  //         deliveryId,
-  //         organizationId:get_org?.organizationId
-  //       }
-  //     })
-  //     if (!confirmDelivery) {
-  //       return Util?.handleFailResponse('Receipient Does not exist')
-  //     }
-
-  //     let confirmStas = {
-  //       status: updateDeliveryStatus?.status
-  //     }
-
-  //     await this.DeliveryModel.update(confirmStas, {
-  //       where:{
-  //         deliveryId: confirmDelivery?.deliveryId
-  //       }
-  //     })
-  //     return Util?.SuccessRespone('Delivery Updated')
-  //   } catch (error) {
-  //     console.log(error)
-  //     return Util?.handleGrpcTryCatchError(Util?.getTryCatchMsg(error));
-  //   }
-  // }
 
   // Filter By Date Range
   async findByDateRange(startDate: Date, endDate: Date, userId: any) {

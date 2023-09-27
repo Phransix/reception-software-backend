@@ -195,39 +195,6 @@ export class DeliveryController {
 
   }
 
-  //  @UseGuards(AuthGuard('jwt'))
-  // @ApiBearerAuth('defaultBearerAuth')
-  // @Public()
-  // @UseGuards(AtGuard)
-  // @ApiTags('Delivery')
-  // @ApiOperation({ summary: 'Confirm Delivery By Receptionist'})
-  // @Patch(':deliveryId/DeliveryConfirm')
-  // async updateStats (
-  //   @GetCurrentUserId() userId : string,
-  //   @Param('deliveryId') deliveryId: string,
-  //   @Body() updateDeliveryStatus: UpdateDeliveryStatus
-  // ){
-  //   let ErrorCode: number;
-  //   try {
-  //     const deliveryConf = await this.deliveryService.confirmDelivery(
-  //       deliveryId,
-  //       userId,
-  //       updateDeliveryStatus
-  //     );
-
-  //     if (deliveryConf?.status_code != HttpStatus.OK) {
-  //       ErrorCode = deliveryConf?.status_code;
-  //       throw new Error(deliveryConf?.message);
-  //     }
-  //     return deliveryConf
-  //   } catch (error) {
-  //     console.log(error)
-  //     return Util?.handleRequestError(Util?.getTryCatchMsg(error), ErrorCode)
-  //   }
-  // }
-
-
-
   // Filter by Date Range
   @UseGuards(AuthGuard('jwt'))
   @ApiBearerAuth('defaultBearerAuth')
