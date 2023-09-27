@@ -9,6 +9,7 @@ import { Public } from 'src/common/decorators/public.decorator';
 import { AtGuard } from 'src/common/guards';
 import { AuthGuard } from '@nestjs/passport';
 import { GetCurrentUserId } from 'src/common/decorators/get-current-user-id.decorator';
+import { UpdateDeliveryStatus } from './dto/updateDeliveryStatus';
 
 @Controller('delivery')
 export class DeliveryController {
@@ -181,15 +182,11 @@ export class DeliveryController {
   ) {
     let ErrorCode: number
     try {
-      const deliveryTo = await this.deliveryService.deliveryConfirm(deliveryConfirmDTO, userId)
+      const deliveryTo = await this.deliveryService.deliveryConfirm(deliveryConfirmDTO,userId)
       if (deliveryTo?.status_code != HttpStatus.CREATED) {
         ErrorCode = deliveryTo?.status_code;
         throw new Error(deliveryTo?.message)
       }
-      if (!deliveryTo) {
-        return Util?.handleFailResponse('Delivery does not exist')
-      }
-
       return deliveryTo
     } catch (error) {
       console.log(error)
@@ -197,6 +194,39 @@ export class DeliveryController {
     }
 
   }
+
+  //  @UseGuards(AuthGuard('jwt'))
+  // @ApiBearerAuth('defaultBearerAuth')
+  // @Public()
+  // @UseGuards(AtGuard)
+  // @ApiTags('Delivery')
+  // @ApiOperation({ summary: 'Confirm Delivery By Receptionist'})
+  // @Patch(':deliveryId/DeliveryConfirm')
+  // async updateStats (
+  //   @GetCurrentUserId() userId : string,
+  //   @Param('deliveryId') deliveryId: string,
+  //   @Body() updateDeliveryStatus: UpdateDeliveryStatus
+  // ){
+  //   let ErrorCode: number;
+  //   try {
+  //     const deliveryConf = await this.deliveryService.confirmDelivery(
+  //       deliveryId,
+  //       userId,
+  //       updateDeliveryStatus
+  //     );
+
+  //     if (deliveryConf?.status_code != HttpStatus.OK) {
+  //       ErrorCode = deliveryConf?.status_code;
+  //       throw new Error(deliveryConf?.message);
+  //     }
+  //     return deliveryConf
+  //   } catch (error) {
+  //     console.log(error)
+  //     return Util?.handleRequestError(Util?.getTryCatchMsg(error), ErrorCode)
+  //   }
+  // }
+
+
 
   // Filter by Date Range
   @UseGuards(AuthGuard('jwt'))

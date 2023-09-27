@@ -387,7 +387,7 @@ export class PurposeService {
     }
   }
 
-  // Search guest by firstname
+  // Search guest by firstname or lastname
   async searchGuest(keyword: string, userId: string) {
     try {
 
