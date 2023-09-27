@@ -10,9 +10,9 @@ export class LoginDTO {
     })
     @IsNotEmpty()
     @IsEmail()
-    @Matches(/^[a-zA-Z0-9._%+-]+@.+\.com$/, {
-       message: 'Invalid Format, must be a valid email with the .com',
-    })
+    // @Matches(/^[a-zA-Z0-9._%+-]+@.+\.com$/, {
+    //    message: 'Invalid Format, must be a valid email with the .com',
+    // })
     email: string;
 
 
