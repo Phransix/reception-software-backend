@@ -188,7 +188,7 @@ export class UsersService {
         offset,
         where: { organizationId: get_org?.organizationId },
         attributes: {
-          exclude: ['password', 'createdAt', 'updatedAt', 'deletedAt'],
+          exclude: ['password', 'updatedAt', 'deletedAt'],
         },
         order: [['createdAt', 'ASC']],
 
