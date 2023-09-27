@@ -174,57 +174,100 @@ export class DeliveryService {
   }
 
   // Confirm Delivery
-  async deliveryConfirm(deliveryConfirmDTO: deliveryConfirmDTO, userId: any) {
+  // async deliveryConfirm(deliveryConfirmDTO: deliveryConfirmDTO, userId: any) {
+  //   try {
+
+  //     console.log(userId)
+  //     let user = await this?.UserModel.findOne({ where: { userId } })
+  //     console.log(user?.organizationId)
+  //     if (!user)
+  //       return Util?.handleErrorRespone('User not found');
+
+  //     let get_org = await this?.OrgModel.findOne({ where: { organizationId: user?.organizationId } })
+
+  //     if (!get_org)
+  //       return Util?.handleErrorRespone('organization not found');
+
+  //     const { receipientName } = deliveryConfirmDTO
+
+  //     const delivery = await this.DeliveryModel.findOne(
+  //       {
+  //        where: {
+  //          receipientName, 
+  //          organizationId: get_org?.organizationId
+  //          } 
+  //         }
+  //         )
+  //     if (!delivery) {
+  //       return Util?.handleFailResponse('Receipient not found')
+  //     }
+
+  //     if (delivery?.status != 'awaiting_pickup')
+  //       return Util?.handleFailResponse('Delivery confirmed already')
+
+
+  //     await Delivery.update(
+  //       { 
+  //         status: 'delivered' 
+  //       }, 
+  //       { 
+  //         where: 
+  //         { 
+  //           receipientName: receipientName, 
+  //           organizationId: get_org?.organizationId 
+  //         } 
+  //       }
+  //       )
+  //     return Util?.SuccessRespone('Delivery Confirmation Successful')
+
+  //   } catch (error) {
+  //     console.log(error)
+  //     return Util?.handleGrpcTryCatchError(Util?.getTryCatchMsg(error));
+  //   }
+  // }
+
+
+
+    async confirmDelivery(deliveryId:string,userId: string, updateDeliveryStatus: UpdateDeliveryStatus) {
     try {
+      let user_data = await this?.UserModel.findOne({where:{userId}})
+      console.log(user_data?.organizationId)
+      if(!user_data)
+      return Util?.CustomhandleNotFoundResponse('User not found');
 
-      console.log(userId)
-      let user = await this?.UserModel.findOne({ where: { userId } })
-      console.log(user?.organizationId)
-      if (!user)
-        return Util?.handleErrorRespone('User not found');
+      let get_org = await this?.OrgModel.findOne({where:{organizationId:user_data?.organizationId}})
 
-      let get_org = await this?.OrgModel.findOne({ where: { organizationId: user?.organizationId } })
+      if(!get_org)
 
-      if (!get_org)
-        return Util?.handleErrorRespone('organization not found');
+      return Util?.CustomhandleNotFoundResponse('organization not found');
 
-      const { receipientName } = deliveryConfirmDTO
-
-      const delivery = await this.DeliveryModel.findOne(
-        {
-         where: {
-           receipientName, 
-           organizationId: get_org?.organizationId
-           } 
-          }
-          )
-      if (!delivery) {
-        return Util?.handleFailResponse('Receipient not found')
+      const confirmDelivery = await this.DeliveryModel.findOne({
+        where: {
+          deliveryId,
+          organizationId:get_org?.organizationId
+        }
+      })
+      if (!confirmDelivery) {
+        return Util?.handleFailResponse('Receipient Does not exist')
       }
 
-      if (delivery?.status != 'awaiting_pickup')
-        return Util?.handleFailResponse('Delivery confirmed already')
+      let confirmStas = {
+        name: updateDeliveryStatus?.receipientName
+      }
 
-
-      await Delivery.update(
-        { 
-          status: 'delivered' 
-        }, 
-        { 
-          where: 
-          { 
-            receipientName: receipientName, 
-            organizationId: get_org?.organizationId 
-          } 
+      await Delivery.update({status:'delivered'}, {
+        where:{
+          deliveryId: confirmDelivery?.deliveryId
         }
-        )
-      return Util?.SuccessRespone('Delivery Confirmation Successful')
-
+      })
+      return Util?.SuccessRespone('Delivery Updated')
     } catch (error) {
       console.log(error)
       return Util?.handleGrpcTryCatchError(Util?.getTryCatchMsg(error));
     }
   }
+  
+
 
 
   // Filter By Date Range

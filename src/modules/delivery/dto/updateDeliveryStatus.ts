@@ -7,5 +7,5 @@ export class UpdateDeliveryStatus {
         description: 'The name of the receipient',
         example: 'Kofi Amponsah'
     })
-    readonly status: string
+    readonly receipientName: string
 }
