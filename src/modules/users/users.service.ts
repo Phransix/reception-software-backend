@@ -463,7 +463,9 @@ export class UsersService {
       if (!user) {
         throw new Error('User data not found.');
       }
-      await this?.userModel?.destroy();
+
+      Object.assign(user);
+      await user?.destroy();
       return Util?.SuccessRespone('User deleted successfully.');
     } catch (error) {
       console.log(error);
