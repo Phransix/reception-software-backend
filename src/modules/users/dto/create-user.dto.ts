@@ -12,11 +12,11 @@ export class CreateUserDto {
     @IsNotEmpty()
     readonly organizationId: string;
 
-    // @ApiProperty({
-    //     description: 'The Name of the role',
-    //     example: 'Receptionist'
-    // })
-    // @IsNotEmpty()
+    @ApiProperty({
+        description: 'The Name of the role',
+        example: 'Receptionist'
+    })
+    @IsNotEmpty()
     readonly roleName: Role
  
     @ApiProperty({
