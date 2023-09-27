@@ -228,26 +228,36 @@ export class DeliveryService {
 
 
 
-    async confirmDelivery(deliveryId:string,userId: string, updateDeliveryStatus: UpdateDeliveryStatus) {
+  async confirmDelivery(deliveryId: string, userId: string, updateDeliveryStatus: UpdateDeliveryStatus) {
     try {
-      let user_data = await this?.UserModel.findOne({where:{userId}})
+      let user_data = await this?.UserModel.findOne({ where: { userId } })
       console.log(user_data?.organizationId)
-      if(!user_data)
-      return Util?.CustomhandleNotFoundResponse('User not found');
+      if (!user_data)
+        return Util?.CustomhandleNotFoundResponse('User not found');
 
-      let get_org = await this?.OrgModel.findOne({where:{organizationId:user_data?.organizationId}})
+      let get_org = await this?.OrgModel.findOne({ where: { organizationId: user_data?.organizationId } })
 
-      if(!get_org)
+      if (!get_org)
 
-      return Util?.CustomhandleNotFoundResponse('organization not found');
+        return Util?.CustomhandleNotFoundResponse('organization not found');
+
+      const { receipientName } = updateDeliveryStatus
 
       const confirmDelivery = await this.DeliveryModel.findOne({
         where: {
           deliveryId,
-          organizationId:get_org?.organizationId
+          organizationId: get_org?.organizationId
         }
       })
-      if (!confirmDelivery) {
+
+      const receipient = await this.DeliveryModel.findOne({
+        where: {
+          receipientName
+        }
+      }
+      )
+
+      if (!receipient || !confirmDelivery) {
         return Util?.handleFailResponse('Receipient Does not exist')
       }
 
@@ -255,18 +265,21 @@ export class DeliveryService {
         name: updateDeliveryStatus?.receipientName
       }
 
-      await Delivery.update({status:'delivered'}, {
-        where:{
+      if (confirmDelivery?.status != 'awaiting_pickup')
+        return Util?.handleFailResponse('Delivery confirmed already')
+
+      await Delivery.update({ status: 'delivered' }, {
+        where: {
           deliveryId: confirmDelivery?.deliveryId
         }
       })
-      return Util?.SuccessRespone('Delivery Updated')
+      return Util?.SuccessRespone('Delivery Confirmation Success')
     } catch (error) {
       console.log(error)
       return Util?.handleGrpcTryCatchError(Util?.getTryCatchMsg(error));
     }
   }
-  
+
 
 
 
