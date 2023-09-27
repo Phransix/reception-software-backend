@@ -59,7 +59,7 @@ export class CreateUserDto {
         description: 'The password of the User/Customer',
         example: '*****'
     })
-    @IsNotEmpty()
+    // @IsNotEmpty()
     @MinLength(8)
     readonly password: string
     
