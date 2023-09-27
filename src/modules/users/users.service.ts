@@ -464,6 +464,7 @@ export class UsersService {
         throw new Error('User data not found.');
       }
 
+    
       Object.assign(user);
       await user?.destroy();
       return Util?.SuccessRespone('User deleted successfully.');
