@@ -30,8 +30,8 @@ module.exports = {
 
       roleName: {
         type: Sequelize.ENUM('Admin', 'Receptionist'),
-        allowNull: false,
-        required:true,
+        allowNull: true,
+        required:false,
         defaultValue: 'Receptionist',
         validate: {
           isIn: [['Admin', 'Receptionist']] 
