@@ -30,7 +30,7 @@ const fs = require('fs');
 import { JwtService } from '@nestjs/jwt';
 import { ConfigService } from '@nestjs/config';
 import { LogOutDTO } from 'src/guard/auth/logoutDto';
-import { Role } from "src/modules/role/role.enum";
+import { Role } from 'src/modules/role/role.enum';
 
 @Injectable()
 export class OrganizationService {
@@ -65,7 +65,7 @@ export class OrganizationService {
         { ...createOrganizationDto },
         { transaction: t },
       );
-      let role = await Role?.Admin 
+      let role = await Role?.Admin;
 
       if (!role) throw new ForbiddenException('Role Not Found');
 
@@ -199,7 +199,10 @@ export class OrganizationService {
       };
 
       //  Send user data and tokens
-      return Util?.handleCustonCreateResponse(orgDetails, 'Login successfully.');
+      return Util?.handleCustonCreateResponse(
+        orgDetails,
+        'Login successfully.',
+      );
     } catch (error) {
       console.error(error);
       return Util?.handleGrpcTryCatchError(Util?.getTryCatchMsg(error));
@@ -221,11 +224,8 @@ export class OrganizationService {
         limit,
         offset,
         attributes: { exclude: ['createdAt', 'updatedAt', 'deletedAt'] },
-        order: [
-          ['createdAt', 'ASC']
-        ]
+        order: [['createdAt', 'ASC']],
       });
-      
 
       let result = Util?.getPagingData(allQueries, page, limit);
       console.log(result);
@@ -270,7 +270,6 @@ export class OrganizationService {
     organizationId: string,
     updateOrganizationDto: UpdateOrganizationDto,
   ) {
- 
     try {
       const org = await Organization.findOne({ where: { organizationId } });
       if (!org) {
@@ -288,11 +287,9 @@ export class OrganizationService {
       await this?.organizationModel?.update(insertQry, {
         where: { organizationId: org?.organizationId },
       });
-      return Util?.SuccessRespone(
-        'Organization  updated successfully',
-      );
+      return Util?.SuccessRespone('Organization  updated successfully');
     } catch (error) {
-      console.log(error)
+      console.log(error);
       return Util?.handleGrpcTryCatchError(Util?.getTryCatchMsg(error));
     }
   }
@@ -362,7 +359,7 @@ export class OrganizationService {
       if (rollImage) {
         await this?.imgHelper?.unlinkFile(rollImage);
       }
-      console.log(error)
+      console.log(error);
       return Util?.handleGrpcTryCatchError(Util?.getTryCatchMsg(error));
     }
   }
@@ -371,20 +368,19 @@ export class OrganizationService {
   async remove(organizationId: string) {
     try {
       const org = await Organization.findOne({ where: { organizationId } });
-      if (!org){
+      if (!org) {
         return Util?.checkIfRecordNotFound('Organization not found.');
       }
-        await this?.organizationModel?.destroy()
 
-      return Util?.SuccessRespone(
-        'Organization deleted successfully.',
-      );
+      Object.assign(org);
+      await org?.destroy();
+
+      return Util?.SuccessRespone('Organization deleted successfully.');
     } catch (error) {
       console.log(error);
       return Util?.handleGrpcTryCatchError(Util?.getTryCatchMsg(error));
     }
   }
-
 
   // Restore Deleted Data
   async restoreUser(organizationId: string) {
@@ -401,14 +397,6 @@ export class OrganizationService {
     }
   }
 
-
-
-
-
-
-
-
-
   async findOneByorganizationName(
     organizationName: string,
   ): Promise<Organization> {
@@ -416,8 +404,6 @@ export class OrganizationService {
       where: { organizationName },
     });
   }
-
- 
 
   async findOneByEmail(email: string): Promise<Organization> {
     return await this.organizationModel.findOne<Organization>({
@@ -451,7 +437,7 @@ export class OrganizationService {
       scopes: organizationName,
     };
 
-    const [at,rt] = await Promise.all([
+    const [at, rt] = await Promise.all([
       this.jwtService.signAsync(jwtPayload, {
         secret: this.config.get<string>('JWT_SECRETTABLET'),
         // expiresIn: '1m',
@@ -468,5 +454,4 @@ export class OrganizationService {
       refresh_token: rt,
     };
   }
-
 }
