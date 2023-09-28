@@ -305,7 +305,7 @@ export class EnquiriesService {
       const filterCheck = await this?.enquiryModel.findAll({
         where: {
           ...filter,
-          organizationId:get_org?.organizationId
+          // organizationId:get_org?.organizationId
         },
       });
 
