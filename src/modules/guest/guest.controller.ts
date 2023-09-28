@@ -1,6 +1,6 @@
 import { Controller, Get, Post, Body, Patch, Param, Delete, HttpStatus, UseGuards, Query } from '@nestjs/common';
 import { GuestService } from './guest.service';
-import { CreateGuestDto } from './dto/create-guest.dto';
+import { CreateGuestDto, Gender } from './dto/create-guest.dto';
 import { UpdateGuestDto } from './dto/update-guest.dto';
 import { ApiBearerAuth, ApiOperation, ApiQuery, ApiTags } from '@nestjs/swagger';
 import * as Util from '../../utils/index'
@@ -195,6 +195,38 @@ export class GuestController {
       return Util?.handleRequestError(Util?.getTryCatchMsg(error), ErrorCode)
     }
   }
+
+      // Filter Guest by Gender
+      @UseGuards(AuthGuard('jwt'))
+      @ApiBearerAuth('defaultBearerAuth')
+      @ApiQuery({
+        name: 'keyword',
+        enum: Gender,
+        required: false
+      })
+      @Public()
+      @UseGuards(AtGuard)
+      @ApiTags('Guest')
+      @ApiOperation({ summary: 'Filter Guest Gender' })
+      // @Get('guest/filterGender')
+      async guestGender(
+        @Query('keyword') keyword: string,
+        @GetCurrentUserId() userId: string
+      ) {
+        let ErrorCode: number
+        try {
+          const guest = await this.guestService.genderFilter(keyword,userId)
+          if (guest?.status_code != HttpStatus.OK) {
+            ErrorCode = guest?.status_code;
+            throw new Error(guest?.message)
+        } 
+        return guest
+        } catch (error) {
+          console.log(error)
+          return Util?.handleRequestError(Util?.getTryCatchMsg(error), ErrorCode)
+        }
+      }
+    
 
   // Bulk guest create
   @UseGuards(AtGuard)
