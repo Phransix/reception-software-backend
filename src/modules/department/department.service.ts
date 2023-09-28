@@ -37,22 +37,22 @@ export class DepartmentService {
       if(!get_org)
       return Util?.CustomhandleNotFoundResponse('organization not found');
 
-      var image_matches = createDepartmentDto?.profilePhoto?.match(
-        /^data:([A-Za-z-+\/]+);base64,(.+)$/,
-      );
-      if(!image_matches){
-        return Util?.handleFailResponse('Invalid Input file');
-      }
+      // var image_matches = createDepartmentDto?.profilePhoto?.match(
+      //   /^data:([A-Za-z-+\/]+);base64,(.+)$/,
+      // );
+      // if(!image_matches){
+      //   return Util?.handleFailResponse('Invalid Input file');
+      // }
 
-      let dept_image = await this?.deptImageHelper?.uploadDeptImage(
-        createDepartmentDto?.profilePhoto
-      )
+      // let dept_image = await this?.deptImageHelper?.uploadDeptImage(
+      //   createDepartmentDto?.profilePhoto
+      // )
 
       const insertQry ={
         organizationId: createDepartmentDto?.organizationId,
         departmentName: createDepartmentDto?.departmentName,
-        departmentRoomNumber: createDepartmentDto?.departmentRoomNum,
-        profilePhoto: dept_image
+        departmentRoomNum: createDepartmentDto?.departmentRoomNum,
+        profilePhoto: createDepartmentDto?.profilePhoto
       }
       console.log(insertQry);
 
@@ -176,9 +176,8 @@ export class DepartmentService {
     }
   }
 
-  // Update Department By The departmentId
+  // Update Department  By The departmentId 
   async update(departmentId: string, updateDepartmentDto: UpdateDepartmentDto,userId:any) {
-    let rollImage = ""
     try {
 
       let user = await this?.userModel.findOne({where:{userId}})
@@ -198,36 +197,11 @@ export class DepartmentService {
         );
       }
 
-      var image_matches = updateDepartmentDto?.profilePhoto?.match(
-        /^data:([A-Za-z-+\/]+);base64,(.+)$/,
-      );
-      if (!image_matches) {
-        return Util?.handleFailResponse('Invalid Input file');
-      }
-
-      let dept_image = await this?.deptImageHelper?.uploadDeptImage(
-        updateDepartmentDto?.profilePhoto,
-      );
-      rollImage = dept_image;
-
-        // Delete the old profile photo if it exists in the directorate
-        let front_path = dept_data?.profilePhoto;
-
-      if (front_path != null) {
-        fs.access(front_path, fs.F_OK, async (err) => {
-          if (err) {
-            console.error(err);
-            return;
-          }
-          await this?.deptImageHelper.unlinkFile(front_path);
-        });
-      }
-
        let insertQry = {
         organizationId: updateDepartmentDto?.organizationId,
         departmentName: updateDepartmentDto?.departmentName,
         departmentRoomNumber: updateDepartmentDto?.departmentRoomNum,
-        profilePhoto: dept_image
+        profilePhoto: updateDepartmentDto?.profilePhoto
        }   
 
        await this?.departmentModel.update(
@@ -241,9 +215,6 @@ export class DepartmentService {
         'Department with this #${departmentId} updated successfully',
       );
     } catch (error) {
-      if (rollImage) {
-        await this?.deptImageHelper?.unlinkFile(rollImage);
-      }
       console.log(error);
       return Util?.handleGrpcTryCatchError(Util?.getTryCatchMsg(error));
     }
@@ -291,7 +262,6 @@ export class DepartmentService {
       )
 
       rollImage = dept_image;
-
 
       // Delete the old profile photo if it exists in the directorate
       let front_path = dept_data?.profilePhoto;
