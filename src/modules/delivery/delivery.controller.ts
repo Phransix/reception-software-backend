@@ -168,35 +168,9 @@ export class DeliveryController {
 
   }
 
-  // Delivery Confirmation
-  // @UseGuards(AuthGuard('jwt'))
-  // @ApiBearerAuth('defaultBearerAuth')
-  // @Public()
-  // @UseGuards(AtGuard)
-  // @ApiTags('Delivery')
-  // @ApiOperation({ summary: 'Confirm Delivery By Receptionist' })
-  // @Post('deliveryConfirmation')
-  // async staffConfirm(
-  //   @Body() deliveryConfirmDTO: deliveryConfirmDTO,
-  //   @GetCurrentUserId() userId: string
-  // ) {
-  //   let ErrorCode: number
-  //   try {
-  //     const deliveryTo = await this.deliveryService.deliveryConfirm(deliveryConfirmDTO,userId)
-  //     if (deliveryTo?.status_code != HttpStatus.CREATED) {
-  //       ErrorCode = deliveryTo?.status_code;
-  //       throw new Error(deliveryTo?.message)
-  //     }
-  //     return deliveryTo
-  //   } catch (error) {
-  //     console.log(error)
-  //     return Util?.handleRequestError(Util?.getTryCatchMsg(error), ErrorCode)
-  //   }
 
-  // }
-
-
-      @UseGuards(AuthGuard('jwt'))
+  // Confirm Delivery
+  @UseGuards(AuthGuard('jwt'))
   @ApiBearerAuth('defaultBearerAuth')
   @Public()
   @UseGuards(AtGuard)
