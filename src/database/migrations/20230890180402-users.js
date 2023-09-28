@@ -37,6 +37,7 @@ module.exports = {
           isIn: [['Admin', 'Receptionist']] 
         }
       },
+      
 
       fullName: {
         type: Sequelize.STRING,
