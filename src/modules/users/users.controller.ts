@@ -126,17 +126,17 @@ export class UsersController {
   ) {
     let ErrorCode: number;
     try {
-      let staffData = await this.usersService?.findAll(
+      let userData = await this.usersService?.findAll(
         page,
         size,
         userId,
       );
 
-      if (staffData?.status_code != HttpStatus.OK) {
-        ErrorCode = staffData?.status_code;
-        throw new Error(staffData?.message);
+      if (userData?.status_code != HttpStatus.OK) {
+        ErrorCode = userData?.status_code;
+        throw new Error(userData?.message);
       }
-      return staffData;
+      return userData;
     } catch (error) {
       console.log(error);
       return Util?.handleRequestError(Util?.getTryCatchMsg(error), ErrorCode);

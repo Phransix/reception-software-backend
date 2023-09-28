@@ -135,6 +135,7 @@ export class UsersService {
         fullname: user.fullName,
         email: user.email,
         IsPhoneNumber: user.phoneNumber,
+  
       };
 
       let userDetails = {
