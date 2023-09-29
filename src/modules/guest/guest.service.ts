@@ -298,6 +298,7 @@ export class GuestService {
     }
   }
 
+
   // Bulk guest delete
   async bulkGuestDelete(Guest: string, whereClause: any = {}, userId: any) {
     const myModel = this.sequelize.model(Guest);
