@@ -235,7 +235,6 @@ export class GuestService {
     }
   }
 
-<<<<<<< HEAD
       // Filter Guest by Gender
       async genderFilter(keyword: string, userId: any) {
         try {
@@ -271,43 +270,6 @@ export class GuestService {
         }
       }
 
-=======
-    // Filter Guest by Gender
-  async genderFilter(keyword: string, userId: any) {
-    try {
-
-      let user = await this?.UserModel.findOne({ where: { userId } })
-      console.log(userId)
-      console.log(user?.organizationId)
-      if (!user)
-        return Util?.handleErrorRespone('User not found');
-
-      let get_org = await this?.OrgModel.findOne({ where: { organizationId: user?.organizationId } })
-
-      if (!get_org)
-        return Util?.handleErrorRespone('organization not found');
-
-      let filter = {}
-
-      if (keyword != null) {
-        filter = { gender: keyword }
-      }
-
-      const filterCheck = await this.GuestModel.findAll({
-        where: {
-          ...filter,
-          organizationId: get_org?.organizationId
-        },
-      });
-
-      return Util?.handleSuccessRespone(filterCheck, "Guest Data filtered Successfully")
-    } catch (error) {
-      console.log(error)
-      return Util?.handleGrpcTryCatchError(Util?.getTryCatchMsg(error));
-    }
-  }
-
->>>>>>> production
   // Bulk guest create
   async bulkGuest(Guest: string, data: any[], userId: any) {
     const myModel = this.sequelize.model(Guest);
@@ -335,6 +297,7 @@ export class GuestService {
       return Util?.handleGrpcTryCatchError(Util?.getTryCatchMsg(error));
     }
   }
+
 
   // Bulk guest delete
   async bulkGuestDelete(Guest: string, whereClause: any = {}, userId: any) {

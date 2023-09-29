@@ -15,7 +15,5 @@ export class CreateUserImgDto {
         message: 'Invalid Format, must be in base64 image',
      })
     readonly profilePhoto: string;
-     
-
 
 }

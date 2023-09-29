@@ -389,10 +389,8 @@ export class UsersService {
   // Update User  Profile Photo
   async updateImg(userId: string, createUserImgDto: CreateUserImgDto) {
     let rollImage = '';
-    // let InsertImg = '';
-
     try {
-      
+    
       let user_data = await this?.userModel.findOne({where:{userId}})
       console.log(user_data?.organizationId)
       if(!user_data)
@@ -436,11 +434,9 @@ export class UsersService {
           await this.imagehelper.unlinkFile(front_path);
         });
       }
-
       let insertQrys = {
         profilePhoto: user_image,
       };
-
       await this?.userModel?.update(insertQrys, {
         where: { id: user_data?.id ,organizationId:get_org?.organizationId},
       });
@@ -474,6 +470,7 @@ export class UsersService {
       return Util?.handleGrpcTryCatchError(Util?.getTryCatchMsg(error));
     }
   }
+
 
   // Restore Deleted Data
   async restoreUser(userId: string) {
