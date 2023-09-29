@@ -281,8 +281,8 @@ export class EnquiriesService {
   // Filter Enquiries By Purpose
   async purposefilter(
     keyword: string,
-     page: number, 
-     size: number,
+    //  page: number, 
+    //  size: number,
      userId:any
      ) {
     try {
@@ -302,63 +302,70 @@ export class EnquiriesService {
       if(!get_org)
       return Util?.CustomhandleNotFoundResponse('organization not found');
 
-      const filterCheck = await this?.enquiryModel.findAll({
+      const filterCheck = await this?.enquiryModel.count({
         where: {
           ...filter,
-          // organizationId:get_org?.organizationId
+          organizationId:get_org?.organizationId
         },
       });
-
-      let currentPage = Util?.Checknegative(page);
-      if (currentPage) {
-        return Util?.handleErrorRespone(
-          'Enquiry current Page cannot be negative',
-        );
-      }
-
-      const { limit, offset } = Util?.getPagination(page, size);
-
-      let queryOption: any = {
-        limit,
-        offset,
-        attributes: { exclude: [ 'updatedAt', 'deletedAt'] },
-        order: [
-          ['createdAt', 'ASC']
-        ],
-        include:[{
-          model: Organization,
-          attributes:{
-            exclude:[
-              "id",
-              "createdAt",
-              "updatedAt",
-              "deletedAt",
-              "isVerified",
-            ]
-          }
-        }]
-      };
-
-      if (keyword) {
-        queryOption = {
-          ...queryOption,
-          where: {
-            purpose: keyword,
-            organizationId:get_org?.organizationId
-          },
-        };
-      }
-
-      const allQueries = await Enquiry?.findAndCountAll(queryOption);
-
-      let result = Util?.getPagingData(allQueries, page, limit);
-      console.log(result);
-
-      const dataResult = { ...result };
+      console.log(filterCheck)
+      
       return Util?.handleSuccessRespone(
-        dataResult,
-        'Enquiries Purpose Data Filtered Successfully.',
+        filterCheck,
+        'Enquiries Purpose Data Filtered and Counted Successfully.',
       );
+     
+        //  return filterCheck
+      // let currentPage = Util?.Checknegative(page);
+      // if (currentPage) {
+      //   return Util?.handleErrorRespone(
+      //     'Enquiry current Page cannot be negative',
+      //   );
+      // }
+
+      // const { limit, offset } = Util?.getPagination(page, size);
+
+      // let queryOption: any = {
+      //   limit,
+      //   offset,
+      //   attributes: { exclude: [ 'updatedAt', 'deletedAt'] },
+      //   order: [
+      //     ['createdAt', 'ASC']
+      //   ],
+      //   include:[{
+      //     model: Organization,
+      //     attributes:{
+      //       exclude:[
+      //         "id",
+      //         "createdAt",
+      //         "updatedAt",
+      //         "deletedAt",
+      //         "isVerified",
+      //       ]
+      //     }
+      //   }]
+      // };
+
+      // if (keyword) {
+      //   queryOption = {
+      //     ...queryOption,
+      //     where: {
+      //       purpose: keyword,
+      //       organizationId:get_org?.organizationId
+      //     },
+      //   };
+      // }
+
+      // const allQueries = await Enquiry?.findAndCountAll(queryOption);
+
+      // let result = Util?.getPagingData(allQueries, page, limit);
+      // console.log(result);
+
+      // const dataResult = { ...result };
+      // return Util?.handleSuccessRespone(
+      //   dataResult,
+      //   'Enquiries Purpose Data Filtered Successfully.',
+      // );
     } catch (error) {
       console.log(error);
       return Util?.handleGrpcTryCatchError(Util?.getTryCatchMsg(error));

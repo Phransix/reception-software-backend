@@ -37,16 +37,16 @@ export class AnalyticsController {
     enum: Purpose,
     required: false,
   })
-  @ApiQuery({
-    name: 'page',
-    type: 'number',
-    required: false,
-  })
-  @ApiQuery({
-    name: 'size',
-    type: 'number',
-    required: false,
-  })
+  // @ApiQuery({
+  //   name: 'page',
+  //   type: 'number',
+  //   required: false,
+  // })
+  // @ApiQuery({
+  //   name: 'size',
+  //   type: 'number',
+  //   required: false,
+  // })
   @Public()
   @UseGuards(AtGuard)
   @ApiOperation({ summary: 'Analytics of Guest Gender, Guest Purpose, Delivery Type, Enquiry Purpose' })
