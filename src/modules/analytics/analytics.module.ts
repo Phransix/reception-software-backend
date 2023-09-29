@@ -14,7 +14,7 @@ import { Organization } from '../organization/entities/organization.entity';
 import { User } from '../users/entities/user.entity';
 
 @Module({
-  imports:[SequelizeModule.forFeature([Delivery,Guest,Enquiry,Purpose,Organization,User])],
+  imports:[SequelizeModule.forFeature([Organization,User,Delivery,Guest,Enquiry,Purpose])],
   controllers: [AnalyticsController],
   providers: [
     AnalyticsService,

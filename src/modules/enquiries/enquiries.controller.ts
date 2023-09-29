@@ -48,7 +48,7 @@ export class EnquiriesController {
     let ErrorCode: number;
     try {
       let new_Enquiry = await this.enquiriesService.createEnquiry(createEnquiryDto,userId);
-      if (new_Enquiry?.status_code != HttpStatus.CREATED) {
+      if (new_Enquiry?.status_code != HttpStatus.OK) {
         ErrorCode = new_Enquiry?.status_code;
         throw new Error(new_Enquiry?.message);
       }
@@ -84,13 +84,13 @@ export class EnquiriesController {
      ) {
     let ErrorCode: number;
     try {
-      let enquiryData = await this.enquiriesService?.findAll(page, size,userId);
+      let staffData = await this.enquiriesService?.findAll(page, size,userId);
 
-      if (enquiryData?.status_code != HttpStatus.OK) {
-        ErrorCode = enquiryData?.status_code;
-        throw new Error(enquiryData?.message);
+      if (staffData?.status_code != HttpStatus.OK) {
+        ErrorCode = staffData?.status_code;
+        throw new Error(staffData?.message);
       }
-      return enquiryData;
+      return staffData;
     } catch (error) {
       console.log(error);
       return Util?.handleRequestError(Util?.getTryCatchMsg(error), ErrorCode);
@@ -317,6 +317,49 @@ export class EnquiriesController {
   }
 
 
- 
+  // @UseGuards(AuthGuard('jwt'))
+  // @ApiBearerAuth('defaultBearerAuth')
+  // @Public()
+  // @UseGuards(AtGuard)
+  // @ApiOperation({ summary: 'Filter Enquiry By The OrganizationId' })
+  // @ApiQuery({
+  //   name: 'keyword',
+  //   type: 'organizationId',
+  //   required: true,
+  // })
+  // @ApiQuery({
+  //   name: 'page',
+  //   type: 'number',
+  //   required: false,
+  // })
+  // @ApiQuery({
+  //   name: 'size',
+  //   type: 'number',
+  //   required: false,
+  // })
+  // @Get('filterByOrganizationId')
+  // async filterByOrganizationId(
+  //   @Query('keyword') keyword: string,
+  //   @Query('page') page: number,
+  //   @Query('size') size: number,
+  // ) {
+  //   let ErrorCode: number;
+  //   try {
+  //     let enquiryData = await this.enquiriesService.filterByOrganizationId(
+  //       keyword,
+  //       page,
+  //       size,
+  //     );
+  //     if (enquiryData?.status_code != HttpStatus.OK) {
+  //       ErrorCode = enquiryData?.status_code;
+  //       throw new Error(enquiryData?.message);
+  //     }
+  //     return enquiryData;
+  //   } catch (error) {
+  //     console.log(error);
+  //     return Util?.handleRequestError(Util?.getTryCatchMsg(error), ErrorCode);
+  //   }
+  // }
+
 
 }

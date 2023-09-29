@@ -305,4 +305,36 @@ export class DeliveryController {
 
   }
 
+    // Filter delivery by status Count
+    @UseGuards(AuthGuard('jwt'))
+    @ApiBearerAuth('defaultBearerAuth')
+    @ApiQuery({
+      name: 'keyword',
+      enum: Status,
+      required: false
+    })
+    @Public()
+    @UseGuards(AtGuard)
+    @ApiTags('Delivery')
+    @ApiOperation({ summary: 'Filter Delivery By Status Count' })
+    @Get('delivery/filterStatusCount')
+    async deliveryStatusFilterCount(
+      @Query('keyword') keyword: string,
+      @GetCurrentUserId() userId: string
+    ) {
+      let ErrorCode: number
+      try {
+        const delivery = await this.deliveryService.deliveryStatusCount(keyword, userId)
+        if (delivery?.status_code != HttpStatus.OK) {
+          ErrorCode = delivery?.status_code;
+          throw new Error(delivery?.message)
+        }
+        return delivery
+      } catch (error) {
+        console.log(error)
+        return Util?.handleRequestError(Util?.getTryCatchMsg(error), ErrorCode)
+      }
+  
+    }
+
 }
