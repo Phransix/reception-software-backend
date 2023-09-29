@@ -9,7 +9,7 @@ import { AuthGuard } from '@nestjs/passport';
 import { AtGuard } from 'src/common/guards/at.guard';
 import { GetCurrentUserId } from 'src/common/decorators/get-current-user-id.decorator';
 import { guestOpDTO } from 'src/guard/auth/guestOpDTO';
-import { status } from '../guest/dto/create-guest.dto';
+import { Gender, status } from '../guest/dto/create-guest.dto';
 
 
 @Controller('purpose')
