@@ -211,72 +211,135 @@ export class EnquiriesService {
   }
 
   // Filter Enquiry Data By Costom Range
+  // async findEnquiryByDateRange(
+  //   startDate: Date,
+  //   endDate: Date,
+  //   page: number,
+  //   size: number,
+  //   userId:any
+  // ) {
+  //   try {
+  //     let enquiryData = { startDate, endDate };
+
+  //     let currentPage = Util?.Checknegative(page);
+  //     if (currentPage) {
+  //       return Util?.handleErrorRespone(
+  //         'Enquiry current page cannot be negative',
+  //       );
+  //     }
+  //     const { limit, offset } = Util?.getPagination(page, size);
+
+  //     let user = await this?.userModel.findOne({where:{userId}})
+  //     console.log(user?.organizationId)
+  //     if(!user)
+  //     return Util?.CustomhandleNotFoundResponse('User not found');
+
+  //     let get_org = await this?.orgModel.findOne({where:{organizationId:user?.organizationId}})
+
+  //     if(!get_org)
+  //     return Util?.CustomhandleNotFoundResponse('organization not found');
+
+  //     const allQueries = await Enquiry.findAndCountAll({
+
+      
+  //       limit,
+  //       offset,
+  //       where:{organizationId:get_org?.organizationId},
+  //       attributes: { exclude: [ 'updatedAt', 'deletedAt'] },
+  //       order: [
+  //         ['createdAt', 'ASC']
+  //       ],
+  //       include:[{
+  //         model: Organization,
+  //         attributes:{
+  //           exclude:[
+  //             "id",
+  //             "createdAt",
+  //             "updatedAt",
+  //             "deletedAt",
+  //             "isVerified",
+  //           ]
+  //         }
+  //       }]
+  //     });
+
+  //     const result = Util?.getPagingData(allQueries, page, limit);
+
+  //     const dataResult = {
+  //       ...enquiryData,
+  //          result
+  //     };
+
+  //     return Util?.handleSuccessRespone(
+  //       dataResult,
+  //       'Enquiries data retrieve successfully',
+  //     );
+  //   } catch (error) {
+  //     console.log(error);
+  //     return Util?.handleGrpcTryCatchError(Util?.getTryCatchMsg(error));
+  //   }
+  // }
+
+
   async findEnquiryByDateRange(
     startDate: Date,
     endDate: Date,
-    page: number,
-    size: number,
-    userId:any
+    userId: any
   ) {
     try {
       let enquiryData = { startDate, endDate };
-
-      let currentPage = Util?.Checknegative(page);
-      if (currentPage) {
-        return Util?.handleErrorRespone(
-          'Enquiry current page cannot be negative',
-        );
-      }
-      const { limit, offset } = Util?.getPagination(page, size);
-
-      let user = await this?.userModel.findOne({where:{userId}})
-      console.log(user?.organizationId)
-      if(!user)
-      return Util?.CustomhandleNotFoundResponse('User not found');
-
-      let get_org = await this?.orgModel.findOne({where:{organizationId:user?.organizationId}})
-
-      if(!get_org)
-      return Util?.CustomhandleNotFoundResponse('organization not found');
-
-      const allQueries = await Enquiry.findAndCountAll({
-        limit,
-        offset,
-        where:{organizationId:get_org?.organizationId},
-        attributes: { exclude: [ 'updatedAt', 'deletedAt'] },
-        order: [
-          ['createdAt', 'ASC']
-        ],
-        include:[{
-          model: Organization,
-          attributes:{
-            exclude:[
-              "id",
-              "createdAt",
-              "updatedAt",
-              "deletedAt",
-              "isVerified",
-            ]
-          }
-        }]
+  
+      let user = await this?.userModel.findOne({ where: { userId } });
+      console.log(user?.organizationId);
+      if (!user) return Util?.CustomhandleNotFoundResponse('User not found');
+  
+      let get_org = await this?.orgModel.findOne({
+        where: { organizationId: user?.organizationId }
       });
-
-      const result = Util?.getPagingData(allQueries, page, limit);
-
+  
+      if (!get_org) return Util?.CustomhandleNotFoundResponse('Organization not found');
+  
+      const allQueries = await Enquiry.findAll({
+        where: {
+          organizationId: get_org?.organizationId,
+          createdAt: {
+            [Op.between]: [startDate, endDate]
+          }
+        },
+        attributes: { exclude: ['updatedAt', 'deletedAt'] },
+        order: [['createdAt', 'ASC']],
+        include: [
+          {
+            model: Organization,
+            attributes: {
+              exclude: [
+                'id',
+                'createdAt',
+                'updatedAt',
+                'deletedAt',
+                'isVerified'
+              ]
+            }
+          }
+        ]
+      });
+  
       const dataResult = {
         ...enquiryData,
-           result
+        result: allQueries
       };
-
+  
       return Util?.handleSuccessRespone(
-        dataResult,
-        'Enquiries data retrieve successfully',
+        // dataResult,
+        allQueries,
+        'Enquiries data retrieved successfully'
       );
     } catch (error) {
       console.log(error);
       return Util?.handleGrpcTryCatchError(Util?.getTryCatchMsg(error));
     }
   }
+  
 
   // Filter Enquiries By Purpose
   async purposefilter(
@@ -371,6 +434,7 @@ export class EnquiriesService {
       return Util?.handleGrpcTryCatchError(Util?.getTryCatchMsg(error));
     }
   }
+  
 
   // Search Enquiry Data by Full Name
   async searchEnquiry(keyword: string,userId:any) {
