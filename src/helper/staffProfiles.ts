@@ -9,7 +9,7 @@ export class staffImageUploadProfile {
 
     async uploadStaffImage(base64: string){
       const staffId= uuidv4();
-      const path = `${staffId}.webp`;
+      const path = `public/staffProfiles/${staffId}.webp`;
       const base64Data = new Buffer.from(
         base64.replace(/^data:image\/\w+;base64,/, ''),
         'base64',
