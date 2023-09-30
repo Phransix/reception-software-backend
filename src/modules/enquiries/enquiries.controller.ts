@@ -209,8 +209,8 @@ export class EnquiriesController {
   async findEnquiryByDateRange(
     @Query('startDate') startDate: Date,
     @Query('endDate') endDate: Date,
-    @Query('page') page: number,
-    @Query('size') size: number,
+    // @Query('page') page: number,
+    // @Query('size') size: number,
     @GetCurrentUserId() userId : string
   ) {
     let ErrorCode: number;
@@ -218,8 +218,8 @@ export class EnquiriesController {
       let enquiryData = await this.enquiriesService.findEnquiryByDateRange(
         startDate,
         endDate,
-        page,
-        size,
+        // page,
+        // size,
         userId
       );
       if (enquiryData?.status_code != HttpStatus.OK) {
@@ -293,16 +293,16 @@ export class EnquiriesController {
   @Get('enquiry/filterPuropse')
   async purposefilter(
     @Query('keyword') keyword: string,
-    @Query('page') page: number,
-    @Query('size') size: number,
+    // @Query('page') page: number,
+    // @Query('size') size: number,
     @GetCurrentUserId() userId : string
   ) {
     let ErrorCode: number;
     try {
       let enquiryData = await this.enquiriesService.purposefilter(
         keyword,
-        page,
-        size,
+        // page,
+        // size,
         userId
       );
       if (enquiryData?.status_code != HttpStatus.OK) {

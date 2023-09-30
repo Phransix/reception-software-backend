@@ -60,8 +60,8 @@ export class AnalyticsService {
       const enquiryPurpose = await this.enquiryService.purposefilter
       (
         enquirypurpose,
-        page,
-        size,
+        // page,
+        // size,
         userId
       )
       
