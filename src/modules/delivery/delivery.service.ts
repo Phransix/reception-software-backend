@@ -293,6 +293,52 @@ export class DeliveryService {
     }
   }
 
+    // Filter delivery by type Count
+    async deliveryTypeCount(keyword: string, userId: any) {
+      try {
+        console.log(userId)
+        let user = await this?.UserModel.findOne({ where: { userId } })
+        console.log(user?.organizationId)
+        if (!user)
+          return Util?.handleErrorRespone('User not found');
+  
+        let get_org = await this?.OrgModel.findOne({ where: { organizationId: user?.organizationId } })
+  
+        if (!get_org)
+          return Util?.handleErrorRespone('organization not found');
+        let filter = {}
+  
+        if (keyword != null) {
+          filter = { type: keyword }
+        }
+  
+        const filterCheck = await this.DeliveryModel.findAll({
+          where: {
+            ...filter,
+            organizationId: get_org?.organizationId
+          },
+        });
+
+      // Calculate the count of signed in and signed out guests
+      const Count1 = filterCheck.filter(item => item.type === 'food').length;
+      const Count2 = filterCheck.filter(item => item.type === 'document').length;
+      const Count3 = filterCheck.filter(item => item.type === 'other').length;
+      const total = filterCheck.length
+
+      const response = {
+        food: Count1,
+        document: Count2,
+        other: Count3,
+        total
+      };
+
+        return Util?.SuccessRespone(response)
+      } catch (error) {
+        console.log(error)
+        return Util?.handleGrpcTryCatchError(Util?.getTryCatchMsg(error));
+      }
+    }
+
   // Filter delivery by status
   async deliveryStatus(keyword: string, userId: any) {
     try {

@@ -18,10 +18,10 @@ export class GuestController {
 
   // Create Guest
   @ApiTags('Guest')
-  @Public()
-  @UseGuards(AtGuard)
   @UseGuards(AuthGuard('jwt'))
   @ApiBearerAuth('defaultBearerAuth')
+  @Public()
+  @UseGuards(AtGuard)
   @UseGuards(DoesGuestExist)
   @ApiOperation({ summary: 'Create New Guest' })
   @Post('createGuest')
@@ -45,10 +45,10 @@ export class GuestController {
 
 
   // Get all Guests
-  @UseGuards(AtGuard)
   @UseGuards(AuthGuard('jwt'))
   @ApiBearerAuth('defaultBearerAuth')
   @Public()
+  @UseGuards(AtGuard)
   @ApiQuery({
     name: "page",
     type: Number,
@@ -59,7 +59,6 @@ export class GuestController {
     type: Number,
     required: false
   })
-  @UseGuards(AtGuard)
   @ApiTags('Guest')
   @ApiOperation({ summary: 'Get Guest By Pagination' })
   @Get('getAllGuest')
@@ -85,10 +84,10 @@ export class GuestController {
   }
 
 // Get Guest by GuestId
-  @UseGuards(AuthGuard('jwt'))
-  @ApiBearerAuth('defaultBearerAuth')
-  @Public()
-  @UseGuards(AtGuard)
+@UseGuards(AuthGuard('jwt'))
+@ApiBearerAuth('defaultBearerAuth')
+@Public()
+@UseGuards(AtGuard)
   @ApiTags('Guest')
   @ApiOperation({ summary: 'Get Guest By guestId' })
   @Get(':guestId')
@@ -167,10 +166,10 @@ export class GuestController {
   }
 
   // Guest sign In
-  @UseGuards(AtGuard)
   @UseGuards(AuthGuard('jwt'))
   @ApiBearerAuth('defaultBearerAuth')
   @Public()
+  @UseGuards(AtGuard)
   @ApiTags('Guest')
   @ApiOperation({ summary: 'Guest Sign In' })
   @Post('guestSignIn')
@@ -196,6 +195,44 @@ export class GuestController {
     }
   }
 
+    // Search guest by custom range
+  @UseGuards(AuthGuard('jwt'))
+  @ApiBearerAuth('defaultBearerAuth')
+  @ApiQuery({
+    name: 'startDate',
+    type: Date,
+    required: false
+  })
+
+  @ApiQuery({
+    name: 'endDate',
+    type: Date,
+    required: false
+  })
+  @Public()
+  @UseGuards(AtGuard)
+  @ApiTags('Guest')
+  @ApiOperation({ summary: 'Search Guest by Custom Date Range' })
+  @Get('guest/filterGuest')
+  async findGuestByDateRange(
+    @Query('startDate') startDate: Date,
+    @Query('endDate') endDate: Date,
+    @GetCurrentUserId() userId: string
+  ) {
+    let ErrorCode: number
+    try {
+      const guestSearch = await this.guestService.customGuestSearch(startDate, endDate,userId)
+      if (guestSearch?.status_code != HttpStatus.OK) {
+        ErrorCode = guestSearch?.status_code;
+        throw new Error(guestSearch?.message)
+      }
+      return guestSearch
+    } catch (error) {
+      console.log(error)
+      return Util?.handleRequestError(Util?.getTryCatchMsg(error), ErrorCode)
+    }
+  }
+
       // Filter Guest by Gender
       @UseGuards(AuthGuard('jwt'))
       @ApiBearerAuth('defaultBearerAuth')
@@ -208,7 +245,7 @@ export class GuestController {
       @UseGuards(AtGuard)
       @ApiTags('Guest')
       @ApiOperation({ summary: 'Filter Guest Gender' })
-      // @Get('guest/filterGender')
+      @Get('guest/filterGender')
       async guestGender(
         @Query('keyword') keyword: string,
         @GetCurrentUserId() userId: string
@@ -229,10 +266,10 @@ export class GuestController {
     
 
   // Bulk guest create
-  @UseGuards(AtGuard)
   @UseGuards(AuthGuard('jwt'))
   @ApiBearerAuth('defaultBearerAuth')
   @Public()
+  @UseGuards(AtGuard)
   @ApiTags('Guest')
   @ApiOperation({ summary: 'Create Multiple Guests' })
   @Public()
@@ -258,10 +295,10 @@ export class GuestController {
   }
 
   // Bulk guest delete
-  @UseGuards(AtGuard)
   @UseGuards(AuthGuard('jwt'))
   @ApiBearerAuth('defaultBearerAuth')
   @Public()
+  @UseGuards(AtGuard)
   @ApiTags('Guest')
   @ApiOperation({ summary: 'Delete Multiple Guests' })
   @Delete('bulkGuestDelete/delete')

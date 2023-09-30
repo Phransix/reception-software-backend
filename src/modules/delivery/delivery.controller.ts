@@ -4,12 +4,11 @@ import { CreateDeliveryDto, Delivery_type, Status } from './dto/create-delivery.
 import { UpdateDeliveryDto } from './dto/update-delivery.dto';
 import * as Util from '../../utils/index'
 import { ApiBearerAuth, ApiOperation, ApiQuery, ApiTags } from '@nestjs/swagger';
-import { deliveryConfirmDTO } from 'src/guard/auth/deliveryConfirmDTO';
 import { Public } from 'src/common/decorators/public.decorator';
-import { AtGuard } from 'src/common/guards';
 import { AuthGuard } from '@nestjs/passport';
 import { GetCurrentUserId } from 'src/common/decorators/get-current-user-id.decorator';
 import { UpdateDeliveryStatus } from './dto/updateDeliveryStatus';
+import { AtGuard } from 'src/common/guards';
 
 @Controller('delivery')
 export class DeliveryController {
@@ -272,6 +271,38 @@ export class DeliveryController {
     }
 
   }
+
+    // Filter delivery by type Count
+    @UseGuards(AuthGuard('jwt'))
+    @ApiBearerAuth('defaultBearerAuth')
+    @ApiQuery({
+      name: 'keyword',
+      enum: Delivery_type,
+      required: false
+    })
+    @Public()
+    @UseGuards(AtGuard)
+    @ApiTags('Delivery')
+    @ApiOperation({ summary: 'Filter Delivery By Type Count' })
+    @Get('delivery/filterTypeCount')
+    async deliveryTypeFilterCount(
+      @Query('keyword') keyword: string,
+      @GetCurrentUserId() userId: string
+    ) {
+      let ErrorCode: number
+      try {
+        const delivery = await this.deliveryService.deliveryTypeCount(keyword, userId)
+        if (delivery?.status_code != HttpStatus.OK) {
+          ErrorCode = delivery?.status_code;
+          throw new Error(delivery?.message)
+        }
+        return delivery
+      } catch (error) {
+        console.log(error)
+        return Util?.handleRequestError(Util?.getTryCatchMsg(error), ErrorCode)
+      }
+  
+    }
 
   // Filter delivery by status
   @UseGuards(AuthGuard('jwt'))

@@ -6,10 +6,12 @@ import { ApiBearerAuth, ApiOperation, ApiQuery, ApiTags } from '@nestjs/swagger'
 import { Public } from 'src/common/decorators/public.decorator';
 import * as Util from '../../utils/index'
 import { AuthGuard } from '@nestjs/passport';
-import { AtGuard } from 'src/common/guards/at.guard';
+import { AtGuard } from 'src/common/guards';
 import { GetCurrentUserId } from 'src/common/decorators/get-current-user-id.decorator';
 import { guestOpDTO } from 'src/guard/auth/guestOpDTO';
 import { Gender, status } from '../guest/dto/create-guest.dto';
+
+
 
 
 @Controller('purpose')
@@ -19,8 +21,8 @@ export class PurposeController {
   // Creating Purpose
   @UseGuards(AuthGuard('jwt'))
   @ApiBearerAuth('defaultBearerAuth')
-  @UseGuards(AtGuard)
   @Public()
+  @UseGuards(AtGuard)
   @ApiTags('Purpose')
   @Public()
   @ApiOperation({ summary: 'Create New Purpose' })
@@ -48,6 +50,7 @@ export class PurposeController {
   @UseGuards(AuthGuard('jwt'))
   @ApiBearerAuth('defaultBearerAuth')
   @Public()
+  @UseGuards(AtGuard)
   @ApiQuery({
     name: "page",
     type: Number,
@@ -58,7 +61,6 @@ export class PurposeController {
     type: Number,
     required: false
   })
-  @UseGuards(AtGuard)
   @ApiTags('Purpose')
   @ApiOperation({ summary: 'Get Purpose By Pagination' })
   @Get('getAllPurposes')
@@ -87,10 +89,10 @@ export class PurposeController {
   // Get Purpose By purposeId
   @Public()
   @ApiTags('Purpose')
-  @UseGuards(AtGuard)
-  @Public()
   @UseGuards(AuthGuard('jwt'))
   @ApiBearerAuth('defaultBearerAuth')
+  @Public()
+  @UseGuards(AtGuard)
   @ApiOperation({ summary: 'Get Purpose By purposeId' })
   @Get(':purposeId')
   async findOne(
@@ -115,10 +117,10 @@ export class PurposeController {
   // Update Purpose By purposeId
   @Public()
   @ApiTags('Purpose')
-  @Public()
-  @UseGuards(AtGuard)
   @UseGuards(AuthGuard('jwt'))
   @ApiBearerAuth('defaultBearerAuth')
+  @Public()
+  @UseGuards(AtGuard)
   @ApiOperation({ summary: 'Update Purpose By purposeId' })
   @Patch(':purposeId')
   async update(
@@ -144,10 +146,10 @@ export class PurposeController {
   // Remove Purpose By purposeId
   @Public()
   @ApiTags('Purpose')
-  @Public()
   @UseGuards(AuthGuard('jwt'))
-  @UseGuards(AtGuard)
   @ApiBearerAuth('defaultBearerAuth')
+  @Public()
+  @UseGuards(AtGuard)
   @ApiOperation({ summary: 'Remove Purpose By purposeId' })
   @Delete(':purposeId')
   async remove(
@@ -199,19 +201,50 @@ export class PurposeController {
     }
   }
 
+    // Search and filter by purpose Count
+    @UseGuards(AuthGuard('jwt'))
+    @ApiBearerAuth('defaultBearerAuth')
+    @ApiQuery({
+      name: 'keyword',
+      enum: visitPurpose,
+      required: false
+    })
+    @Public()
+    @UseGuards(AtGuard)
+    @ApiTags('Purpose')
+    @ApiOperation({ summary: 'Filter Purpose Count' })
+    @Get('purpose/purposeFilterCount')
+    async purposeFilterCount(
+      @Query('keyword') keyword: string,
+      @GetCurrentUserId() userId: string
+    ) {
+      let ErrorCode: number
+      try {
+        const purpose = await this.purposeService.guestPurposeCount(keyword, userId);
+        if (purpose && 'status_code' in purpose && purpose.status_code !== HttpStatus.OK) {
+          ErrorCode = purpose?.status_code;
+          throw new Error(purpose?.message)
+        }
+        return purpose
+      } catch (error) {
+        console.log(error)
+        return Util?.handleRequestError(Util?.getTryCatchMsg(error), ErrorCode)
+      }
+    }
+
   // Search guest by custom range
   @UseGuards(AuthGuard('jwt'))
   @ApiBearerAuth('defaultBearerAuth')
   @ApiQuery({
     name: 'startDate',
     type: Date,
-    required: true
+    required: false
   })
 
   @ApiQuery({
     name: 'endDate',
     type: Date,
-    required: true
+    required: false
   })
   @Public()
   @UseGuards(AtGuard)
@@ -272,8 +305,8 @@ export class PurposeController {
   // Guest SignOut
   @UseGuards(AuthGuard('jwt'))
   @ApiBearerAuth('defaultBearerAuth')
-  @UseGuards(AtGuard)
   @Public()
+  @UseGuards(AtGuard)
   @ApiTags('Purpose')
   @ApiOperation({ summary: 'Guest Sign Out' })
   @Post('guestSignOut')
@@ -299,8 +332,8 @@ export class PurposeController {
   // Guest ConfirmSignOut
   @UseGuards(AuthGuard('jwt'))
   @ApiBearerAuth('defaultBearerAuth')
-  @UseGuards(AtGuard)
   @Public()
+  @UseGuards(AtGuard)
   @ApiTags('Purpose')
   @ApiOperation({ summary: 'Confirm Guest Sign Out' })
   @Post('guestConfirmSignOut')

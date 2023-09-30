@@ -49,7 +49,7 @@ export class PurposeService {
 
 
   // Get All Purposes
-  async findAll(page: number, size: number, userId: string) {
+  async findAll(page: number, size: number, userId: any) {
     try {
 
       console.log(userId)
@@ -145,7 +145,7 @@ export class PurposeService {
   }
 
   // Get Purpose By purposeId
-  async findOne(purposeId: string, userId: string) {
+  async findOne(purposeId: string, userId: any) {
     try {
 
       console.log(userId)
@@ -213,7 +213,7 @@ export class PurposeService {
   }
 
   // Update Purpose By purposeId
-  async update(purposeId: string, updatePurposeDto: UpdatePurposeDto, userId: string) {
+  async update(purposeId: string, updatePurposeDto: UpdatePurposeDto, userId: any) {
     try {
 
       console.log(userId)
@@ -241,7 +241,7 @@ export class PurposeService {
   }
 
   // Remove Purpose By purposeId
-  async remove(purposeId: string, userId: string) {
+  async remove(purposeId: string, userId: any) {
     try {
 
       console.log(userId)
@@ -268,7 +268,7 @@ export class PurposeService {
   }
 
   // Filter by Official and Personal Visits
-  async guestPurpose(keyword: string, userId: string) {
+  async guestPurpose(keyword: string, userId: any) {
     try {
 
       console.log(userId)
@@ -294,9 +294,7 @@ export class PurposeService {
           organizationId: get_org?.organizationId
         },
       });
-      if (!filterCheck) {
-        throw new HttpException('Purpose not found', HttpStatus.NOT_FOUND)
-      }
+
       return Util?.handleSuccessRespone(filterCheck, "Purpose Data updated Successfully")
     } catch (error) {
       console.log(error)
@@ -304,8 +302,54 @@ export class PurposeService {
     }
   }
 
+    // Filter by Official and Personal Visits Count
+    async guestPurposeCount(keyword: string, userId: any) {
+      try {
+  
+        console.log(userId)
+        let user = await this?.UserModel.findOne({ where: { userId } })
+        console.log(user?.organizationId)
+        if (!user)
+          return Util?.handleErrorRespone('User not found');
+  
+        let get_org = await this?.OrgModel.findOne({ where: { organizationId: user?.organizationId } })
+  
+        if (!get_org)
+          return Util?.handleErrorRespone('organization not found');
+  
+        let filter = {}
+  
+        if (keyword != null) {
+          filter = { purpose: keyword }
+        }
+  
+        const filterCheck = await this.PurposeModel.findAll({
+          where: {
+            ...filter,
+            organizationId: get_org?.organizationId
+          },
+        });
+
+      // Calculate the count of personal and official visits
+      const Count1 = filterCheck.filter(item => item.purpose === 'personal').length;
+      const Count2 = filterCheck.filter(item => item.purpose === 'official').length;
+      const total = filterCheck.length
+
+      const response = {
+        Personal: Count1,
+        Official: Count2,
+        total
+      };
+
+      return Util?.SuccessRespone(response)
+      } catch (error) {
+        console.log(error)
+        return Util?.handleGrpcReqError(Util?.getTryCatchMsg(error))
+      }
+    }
+
   // Filter By Date Range
-  async findByDateRange(startDate: Date, endDate: Date, userId: string) {
+  async findByDateRange(startDate: Date, endDate: Date, userId: any) {
     try {
 
       console.log(userId)
@@ -319,7 +363,7 @@ export class PurposeService {
       if (!get_org)
         return Util?.handleErrorRespone('organization not found');
 
-      const purpose = await Purpose.findAll({
+      const purposeResponse = await Purpose.findAll({
         where: {
           createdAt:
           {
@@ -327,7 +371,7 @@ export class PurposeService {
           },
           organizationId: get_org?.organizationId
         },
-        attributes: { exclude: ['createdAt', 'updatedAt', 'deletedAt'] },
+        attributes: { exclude: ['updatedAt', 'deletedAt'] },
         include: [
           {
             model: Guest,
@@ -336,7 +380,6 @@ export class PurposeService {
                 'id',
                 'guestId',
                 'organizationId',
-                'createdAt',
                 'updatedAt',
                 'deletedAt'
               ]
@@ -380,7 +423,7 @@ export class PurposeService {
         ]
       });
 
-      return Util?.handleSuccessRespone(purpose, "Delivery Successfully retrieved")
+      return Util?.handleSuccessRespone(purposeResponse, "Delivery Successfully retrieved")
     } catch (error) {
       console.log(error)
       return Util?.handleGrpcTryCatchError(Util?.getTryCatchMsg(error));
@@ -388,7 +431,7 @@ export class PurposeService {
   }
 
   // Search guest by firstname or lastname
-  async searchGuest(keyword: string, userId: string) {
+  async searchGuest(keyword: string, userId: any) {
     try {
 
       console.log(userId)
@@ -614,7 +657,7 @@ export class PurposeService {
 
 
   // Filter Guest by Status
-  async statusFilter(keyword: string, userId: string) {
+  async statusFilter(keyword: string, userId: any) {
     try {
 
       console.log(userId)
@@ -650,7 +693,7 @@ export class PurposeService {
 
 
   // Filter Guest by Status Count
-  async statusFilterCount(keyword: string, userId: string) {
+  async statusFilterCount(keyword: string, userId: any) {
     try {
 
       console.log(userId)
@@ -688,7 +731,7 @@ export class PurposeService {
         total
       };
 
-      return Util?.handleSuccessRespone(response, "Guest Data filtered Successfully")
+      return Util?.SuccessRespone(response)
     } catch (error) {
       console.log(error)
       return Util?.handleGrpcTryCatchError(Util?.getTryCatchMsg(error));
@@ -697,7 +740,7 @@ export class PurposeService {
 
 
   // Filter Guest by Gender
-  async genderFilter(keyword: string, userId: string) {
+  async genderFilter(keyword: string, userId: any) {
     try {
 
       console.log(userId)
@@ -732,7 +775,7 @@ export class PurposeService {
   }
 
   // Filter Guest by Gender Count
-  async genderFilterCount(keyword: string, userId: string) {
+  async genderFilterCount(keyword: string, userId: any) {
     try {
 
       console.log(userId)
@@ -770,7 +813,7 @@ export class PurposeService {
         total
       };
 
-      return Util?.handleSuccessRespone(response, "Guest Data filtered Successfully")
+      return Util?.SuccessRespone(response)
     } catch (error) {
       console.log(error)
       return Util?.handleGrpcTryCatchError(Util?.getTryCatchMsg(error));

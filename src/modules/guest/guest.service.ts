@@ -9,6 +9,7 @@ import { Sequelize } from 'sequelize-typescript';
 import { Purpose } from '../purpose/entities/purpose.entity';
 import { Organization } from '../organization/entities/organization.entity';
 import { User } from '../users/entities/user.entity';
+import { Op } from 'sequelize';
 
 @Injectable()
 export class GuestService {
@@ -269,6 +270,39 @@ export class GuestService {
           return Util?.handleGrpcTryCatchError(Util?.getTryCatchMsg(error));
         }
       }
+
+  // Search by Custom Date Range
+  async customGuestSearch(startDate: Date, endDate: Date, userId: any) {
+    try {
+
+      console.log(userId)
+      let user = await this?.UserModel.findOne({ where: { userId } })
+      console.log(user?.organizationId)
+      if (!user)
+        return Util?.handleErrorRespone('User not found');
+
+      let get_org = await this?.OrgModel.findOne({ where: { organizationId: user?.organizationId } })
+
+      if (!get_org)
+        return Util?.handleErrorRespone('organization not found');
+
+      const guestSearch = await Guest.findAll({
+        where: {
+          createdAt:
+          {
+            [Op.between]: [startDate, endDate],
+          },
+          organizationId: get_org?.organizationId
+        },
+        attributes: { exclude: ['createdAt', 'updated', 'deletedAt'] }
+      });
+      return Util?.handleSuccessRespone(guestSearch, "Guest Data retrieved Successfully")
+    } catch (error) {
+      console.log(error)
+      return Util?.handleGrpcTryCatchError(Util?.getTryCatchMsg(error));
+    }
+  }
+
 
   // Bulk guest create
   async bulkGuest(Guest: string, data: any[], userId: any) {

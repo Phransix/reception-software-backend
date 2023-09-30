@@ -42,17 +42,17 @@ export class AnalyticsService {
       if (!get_org)
         return Util?.handleErrorRespone('organization not found');
       
-      const guestGender = await this.guestService.genderFilter
+      const guestGender = await this.purposeService.genderFilterCount
       (
         guest,
         userId
       )
-      const deliveryType = await this.deliveryService.deliveryType
+      const deliveryType = await this.deliveryService.deliveryTypeCount
       (
         delivery,
         userId
       )
-      const guestPurpose = await this.purposeService.guestPurpose
+      const guestPurpose = await this.purposeService.guestPurposeCount
       (
         guestpurpose,
         userId
