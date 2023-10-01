@@ -49,7 +49,7 @@ export class PurposeService {
 
 
   // Get All Purposes
-  async findAll(page: number, size: number, userId: any) {
+  async findAll(page: number, size: number, userId: string) {
     try {
 
       console.log(userId)
@@ -81,7 +81,7 @@ export class PurposeService {
         include: [
           {
             model: Guest,
-            attributes: {
+            attributes: { 
               exclude: [
                 'id',
                 'guestId',
@@ -90,13 +90,13 @@ export class PurposeService {
                 'updatedAt',
                 'deletedAt'
               ]
-            },
+             },
             order: [['id', 'DESC']],
             as: 'guestData'
           },
           {
             model: Department,
-            attributes: {
+            attributes: { 
               exclude: [
                 'id',
                 'organizationId',
@@ -105,13 +105,13 @@ export class PurposeService {
                 'updatedAt',
                 'deletedAt'
               ]
-            },
+             },
             order: [['id', 'DESC']],
             as: 'departmentData'
           },
           {
             model: Staff,
-            attributes: {
+            attributes: { 
               exclude: [
                 'id',
                 'departmentId',
@@ -123,7 +123,7 @@ export class PurposeService {
                 'updatedAt',
                 'deletedAt'
               ]
-            },
+             },
             order: [['id', 'DESC']],
             as: 'staffData'
           }
@@ -145,7 +145,7 @@ export class PurposeService {
   }
 
   // Get Purpose By purposeId
-  async findOne(purposeId: string, userId: any) {
+  async findOne(purposeId: string, userId: string) {
     try {
 
       console.log(userId)
@@ -160,16 +160,16 @@ export class PurposeService {
         return Util?.handleErrorRespone('organization not found');
 
       const purpose = await Purpose.findOne({
-        where:
-        {
+        where: 
+        { 
           purposeId,
           organizationId: get_org?.organizationId
-        },
+         },
         attributes: { exclude: ['createdAt', 'updatedAt'] },
         include: [
           {
             model: Guest,
-            attributes: {
+            attributes: { 
               exclude: [
                 'id',
                 'guestId',
@@ -178,13 +178,13 @@ export class PurposeService {
                 'updatedAt',
                 'deletedAt'
               ]
-            },
+             },
             order: [['id', 'DESC']],
             as: 'guestData'
           },
           {
             model: Staff,
-            attributes: {
+            attributes: { 
               exclude: [
                 'id',
                 'departmentId',
@@ -196,7 +196,7 @@ export class PurposeService {
                 'updatedAt',
                 'deletedAt'
               ]
-            },
+             },
             order: [['id', 'DESC']],
             as: 'staffData'
           }
@@ -213,7 +213,7 @@ export class PurposeService {
   }
 
   // Update Purpose By purposeId
-  async update(purposeId: string, updatePurposeDto: UpdatePurposeDto, userId: any) {
+  async update(purposeId: string, updatePurposeDto: UpdatePurposeDto, userId: string) {
     try {
 
       console.log(userId)
@@ -241,7 +241,7 @@ export class PurposeService {
   }
 
   // Remove Purpose By purposeId
-  async remove(purposeId: string, userId: any) {
+  async remove(purposeId: string, userId: string) {
     try {
 
       console.log(userId)
@@ -268,7 +268,7 @@ export class PurposeService {
   }
 
   // Filter by Official and Personal Visits
-  async guestPurpose(keyword: string, userId: any) {
+  async guestPurpose(keyword: string, userId: string) {
     try {
 
       console.log(userId)
@@ -294,7 +294,9 @@ export class PurposeService {
           organizationId: get_org?.organizationId
         },
       });
-
+      if (!filterCheck) {
+        throw new HttpException('Purpose not found', HttpStatus.NOT_FOUND)
+      }
       return Util?.handleSuccessRespone(filterCheck, "Purpose Data updated Successfully")
     } catch (error) {
       console.log(error)
@@ -302,54 +304,8 @@ export class PurposeService {
     }
   }
 
-    // Filter by Official and Personal Visits Count
-    async guestPurposeCount(keyword: string, userId: any) {
-      try {
-  
-        console.log(userId)
-        let user = await this?.UserModel.findOne({ where: { userId } })
-        console.log(user?.organizationId)
-        if (!user)
-          return Util?.handleErrorRespone('User not found');
-  
-        let get_org = await this?.OrgModel.findOne({ where: { organizationId: user?.organizationId } })
-  
-        if (!get_org)
-          return Util?.handleErrorRespone('organization not found');
-  
-        let filter = {}
-  
-        if (keyword != null) {
-          filter = { purpose: keyword }
-        }
-  
-        const filterCheck = await this.PurposeModel.findAll({
-          where: {
-            ...filter,
-            organizationId: get_org?.organizationId
-          },
-        });
-
-      // Calculate the count of personal and official visits
-      const Count1 = filterCheck.filter(item => item.purpose === 'personal').length;
-      const Count2 = filterCheck.filter(item => item.purpose === 'official').length;
-      const total = filterCheck.length
-
-      const response = {
-        Personal: Count1,
-        Official: Count2,
-        total
-      };
-
-      return Util?.SuccessRespone(response)
-      } catch (error) {
-        console.log(error)
-        return Util?.handleGrpcReqError(Util?.getTryCatchMsg(error))
-      }
-    }
-
   // Filter By Date Range
-  async findByDateRange(startDate: Date, endDate: Date, userId: any) {
+  async findByDateRange(startDate: Date, endDate: Date, userId: string) {
     try {
 
       console.log(userId)
@@ -363,7 +319,7 @@ export class PurposeService {
       if (!get_org)
         return Util?.handleErrorRespone('organization not found');
 
-      const purposeResponse = await Purpose.findAll({
+      const purpose = await Purpose.findAll({
         where: {
           createdAt:
           {
@@ -371,25 +327,26 @@ export class PurposeService {
           },
           organizationId: get_org?.organizationId
         },
-        attributes: { exclude: ['updatedAt', 'deletedAt'] },
+        attributes: { exclude: ['createdAt', 'updatedAt', 'deletedAt'] },
         include: [
           {
             model: Guest,
-            attributes: {
+            attributes: { 
               exclude: [
                 'id',
                 'guestId',
                 'organizationId',
+                'createdAt',
                 'updatedAt',
                 'deletedAt'
               ]
-            },
+             },
             order: [['id', 'DESC']],
             as: 'guestData'
           },
           {
             model: Department,
-            attributes: {
+            attributes: { 
               exclude: [
                 'id',
                 'organizationId',
@@ -398,13 +355,13 @@ export class PurposeService {
                 'updatedAt',
                 'deletedAt'
               ]
-            },
+             },
             order: [['id', 'DESC']],
             as: 'departmentData'
           },
           {
             model: Staff,
-            attributes: {
+            attributes: { 
               exclude: [
                 'id',
                 'departmentId',
@@ -416,14 +373,14 @@ export class PurposeService {
                 'updatedAt',
                 'deletedAt'
               ]
-            },
+             },
             order: [['id', 'DESC']],
             as: 'staffData'
           }
         ]
       });
 
-      return Util?.handleSuccessRespone(purposeResponse, "Delivery Successfully retrieved")
+      return Util?.handleSuccessRespone(purpose, "Delivery Successfully retrieved")
     } catch (error) {
       console.log(error)
       return Util?.handleGrpcTryCatchError(Util?.getTryCatchMsg(error));
@@ -431,7 +388,7 @@ export class PurposeService {
   }
 
   // Search guest by firstname or lastname
-  async searchGuest(keyword: string, userId: any) {
+  async searchGuest(keyword: string, userId: string) {
     try {
 
       console.log(userId)
@@ -450,7 +407,7 @@ export class PurposeService {
         include: [
           {
             model: Guest,
-            attributes: {
+            attributes: { 
               exclude: [
                 'id',
                 'guestId',
@@ -459,7 +416,7 @@ export class PurposeService {
                 'updatedAt',
                 'deletedAt'
               ]
-            },
+             },
             order: [['id', 'DESC']],
             as: 'guestData',
             where: {
@@ -480,7 +437,7 @@ export class PurposeService {
           },
           {
             model: Department,
-            attributes: {
+            attributes: { 
               exclude: [
                 'id',
                 'organizationId',
@@ -489,13 +446,13 @@ export class PurposeService {
                 'updatedAt',
                 'deletedAt'
               ]
-            },
+             },
             order: [['id', 'DESC']],
             as: 'departmentData'
           },
           {
             model: Staff,
-            attributes: {
+            attributes: { 
               exclude: [
                 'id',
                 'departmentId',
@@ -507,7 +464,7 @@ export class PurposeService {
                 'updatedAt',
                 'deletedAt'
               ]
-            },
+             },
             order: [['id', 'DESC']],
             as: 'staffData'
           }
@@ -655,9 +612,8 @@ export class PurposeService {
     }
   }
 
-
   // Filter Guest by Status
-  async statusFilter(keyword: string, userId: any) {
+  async statusFilter(keyword: string, userId: string) {
     try {
 
       console.log(userId)
@@ -677,61 +633,26 @@ export class PurposeService {
         filter = { visitStatus: keyword }
       }
 
-      const filterCheck = await this.PurposeModel.findAll({
+      const getSingedInCount = await this.PurposeModel.count({
         where: {
-          ...filter,
+          visitStatus : 'Signed In',
           organizationId: get_org?.organizationId
         },
       });
 
-      return Util?.handleSuccessRespone(filterCheck, "Guest Data filtered Successfully")
-    } catch (error) {
-      console.log(error)
-      return Util?.handleGrpcTryCatchError(Util?.getTryCatchMsg(error));
-    }
-  }
+      const getSingedOutCount = await this.PurposeModel.count({
+        where: {
+          visitStatus : 'Signed Out',
+          organizationId: get_org?.organizationId
+        },
+      });
 
-
-  // Filter Guest by Status Count
-  async statusFilterCount(keyword: string, userId: any) {
-    try {
-
-      console.log(userId)
-      let user = await this?.UserModel.findOne({ where: { userId } })
-      console.log(user?.organizationId)
-      if (!user)
-        return Util?.handleErrorRespone('User not found');
-
-      let get_org = await this?.OrgModel.findOne({ where: { organizationId: user?.organizationId } })
-
-      if (!get_org)
-        return Util?.handleErrorRespone('organization not found');
-
-      let filter = {}
-
-      if (keyword != null) {
-        filter = { visitStatus: keyword }
+      filter = {
+        signed_in : Number(getSingedInCount),
+        signed_out : Number(getSingedOutCount)
       }
 
-      const filterCheck = await this.PurposeModel.findAll({
-        where: {
-          ...filter,
-          organizationId: get_org?.organizationId
-        },
-      });
-
-      // Calculate the count of signed in and signed out guests
-      const Count1 = filterCheck.filter(item => item.visitStatus === 'Signed In').length;
-      const Count2 = filterCheck.filter(item => item.visitStatus === 'Signed Out').length;
-      const total = filterCheck.length
-
-      const response = {
-        Signed_In: Count1,
-        Signed_Out: Count2,
-        total
-      };
-
-      return Util?.SuccessRespone(response)
+      return Util?.handleSuccessRespone(filter, "Guest Data filtered Successfully")
     } catch (error) {
       console.log(error)
       return Util?.handleGrpcTryCatchError(Util?.getTryCatchMsg(error));
@@ -740,7 +661,7 @@ export class PurposeService {
 
 
   // Filter Guest by Gender
-  async genderFilter(keyword: string, userId: any) {
+  async genderFilter(keyword: string, userId: string) {
     try {
 
       console.log(userId)
@@ -760,7 +681,7 @@ export class PurposeService {
         filter = { gender: keyword }
       }
 
-      const filterCheck = await this.GuestModel.findAll({
+      const filterCheck = await this.PurposeModel.findAll({
         where: {
           ...filter,
           organizationId: get_org?.organizationId
@@ -768,52 +689,6 @@ export class PurposeService {
       });
 
       return Util?.handleSuccessRespone(filterCheck, "Guest Data filtered Successfully")
-    } catch (error) {
-      console.log(error)
-      return Util?.handleGrpcTryCatchError(Util?.getTryCatchMsg(error));
-    }
-  }
-
-  // Filter Guest by Gender Count
-  async genderFilterCount(keyword: string, userId: any) {
-    try {
-
-      console.log(userId)
-      let user = await this?.UserModel.findOne({ where: { userId } })
-      console.log(user?.organizationId)
-      if (!user)
-        return Util?.handleErrorRespone('User not found');
-
-      let get_org = await this?.OrgModel.findOne({ where: { organizationId: user?.organizationId } })
-
-      if (!get_org)
-        return Util?.handleErrorRespone('organization not found');
-
-      let filter = {}
-
-      if (keyword != null) {
-        filter = { gender: keyword }
-      }
-
-      const filterCheck = await this.GuestModel.findAll({
-        where: {
-          ...filter,
-          organizationId: get_org?.organizationId
-        },
-      });
-
-      // Calculate the count of males and females
-      const Count1 = filterCheck.filter(item => item.gender === 'male').length;
-      const Count2 = filterCheck.filter(item => item.gender === 'female').length;
-      const total = filterCheck.length
-
-      const response = {
-        males: Count1,
-        females: Count2,
-        total
-      };
-
-      return Util?.SuccessRespone(response)
     } catch (error) {
       console.log(error)
       return Util?.handleGrpcTryCatchError(Util?.getTryCatchMsg(error));

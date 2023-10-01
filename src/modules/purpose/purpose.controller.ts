@@ -201,36 +201,6 @@ export class PurposeController {
     }
   }
 
-    // Search and filter by purpose Count
-    @UseGuards(AuthGuard('jwt'))
-    @ApiBearerAuth('defaultBearerAuth')
-    @ApiQuery({
-      name: 'keyword',
-      enum: visitPurpose,
-      required: false
-    })
-    @Public()
-    @UseGuards(AtGuard)
-    @ApiTags('Purpose')
-    @ApiOperation({ summary: 'Filter Purpose Count' })
-    @Get('purpose/purposeFilterCount')
-    async purposeFilterCount(
-      @Query('keyword') keyword: string,
-      @GetCurrentUserId() userId: string
-    ) {
-      let ErrorCode: number
-      try {
-        const purpose = await this.purposeService.guestPurposeCount(keyword, userId);
-        if (purpose && 'status_code' in purpose && purpose.status_code !== HttpStatus.OK) {
-          ErrorCode = purpose?.status_code;
-          throw new Error(purpose?.message)
-        }
-        return purpose
-      } catch (error) {
-        console.log(error)
-        return Util?.handleRequestError(Util?.getTryCatchMsg(error), ErrorCode)
-      }
-    }
 
   // Search guest by custom range
   @UseGuards(AuthGuard('jwt'))
@@ -387,37 +357,6 @@ export class PurposeController {
     }
   }
 
-    // Filter by Guest Visit Status Count
-    @UseGuards(AuthGuard('jwt'))
-    @ApiBearerAuth('defaultBearerAuth')
-    @ApiQuery({
-      name: 'keyword',
-      enum: status,
-      required: false
-    })
-    @Public()
-    @UseGuards(AtGuard)
-    @ApiTags('Purpose')
-    @ApiOperation({ summary: 'Filter Guest By Status Count' })
-    @Get('guest/filterStatusCount')
-    async filterGuestStatusCount(
-      @Query('keyword') keyword: string,
-      @GetCurrentUserId() userId: string
-    ) {
-      let ErrorCode: number
-      try {
-        const guest = await this.purposeService.statusFilterCount(keyword, userId)
-        if (guest?.status_code != HttpStatus.OK) {
-          ErrorCode = guest?.status_code;
-          throw new Error(guest?.message)
-        }
-        return guest
-      } catch (error) {
-        console.log(error)
-        return Util?.handleRequestError(Util?.getTryCatchMsg(error), ErrorCode)
-      }
-    }
-
 
       // Filter by Guest Gender
       @UseGuards(AuthGuard('jwt'))
@@ -450,35 +389,5 @@ export class PurposeController {
         }
       }
 
-    // Filter by Guest Gender Count
-    @UseGuards(AuthGuard('jwt'))
-    @ApiBearerAuth('defaultBearerAuth')
-    @ApiQuery({
-      name: 'keyword',
-      enum: Gender,
-      required: false
-    })
-    @Public()
-    @UseGuards(AtGuard)
-    @ApiTags('Purpose')
-    @ApiOperation({ summary: 'Filter Guest By Gender Count' })
-    @Get('guest/filterGenderCount')
-    async filterGuestGenderCount(
-      @Query('keyword') keyword: string,
-      @GetCurrentUserId() userId: string
-    ) {
-      let ErrorCode: number
-      try {
-        const guest = await this.purposeService.genderFilterCount(keyword, userId)
-        if (guest?.status_code != HttpStatus.OK) {
-          ErrorCode = guest?.status_code;
-          throw new Error(guest?.message)
-        }
-        return guest
-      } catch (error) {
-        console.log(error)
-        return Util?.handleRequestError(Util?.getTryCatchMsg(error), ErrorCode)
-      }
-    }
 
 }
