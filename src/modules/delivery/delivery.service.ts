@@ -1,5 +1,5 @@
 import { Injectable } from '@nestjs/common';
-import { CreateDeliveryDto } from './dto/create-delivery.dto';
+import { CreateDeliveryDto, Status } from './dto/create-delivery.dto';
 import { UpdateDeliveryDto } from './dto/update-delivery.dto';
 import { InjectModel } from '@nestjs/sequelize';
 import { Delivery } from './entities/delivery.entity';
@@ -327,9 +327,12 @@ export class DeliveryService {
         },
       });
 
+      const total = Number(getPickUpCount) + Number(getDeliveredCount);
+
       filter = {
         awaiting_pickup : Number(getPickUpCount),
-        delivered : Number(getDeliveredCount)
+        delivered : Number(getDeliveredCount),
+        total : total
       }
 
       return Util?.handleSuccessRespone(filter, "Delivery Status Successfully retrieved")
