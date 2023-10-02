@@ -48,8 +48,9 @@ export class AnalyticsService {
 
       if (!get_org)
         return Util?.handleErrorRespone('organization not found');
-      if(analytics === Analytics?.PURPOSE){
 
+
+      if(analytics === Analytics?.PURPOSE){
 
         const getPersonalPurposeCount = await this.PurposeModel.count({
           where: {
@@ -70,11 +71,10 @@ export class AnalyticsService {
           official : Number(getOfficialPurposeCount)
         }
       
-
       }
+      
 
       if(analytics === Analytics?.GENDER){
-
 
         const getMaleCount = await this.GuestModel.count({
           where: {

@@ -53,7 +53,7 @@ export class Staff extends Model<Staff>{
 
   @Column({
     type: DataType.STRING,
-    allowNull: false,
+    allowNull: true,
   })
   organizationName: string;
 
@@ -62,7 +62,7 @@ export class Staff extends Model<Staff>{
   @Column({
     defaultValue: uuidv4,
     type: DataType.STRING,
-    allowNull: false,
+    allowNull: true,
     unique: true,
     references: {
       model: {

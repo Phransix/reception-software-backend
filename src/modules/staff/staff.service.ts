@@ -36,16 +36,16 @@ export class StaffService {
       return Util?.CustomhandleNotFoundResponse('organization not found');
 
 
-      var image_matches = createStaffDto?.profilePhoto?.match(
-        /^data:([A-Za-z-+\/]+);base64,(.+)$/,
-      );
-      if (!image_matches) {
-        return Util?.handleFailResponse('Invalid Input file');
-      }
+      // var image_matches = createStaffDto?.profilePhoto?.match(
+      //   /^data:([A-Za-z-+\/]+);base64,(.+)$/,
+      // );
+      // if (!image_matches) {
+      //   return Util?.handleFailResponse('Invalid Input file');
+      // }
 
-      let staff_image = await this?.staffImgHelper?.uploadStaffImage(
-        createStaffDto?.profilePhoto,
-      );
+      // let staff_image = await this?.staffImgHelper?.uploadStaffImage(
+      //   createStaffDto?.profilePhoto,
+      // );
 
       let insertQry = {
         organizationId: createStaffDto?.organizationId,
@@ -58,7 +58,7 @@ export class StaffService {
         phoneNumber: createStaffDto?.phoneNumber,
         // gender: createStaffDto?.gender,
         role: createStaffDto?.role,
-        profilePhoto: staff_image,
+        // profilePhoto: staff_image,
       };
       console.log(insertQry);
 

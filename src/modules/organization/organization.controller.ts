@@ -88,23 +88,23 @@ export class OrganizationController {
   }
 
   // Login Organization
-  @ApiOperation({ summary: 'Organization Login' })
-  @Public()
-  @Post('login')
-  async login(@Body() loginDto: LoginDTO) {
-    let ErrorCode: number;
-    try {
-      const org = await this.organizationService.login(loginDto);
-      if (org?.status_code != HttpStatus.CREATED) {
-        ErrorCode = org?.status_code;
-        throw new Error(org?.message);
-      }
-      return org
-    } catch (error) {
-      console.log(error);
-      return Util?.handleRequestError(Util?.getTryCatchMsg(error), ErrorCode);
-    }
-  }
+  // @ApiOperation({ summary: 'Organization Login' })
+  // @Public()
+  // @Post('login')
+  // async login(@Body() loginDto: LoginDTO) {
+  //   let ErrorCode: number;
+  //   try {
+  //     const org = await this.organizationService.login(loginDto);
+  //     if (org?.status_code != HttpStatus.CREATED) {
+  //       ErrorCode = org?.status_code;
+  //       throw new Error(org?.message);
+  //     }
+  //     return org
+  //   } catch (error) {
+  //     console.log(error);
+  //     return Util?.handleRequestError(Util?.getTryCatchMsg(error), ErrorCode);
+  //   }
+  // }
 
   // Get All Organization In the System
   @ApiResponse({

@@ -30,12 +30,12 @@ module.exports = {
 
       organizationName: {
         type: Sequelize.STRING,
-        allowNull: false
+        allowNull: true
       },
 
       departmentId: {
         type: Sequelize.UUID,
-        allowNull: false,
+        allowNull: true,
         references: {
           model:{
             tableName: 'Departments',

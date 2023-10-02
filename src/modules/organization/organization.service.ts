@@ -147,67 +147,67 @@ export class OrganizationService {
   }
 
   // Login Organization Tablet
-  async login(loginDto: LoginDTO) {
-    const { email, password } = loginDto;
+  // async login(loginDto: LoginDTO) {
+  //   const { email, password } = loginDto;
 
-    try {
-      const user = await User.findOne({ where: { email } });
-      const org = await Organization.findOne({ where: { email } });
-      if (!user) {
-        // return Util.handleForbiddenExceptionResponses('Invaid email or password');
-        throw new HttpException(
-          'Invalid email or password',
-          HttpStatus.FORBIDDEN,
-        );
-      }
+  //   try {
+  //     const user = await User.findOne({ where: { email } });
+  //     const org = await Organization.findOne({ where: { email } });
+  //     if (!user) {
+  //       // return Util.handleForbiddenExceptionResponses('Invaid email or password');
+  //       throw new HttpException(
+  //         'Invalid email or password',
+  //         HttpStatus.FORBIDDEN,
+  //       );
+  //     }
 
-      // Check if the password of the Matches
-      const passwordMatches = await argon.verify(
-        user.password,
-        loginDto.password,
-      );
-      if (!passwordMatches) {
-        throw new HttpException(
-          'Invalid email or password',
-          HttpStatus.FORBIDDEN,
-        );
-      }
-      // Check if the oraganiazation is verified
-      if (org?.isVerified != true)
-        return Util?.handleFailResponse('Oraganiazation account not verified');
-      console.log(org?.isVerified);
+  //     // Check if the password of the Matches
+  //     const passwordMatches = await argon.verify(
+  //       user.password,
+  //       loginDto.password,
+  //     );
+  //     if (!passwordMatches) {
+  //       throw new HttpException(
+  //         'Invalid email or password',
+  //         HttpStatus.FORBIDDEN,
+  //       );
+  //     }
+  //     // Check if the oraganiazation is verified
+  //     if (org?.isVerified != true)
+  //       return Util?.handleFailResponse('Oraganiazation account not verified');
+  //     console.log(org?.isVerified);
 
-      let tokens = await this?.getTokens(
-        org?.organizationId,
-        org?.email,
-        org?.organizationName,
-      );
+  //     let tokens = await this?.getTokens(
+  //       org?.organizationId,
+  //       org?.email,
+  //       org?.organizationName,
+  //     );
 
-      //  console.log(tokens)
-      //return;
-      let org_data = {
-        organizationId: org?.organizationId,
-        organizationName: org?.organizationName,
-        fullname: user.fullName,
-        email: org?.email,
-        IsPhoneNumber: org?.phoneNumber,
-      };
+  //     //  console.log(tokens)
+  //     //return;
+  //     let org_data = {
+  //       organizationId: org?.organizationId,
+  //       organizationName: org?.organizationName,
+  //       fullname: user.fullName,
+  //       email: org?.email,
+  //       IsPhoneNumber: org?.phoneNumber,
+  //     };
 
-      let orgDetails = {
-        ...org_data,
-        tokens,
-      };
+  //     let orgDetails = {
+  //       ...org_data,
+  //       tokens,
+  //     };
 
-      //  Send user data and tokens
-      return Util?.handleCustonCreateResponse(
-        orgDetails,
-        'Login successfully.',
-      );
-    } catch (error) {
-      console.error(error);
-      return Util?.handleGrpcTryCatchError(Util?.getTryCatchMsg(error));
-    }
-  }
+  //     //  Send user data and tokens
+  //     return Util?.handleCustonCreateResponse(
+  //       orgDetails,
+  //       'Login successfully.',
+  //     );
+  //   } catch (error) {
+  //     console.error(error);
+  //     return Util?.handleGrpcTryCatchError(Util?.getTryCatchMsg(error));
+  //   }
+  // }
 
   // Get All
   async findAll(page: number, size: number) {
@@ -430,28 +430,28 @@ export class OrganizationService {
     return result;
   }
 
-  async getTokens(org_id: string, email: string, organizationName: string) {
-    const jwtPayload = {
-      sub: org_id,
-      email: email,
-      scopes: organizationName,
-    };
+  // async getTokens(org_id: string, email: string, organizationName: string) {
+  //   const jwtPayload = {
+  //     sub: org_id,
+  //     email: email,
+  //     scopes: organizationName,
+  //   };
 
-    const [at, rt] = await Promise.all([
-      this.jwtService.signAsync(jwtPayload, {
-        secret: this.config.get<string>('JWT_SECRETTABLET'),
-        // expiresIn: '1m',
-        expiresIn: '7d',
-      }),
-      this.jwtService.signAsync(jwtPayload, {
-        secret: this.config.get<string>('RT_SECRET'),
-        expiresIn: '360d',
-      }),
-    ]);
+  //   const [at, rt] = await Promise.all([
+  //     this.jwtService.signAsync(jwtPayload, {
+  //       secret: this.config.get<string>('JWT_SECRETTABLET'),
+  //       // expiresIn: '1m',
+  //       expiresIn: '7d',
+  //     }),
+  //     this.jwtService.signAsync(jwtPayload, {
+  //       secret: this.config.get<string>('RT_SECRET'),
+  //       expiresIn: '360d',
+  //     }),
+  //   ]);
 
-    return {
-      access_token: at,
-      refresh_token: rt,
-    };
-  }
+  //   return {
+  //     access_token: at,
+  //     refresh_token: rt,
+  //   };
+  // }
 }
