@@ -1,39 +1,48 @@
-import { Controller, Get, Post, Body, Patch, Param, Delete, UseGuards, Query } from '@nestjs/common';
+import { Controller, Get, Post, Body, Patch, Param, Delete, UseGuards, Query, HttpStatus } from '@nestjs/common';
 import { OverviewService } from './overview.service';
 import { ApiBearerAuth, ApiOperation, ApiQuery, ApiTags } from '@nestjs/swagger';
+import { AuthGuard } from '@nestjs/passport';
+import { AtGuard } from 'src/common/guards/at.guard';
 import { Public } from 'src/common/decorators/public.decorator';
+import { daysDto } from './days.dto';
+import * as Util from '../../utils/index'
+import { GetCurrentUserId } from 'src/common/decorators/get-current-user-id.decorator';
 
 @Controller('overview')
 export class OverviewController {
   constructor(private readonly overviewService: OverviewService) {}
 
 
-  // @UseGuards(AuthGuard('jwt'))
-  // @ApiBearerAuth('defaultBearerAuth')
-  // @Public()
-  // @UseGuards(AtGuard)
-  // @ApiQuery({
-  //   name: "page",
-  //   type: Number,
-  //   required: false
-  // })
-  // @UseGuards(AtGuard)
-  // @ApiTags('Overview')
-  // @ApiOperation({ summary: 'Get Overview By Pagination' })
-  // @Get('by-date/:dateRange')
-  // async findAll(
-  // @Query('startDate') startDate: Date,
-  // @Query('endDate') endDate: Date,
-  // ) {
-  //   try {
-  //     const orders = await this.overviewService.getOverviewByDateRange(startDate,endDate);
-  //     return orders;
-  //   } catch (error) {
-  //     // Handle the error (e.g., return an error response)
-  //     return { error: error.message };
-  //   }
-  // }
-
+  @UseGuards(AuthGuard('jwt'))
+  @ApiBearerAuth('defaultBearerAuth')
+  @Public()
+  @UseGuards(AtGuard)
+  @ApiQuery({
+    name: "days",
+    enum: daysDto,
+    required: false
+  })
+  @UseGuards(AtGuard)
+  @ApiTags('Overview')
+  @ApiOperation({ summary: 'Overview of Active Visits, Total Visits, Enquiries, Deliveries' })
+  @Get('dateRange')
+  async findAll(
+    @Query('days') days : string,
+    @GetCurrentUserId() userId: string
+  ) {
+    let ErrorCode : number
+    try {
+      const overview = await this.overviewService.getGeneralOverview(days,userId);
+      if (overview && 'status_code' in overview && overview.status_code != HttpStatus.OK) {
+        ErrorCode = overview?.status_code;
+        throw new Error(overview?.message)
+      }
+      return overview;
+    } catch (error) {
+      console.log(error)
+      return Util?.handleRequestError(Util?.getTryCatchMsg(error), ErrorCode)
+    }
+  }
   
 
 }
