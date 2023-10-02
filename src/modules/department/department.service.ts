@@ -95,7 +95,7 @@ export class DepartmentService {
         limit,
         offset,
         where:{organizationId:get_org?.organizationId},
-        attributes: { exclude: ['createdAt', 'updatedAt', 'deletedAt'] },
+        attributes: { exclude: ['updatedAt', 'deletedAt'] },
         order: [
           ['createdAt', 'ASC']
         ],
@@ -146,7 +146,7 @@ export class DepartmentService {
 
       const data = await Department.findOne({
         attributes: {
-          exclude: ['createdAt', 'updatedAt', 'deletedAt'],
+          exclude: [ 'updatedAt', 'deletedAt'],
         },
         include:[{
           model: Organization,
@@ -350,7 +350,7 @@ export class DepartmentService {
 
       const deptData = await this?.departmentModel.findAll({
         attributes: {
-          exclude: ['createdAt', 'updatedAt', 'deletedAt'],
+          exclude: [ 'updatedAt', 'deletedAt'],
         },
         order: [
           ['createdAt', 'ASC']
