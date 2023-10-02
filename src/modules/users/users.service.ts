@@ -69,7 +69,7 @@ export class UsersService {
         fullName: createUserDto?.fullName,
         email: createUserDto?.email,
         phoneNumber: createUserDto?.phoneNumber,
-        profilePhoto: createUserDto?.profilePhoto,
+        // profilePhoto: createUserDto?.profilePhoto,
         password: hash,
       };
 
@@ -106,10 +106,10 @@ export class UsersService {
         return Util.handleFailResponse('Invalid email or password');
       }
 
-      // Check if the oraganiazation is verified
-      if (org?.isVerified != true)
-        return Util?.handleFailResponse('Oraganiazation account not verified');
-      console.log(org?.isVerified);
+      // // Check if the oraganiazation is verified
+      // if (org?.isVerified != true)
+      //   return Util?.handleFailResponse('Oraganiazation account not verified');
+      // console.log(org?.isVerified);
 
       //  Check the Role of the User
       const user_role = await User.findOne({
@@ -123,8 +123,6 @@ export class UsersService {
         user?.roleName,
       );
 
-      //  console.log(tokens)
-      //return;
       let org_data = {
         id: user?.id,
         userId: user.userId,
