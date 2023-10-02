@@ -61,8 +61,6 @@ export class UsersService {
       if (!get_org)
         return Util?.CustomhandleNotFoundResponse('organization not found');
 
-      
-
       const hash = await argon.hash(createUserDto.password);
 
       let insertQry = {
@@ -71,7 +69,7 @@ export class UsersService {
         fullName: createUserDto?.fullName,
         email: createUserDto?.email,
         phoneNumber: createUserDto?.phoneNumber,
-        profilePhoto: createUserDto?.profilePhoto,
+        // profilePhoto: createUserDto?.profilePhoto,
         password: hash,
       };
 
@@ -108,10 +106,10 @@ export class UsersService {
         return Util.handleFailResponse('Invalid email or password');
       }
 
-      // Check if the oraganiazation is verified
-      if (org?.isVerified != true)
-        return Util?.handleFailResponse('Oraganiazation account not verified');
-      console.log(org?.isVerified);
+      // // Check if the oraganiazation is verified
+      // if (org?.isVerified != true)
+      //   return Util?.handleFailResponse('Oraganiazation account not verified');
+      // console.log(org?.isVerified);
 
       //  Check the Role of the User
       const user_role = await User.findOne({
@@ -125,8 +123,6 @@ export class UsersService {
         user?.roleName,
       );
 
-      //  console.log(tokens)
-      //return;
       let org_data = {
         id: user?.id,
         userId: user.userId,
@@ -135,7 +131,6 @@ export class UsersService {
         fullname: user.fullName,
         email: user.email,
         IsPhoneNumber: user.phoneNumber,
-  
       };
 
       let userDetails = {
@@ -163,7 +158,6 @@ export class UsersService {
   async findAll(page: number, size: number, userId: any) {
     try {
       console.log(userId);
-
 
       let currentPage = Util.Checknegative(page);
       if (currentPage) {
@@ -226,27 +220,30 @@ export class UsersService {
   // Get User By Id
   async findOne(userId: string) {
     try {
-      console.log(userId)
+      console.log(userId);
 
-      let user = await this?.userModel.findOne({where:{userId}})
-      console.log(user?.organizationId)
-      if(!user)
-      return Util?.CustomhandleNotFoundResponse('User not found');
+      let user = await this?.userModel.findOne({ where: { userId } });
+      console.log(user?.organizationId);
+      if (!user) return Util?.CustomhandleNotFoundResponse('User not found');
 
-      let get_org = await this?.orgModel.findOne({where:{organizationId:user?.organizationId}})
+      let get_org = await this?.orgModel.findOne({
+        where: { organizationId: user?.organizationId },
+      });
 
-      if(!get_org)
-      return Util?.CustomhandleNotFoundResponse('organization not found');
+      if (!get_org)
+        return Util?.CustomhandleNotFoundResponse('organization not found');
 
       const userdata = await User.findOne({
         attributes: {
           exclude: ['password', 'createdAt', 'updatedAt', 'deletedAt'],
         },
-        where: { userId,organizationId:get_org?.organizationId },
+        where: { userId, organizationId: get_org?.organizationId },
       });
-    
 
-      return Util?.handleSuccessRespone(userdata, 'User retrieve successfully.');
+      return Util?.handleSuccessRespone(
+        userdata,
+        'User retrieve successfully.',
+      );
     } catch (error) {
       console.log(error);
       return Util?.handleGrpcTryCatchError(Util?.getTryCatchMsg(error));
@@ -255,18 +252,17 @@ export class UsersService {
 
   // Update User by Id
   async update(userId: string, updateUserDto: UpdateUserDto) {
-   
     try {
+      let user = await this?.userModel.findOne({ where: { userId } });
+      console.log(user?.organizationId);
+      if (!user) return Util?.CustomhandleNotFoundResponse('User not found');
 
-      let user = await this?.userModel.findOne({where:{userId}})
-      console.log(user?.organizationId)
-      if(!user)
-      return Util?.CustomhandleNotFoundResponse('User not found');
+      let get_org = await this?.orgModel.findOne({
+        where: { organizationId: user?.organizationId },
+      });
 
-      let get_org = await this?.orgModel.findOne({where:{organizationId:user?.organizationId}})
-
-      if(!get_org)
-      return Util?.CustomhandleNotFoundResponse('organization not found');
+      if (!get_org)
+        return Util?.CustomhandleNotFoundResponse('organization not found');
 
       let insertQry = {
         roleName: updateUserDto?.roleName,
@@ -276,12 +272,11 @@ export class UsersService {
       };
 
       await this?.userModel?.update(insertQry, {
-        where: { id: user?.id ,organizationId:get_org?.organizationId},
+        where: { id: user?.id, organizationId: get_org?.organizationId },
       });
 
       return Util?.SuccessRespone('User updated successfully');
     } catch (error) {
-     
       console.log(error);
       return Util?.handleGrpcTryCatchError(Util?.getTryCatchMsg(error));
     }
@@ -300,6 +295,13 @@ export class UsersService {
       const match = await argon.verify(user.password, oldPassword);
       if (!match) {
         return Util?.handleFailResponse('Incorrect old password');
+      }
+
+      // Check if oldPassword is the same as newPassword
+      if (oldPassword === newPassword) {
+        return Util?.handleFailResponse(
+          'Old password cannot be the same as the new password',
+        );
       }
 
       // Testing if confirmNewPassword != newPassword
@@ -390,17 +392,17 @@ export class UsersService {
   async updateImg(userId: string, createUserImgDto: CreateUserImgDto) {
     let rollImage = '';
     try {
-    
-      let user_data = await this?.userModel.findOne({where:{userId}})
-      console.log(user_data?.organizationId)
-      if(!user_data)
-      return Util?.CustomhandleNotFoundResponse('User not found');
+      let user_data = await this?.userModel.findOne({ where: { userId } });
+      console.log(user_data?.organizationId);
+      if (!user_data)
+        return Util?.CustomhandleNotFoundResponse('User not found');
 
-      let get_org = await this?.orgModel.findOne({where:{organizationId:user_data?.organizationId}})
+      let get_org = await this?.orgModel.findOne({
+        where: { organizationId: user_data?.organizationId },
+      });
 
-      if(!get_org)
-      return Util?.CustomhandleNotFoundResponse('organization not found');
-
+      if (!get_org)
+        return Util?.CustomhandleNotFoundResponse('organization not found');
 
       if (
         createUserImgDto?.profilePhoto == null ||
@@ -438,7 +440,7 @@ export class UsersService {
         profilePhoto: user_image,
       };
       await this?.userModel?.update(insertQrys, {
-        where: { id: user_data?.id ,organizationId:get_org?.organizationId},
+        where: { id: user_data?.id, organizationId: get_org?.organizationId },
       });
 
       return Util?.SuccessRespone(
@@ -461,7 +463,6 @@ export class UsersService {
         throw new Error('User data not found.');
       }
 
-    
       Object.assign(user);
       await user?.destroy();
       return Util?.SuccessRespone('User deleted successfully.');
@@ -470,7 +471,6 @@ export class UsersService {
       return Util?.handleGrpcTryCatchError(Util?.getTryCatchMsg(error));
     }
   }
-
 
   // Restore Deleted Data
   async restoreUser(userId: string) {
@@ -487,20 +487,19 @@ export class UsersService {
   }
 
   // Logout Organization
-  async logout(logout: LogOutDTO,userId:any) {
+  async logout(logout: LogOutDTO, userId: any) {
     try {
-    
-      
-      let user = await this?.userModel.findOne({where:{userId}})
-      console.log(user?.organizationId)
-      if(!user)
-      return Util?.CustomhandleNotFoundResponse('User not found');
+      let user = await this?.userModel.findOne({ where: { userId } });
+      console.log(user?.organizationId);
+      if (!user) return Util?.CustomhandleNotFoundResponse('User not found');
 
-      let get_org = await this?.orgModel.findOne({where:{organizationId:user?.organizationId}})
+      let get_org = await this?.orgModel.findOne({
+        where: { organizationId: user?.organizationId },
+      });
 
-      if(!get_org)
-      return Util?.CustomhandleNotFoundResponse('organization not found');
-      
+      if (!get_org)
+        return Util?.CustomhandleNotFoundResponse('organization not found');
+
       // Compare Password
       const passwordMatches = await argon.verify(
         user?.password,
@@ -520,7 +519,7 @@ export class UsersService {
         {
           where: {
             password: user?.password,
-            organizationId:get_org?.organizationId
+            organizationId: get_org?.organizationId,
           },
         },
       );
@@ -531,7 +530,6 @@ export class UsersService {
       return Util?.handleGrpcTryCatchError(Util?.getTryCatchMsg(error));
     }
   }
-
 
   async getTokens(user_id: string, email: string, role: string) {
     const jwtPayload = {
