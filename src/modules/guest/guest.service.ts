@@ -25,33 +25,29 @@ export class GuestService {
   // Creating a guest
   async create(createGuestDto: CreateGuestDto, userId: any) {
     try {
-      let user = await this?.UserModel.findOne({ where: { userId } })
       console.log(userId)
+      let user = await this?.UserModel.findOne({ where: { userId } })
+      console.log(user?.organizationId)
       if (!user)
-        return Util?.CustomhandleNotFoundResponse('User not found');
+        return Util?.handleErrorRespone('User not found');
 
       let get_org = await this?.OrgModel.findOne({ where: { organizationId: user?.organizationId } })
+
       if (!get_org)
-        return Util?.CustomhandleNotFoundResponse('organization not found');
-      const guest = await Guest?.create({
+        return Util?.handleErrorRespone('organization not found');
+      
+      const guest = await this.GuestModel?.create({
         ...createGuestDto,
         organizationId: get_org?.organizationId
       })
       await guest.save();
-      const { phoneNumber } = createGuestDto
-      const guestData = await Guest.findOne({
-        where: {
-          phoneNumber,
-          organizationId: get_org?.organizationId
-        }
-      })
       let guest_data = {
-        guestId: guestData?.guestId,
-        firstName: guestData?.firstName,
-        lastname: guestData?.lastName,
-        gender: guestData?.gender,
-        countryCode: guestData?.countryCode,
-        phoneNumber: guestData?.phoneNumber,
+        guestId: guest?.guestId,
+        firstName: guest?.firstName,
+        lastname: guest?.lastName,
+        gender: guest?.gender,
+        countryCode: guest?.countryCode,
+        phoneNumber: guest?.phoneNumber,
       }
       return Util?.handleCustonCreateResponse(guest_data, "Guest Created Successfully")
     } catch (error) {

@@ -81,7 +81,7 @@ export class PurposeService {
         include: [
           {
             model: Guest,
-            attributes: { 
+            attributes: {
               exclude: [
                 'id',
                 'guestId',
@@ -90,13 +90,13 @@ export class PurposeService {
                 'updatedAt',
                 'deletedAt'
               ]
-             },
+            },
             order: [['id', 'DESC']],
             as: 'guestData'
           },
           {
             model: Department,
-            attributes: { 
+            attributes: {
               exclude: [
                 'id',
                 'organizationId',
@@ -105,13 +105,13 @@ export class PurposeService {
                 'updatedAt',
                 'deletedAt'
               ]
-             },
+            },
             order: [['id', 'DESC']],
             as: 'departmentData'
           },
           {
             model: Staff,
-            attributes: { 
+            attributes: {
               exclude: [
                 'id',
                 'departmentId',
@@ -123,7 +123,7 @@ export class PurposeService {
                 'updatedAt',
                 'deletedAt'
               ]
-             },
+            },
             order: [['id', 'DESC']],
             as: 'staffData'
           }
@@ -160,16 +160,16 @@ export class PurposeService {
         return Util?.handleErrorRespone('organization not found');
 
       const purpose = await Purpose.findOne({
-        where: 
-        { 
+        where:
+        {
           purposeId,
           organizationId: get_org?.organizationId
-         },
+        },
         attributes: { exclude: ['createdAt', 'updatedAt'] },
         include: [
           {
             model: Guest,
-            attributes: { 
+            attributes: {
               exclude: [
                 'id',
                 'guestId',
@@ -178,13 +178,13 @@ export class PurposeService {
                 'updatedAt',
                 'deletedAt'
               ]
-             },
+            },
             order: [['id', 'DESC']],
             as: 'guestData'
           },
           {
             model: Staff,
-            attributes: { 
+            attributes: {
               exclude: [
                 'id',
                 'departmentId',
@@ -196,7 +196,7 @@ export class PurposeService {
                 'updatedAt',
                 'deletedAt'
               ]
-             },
+            },
             order: [['id', 'DESC']],
             as: 'staffData'
           }
@@ -331,7 +331,7 @@ export class PurposeService {
         include: [
           {
             model: Guest,
-            attributes: { 
+            attributes: {
               exclude: [
                 'id',
                 'guestId',
@@ -340,13 +340,13 @@ export class PurposeService {
                 'updatedAt',
                 'deletedAt'
               ]
-             },
+            },
             order: [['id', 'DESC']],
             as: 'guestData'
           },
           {
             model: Department,
-            attributes: { 
+            attributes: {
               exclude: [
                 'id',
                 'organizationId',
@@ -355,13 +355,13 @@ export class PurposeService {
                 'updatedAt',
                 'deletedAt'
               ]
-             },
+            },
             order: [['id', 'DESC']],
             as: 'departmentData'
           },
           {
             model: Staff,
-            attributes: { 
+            attributes: {
               exclude: [
                 'id',
                 'departmentId',
@@ -373,7 +373,7 @@ export class PurposeService {
                 'updatedAt',
                 'deletedAt'
               ]
-             },
+            },
             order: [['id', 'DESC']],
             as: 'staffData'
           }
@@ -407,7 +407,7 @@ export class PurposeService {
         include: [
           {
             model: Guest,
-            attributes: { 
+            attributes: {
               exclude: [
                 'id',
                 'guestId',
@@ -416,7 +416,7 @@ export class PurposeService {
                 'updatedAt',
                 'deletedAt'
               ]
-             },
+            },
             order: [['id', 'DESC']],
             as: 'guestData',
             where: {
@@ -437,7 +437,7 @@ export class PurposeService {
           },
           {
             model: Department,
-            attributes: { 
+            attributes: {
               exclude: [
                 'id',
                 'organizationId',
@@ -446,13 +446,13 @@ export class PurposeService {
                 'updatedAt',
                 'deletedAt'
               ]
-             },
+            },
             order: [['id', 'DESC']],
             as: 'departmentData'
           },
           {
             model: Staff,
-            attributes: { 
+            attributes: {
               exclude: [
                 'id',
                 'departmentId',
@@ -464,7 +464,7 @@ export class PurposeService {
                 'updatedAt',
                 'deletedAt'
               ]
-             },
+            },
             order: [['id', 'DESC']],
             as: 'staffData'
           }
@@ -504,7 +504,7 @@ export class PurposeService {
         }
       })
 
-      const currentTime = new Date().toLocaleTimeString();
+      // const currentTime = new Date().toLocaleTimeString();
 
       if (!guest)
         return Util?.handleFailResponse('Guest not found')
@@ -512,36 +512,36 @@ export class PurposeService {
       if (!guest || !cCode)
         return Util?.handleFailResponse('Invalid phone number or country code')
 
-      const purpose = await this.PurposeModel.findOne(
-        {
-          where: {
-            guestId: guest?.guestId,
-            organizationId: get_org?.organizationId
-          }
-        });
+      // const purpose = await this.PurposeModel.findOne(
+      //   {
+      //     where: {
+      //       guestId: guest?.guestId,
+      //       organizationId: get_org?.organizationId
+      //     }
+      //   });
 
-      if (!purpose)
-        return Util?.handleFailResponse('Purpose not found')
+      // if (!purpose)
+      //   return Util?.handleFailResponse('Purpose not found')
 
-      if (purpose?.isLogOut != false) {
-        return Util?.handleFailResponse('Guest already logout')
-      };
+      // if (purpose?.isLogOut != false) {
+      //   return Util?.handleFailResponse('Guest already logout')
+      // };
 
       console.log(phoneNumber);
       // return
-      await Purpose.update({ isLogOut: true },
-        { where: { guestId: guest?.guestId } }
-      )
-      await Purpose.update({ visitStatus: 'Signed Out' },
-        { where: { guestId: guest?.guestId } }
-      )
-      await Purpose.update({ signOutTime: currentTime },
-        { where: { guestId: guest?.guestId } }
-      )
-      let guest_data = {
-        signOutTime: purpose?.signOutTime
-      }
-      return Util?.handleCustonCreateResponse(guest_data, 'Logout successful');
+      // await Purpose.update({ isLogOut: true },
+      //   { where: { guestId: guest?.guestId } }
+      // )
+      // await Purpose.update({ visitStatus: 'Signed Out' },
+      //   { where: { guestId: guest?.guestId } }
+      // )
+      // await Purpose.update({ signOutTime: currentTime },
+      //   { where: { guestId: guest?.guestId } }
+      // )
+      // let guest_data = {
+      //   signOutTime: purpose?.signOutTime
+      // }
+      return Util?.handleCreateSuccessRespone('Logout successful');
     } catch (error) {
       console.log(error)
       return Util?.handleGrpcTryCatchError(Util?.getTryCatchMsg(error));
@@ -578,6 +578,9 @@ export class PurposeService {
 
       const currentTime = new Date().toLocaleTimeString();
 
+      if (!guest)
+        return Util?.handleFailResponse('Guest not found')
+
       if (!guest || !cCode)
         return Util?.handleFailResponse('Invalid phone number or country code')
 
@@ -587,9 +590,21 @@ export class PurposeService {
             guestId: guest?.guestId
           }
         });
+
       // Checking if guest is signed In
-      if (purpose?.visitStatus != 'Signed In')
-        return Util?.handleFailResponse('Guest already signed out, sign in first');
+      if (purpose?.isLogOut != false) {
+        return Util?.handleFailResponse('Guest already logged Out')
+      };
+
+      await Purpose.update({ isLogOut: true },
+        { where: { guestId: guest?.guestId } }
+      )
+      await Purpose.update({ visitStatus: 'Signed Out' },
+        { where: { guestId: guest?.guestId } }
+      )
+      await Purpose.update({ signOutTime: currentTime },
+        { where: { guestId: guest?.guestId } }
+      )
 
       console.log(phoneNumber);
 
@@ -635,21 +650,24 @@ export class PurposeService {
 
       const getSingedInCount = await this.PurposeModel.count({
         where: {
-          visitStatus : 'Signed In',
+          visitStatus: 'Signed In',
           organizationId: get_org?.organizationId
         },
       });
 
       const getSingedOutCount = await this.PurposeModel.count({
         where: {
-          visitStatus : 'Signed Out',
+          visitStatus: 'Signed Out',
           organizationId: get_org?.organizationId
         },
       });
 
+      const total = Number(getSingedInCount) + Number(getSingedOutCount)
+
       filter = {
-        signed_in : Number(getSingedInCount),
-        signed_out : Number(getSingedOutCount)
+        signed_in: Number(getSingedInCount),
+        signed_out: Number(getSingedOutCount),
+        total : total
       }
 
       return Util?.handleSuccessRespone(filter, "Guest Data filtered Successfully")
