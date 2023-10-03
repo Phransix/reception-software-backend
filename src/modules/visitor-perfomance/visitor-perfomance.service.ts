@@ -5,7 +5,7 @@ import { Purpose } from '../purpose/entities/purpose.entity';
 import * as Util from '../../utils/index';
 import { User } from '../users/entities/user.entity';
 import { Organization } from '../organization/entities/organization.entity';
-import { MONTHS } from './months.DTO';
+import { MONTHS, filter } from './months.DTO';
 import { Op } from 'sequelize';
 
 @Injectable()
@@ -17,8 +17,9 @@ export class VisitorPerfomanceService {
     @InjectModel(Purpose) private readonly PurposeModel: typeof Purpose,
   ) {}
 
-  async getVisitorPerformance(months: any, userId: any) {
-    let filteredData = {};
+  async getVisitorPerformance(filteredDatas:any,  userId: any) {
+    // let filteredData = {};
+   
 
     try {
       let user = await this?.UserModel?.findOne({ where: { userId } });
@@ -34,281 +35,237 @@ export class VisitorPerfomanceService {
         return Util?.CustomhandleNotFoundResponse('Organization Not Found');
       }
 
-      // January Data
-      if (months === MONTHS?.JANUARY) {
+      if(filteredDatas === filter?.MONTH){
+
         const today = new Date();
         today?.setHours(0, 0, 0, 0);
 
-        const firstDayOfJan = new Date(
-          today?.getFullYear(), 0, 1, 0, 0, 0, 0);
+      // January Data
+       MONTHS?.JANUARY
 
-        const firstDayOfFeb = new Date(
-          today?.getFullYear(), 1, 1, 0, 0, 0, 0);
-
+        const firstDayOfJan = new Date(today?.getFullYear(), 0, 1, 0, 0, 0, 0);
+        const firstDayOfFebs = new Date(today?.getFullYear(), 1, 1, 0, 0, 0, 0);
+      
         const totalVisitInJan = await this?.guestModel?.count({
           where: {
             createdAt: {
-              [Op.between]: [firstDayOfJan, firstDayOfFeb],
+              [Op.between]: [firstDayOfJan, firstDayOfFebs],
             },
             organizationId: user?.organizationId,
           },
         });
-
-        filteredData = {
-          vistInJan: Number(totalVisitInJan),
-        };
-      }
+      
 
       // February Data
-      if (months === MONTHS?.FEBRUARY) {
-        const today = new Date();
-        today?.setHours(0, 0, 0, 0);
-
+       MONTHS?.FEBRUARY
+  
         const firstDayOfFeb = new Date(
           today?.getFullYear(), 1, 1, 0, 0, 0, 0);
 
-        const firstDayOfMarch = new Date( 
+        const firstDayOfMarchs = new Date( 
           today?.getFullYear(), 2,1,0,0,0,0)
 
         const totalVisitInFeb = await this?.guestModel?.count({
           where: {
             createdAt: {
-              [Op.between]: [firstDayOfFeb, firstDayOfMarch],
+              [Op.between]: [firstDayOfFeb, firstDayOfMarchs],
             },
             organizationId: user?.organizationId,
           },
         });
 
-        filteredData = {
-          vistInFeb: Number(totalVisitInFeb),
-        };
-      }
+      
 
       // March Data
-      if (months === MONTHS?.MARCH) {
-        const today = new Date();
-
+       MONTHS?.MARCH
         const firstDayOfMarch = new Date(today?.getFullYear(),2,1,0,0,0,0)
-      
-        const firstDayOfApril = new Date( today?.getFullYear(),3,1,0,0,0,0)
+        const firstDayOfAprils= new Date( today?.getFullYear(),3,1,0,0,0,0)
 
         const totalVisitInMarch = await this?.guestModel?.count({
           where: {
             createdAt: {
-              [Op.between]: [firstDayOfMarch, firstDayOfApril],
+              [Op.between]: [firstDayOfMarch, firstDayOfAprils],
             },
             organizationId: user?.organizationId,
           },
         });
 
-        filteredData = {
-          vistInMarch: Number(totalVisitInMarch),
-        };
-      }
+      
 
       // April Data
-      if (months === MONTHS?.APRIL) {
-        const today = new Date();today?.setHours(0, 0, 0, 0);
-
+       MONTHS?.APRIL
+        
         const firstDayOfApril = new Date(today?.getFullYear(),3,1,0,0,0,0)
     
-        const firstDayOfMay = new Date(today?.getFullYear(), 4, 1, 0, 0, 0, 0);
+        const firstDayOfMays = new Date(today?.getFullYear(), 4, 1, 0, 0, 0, 0);
 
         const totalVisitInApril = await this?.guestModel?.count({
           where: {
             createdAt: {
-              [Op.between]: [firstDayOfApril, firstDayOfMay],
+              [Op.between]: [firstDayOfApril, firstDayOfMays],
             },
             organizationId: user?.organizationId,
           },
         });
-
-        filteredData = {
-          vistInApril: Number(totalVisitInApril),
-        };
-      }
+      
 
       // May Data
-      if (months === MONTHS?.MAY) {
-        const today = new Date();
-        today?.setHours(0, 0, 0, 0);
-
+       MONTHS?.MAY
+    
         const firstDayOfMay = new Date( today?.getFullYear(), 4, 1, 0, 0, 0, 0);
-         
-        const firstDayOfJune = new Date(today?.getFullYear(), 5, 1, 0, 0, 0, 0);
+        const firstDayOfJunes = new Date(today?.getFullYear(), 5, 1, 0, 0, 0, 0);
           
         const totalVisitInMay = await this?.guestModel?.count({
           where: {
             createdAt: {
-              [Op.between]: [firstDayOfMay, firstDayOfJune],
+              [Op.between]: [firstDayOfMay, firstDayOfJunes],
             },
             organizationId: user?.organizationId,
           },
         });
 
-        filteredData = {
-          vistInMay: Number(totalVisitInMay),
-        };
-      }
+      
 
       // June Data
-      if (months === MONTHS?.JUNE) {
-        const today = new Date();
-        today?.setHours(0, 0, 0, 0);
-
+       MONTHS?.JUNE
+        
         const firstDayOfJune = new Date(today?.getFullYear(), 5, 1, 0, 0, 0, 0);
-        const firstDayOfJuly = new Date(today?.getFullYear(), 6, 1, 0, 0, 0, 0);
+        const firstDayOfJulys = new Date(today?.getFullYear(), 6, 1, 0, 0, 0, 0);
 
         const totalVisitInJune = await this?.guestModel?.count({
           where: {
             createdAt: {
-              [Op.between]: [firstDayOfJune, firstDayOfJuly],
+              [Op.between]: [firstDayOfJune, firstDayOfJulys],
             },
             organizationId: user?.organizationId,
           },
         });
-
-        filteredData = {
-          vistInJune: Number(totalVisitInJune),
-        };
-      }
+      
 
       // July Data
-      if (months === MONTHS?.JULY) {
-        const today = new Date();
-        today?.setHours(0, 0, 0, 0);
+       MONTHS?.JULY
 
         const firstDayOfJuly = new Date(today?.getFullYear(), 6, 1, 0, 0, 0, 0);
-        const firstDayOfAug = new Date(today?.getFullYear(), 7, 1, 0, 0, 0, 0);
+        const firstDayOfAugs = new Date(today?.getFullYear(), 7, 1, 0, 0, 0, 0);
 
         const totalVisitInJuly = await this?.guestModel?.count({
           where: {
             createdAt: {
-              [Op.between]: [firstDayOfJuly, firstDayOfAug],
+              [Op.between]: [firstDayOfJuly, firstDayOfAugs],
             },
             organizationId: user?.organizationId,
           },
         });
 
-        filteredData = {
-          visitInJuly: Number(totalVisitInJuly),
-        };
-      }
+       
+      
 
       // August Data
-      if (months === MONTHS?.AUGUST) {
-        const today = new Date();
-        today?.setHours(0, 0, 0, 0);
-
+       MONTHS?.AUGUST
+        
         const firstDayOfAug = new Date(today?.getFullYear(), 7, 1, 0, 0, 0, 0);
-        const firstDayOfSept = new Date(today?.getFullYear(), 8, 1, 0, 0, 0, 0);
+        const firstDayOfSepts = new Date(today?.getFullYear(), 8, 1, 0, 0, 0, 0);
 
         const totalVisitInAug = await this?.guestModel?.count({
           where: {
             createdAt: {
-              [Op.between]: [firstDayOfAug, firstDayOfSept],
+              [Op.between]: [firstDayOfAug, firstDayOfSepts],
             },
             organizationId: user?.organizationId,
           },
         });
 
-        filteredData = {
-          visitInAug: Number(totalVisitInAug),
-        };
-      }
+      
+      
 
       // September Data
-      if (months === MONTHS?.SEPTEMBER) {
-        const today = new Date();
-        today?.setHours(0, 0, 0, 0);
-
+       MONTHS?.SEPTEMBER
+       
         const firstDayOfSept = new Date(today?.getFullYear(), 8, 1, 0, 0, 0, 0);
-        const firstDayOfOct = new Date(today?.getFullYear(), 9, 1, 0, 0, 0, 0);
+        const firstDayOfOcts = new Date(today?.getFullYear(), 9, 1, 0, 0, 0, 0);
 
         const totalVisitInSept = await this?.guestModel?.count({
           where: {
             createdAt: {
-              [Op.between]: [firstDayOfSept, firstDayOfOct],
+              [Op.between]: [firstDayOfSept, firstDayOfOcts],
             },
             organizationId: user?.organizationId,
           },
         });
 
-        filteredData = {
-          visitInSept: Number(totalVisitInSept),
-        };
-      }
+     
+      
 
       // October Data
-      if (months === MONTHS?.OCTOBER) {
-        const today = new Date();
-        today?.setHours(0, 0, 0, 0);
-
+       MONTHS?.OCTOBER
         const firstDayOfOct = new Date(today?.getFullYear(), 9, 1, 0, 0, 0, 0);
-        const firstDayOfNov = new Date(today?.getFullYear(), 10, 1, 0, 0, 0, 0);
+        const firstDayOfNovs = new Date(today?.getFullYear(), 10, 1, 0, 0, 0, 0);
 
         const totalVisitInOct = await this?.guestModel?.count({
           where: {
             createdAt: {
-              [Op.between]: [firstDayOfOct, firstDayOfNov],
+              [Op.between]: [firstDayOfOct, firstDayOfNovs],
             },
             organizationId: user?.organizationId,
           },
         });
 
-        filteredData = {
-          visitInOct: Number(totalVisitInOct),
-        };
-      }
+      
+      
 
       // November Data
-      if (months === MONTHS?.NOVEMBER) {
-        const today = new Date();
-        today?.setHours(0, 0, 0, 0);
-
+       MONTHS?.NOVEMBER
         const firstDayOfNov = new Date(today?.getFullYear(), 10, 1, 0, 0, 0, 0);
-        const firstDayOfDec = new Date(today?.getFullYear(), 11, 1, 0, 0, 0, 0);
+        const firstDayOfDecs = new Date(today?.getFullYear(), 11, 1, 0, 0, 0, 0);
 
         const totalVisitInNov = await this?.guestModel?.count({
           where: {
             createdAt: {
-              [Op.between]: [firstDayOfNov, firstDayOfDec],
+              [Op.between]: [firstDayOfNov, firstDayOfDecs],
             },
             organizationId: user?.organizationId,
           },
         });
 
-        filteredData = {
-          visitInDec: Number(totalVisitInNov),
-        };
-      }
+      
+      
 
       // December Data
-      if (months === MONTHS?.DECEMBER) {
-        const today = new Date();
-        today?.setHours(0, 0, 0, 0);
-
+       MONTHS?.DECEMBER
         const firstDayOfDec = new Date(today?.getFullYear(), 11, 1, 0, 0, 0, 0);
-        const firstDayOfJan = new Date(today?.getFullYear(), 12, 1, 0, 0, 0, 0);
+        const firstDayOfJans= new Date(today?.getFullYear(), 12, 1, 0, 0, 0, 0);
 
         const totalVisitInDec = await this?.guestModel?.count({
           where: {
             createdAt: {
-              [Op.between]: [firstDayOfDec, firstDayOfJan],
+              [Op.between]: [firstDayOfDec, firstDayOfJans],
             },
             organizationId: user?.organizationId,
           },
         });
 
-        filteredData = {
-          visitInDec: Number(totalVisitInDec),
+       let  filteredData = {
+          January: Number(totalVisitInJan),
+          February: Number(totalVisitInFeb),
+          March: Number(totalVisitInMarch),
+          April: Number(totalVisitInApril),
+          May: Number(totalVisitInMay),
+          June: Number(totalVisitInJune),
+          July: Number(totalVisitInJuly),
+          August: Number(totalVisitInAug),
+          September: Number(totalVisitInSept),
+          October: Number(totalVisitInOct),
+          November: Number(totalVisitInNov),
+          December: Number(totalVisitInDec),
         };
-      }
+      
+        return Util?.handleSuccessRespone(
+          filteredData,
+          'Data requested successfully',
+        );
 
-      return Util?.handleSuccessRespone(
-        filteredData,
-        'Data requested successfully',
-      );
+    }
+
     } catch (error) {
       console.log(error);
       return Util?.handleGrpcTryCatchError(Util?.getTryCatchMsg(error));
