@@ -37,6 +37,7 @@ import { orgImageUploadProfile } from './helper/organizationsProfile';
 import { ResetPasswordService } from './helper/ResetPassHelper';
 import { OverviewModule } from './modules/overview/overview.module';
 import { AnalyticsModule } from './modules/analytics/analytics.module';
+import { VisitorPerfomanceModule } from './modules/visitor-perfomance/visitor-perfomance.module';
 
 
 
@@ -118,6 +119,7 @@ import { AnalyticsModule } from './modules/analytics/analytics.module';
     PurposeModule,
     OverviewModule,
     AnalyticsModule,
+    VisitorPerfomanceModule,
   ],
 
   controllers: [AppController],
