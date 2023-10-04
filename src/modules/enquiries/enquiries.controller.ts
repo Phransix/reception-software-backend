@@ -280,16 +280,16 @@ export class EnquiriesController {
     enum: Purpose,
     required: false,
   })
-  @ApiQuery({
-    name: 'page',
-    type: 'number',
-    required: false,
-  })
-  @ApiQuery({
-    name: 'size',
-    type: 'number',
-    required: false,
-  })
+  // @ApiQuery({
+  //   name: 'page',
+  //   type: 'number',
+  //   required: false,
+  // })
+  // @ApiQuery({
+  //   name: 'size',
+  //   type: 'number',
+  //   required: false,
+  // })
   @Get('enquiry/filterPuropse')
   async purposefilter(
     @Query('keyword') keyword: string,

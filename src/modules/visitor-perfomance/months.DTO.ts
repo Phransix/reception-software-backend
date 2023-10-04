@@ -15,10 +15,19 @@ export enum MONTHS {
     DECEMBER = 'december'
 }
 
-export enum year {
-    year = '2023',
-    year2 = '2024',
-    year3 = '2025',
-    year4 = '2025'
+export enum filter{
+    Day = 'day',
+    WEEK = 'week',
+    MONTH = 'month'
+}
 
+
+export enum Days{
+    MONDAY = 'monday',
+    TUESDAY = 'tuesday',
+    WEDNESDAY = 'wednesday',
+    THURSDAY = 'thursday',
+    FRIDAY = 'friday',
+    SATUARDAY = 'satuarday',
+    SUNDAY = 'sunday'
 }

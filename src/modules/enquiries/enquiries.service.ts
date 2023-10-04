@@ -343,15 +343,13 @@ export class EnquiriesService {
   // Filter Enquiries By Purpose
   async purposefilter(
     keyword: string,
-    //  page: number, 
-    //  size: number,
      userId:any
      ) {
     try {
-      let filter = {};
+      let filterData = {};
 
       if (keyword != null) {
-        filter = { purpose: keyword };
+        filterData = { purpose: keyword };
       }
 
       let user = await this?.userModel.findOne({where:{userId}})
@@ -364,70 +362,112 @@ export class EnquiriesService {
       if(!get_org)
       return Util?.CustomhandleNotFoundResponse('organization not found');
 
-      const filterCheck = await this?.enquiryModel.count({
+
+      const filterOfficial = await this?.enquiryModel.count({
         where: {
-          ...filter,
+          purpose:'Official',
           organizationId:get_org?.organizationId
         },
       });
-      console.log(filterCheck)
+      // console.log(filterPersonal)
+
+      const filterPersonal = await this?.enquiryModel.count({
+        where: {
+          purpose:'Personal',
+          organizationId:get_org?.organizationId
+        },
+      });
+      // console.log(filterPersonal)
+
+      const filterPartnership = await this?.enquiryModel.count({
+        where: {
+          purpose:'Partnership',
+          organizationId:get_org?.organizationId
+        },
+      });
+      // console.log(filterPartnership)
+
+      const filterLegal = await this?.enquiryModel.count({
+        where: {
+          purpose:'Legal',
+          organizationId:get_org?.organizationId
+        },
+      });
+      // console.log(filterLegal)
+
+      const filterCareer = await this?.enquiryModel.count({
+        where: {
+          purpose:'Career',
+          organizationId:get_org?.organizationId
+        },
+      });
+      // console.log(filterCareer)
+
+      const filterSales = await this?.enquiryModel.count({
+        where: {
+          purpose:'Sales',
+          organizationId:get_org?.organizationId
+        },
+      });
+      // console.log(filterSales)
+
+      const filterComplaints = await this?.enquiryModel.count({
+        where: {
+          purpose:'Complaints',
+          organizationId:get_org?.organizationId
+        },
+      });
+      // console.log(filterComplaints)
+
+      const filterPayments = await this?.enquiryModel.count({
+        where: {
+          purpose:'Payments',
+          organizationId:get_org?.organizationId
+        },
+      });
+      // console.log(filterPayments)
+
+      const filterInvestments = await this?.enquiryModel.count({
+        where: {
+          purpose:'Investments',
+          organizationId:get_org?.organizationId
+        },
+      });
+      // console.log(filterInvestments)
+
+      const filterEvents = await this?.enquiryModel.count({
+        where: {
+          purpose:'Events',
+          organizationId:get_org?.organizationId
+        },
+      });
+      // console.log(filterEvents)
+
+      const total = Number(filterOfficial) + Number(filterPersonal) + Number(filterPartnership) +
+      Number(filterLegal) + Number(filterCareer) + Number(filterSales) + Number(filterComplaints) +
+      Number(filterPayments) + Number(filterPayments) + Number(filterInvestments) + Number(filterEvents)
+
+      filterData = {
+        Official:  Number(filterOfficial),
+        Personal: Number(filterPersonal) ,
+        Partnership: Number(filterPartnership),
+        Legal: Number(filterLegal) ,
+        Career: Number(filterCareer),
+        Sales: Number(filterSales),
+        Complaints: Number(filterComplaints),
+        Payments:  Number(filterPayments),
+        Investments: Number(filterInvestments),
+        Events: Number(filterEvents),
+        Total: total
+      }
+
       
       return Util?.handleSuccessRespone(
-        filterCheck,
+        filterData,
         'Enquiries Purpose Data Filtered and Counted Successfully.',
       );
      
-        //  return filterCheck
-      // let currentPage = Util?.Checknegative(page);
-      // if (currentPage) {
-      //   return Util?.handleErrorRespone(
-      //     'Enquiry current Page cannot be negative',
-      //   );
-      // }
-
-      // const { limit, offset } = Util?.getPagination(page, size);
-
-      // let queryOption: any = {
-      //   limit,
-      //   offset,
-      //   attributes: { exclude: [ 'updatedAt', 'deletedAt'] },
-      //   order: [
-      //     ['createdAt', 'ASC']
-      //   ],
-      //   include:[{
-      //     model: Organization,
-      //     attributes:{
-      //       exclude:[
-      //         "id",
-      //         "createdAt",
-      //         "updatedAt",
-      //         "deletedAt",
-      //         "isVerified",
-      //       ]
-      //     }
-      //   }]
-      // };
-
-      // if (keyword) {
-      //   queryOption = {
-      //     ...queryOption,
-      //     where: {
-      //       purpose: keyword,
-      //       organizationId:get_org?.organizationId
-      //     },
-      //   };
-      // }
-
-      // const allQueries = await Enquiry?.findAndCountAll(queryOption);
-
-      // let result = Util?.getPagingData(allQueries, page, limit);
-      // console.log(result);
-
-      // const dataResult = { ...result };
-      // return Util?.handleSuccessRespone(
-      //   dataResult,
-      //   'Enquiries Purpose Data Filtered Successfully.',
-      // );
+    
     } catch (error) {
       console.log(error);
       return Util?.handleGrpcTryCatchError(Util?.getTryCatchMsg(error));

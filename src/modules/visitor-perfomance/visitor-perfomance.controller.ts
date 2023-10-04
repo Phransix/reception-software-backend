@@ -1,6 +1,6 @@
 import { Controller, Get, Post, Body, Patch, Param, Delete, UseGuards, Query, HttpStatus } from '@nestjs/common';
 import { VisitorPerfomanceService } from './visitor-perfomance.service';
-import { MONTHS } from './months.DTO';
+import { MONTHS, filter } from './months.DTO';
 import { AuthGuard } from '@nestjs/passport';
 import { ApiBearerAuth, ApiOperation, ApiQuery, ApiTags } from '@nestjs/swagger';
 import { Public } from 'src/common/decorators/public.decorator';
@@ -18,21 +18,21 @@ export class VisitorPerfomanceController {
   @Public()
   @UseGuards(AtGuard)
   @ApiQuery({
-    name: "months",
-    enum: MONTHS,
+    name: "filter",
+    enum: filter,
     required: false
   })
   @UseGuards(AtGuard)
   @ApiTags('Visitor Performance')
-  @ApiOperation({ summary: 'Visitor Performance for a Year' })
+  @ApiOperation({ summary: 'Visitor Performance ' })
   @Get('dateRange')
   async findAll(
-    @Query('months') months : string,
+    @Query('filter') filter : string,
     @GetCurrentUserId() userId: string
   ) {
     let ErrorCode : number
     try {
-      const overview = await this?.visitorPerfomanceService?.getVisitorPerformance(months,userId);
+      const overview = await this?.visitorPerfomanceService?.getVisitorPerformance(filter,userId);
       if (overview && 'status_code' in overview && overview.status_code != HttpStatus.OK) {
         ErrorCode = overview?.status_code;
         throw new Error(overview?.message)
