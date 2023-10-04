@@ -9,14 +9,4 @@ export class VisitorLogsController {
   findAll() {
     return this.visitorLogsService.findAll();
   }
-
-  @Get(':id')
-  findOne(@Param('id') id: string) {
-    return this.visitorLogsService.findOne(+id);
-  }
-  
-  @Delete(':id')
-  remove(@Param('id') id: string) {
-    return this.visitorLogsService.remove(+id);
-  }
 }

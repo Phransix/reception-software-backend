@@ -83,6 +83,33 @@ export class GuestController {
 
   }
 
+    // Get all Guests for Tablet
+    @UseGuards(AuthGuard('jwt'))
+    @ApiBearerAuth('defaultBearerAuth')
+    @Public()
+    @UseGuards(AtGuard)
+    @ApiTags('Guest')
+    @ApiOperation({ summary: 'Get Guest for tablet' })
+    @Get('getAllGuestTablet')
+    async getAllGuestData(
+      @GetCurrentUserId() userId: string
+    ) {
+      let ErrorCode: number;
+      try {
+        let guesData = await this.guestService.findAllGuest(userId);
+  
+        if (guesData?.status_code != HttpStatus.OK) {
+          ErrorCode = guesData?.status_code;
+          throw new Error(guesData?.message);
+        }
+        return guesData;
+      } catch (error) {
+        console.log(error)
+        return Util?.handleRequestError(Util?.getTryCatchMsg(error), ErrorCode);
+      }
+  
+    }
+
 // Get Guest by GuestId
 @UseGuards(AuthGuard('jwt'))
 @ApiBearerAuth('defaultBearerAuth')

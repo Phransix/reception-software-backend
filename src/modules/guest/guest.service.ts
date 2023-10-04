@@ -103,6 +103,36 @@ export class GuestService {
     }
   }
 
+    // Get All Guest for Tablet
+    async findAllGuest(userId: any) {
+      try {
+        console.log(userId)
+        let user = await this?.UserModel.findOne({ where: { userId } })
+        console.log(user?.organizationId)
+        if (!user)
+          return Util?.handleErrorRespone('User not found');
+        let get_org = await this?.OrgModel.findOne({ where: { organizationId: user?.organizationId } })
+  
+        if (!get_org)
+          return Util?.handleErrorRespone('organization not found');
+  
+        const guestData = await Guest.findAndCountAll({
+          where: {
+            organizationId: get_org?.organizationId
+          },
+          attributes: { exclude: ['createdAt', 'updatedAt', 'deletedAt'] },
+        })
+
+        return Util?.handleSuccessRespone(
+          guestData,
+          'Guest Data retrieved successfully.',
+        );
+      } catch (error) {
+        console.log(error)
+        return Util?.handleGrpcTryCatchError(Util?.getTryCatchMsg(error));
+      }
+    }
+
   // Get Gest By guestId
   async findOne(guestId: string, userId: any) {
     try {
