@@ -16,9 +16,9 @@ export enum MONTHS {
 }
 
 export enum filter{
-    Day = 'day',
+
     WEEK = 'week',
-    MONTH = 'month'
+    YEAR = 'Year'
 }
 
 

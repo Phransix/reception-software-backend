@@ -32,7 +32,8 @@ export class VisitorPerfomanceService {
         return Util?.CustomhandleNotFoundResponse('Organization Not Found');
       }
 
-      if (filterData === filter?.MONTH) {
+         //  Filter Visitor Activity Performanc By Months
+      if (filterData === filter?.YEAR) {
         const today = new Date();
         today?.setHours(0, 0, 0, 0);
 
@@ -246,7 +247,7 @@ export class VisitorPerfomanceService {
         );
       }
 
-         //  Filter Visitor Activity Performanc By week
+         //  Filter Visitor Activity Performanc By week(days)
       if (filterData === filter?.WEEK) {
         const today = new Date();
         const year = today.getFullYear();
@@ -465,6 +466,31 @@ export class VisitorPerfomanceService {
           'Data requested successfully',
         );
       }
+
+  // // Filter Visitor Activity Performanc By Day(hours)
+  //      if ( filterData === filter?.Day){
+  //       const today = new Date ()
+  //       today?.setHours(10,0,0,0)
+  //       const tomorrow = new Date(today)
+  //       tomorrow?.setHours(11,0,0,0)
+
+  //       const totalVisitfrm = await this?.guestModel?.count({
+  //         where:{
+  //           createdAt:{
+  //             [Op.between]: [today, tomorrow],
+  //           },
+  //           organizationId: user?.organizationId
+  //         }
+  //       })
+      
+  //       return Util?.handleSuccessRespone(
+  //         totalVisitfrm,
+  //         'Data requested successfully',
+  //       );
+
+  //      }
+
+
     } catch (error) {
       console.log(error);
       return Util?.handleGrpcTryCatchError(Util?.getTryCatchMsg(error));
