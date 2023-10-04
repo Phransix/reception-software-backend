@@ -57,14 +57,7 @@ export class VisitorPerfomanceService {
         const firstDayOfFeb = new Date(today?.getFullYear(), 1, 1, 0, 0, 0, 0);
 
         const firstDayOfMarchs = new Date(
-          today?.getFullYear(),
-          2,
-          1,
-          0,
-          0,
-          0,
-          0,
-        );
+          today?.getFullYear(),2, 1, 0, 0, 0, 0);
 
         const totalVisitInFeb = await this?.guestModel?.count({
           where: {
@@ -78,24 +71,11 @@ export class VisitorPerfomanceService {
         // March Data
         MONTHS?.MARCH;
         const firstDayOfMarch = new Date(
-          today?.getFullYear(),
-          2,
-          1,
-          0,
-          0,
-          0,
-          0,
-        );
+          today?.getFullYear(),2, 1, 0, 0, 0, 0);
+      
         const firstDayOfAprils = new Date(
-          today?.getFullYear(),
-          3,
-          1,
-          0,
-          0,
-          0,
-          0,
-        );
-
+          today?.getFullYear(),3, 1, 0, 0, 0, 0);
+        
         const totalVisitInMarch = await this?.guestModel?.count({
           where: {
             createdAt: {
@@ -109,14 +89,7 @@ export class VisitorPerfomanceService {
         MONTHS?.APRIL;
 
         const firstDayOfApril = new Date(
-          today?.getFullYear(),
-          3,
-          1,
-          0,
-          0,
-          0,
-          0,
-        );
+          today?.getFullYear(),3, 1, 0, 0, 0, 0);
 
         const firstDayOfMays = new Date(today?.getFullYear(), 4, 1, 0, 0, 0, 0);
 
@@ -134,14 +107,7 @@ export class VisitorPerfomanceService {
 
         const firstDayOfMay = new Date(today?.getFullYear(), 4, 1, 0, 0, 0, 0);
         const firstDayOfJunes = new Date(
-          today?.getFullYear(),
-          5,
-          1,
-          0,
-          0,
-          0,
-          0,
-        );
+          today?.getFullYear(),5, 1, 0, 0, 0, 0);
 
         const totalVisitInMay = await this?.guestModel?.count({
           where: {
@@ -157,14 +123,7 @@ export class VisitorPerfomanceService {
 
         const firstDayOfJune = new Date(today?.getFullYear(), 5, 1, 0, 0, 0, 0);
         const firstDayOfJulys = new Date(
-          today?.getFullYear(),
-          6,
-          1,
-          0,
-          0,
-          0,
-          0,
-        );
+          today?.getFullYear(),5, 1, 0, 0, 0, 0);
 
         const totalVisitInJune = await this?.guestModel?.count({
           where: {
@@ -195,14 +154,7 @@ export class VisitorPerfomanceService {
 
         const firstDayOfAug = new Date(today?.getFullYear(), 7, 1, 0, 0, 0, 0);
         const firstDayOfSepts = new Date(
-          today?.getFullYear(),
-          8,
-          1,
-          0,
-          0,
-          0,
-          0,
-        );
+          today?.getFullYear(),8, 1, 0, 0, 0, 0);
 
         const totalVisitInAug = await this?.guestModel?.count({
           where: {
@@ -232,14 +184,7 @@ export class VisitorPerfomanceService {
         MONTHS?.OCTOBER;
         const firstDayOfOct = new Date(today?.getFullYear(), 9, 1, 0, 0, 0, 0);
         const firstDayOfNovs = new Date(
-          today?.getFullYear(),
-          10,
-          1,
-          0,
-          0,
-          0,
-          0,
-        );
+          today?.getFullYear(),10, 1, 0, 0, 0, 0);
 
         const totalVisitInOct = await this?.guestModel?.count({
           where: {
@@ -254,14 +199,7 @@ export class VisitorPerfomanceService {
         MONTHS?.NOVEMBER;
         const firstDayOfNov = new Date(today?.getFullYear(), 10, 1, 0, 0, 0, 0);
         const firstDayOfDecs = new Date(
-          today?.getFullYear(),
-          11,
-          1,
-          0,
-          0,
-          0,
-          0,
-        );
+          today?.getFullYear(),  11, 1, 0, 0, 0, 0);
 
         const totalVisitInNov = await this?.guestModel?.count({
           where: {
@@ -276,14 +214,7 @@ export class VisitorPerfomanceService {
         MONTHS?.DECEMBER;
         const firstDayOfDec = new Date(today?.getFullYear(), 11, 1, 0, 0, 0, 0);
         const firstDayOfJans = new Date(
-          today?.getFullYear(),
-          12,
-          1,
-          0,
-          0,
-          0,
-          0,
-        );
+          today?.getFullYear(),12, 1, 0, 0, 0, 0);
 
         const totalVisitInDec = await this?.guestModel?.count({
           where: {
@@ -315,138 +246,7 @@ export class VisitorPerfomanceService {
         );
       }
 
-      // if (filterData === filter?.WEEK){
-      //   const today = new Date();
-      //   today?.setHours(0,0,0,0)
-
-      //   // Calculate for the Days
-
-      //   const daysUntilMondays = 1 -(today?.getDay() + 6) % 7
-      //   const nextMonday = new Date (today)
-      //   nextMonday?.setDate(today?.getDate() + daysUntilMondays)
-
-      //   const nextTuesday = new Date(nextMonday)
-      //   nextTuesday?.setDate(nextMonday?.getDate() + 1)
-
-      //   const nextWednesday = new Date(nextTuesday)
-      //   nextWednesday?.setDate(nextTuesday?.getDate() + 2)
-
-      //   const nextThursday = new Date(nextWednesday)
-      //   nextThursday?.setDate(nextWednesday?.getDate() + 1)
-
-      //   const nextFriday = new Date(nextThursday)
-      //   nextFriday?.setDate(nextThursday?.getDate() + 1)
-
-      //   const nextSatuarday = new Date(nextFriday)
-      //   nextSatuarday?.setDate(nextFriday?.getDate() + 1)
-
-      //   const nextSunday = new Date(nextSatuarday)
-      //   nextSunday?.setDate(nextSatuarday?.getDate() + 1)
-
-      //   Days?.MONDAY
-
-      //   const visitOnMon = new Date(today?.getDay(), 0, 1, 0, 0, 0, 0);
-      //   const visitOnTuesd = new Date(today?.getDay(), 1, 1, 0, 0, 0, 0);
-
-      //   const totalVisistOnMon = await this?.guestModel?.count({
-      //     where: {
-      //       createdAt: {
-      //         [Op.between]: [visitOnMon, visitOnTuesd],
-      //       },
-      //       organizationId: user?.organizationId,
-      //     },
-      //   });
-
-      // //  const totalVisistOnMon = await this?.guestModel?.count({
-      // //   where: {
-      // //     createdAt: {
-      // //       [Op.between]: [nextMonday, nextTuesday],
-      // //     },
-      // //     organizationId: user?.organizationId,
-      // //   },
-      // //  })
-
-      //  Days?.TUESDAY
-
-      //  const visitOnTues = new Date(today?.getDay(), 1, 1, 0, 0, 0, 0);
-      //   const visitOnWed = new Date(today?.getDay(), 2, 1, 0, 0, 0, 0);
-
-      //  const totalVisistOnTues = await this?.guestModel?.count({
-      //   where: {
-      //     createdAt: {
-      //       [Op.between]: [visitOnTues, visitOnWed],
-      //     },
-      //     organizationId: user?.organizationId,
-      //   },
-      //  })
-
-      //  Days?.WEDNESDAY
-      //  const totalVisistOnWEd = await this?.guestModel?.count({
-      //   where: {
-      //     createdAt: {
-      //       [Op.between]: [ nextWednesday, nextThursday],
-      //     },
-      //     organizationId: user?.organizationId,
-      //   },
-      //  })
-
-      //  Days?.THURSDAY
-      //  const totalVisistOnThur = await this?.guestModel?.count({
-      //   where: {
-      //     createdAt: {
-      //       [Op.between]: [nextThursday, nextFriday],
-      //     },
-      //     organizationId: user?.organizationId,
-      //   },
-      //  })
-
-      //  Days?.FRIDAY
-      //  const totalVisistOnFri = await this?.guestModel?.count({
-      //   where: {
-      //     createdAt: {
-      //       [Op.between]: [nextFriday,nextSatuarday],
-      //     },
-      //     organizationId: user?.organizationId,
-      //   },
-      //  })
-
-      //  Days?.SATUARDAY
-      //  const totalVisistOnSat = await this?.guestModel?.count({
-      //   where: {
-      //     createdAt: {
-      //       [Op.between]: [nextSatuarday, nextSunday],
-      //     },
-      //     organizationId: user?.organizationId,
-      //   },
-      //  })
-
-      //  Days?.SUNDAY
-      //  const totalVisistOnSun = await this?.guestModel?.count({
-      //   where: {
-      //     createdAt: {
-      //       [Op.between]: [nextSunday, nextMonday],
-      //     },
-      //     organizationId: user?.organizationId,
-      //   },
-      //  })
-
-      //  let filteredData = {
-      //   Monday: Number(totalVisistOnMon),
-      //   Tuesday: Number(totalVisistOnTues),
-      //   Wednesday: Number(totalVisistOnWEd),
-      //   Thursday: Number(totalVisistOnThur),
-      //   Friday: Number(totalVisistOnFri),
-      //   Satuarday: Number(totalVisistOnSat),
-      //   Sunday: Number(totalVisistOnSun)
-      //  }
-
-      //  return Util?.handleSuccessRespone(
-      //   filteredData,
-      //   'Data requested successfully',
-      // );
-
-      // }
-
+         //  Filter Visitor Activity Performanc By week
       if (filterData === filter?.WEEK) {
         const today = new Date();
         const year = today.getFullYear();
@@ -460,22 +260,12 @@ export class VisitorPerfomanceService {
         const visitOnSunday = new Date(
           year,
           month,
-          today.getDate() - (today.getDay() - dayOfWeekSun),
-          0,
-          0,
-          0,
-          0,
-        );
+          today.getDate() - (today.getDay() - dayOfWeekSun),0,0,0,0)
 
         const visitOnMons = new Date(
           year,
           month,
-          visitOnSunday.getDate() + 1,
-          0,
-          0,
-          0,
-          0,
-        );
+          visitOnSunday.getDate() + 1,0,0,0,0)
 
         const totalVisitsSunday = await this?.guestModel?.count({
           where: {
@@ -492,27 +282,17 @@ export class VisitorPerfomanceService {
 
         const dayOfWeekMon = 1; // 1 for monday
 
-        // // Calculate the start and end dates for the current Sunday
+        // // Calculate the start and end dates for the current Monday
         const visitOnMon = new Date(
           year,
           month,
-          today.getDate() - (today.getDay() - dayOfWeekMon),
-          0,
-          0,
-          0,
-          0,
-        );
+          today.getDate() - (today.getDay() - dayOfWeekMon),0,0,0,0)
 
         const visitOnTues = new Date(
           year,
           month,
-          visitOnMon.getDate() + 1,
-          0,
-          0,
-          0,
-          0,
-        );
-
+          visitOnMon.getDate() + 1,0,0,0,0)
+    
         const totalVisitsMonday = await this?.guestModel?.count({
           where: {
             createdAt: {
@@ -527,28 +307,18 @@ export class VisitorPerfomanceService {
         // Data For Tuesday
         Days?.TUESDAY;
 
-        const dayOfWeekTues = 2; // 1 for monday
+        const dayOfWeekTues = 2; // 2 for Tuesday
 
-        // // Calculate the start and end dates for the current Sunday
+        // // Calculate the start and end dates for the current Tuesday
         const visitOnTuesday = new Date(
           year,
           month,
-          today.getDate() - (today.getDay() - dayOfWeekTues),
-          0,
-          0,
-          0,
-          0,
-        );
+          today.getDate() - (today.getDay() - dayOfWeekTues),0,0,0,0)
 
         const visitOnWed = new Date(
           year,
           month,
-          visitOnTuesday.getDate() + 1,
-          0,
-          0,
-          0,
-          0,
-        );
+          visitOnTuesday.getDate() + 1,0,0,0,0)
 
         const totalVisitsTuesday = await this?.guestModel?.count({
           where: {
@@ -564,28 +334,18 @@ export class VisitorPerfomanceService {
         // Data For Wednesday
         Days?.WEDNESDAY;
 
-        const dayOfWeekWed = 3; // 1 for monday
+        const dayOfWeekWed = 3; // 3 for Wednesday
 
-        // // Calculate the start and end dates for the current Sunday
+        // // Calculate the start and end dates for the current Wednesday
         const visitOnWednesday = new Date(
           year,
           month,
-          today.getDate() - (today.getDay() - dayOfWeekWed),
-          0,
-          0,
-          0,
-          0,
-        );
+          today.getDate() - (today.getDay() - dayOfWeekWed),0,0,0,0)
 
         const visitOnThur = new Date(
           year,
           month,
-          visitOnWednesday.getDate() + 1,
-          0,
-          0,
-          0,
-          0,
-        );
+          visitOnWednesday.getDate() + 1,0,0,0,)
 
         const totalVisitsWednesday = await this?.guestModel?.count({
           where: {
@@ -601,28 +361,18 @@ export class VisitorPerfomanceService {
         // Data For Thursday
         Days?.THURSDAY;
 
-        const dayOfWeekThurs = 4; // 1 for monday
+        const dayOfWeekThurs = 4; // 4 for Thursday
 
-        // // Calculate the start and end dates for the current Sunday
+        // // Calculate the start and end dates for the current Thursday
         const visitOnThursday = new Date(
           year,
           month,
-          today.getDate() - (today.getDay() - dayOfWeekThurs),
-          0,
-          0,
-          0,
-          0,
-        );
-
+          today.getDate() - (today.getDay() - dayOfWeekThurs),0,0,0,0)
+       
         const visitOnFri = new Date(
           year,
           month,
-          visitOnThursday.getDate() + 1,
-          0,
-          0,
-          0,
-          0,
-        );
+          visitOnThursday.getDate() + 1,0,0,0,0)
 
         const totalVisitsThursday = await this?.guestModel?.count({
           where: {
@@ -640,26 +390,16 @@ export class VisitorPerfomanceService {
 
         const dayOfWeekFri = 5; // 1 for monday
 
-        // // Calculate the start and end dates for the current Sunday
+        // // Calculate the start and end dates for the current Friday
         const visitOnFriday = new Date(
           year,
           month,
-          today.getDate() - (today.getDay() - dayOfWeekFri),
-          0,
-          0,
-          0,
-          0,
-        );
+          today.getDate() - (today.getDay() - dayOfWeekFri),0,0,0,0)
 
         const visitOnSat = new Date(
           year,
           month,
-          visitOnFriday.getDate() + 1,
-          0,
-          0,
-          0,
-          0,
-        );
+          visitOnFriday.getDate() + 1,0,0,0,0)
 
         const totalVisitsFriday = await this?.guestModel?.count({
           where: {
@@ -711,10 +451,10 @@ export class VisitorPerfomanceService {
 
         let filterData = {
           Sunday: Number(totalVisitsSunday),
-          Monday: Number(),
+          Monday: Number(totalVisitsMonday),
           Tuesday: Number(totalVisitsTuesday),
           Wednesday: Number(totalVisitsWednesday),
-          Thursday: Number(dayOfWeekThurs),
+          Thursday: Number(totalVisitsThursday),
           Friday: Number(totalVisitsFriday),
           Satuarday: Number(totalVisitsSaturday),
          
