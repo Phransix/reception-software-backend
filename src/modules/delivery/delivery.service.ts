@@ -251,7 +251,7 @@ export class DeliveryService {
           },
           organizationId: get_org?.organizationId
         },
-        attributes: { exclude: ['createdAt', 'updatedAt', 'deletedAt'] }
+        attributes: { exclude: ['updatedAt', 'deletedAt'] }
       });
 
       return Util?.handleSuccessRespone(deliver, "Delivery Successfully retrieved")

@@ -38,6 +38,7 @@ import { ResetPasswordService } from './helper/ResetPassHelper';
 import { OverviewModule } from './modules/overview/overview.module';
 import { AnalyticsModule } from './modules/analytics/analytics.module';
 import { VisitorPerfomanceModule } from './modules/visitor-perfomance/visitor-perfomance.module';
+import { VisitorLogsModule } from './modules/visitor-logs/visitor-logs.module';
 
 
 
@@ -120,6 +121,7 @@ import { VisitorPerfomanceModule } from './modules/visitor-perfomance/visitor-pe
     OverviewModule,
     AnalyticsModule,
     VisitorPerfomanceModule,
+    VisitorLogsModule,
   ],
 
   controllers: [AppController],
