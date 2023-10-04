@@ -466,7 +466,7 @@ export class EnquiriesService {
         filterData,
         'Enquiries Purpose Data Filtered and Counted Successfully.',
       );
-     
+      
     
     } catch (error) {
       console.log(error);
