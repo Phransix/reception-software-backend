@@ -445,7 +445,7 @@ export class EnquiriesService {
 
       const total = Number(filterOfficial) + Number(filterPersonal) + Number(filterPartnership) +
       Number(filterLegal) + Number(filterCareer) + Number(filterSales) + Number(filterComplaints) +
-      Number(filterPayments) + Number(filterPayments) + Number(filterInvestments) + Number(filterEvents)
+      Number(filterPayments) + Number(filterInvestments) + Number(filterEvents)
 
       filterData = {
         Official:  Number(filterOfficial),
