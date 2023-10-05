@@ -37,24 +37,14 @@ export class DepartmentService {
       if(!get_org)
       return Util?.CustomhandleNotFoundResponse('organization not found');
 
-      // var image_matches = createDepartmentDto?.profilePhoto?.match(
-      //   /^data:([A-Za-z-+\/]+);base64,(.+)$/,
-      // );
-      // if(!image_matches){
-      //   return Util?.handleFailResponse('Invalid Input file');
-      // }
-
-      // let dept_image = await this?.deptImageHelper?.uploadDeptImage(
-      //   createDepartmentDto?.profilePhoto
-      // )
 
       const insertQry ={
         organizationId: createDepartmentDto?.organizationId,
         departmentName: createDepartmentDto?.departmentName,
         departmentRoomNum: createDepartmentDto?.departmentRoomNum,
-        profilePhoto: createDepartmentDto?.profilePhoto
+        // profilePhoto: createDepartmentDto?.profilePhoto
       }
-      console.log(insertQry);
+      // console.log(insertQry);
 
       const new_dept = await Department?.create({
         ...insertQry,

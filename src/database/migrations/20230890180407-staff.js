@@ -75,14 +75,6 @@ module.exports = {
         unique: true
       },
 
-      //      gender: {
-      //   type: Sequelize.ENUM('male', 'female'),
-      //   allowNull: false,
-      //   validate: {
-      //     isIn: [['male','female']]
-      //   }
-      // },
-
       role: {
         type:Sequelize.STRING,
         allowNull: false,

@@ -10,23 +10,23 @@ module.exports = {
         type: Sequelize.INTEGER,
       },
 
-      enquiryId:{
+      enquiryId: {
         type: Sequelize.UUID,
         defaultValue: Sequelize.UUIDV4,
         allowNull: false,
-        unique:true
+        unique: true,
       },
 
       organizationId: {
         type: Sequelize.UUID,
         allowNull: false,
         references: {
-          model:{
+          model: {
             tableName: 'Organizations',
           },
-          key:'organizationId'
+          key: 'organizationId',
         },
-        onDelete: 'CASCADE'
+        onDelete: 'CASCADE',
       },
 
       enquirerFullName: {
@@ -37,19 +37,17 @@ module.exports = {
       email: {
         allowNull: true,
         type: Sequelize.STRING,
-        unique:true
       },
 
       phoneNumber: {
         allowNull: false,
         type: Sequelize.STRING,
-        unique: true
       },
 
       purpose: {
         allowNull: false,
         type: Sequelize.ENUM(
-          'Official', 
+          'Official',
           'Personal',
           'Partnership',
           'Legal',
@@ -58,7 +56,8 @@ module.exports = {
           'Complaints',
           'Payments',
           'Investments',
-          'Events')
+          'Events',
+        ),
       },
 
       description: {
@@ -77,12 +76,11 @@ module.exports = {
         defaultValue: Sequelize.fn('now'),
       },
 
-      
       deletedAt: {
         type: Sequelize.DATE,
-      allowNull: true,
-     defaultValue: null
-      }, 
+        allowNull: true,
+        defaultValue: null,
+      },
     });
   },
 

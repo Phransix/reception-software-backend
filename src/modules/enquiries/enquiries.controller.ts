@@ -14,7 +14,6 @@ import { EnquiriesService } from './enquiries.service';
 import { CreateEnquiryDto, Purpose } from './dto/create-enquiry.dto';
 import { UpdateEnquiryDto } from './dto/update-enquiry.dto';
 import * as Util from '../../utils/index';
-import { Enquiry } from './entities/enquiry.entity';
 import {
   ApiBearerAuth,
   ApiOperation,
@@ -25,9 +24,7 @@ import { AuthGuard } from '@nestjs/passport';
 import { Public } from 'src/common/decorators/public.decorator';
 import { AtGuard } from 'src/common/guards';
 import { GetCurrentUserId } from 'src/common/decorators/get-current-user-id.decorator';
-// import { size } from 'lodash';
-// import { where } from 'sequelize';
-// import { type } from 'os';
+
 
 @ApiTags('Enquiries')
 @Controller('enquiries')
@@ -48,7 +45,7 @@ export class EnquiriesController {
     let ErrorCode: number;
     try {
       let new_Enquiry = await this.enquiriesService.createEnquiry(createEnquiryDto,userId);
-      if (new_Enquiry?.status_code != HttpStatus.OK) {
+      if (new_Enquiry?.status_code != HttpStatus.CREATED) {
         ErrorCode = new_Enquiry?.status_code;
         throw new Error(new_Enquiry?.message);
       }
@@ -193,24 +190,12 @@ export class EnquiriesController {
     type: 'Date',
     required: false,
   })
-  @ApiQuery({
-    name: 'page',
-    type: 'number',
-    required: false,
-  })
-  @ApiQuery({
-    name: 'size',
-    type: 'number',
-    required: false,
-  })
   @UseGuards(AtGuard)
   @ApiTags('Enquiries')
   @Get('enquiry/filterEnquiry')
   async findEnquiryByDateRange(
     @Query('startDate') startDate: Date,
     @Query('endDate') endDate: Date,
-    // @Query('page') page: number,
-    // @Query('size') size: number,
     @GetCurrentUserId() userId : string
   ) {
     let ErrorCode: number;
@@ -218,8 +203,6 @@ export class EnquiriesController {
       let enquiryData = await this.enquiriesService.findEnquiryByDateRange(
         startDate,
         endDate,
-        // page,
-        // size,
         userId
       );
       if (enquiryData?.status_code != HttpStatus.OK) {
@@ -280,29 +263,16 @@ export class EnquiriesController {
     enum: Purpose,
     required: false,
   })
-  // @ApiQuery({
-  //   name: 'page',
-  //   type: 'number',
-  //   required: false,
-  // })
-  // @ApiQuery({
-  //   name: 'size',
-  //   type: 'number',
-  //   required: false,
-  // })
+ 
   @Get('enquiry/filterPuropse')
   async purposefilter(
     @Query('keyword') keyword: string,
-    // @Query('page') page: number,
-    // @Query('size') size: number,
     @GetCurrentUserId() userId : string
   ) {
     let ErrorCode: number;
     try {
       let enquiryData = await this.enquiriesService.purposefilter(
         keyword,
-        // page,
-        // size,
         userId
       );
       if (enquiryData?.status_code != HttpStatus.OK) {
