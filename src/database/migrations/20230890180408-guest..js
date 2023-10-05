@@ -1,4 +1,3 @@
-
 'use strict';
 
 /** @type {import('sequelize-cli').Migration} */
@@ -10,14 +9,14 @@ module.exports = {
      * Example:
      * await queryInterface.createTable('users', { id: Sequelize.INTEGER });
      */
-    await queryInterface.createTable("Deliveries",{
+    await queryInterface.createTable("Guests", {
       id: {
         allowNull: false,
         autoIncrement: true,
         primaryKey: true,
-        type: Sequelize.INTEGER,
+        type: Sequelize.INTEGER
       },
-      deliveryId: {
+      guestId: {
         type: Sequelize.UUID,
         defaultValue: Sequelize.UUIDV4,
         allowNull: false,
@@ -27,62 +26,35 @@ module.exports = {
         type: Sequelize.UUID,
         allowNull: false,
         references: {
-          model: {
+          model:{
             tableName: 'Organizations',
           },
-          key: 'organizationId'
+          key:'organizationId'
         },
         onDelete: 'CASCADE'
       },
-      from: {
+      firstName: {
         type: Sequelize.STRING,
         allowNull: false,
       },
-      receipientName: {
+      lastName: {
         type: Sequelize.STRING,
         allowNull: false,
       },
-      receipientPhoneNumber: {
-        type: Sequelize.STRING,
+      gender: {
+        type: Sequelize.ENUM('male', 'female'),
         allowNull: false,
-        unique: true
-      },
-      email: {
-        type: Sequelize.STRING,
-        allowNull: false,
-        unique: true
-      },
-      type: {
-        type: Sequelize.ENUM('document', 'food', 'other'),
-        allowNull: false,
-        defaultValue: null,
         validate: {
-          isIn: [['document', 'food', 'other']]
+          isIn: [['male','female']]
         }
       },
-      itemQuantity: {
+      countryCode: {
         type: Sequelize.STRING,
         allowNull: false
       },
-      unit: {
-        type: Sequelize.ENUM('pc(s)', 'bx(s)', 'pck(s)'),
-        allowNull: true,
-        defaultValue: null,
-        validate: {
-          isIn: [['pc(c)', 'bx(s)', 'pck(s)']]
-        }
-      },
-      itemDescription: {
+      phoneNumber: {
         type: Sequelize.STRING,
-        allowNull: false,
-      },
-      status: {
-        type: Sequelize.ENUM('delivered', 'awaiting_pickup'),
-        allowNull: true,
-        defaultValue: 'awaiting_pickup',
-        validate: {
-          isIn: [['delivered', 'awaiting_pickup']]
-        }
+        allowNull: false
       },
       createdAt: {
         type: Sequelize.DATE,
@@ -94,13 +66,11 @@ module.exports = {
         allowNull: false,
         defaultValue: Sequelize.literal('CURRENT_TIMESTAMP'),
       },
-      
       deletedAt: {
         type: Sequelize.DATE,
       allowNull: true,
      defaultValue: null
       }, 
-
     })
   },
 
@@ -111,7 +81,6 @@ module.exports = {
      * Example:
      * await queryInterface.dropTable('users');
      */
-    await queryInterface.dropTable("Deliveries")
+    await queryInterface.dropTable('Guests')
   }
 };
-

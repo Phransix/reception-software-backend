@@ -5,7 +5,6 @@ import { InjectModel } from '@nestjs/sequelize';
 import { Delivery } from './entities/delivery.entity';
 import * as Util from '../../utils/index'
 import { Op } from 'sequelize';
-import { deliveryConfirmDTO } from 'src/guard/auth/deliveryConfirmDTO';
 import { User } from '../users/entities/user.entity';
 import { Organization } from '../organization/entities/organization.entity';
 import { UpdateDeliveryStatus } from './dto/updateDeliveryStatus';

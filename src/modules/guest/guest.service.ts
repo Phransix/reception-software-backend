@@ -26,15 +26,23 @@ export class GuestService {
   async create(createGuestDto: CreateGuestDto, userId: any) {
     try {
       console.log(userId)
-      let user = await this?.UserModel.findOne({ where: { userId } })
+      const user = await this?.UserModel.findOne({ where: { userId } })
       console.log(user?.organizationId)
       if (!user)
         return Util?.handleErrorRespone('User not found');
 
-      let get_org = await this?.OrgModel.findOne({ where: { organizationId: user?.organizationId } })
+      const get_org = await this?.OrgModel.findOne({ where: { organizationId: user?.organizationId } })
 
       if (!get_org)
         return Util?.handleErrorRespone('organization not found');
+
+        const existingGuest = await this.GuestModel.findOne({
+          where: { phoneNumber: createGuestDto.phoneNumber, organizationId: get_org?.organizationId },
+        });
+    
+        if (existingGuest) {
+          return Util.handleErrorRespone('Phone number already exists within this organization');
+        }
       
       const guest = await this.GuestModel?.create({
         ...createGuestDto,
@@ -340,12 +348,34 @@ export class GuestService {
       let user = await this?.UserModel.findOne({ where: { userId } })
       console.log(user?.organizationId)
       if (!user)
+      {
+        t.rollback();
         return Util?.handleErrorRespone('User not found');
+      }
 
       let get_org = await this?.OrgModel.findOne({ where: { organizationId: user?.organizationId } })
 
       if (!get_org)
+      {
+        t.rollback();
         return Util?.handleErrorRespone('organization not found');
+      }
+
+    // Check for duplicates within the same organization
+    const duplicatePhoneNumbers = [];
+    for (const guestData of data) {
+      const existingGuest = await myModel.findOne({
+        where: { phoneNumber: guestData.phoneNumber, organizationId: user.organizationId },
+      });
+      if (existingGuest) {
+        duplicatePhoneNumbers.push(guestData.phoneNumber);
+      }
+    }
+
+    if (duplicatePhoneNumbers.length > 0) {
+      t.rollback(); // Rollback the transaction if duplicate phone numbers are found
+      return Util?.handleErrorRespone('Duplicate phone numbers within this organization: ' + duplicatePhoneNumbers.join(', '));
+    }
 
       const createMultipleGuest = await myModel.bulkCreate(data, { transaction: t })
       t.commit()
@@ -385,12 +415,4 @@ export class GuestService {
     }
   }
 
-
-
-
-  async findOneByPhoneNumber(phoneNumber: string): Promise<Guest> {
-    return await this.GuestModel.findOne<Guest>({ where: { phoneNumber } })
-  }
-
 }
-

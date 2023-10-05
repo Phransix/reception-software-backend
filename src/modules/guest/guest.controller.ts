@@ -8,7 +8,6 @@ import { guestOpDTO } from 'src/guard/auth/guestOpDTO';
 import { Public } from 'src/common/decorators/public.decorator';
 import { AuthGuard } from '@nestjs/passport';
 import { AtGuard } from 'src/common/guards';
-import { DoesGuestExist } from '../../common/guards/doesGuestExist.guard'
 import { GetCurrentUserId } from 'src/common/decorators/get-current-user-id.decorator';
 
 
@@ -22,7 +21,6 @@ export class GuestController {
   @ApiBearerAuth('defaultBearerAuth')
   @Public()
   @UseGuards(AtGuard)
-  @UseGuards(DoesGuestExist)
   @ApiOperation({ summary: 'Create New Guest' })
   @Post('createGuest')
   async create(
