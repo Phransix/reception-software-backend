@@ -58,7 +58,7 @@ export class Enquiry extends Model<Enquiry>{
 
   @Column({
     type: DataType.STRING,
-    allowNull:false
+    allowNull:true
   })
   email:string
 
