@@ -18,19 +18,75 @@ module.exports = {
         primaryKey: true,
         type: Sequelize.INTEGER
       },
+      organizationId: {
+        type: Sequelize.UUID,
+        allowNull: false,
+        references: {
+          model:{
+            tableName: 'Organizations',
+          },
+          key:'organizationId'
+        },
+        onDelete: 'CASCADE'
+      },
+      purposeId: {
+        type: Sequelize.UUID,
+        allowNull: true,
+        references: {
+          model:{
+            tableName: 'Purposes',
+          },
+          key:'purposeId'
+        },
+        onDelete: 'CASCADE'
+      },
       guestId: {
         type: Sequelize.UUID,
         defaultValue: Sequelize.UUIDV4,
         allowNull: false,
-        unique: true
-      },
-      host: {
-        type: Sequelize.STRING,
-        allowNull: false,
+        references: {
+          model:{
+            tableName: 'Guests',
+          },
+          key:'guestId'
+        },
+        onDelete: 'CASCADE'
       },
       purpose: {
-        type: Sequelize.STRING,
+        type: Sequelize.ENUM('personal', 'official'),
         allowNull: false,
+        required:true,
+        defaultValue: 'official',
+        validate: {
+          isIn: [['personal', 'official']] 
+        }
+      },
+      departmentId: {
+        type: Sequelize.UUID,
+        allowNull: true,
+        references: {
+          model:{
+            tableName: 'Departments',
+          },
+          key:'departmentId'
+        },
+        onDelete: 'CASCADE'
+      },
+      staffId: {
+        type: Sequelize.UUID,
+        allowNull: true,
+        references: {
+          model:{
+            tableName: 'Staffs',
+          },
+          key:'staffId'
+        },
+        onDelete: 'CASCADE'
+      },
+      signInDate: {
+        type: Sequelize.DATEONLY,
+        allowNull: true,
+        defaultValue: Sequelize.literal('CURRENT_TIMESTAMP'),
       },
       signInTime: {
         type: Sequelize.TIME,
@@ -39,8 +95,7 @@ module.exports = {
       },
       signOutTime: {
         type: Sequelize.TIME,
-        allowNull: true,
-        defaultValue: Sequelize.literal('CURRENT_TIMESTAMP'),
+        allowNull: true
       },
       createdAt: {
         type: Sequelize.DATE,

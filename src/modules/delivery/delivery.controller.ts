@@ -174,13 +174,13 @@ export class DeliveryController {
   @Public()
   @UseGuards(AtGuard)
   @ApiTags('Delivery')
-  @ApiOperation({ summary: 'Confirm Delivery By Receptionist'})
+  @ApiOperation({ summary: 'Confirm Delivery By Receptionist' })
   @Patch(':deliveryId/DeliveryConfirm')
-  async updateStats (
-    @GetCurrentUserId() userId : string,
+  async updateStats(
+    @GetCurrentUserId() userId: string,
     @Param('deliveryId') deliveryId: string,
     @Body() updateDeliveryStatus: UpdateDeliveryStatus
-  ){
+  ) {
     let ErrorCode: number;
     try {
       const deliveryConf = await this.deliveryService.confirmDelivery(
@@ -196,49 +196,66 @@ export class DeliveryController {
       return deliveryConf
     } catch (error) {
       console.log(error)
-      return Util?.handleRequestError(Util?.getTryCatchMsg(error), ErrorCode)  
-    }
-  }
-
-
-
-  // Filter by Date Range
-  @UseGuards(AuthGuard('jwt'))
-  @ApiBearerAuth('defaultBearerAuth')
-  @ApiQuery({
-    name: 'startDate',
-    type: Date,
-    required: false
-  })
-
-  @ApiQuery({
-    name: 'endDate',
-    type: Date,
-    required: false
-  })
-  @Public()
-  @UseGuards(AtGuard)
-  @ApiTags('Delivery')
-  @ApiOperation({ summary: 'Search Delivery by Custom Date Range' })
-  @Get('delivery/filterDelivery')
-  async findDeliveryByDateRange(
-    @Query('startDate') startDate: Date,
-    @Query('endDate') endDate: Date,
-    @GetCurrentUserId() userId: string
-  ) {
-    let ErrorCode: number
-    try {
-      const deliver = await this.deliveryService.findByDateRange(startDate, endDate, userId)
-      if (deliver?.status_code != HttpStatus.OK) {
-        ErrorCode = deliver?.status_code;
-        throw new Error(deliver?.message)
-      }
-      return deliver
-    } catch (error) {
-      console.log(error)
       return Util?.handleRequestError(Util?.getTryCatchMsg(error), ErrorCode)
     }
   }
+
+
+  // Filter By Custom Range
+  @UseGuards(AuthGuard('jwt'))
+  @ApiBearerAuth('defaultBearerAuth')
+  @ApiOperation({ summary: 'Filter Delivery Data by Custom Date Range' })
+  @Public()
+  @ApiQuery({
+    name: 'startDate',
+    type: 'Date',
+    required: false,
+  })
+  @ApiQuery({
+    name: 'endDate',
+    type: 'Date',
+    required: false,
+  })
+  @ApiQuery({
+    name: 'page',
+    type: 'number',
+    required: false,
+  })
+  @ApiQuery({
+    name: 'size',
+    type: 'number',
+    required: false,
+  })
+  @UseGuards(AtGuard)
+  @ApiTags('Delivery')
+  @Get('enquiry/filterEnquiry')
+  async findDeliveryByDateRange(
+    @Query('startDate') startDate: Date,
+    @Query('endDate') endDate: Date,
+    @Query('page') page: number,
+    @Query('size') size: number,
+    @GetCurrentUserId() userId: string
+  ) {
+    let ErrorCode: number;
+    try {
+      let enquiryData = await this.deliveryService.findDeliveryByDateRange(
+        startDate,
+        endDate,
+        page,
+        size,
+        userId
+      );
+      if (enquiryData?.status_code != HttpStatus.OK) {
+        ErrorCode = enquiryData?.status_code;
+        throw new Error(enquiryData?.message);
+      }
+      return enquiryData;
+    } catch (error) {
+      console.log(error);
+      return Util?.handleRequestError(Util?.getTryCatchMsg(error), ErrorCode);
+    }
+  }
+
 
   // Filter delivery by type
   @UseGuards(AuthGuard('jwt'))

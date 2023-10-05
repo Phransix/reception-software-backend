@@ -514,35 +514,7 @@ export class PurposeService {
       if (!guest || !cCode)
         return Util?.handleFailResponse('Invalid phone number or country code')
 
-      // const purpose = await this.PurposeModel.findOne(
-      //   {
-      //     where: {
-      //       guestId: guest?.guestId,
-      //       organizationId: get_org?.organizationId
-      //     }
-      //   });
-
-      // if (!purpose)
-      //   return Util?.handleFailResponse('Purpose not found')
-
-      // if (purpose?.isLogOut != false) {
-      //   return Util?.handleFailResponse('Guest already logout')
-      // };
-
       console.log(phoneNumber);
-      // return
-      // await Purpose.update({ isLogOut: true },
-      //   { where: { guestId: guest?.guestId } }
-      // )
-      // await Purpose.update({ visitStatus: 'Signed Out' },
-      //   { where: { guestId: guest?.guestId } }
-      // )
-      // await Purpose.update({ signOutTime: currentTime },
-      //   { where: { guestId: guest?.guestId } }
-      // )
-      // let guest_data = {
-      //   signOutTime: purpose?.signOutTime
-      // }
       return Util?.handleCreateSuccessRespone('Logout successful');
     } catch (error) {
       console.log(error)

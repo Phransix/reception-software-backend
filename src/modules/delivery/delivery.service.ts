@@ -226,36 +226,55 @@ export class DeliveryService {
   }
 
 
-
-
-  // Filter By Date Range
-  async findByDateRange(startDate: Date, endDate: Date, userId: any) {
+  // Filter delivery Data By Custom Date Range
+  async findDeliveryByDateRange(
+    startDate: Date,
+    endDate: Date,
+    page: number,
+    size: number,
+    userId: any
+  ) {
     try {
-      console.log(userId)
+      let deliveryData = { startDate, endDate };
+
+      let currentPage = Util?.Checknegative(page);
+      if (currentPage) {
+        return Util?.handleErrorRespone(
+          'Delivery current page cannot be negative',
+        );
+      }
+      const { limit, offset } = Util?.getPagination(page, size);
+
       let user = await this?.UserModel.findOne({ where: { userId } })
       console.log(user?.organizationId)
       if (!user)
-        return Util?.handleErrorRespone('User not found');
+        return Util?.CustomhandleNotFoundResponse('User not found');
 
       let get_org = await this?.OrgModel.findOne({ where: { organizationId: user?.organizationId } })
 
       if (!get_org)
-        return Util?.handleErrorRespone('organization not found');
+        return Util?.CustomhandleNotFoundResponse('organization not found');
 
-      const deliver = await Delivery.findAll({
-        where: {
-          createdAt:
-          {
-            [Op.between]: [startDate, endDate],
-          },
-          organizationId: get_org?.organizationId
-        },
-        attributes: { exclude: ['updatedAt', 'deletedAt'] }
+      const allQueries = await Delivery.findAndCountAll({
+
+
+        limit,
+        offset,
+        where: { organizationId: get_org?.organizationId },
+        attributes: { exclude: ['updatedAt', 'deletedAt'] },
+        order: [
+          ['createdAt', 'ASC']
+        ],
       });
 
-      return Util?.handleSuccessRespone(deliver, "Delivery Successfully retrieved")
+      const result = Util?.getPagingData(allQueries, page, limit);
+
+      return Util?.handleSuccessRespone(
+        result,
+        'Deliveries data retrieved successfully',
+      );
     } catch (error) {
-      console.log(error)
+      console.log(error);
       return Util?.handleGrpcTryCatchError(Util?.getTryCatchMsg(error));
     }
   }
@@ -314,14 +333,14 @@ export class DeliveryService {
 
       const getPickUpCount = await this.DeliveryModel.count({
         where: {
-          status : 'awaiting_pickup',
+          status: 'awaiting_pickup',
           organizationId: get_org?.organizationId
         },
       });
 
       const getDeliveredCount = await this.DeliveryModel.count({
         where: {
-          status : 'delivered',
+          status: 'delivered',
           organizationId: get_org?.organizationId
         },
       });
@@ -329,9 +348,9 @@ export class DeliveryService {
       const total = Number(getPickUpCount) + Number(getDeliveredCount);
 
       filter = {
-        awaiting_pickup : Number(getPickUpCount),
-        delivered : Number(getDeliveredCount),
-        total : total
+        awaiting_pickup: Number(getPickUpCount),
+        delivered: Number(getDeliveredCount),
+        total: total
       }
 
       return Util?.handleSuccessRespone(filter, "Delivery Status Successfully retrieved")
