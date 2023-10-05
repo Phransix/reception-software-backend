@@ -249,6 +249,7 @@ export class VisitorPerfomanceService {
           'Data requested successfully',
         );
       }
+      
 
          //  Filter Visitor Activity Performanc By week(days)
       if (filterData === filter?.WEEK) {
@@ -453,16 +454,16 @@ export class VisitorPerfomanceService {
 
         // console.log(`Total visits on Saturday: ${totalVisitsSaturday}`);
 
-        let filterData = {
-          Sunday: Number(totalVisitsSunday),
-          Monday: Number(totalVisitsMonday),
-          Tuesday: Number(totalVisitsTuesday),
-          Wednesday: Number(totalVisitsWednesday),
-          Thursday: Number(totalVisitsThursday),
-          Friday: Number(totalVisitsFriday),
-          Satuarday: Number(totalVisitsSaturday),
+        let filterData = [
+         { id:1, days:'Sunday', totalVisit: Number(totalVisitsSunday)},
+         { id:2, days:'Monday', totalVisit :Number(totalVisitsMonday)},
+         { id:3, days: 'Tuesday',totalVisit : Number(totalVisitsTuesday)},
+         { id:4, days:'Wednesday', totalVisit : Number(totalVisitsWednesday)},
+         { id:5, days: 'Thursday',totalVisit : Number(totalVisitsThursday)},
+         { id:6, days:'Friday', totalVisit :Number(totalVisitsFriday)},
+         { id:7, days:'Satuarday', totalVisit : Number(totalVisitsSaturday)},
          
-        };
+        ];
 
         return Util?.handleSuccessRespone(
           filterData,
@@ -644,20 +645,21 @@ export class VisitorPerfomanceService {
           }
         });
 
-        let filterData = {
-          '00:00-01:59': Number(totalVisitfrm0_2),
-          '02:00-03:59': Number(totalVisitfrm2_4),
-          '04:00-05:59': Number(totalVisitfrm4_6),
-          '06:00-07:59': Number(totalVisitfrm6_8),
-          '08:00-09:59': Number(totalVisitfrm8_10),
-          '10:00-11:59': Number(totalVisitfrm10_12),
-          '12:00-13:59': Number(totalVisitfrm12_14),
-          '14:00-15:59': Number(totalVisitfrm14_16),
-          '16:00-17:59': Number(totalVisitfrm16_18),
-          '18:00-19:59': Number(totalVisitfrm18_20),
-          '20:00-21:59': Number(totalVisitfrm20_22),
-          '22:00-23:59': Number(totalVisitfrm22_24),
-        }
+        let filterData = [
+
+          {id:1,hours:'00:00-01:59', totalVisit : Number(totalVisitfrm0_2)},
+          {id:2,hours: '02:00-03:59', totalVisit : Number(totalVisitfrm2_4)},
+          {id:3,hours:'04:00-05:59', totalVisit: Number(totalVisitfrm4_6)},
+          {id:4,hours:'06:00-07:59', totalVisit: Number(totalVisitfrm6_8)},
+          {id:5,hours:'08:00-09:59', totalVisit: Number(totalVisitfrm8_10)},
+          {id:6,hours:'10:00-11:59', totalVisit: Number(totalVisitfrm10_12)},
+          {id:7,hours:'12:00-13:59', totalVisit: Number(totalVisitfrm12_14)},
+          {id:8,hours:'14:00-15:59', totalVisit: Number(totalVisitfrm14_16)},
+          {id:9,hours:'16:00-17:59', totalVisit: Number(totalVisitfrm16_18)},
+          {id:10,hours:'18:00-19:59', totalVisit: Number(totalVisitfrm18_20)},
+          {id:11,hours:'20:00-21:59', totalVisit: Number(totalVisitfrm20_22)},
+         { id:12,hours:'22:00-23:59', totalVisit: Number(totalVisitfrm22_24)},
+        ]
       
         return Util?.handleSuccessRespone(
           filterData,

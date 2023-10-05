@@ -183,26 +183,20 @@ export class DepartmentService {
       const dept_data = await Department.findOne({ where: { departmentId ,organizationId:get_org?.organizationId} });
       if (!dept_data) {
         return Util?.CustomhandleNotFoundResponse(
-          'Department with this #${departmentId} not found',
+          'Department  not found',
         );
       }
 
-       let insertQry = {
-        organizationId: updateDepartmentDto?.organizationId,
-        departmentName: updateDepartmentDto?.departmentName,
-        departmentRoomNumber: updateDepartmentDto?.departmentRoomNum,
-        profilePhoto: updateDepartmentDto?.profilePhoto
-       }   
 
        await this?.departmentModel.update(
-          insertQry,
+          updateDepartmentDto,
         {where:{
           departmentId:dept_data?.departmentId
         }}
        )
       
       return Util?.SuccessRespone(
-        'Department with this #${departmentId} updated successfully',
+        'Department updated successfully',
       );
     } catch (error) {
       console.log(error);
@@ -228,7 +222,7 @@ export class DepartmentService {
       const dept_data = await this?.departmentModel?.findOne({where:{departmentId, organizationId:get_org?.organizationId}})
       if(!dept_data){
         return Util?.CustomhandleNotFoundResponse(
-          'Department with this #${staffId} not found',
+          'Department  not found',
         );
       }
 
@@ -278,7 +272,7 @@ export class DepartmentService {
         }}
       );
       return Util?.SuccessRespone(
-        'Staff with this id, Image updated successfully',
+        'Department Image updated successfully',
       );
       
     } catch (error) {
@@ -307,14 +301,14 @@ export class DepartmentService {
       const data = await Department.findOne({ where: { departmentId  ,organizationId:get_org?.organizationId} });
       if (!data) {
         return Util?.CustomhandleNotFoundResponse(
-          'Department with this #${departmentId} not found',
+          'Department  not found',
         );
       }
 
       Object.assign(data);
       await data.destroy();
       return Util?.SuccessRespone(
-        `Department with this #${departmentId}  deleted successfully`,
+        `Department deleted successfully`,
       );
     } catch (error) {
       console.log(error);

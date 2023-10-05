@@ -190,20 +190,34 @@ export class EnquiriesController {
     type: 'Date',
     required: false,
   })
+  @ApiQuery({
+    name: 'page',
+    type: 'number',
+    required: false,
+  })
+  @ApiQuery({
+    name: 'size',
+    type: 'number',
+    required: false,
+  })
   @UseGuards(AtGuard)
   @ApiTags('Enquiries')
   @Get('enquiry/filterEnquiry')
   async findEnquiryByDateRange(
     @Query('startDate') startDate: Date,
     @Query('endDate') endDate: Date,
-    @GetCurrentUserId() userId : string
+    @GetCurrentUserId() userId : string,
+    @Query('page') page: number,
+     @Query('size') size: number
   ) {
     let ErrorCode: number;
     try {
       let enquiryData = await this.enquiriesService.findEnquiryByDateRange(
         startDate,
         endDate,
-        userId
+        userId,
+         page,
+         size
       );
       if (enquiryData?.status_code != HttpStatus.OK) {
         ErrorCode = enquiryData?.status_code;
