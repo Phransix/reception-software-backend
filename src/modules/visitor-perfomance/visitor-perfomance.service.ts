@@ -33,7 +33,7 @@ export class VisitorPerfomanceService {
       }
 
          //  Filter Visitor Activity Performanc By Months
-      if (filterData === filter?.YEAR) {
+      if (filterData === filter?.MONTH) {
         const today = new Date();
         today?.setHours(0, 0, 0, 0);
 
@@ -467,28 +467,201 @@ export class VisitorPerfomanceService {
         );
       }
 
-  // // Filter Visitor Activity Performanc By Day(hours)
-  //      if ( filterData === filter?.Day){
-  //       const today = new Date ()
-  //       today?.setHours(10,0,0,0)
-  //       const tomorrow = new Date(today)
-  //       tomorrow?.setHours(11,0,0,0)
+  // Filter Visitor Activity Performanc By Day(hours)
+  
+       if ( filterData === filter?.Day){
 
-  //       const totalVisitfrm = await this?.guestModel?.count({
-  //         where:{
-  //           createdAt:{
-  //             [Op.between]: [today, tomorrow],
-  //           },
-  //           organizationId: user?.organizationId
-  //         }
-  //       })
+        const start0 = new Date ()
+        start0?.setHours(0,0,0,0)
+        const end2 = new Date(start0)
+        end2?.setHours(2,0,0,0)
+
+        const totalVisitfrm0_2 = await this?.guestModel?.count({
+          where:{
+            createdAt:{
+              [Op.between]: [start0, end2],
+            },
+            organizationId: user?.organizationId
+          }
+        });
+          // console.log(`Total visits from 0 to 1:59: ${totalVisitfrm0_2}`);
+
+        const start2 = new Date ()
+        start2?.setHours(2,0,0,0)
+        const end4 = new Date(start2)
+        end4?.setHours(4,0,0,0)
+
+        const totalVisitfrm2_4 = await this?.guestModel?.count({
+          where:{
+            createdAt:{
+              [Op.between]: [start2, end4],
+            },
+            organizationId: user?.organizationId
+          }
+        });
+
+        const start4 = new Date ()
+        start4?.setHours(4,0,0,0)
+        const end6 = new Date(start4)
+        end6?.setHours(6,0,0,0)
+
+        const totalVisitfrm4_6 = await this?.guestModel?.count({
+          where:{
+            createdAt:{
+              [Op.between]: [start4, end6],
+            },
+            organizationId: user?.organizationId
+          }
+        });
+
+        const start6 = new Date ()
+        start6?.setHours(6,0,0,0)
+        const end8 = new Date(start6)
+        end8?.setHours(8,0,0,0)
+
+        const totalVisitfrm6_8 = await this?.guestModel?.count({
+          where:{
+            createdAt:{
+              [Op.between]: [start6, end8],
+            },
+            organizationId: user?.organizationId
+          }
+        });
+
+        const start8 = new Date ()
+        start8?.setHours(8,0,0,0)
+        const end10 = new Date(start8)
+        end10?.setHours(10,0,0,0)
+
+        const totalVisitfrm8_10 = await this?.guestModel?.count({
+          where:{
+            createdAt:{
+              [Op.between]: [start8, end10],
+            },
+            organizationId: user?.organizationId
+          }
+        });
+
+        const start10 = new Date ()
+        start10?.setHours(10,0,0,0)
+        const end12 = new Date(start10)
+        end12?.setHours(12,0,0,0)
+
+        const totalVisitfrm10_12 = await this?.guestModel?.count({
+          where:{
+            createdAt:{
+              [Op.between]: [start10, end8],
+            },
+            organizationId: user?.organizationId
+          }
+        });
+
+        const start12 = new Date ()
+        start12?.setHours(12,0,0,0)
+        const end14 = new Date(start12)
+        end14?.setHours(14,0,0,0)
+
+        const totalVisitfrm12_14= await this?.guestModel?.count({
+          where:{
+            createdAt:{
+              [Op.between]: [start12, end14],
+            },
+            organizationId: user?.organizationId
+          }
+        });
+
+        const start14 = new Date ()
+        start14?.setHours(14,0,0,0)
+        const end16 = new Date(start14)
+        end16?.setHours(16,0,0,0)
+
+        const totalVisitfrm14_16 = await this?.guestModel?.count({
+          where:{
+            createdAt:{
+              [Op.between]: [start14, end16],
+            },
+            organizationId: user?.organizationId
+          }
+        });
+
+
+        const start16 = new Date ()
+        start16?.setHours(16,0,0,0)
+        const end18 = new Date(start16)
+        end18?.setHours(18,0,0,0)
+
+        const totalVisitfrm16_18 = await this?.guestModel?.count({
+          where:{
+            createdAt:{
+              [Op.between]: [start16, end18],
+            },
+            organizationId: user?.organizationId
+          }
+        });
+
+        const start18 = new Date ()
+        start18?.setHours(18,0,0,0)
+        const end20 = new Date(start18)
+        end20?.setHours(18,0,0,0)
+
+        const totalVisitfrm18_20 = await this?.guestModel?.count({
+          where:{
+            createdAt:{
+              [Op.between]: [start18, end20],
+            },
+            organizationId: user?.organizationId
+          }
+        });
+
+        const start20 = new Date ()
+        start20?.setHours(20,0,0,0)
+        const end22 = new Date(start20)
+        end22?.setHours(22,0,0,0)
+
+        const totalVisitfrm20_22 = await this?.guestModel?.count({
+          where:{
+            createdAt:{
+              [Op.between]: [start20, end22],
+            },
+            organizationId: user?.organizationId
+          }
+        });
+
+        const start22 = new Date ()
+        start22?.setHours(22,0,0,0)
+        const end24 = new Date(start22)
+        end24?.setHours(0,0,0,0)
+
+        const totalVisitfrm22_24 = await this?.guestModel?.count({
+          where:{
+            createdAt:{
+              [Op.between]: [start22, end24],
+            },
+            organizationId: user?.organizationId
+          }
+        });
+
+        let filterData = {
+          '00:00-01:59': Number(totalVisitfrm0_2),
+          '02:00-03:59': Number(totalVisitfrm2_4),
+          '04:00-05:59': Number(totalVisitfrm4_6),
+          '06:00-07:59': Number(totalVisitfrm6_8),
+          '08:00-09:59': Number(totalVisitfrm8_10),
+          '10:00-11:59': Number(totalVisitfrm10_12),
+          '12:00-13:59': Number(totalVisitfrm12_14),
+          '14:00-15:59': Number(totalVisitfrm14_16),
+          '16:00-17:59': Number(totalVisitfrm16_18),
+          '18:00-19:59': Number(totalVisitfrm18_20),
+          '20:00-21:59': Number(totalVisitfrm20_22),
+          '22:00-23:59': Number(totalVisitfrm22_24),
+        }
       
-  //       return Util?.handleSuccessRespone(
-  //         totalVisitfrm,
-  //         'Data requested successfully',
-  //       );
+        return Util?.handleSuccessRespone(
+          filterData,
+          'Data requested successfully',
+        );
 
-  //      }
+       }
 
 
     } catch (error) {
