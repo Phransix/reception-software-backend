@@ -11,6 +11,7 @@ import { Op } from 'sequelize';
 import { Organization } from '../organization/entities/organization.entity';
 import { User } from '../users/entities/user.entity';
 import { guestOpDTO } from 'src/guard/auth/guestOpDTO';
+import { Sequelize } from 'sequelize-typescript';
 
 @Injectable()
 export class PurposeService {
@@ -20,6 +21,7 @@ export class PurposeService {
     @InjectModel(Organization) private readonly OrgModel: typeof Organization,
     @InjectModel(User) private readonly UserModel: typeof User,
     @InjectModel(Guest) private readonly GuestModel: typeof Guest,
+    private readonly sequelize: Sequelize
   ) { }
 
   // Create Purpose
@@ -708,6 +710,40 @@ export class PurposeService {
 
       return Util?.handleSuccessRespone(filterCheck, "Guest Data filtered Successfully")
     } catch (error) {
+      console.log(error)
+      return Util?.handleGrpcTryCatchError(Util?.getTryCatchMsg(error));
+    }
+  }
+
+  // Bulk Purpose
+  async bulkPurpose(Guest: string, data: any[], userId: any) {
+    const myModel = this.sequelize.model(Purpose);
+    const t = await this.sequelize.transaction();
+    try {
+
+      console.log(userId)
+      let user = await this?.UserModel.findOne({ where: { userId } })
+      console.log(user?.organizationId)
+      if (!user)
+      {
+        t.rollback();
+        return Util?.handleErrorRespone('User not found');
+      }
+
+      let get_org = await this?.OrgModel.findOne({ where: { organizationId: user?.organizationId } })
+
+      if (!get_org)
+      {
+        t.rollback();
+        return Util?.handleErrorRespone('organization not found');
+      }
+
+      const createMultiplePurpose = await myModel.bulkCreate(data, { transaction: t })
+      t.commit()
+      return Util?.handleCustonCreateResponse(createMultiplePurpose, 'Multiple Purposes created successfully')
+
+    } catch (error) {
+      t.rollback()
       console.log(error)
       return Util?.handleGrpcTryCatchError(Util?.getTryCatchMsg(error));
     }

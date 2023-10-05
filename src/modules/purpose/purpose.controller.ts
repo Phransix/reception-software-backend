@@ -389,5 +389,33 @@ export class PurposeController {
         }
       }
 
+      // Bulk Purpose
+      @UseGuards(AuthGuard('jwt'))
+      @ApiBearerAuth('defaultBearerAuth')
+      @Public()
+      @UseGuards(AtGuard)
+      @ApiOperation({ summary: 'Create Multiple Purposes' })
+      @Public()
+      @ApiTags('Purpose')
+      @Post('bulkPurposeCreate/create')
+      async buklCreatePurpose(
+        @Body() data: any[],
+        @GetCurrentUserId() userId: string
+      ) {
+        let ErrorCode: number
+        try {
+          const modelName = 'Guest'
+          const purposeResults = await this.purposeService.bulkPurpose(modelName, data, userId)
+          if (purposeResults?.status_code != HttpStatus.CREATED) {
+            ErrorCode = purposeResults?.status_code;
+            throw new Error(purposeResults?.message)
+          }
+          return purposeResults
+        } catch (error) {
+          console.log(error)
+          return Util?.handleRequestError(Util?.getTryCatchMsg(error), ErrorCode)
+        }
+      }
+
 
 }
