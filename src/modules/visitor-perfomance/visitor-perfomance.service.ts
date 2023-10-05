@@ -226,20 +226,23 @@ export class VisitorPerfomanceService {
           },
         });
 
-        let filteredData = {
-          January: Number(totalVisitInJan),
-          February: Number(totalVisitInFeb),
-          March: Number(totalVisitInMarch),
-          April: Number(totalVisitInApril),
-          May: Number(totalVisitInMay),
-          June: Number(totalVisitInJune),
-          July: Number(totalVisitInJuly),
-          August: Number(totalVisitInAug),
-          September: Number(totalVisitInSept),
-          October: Number(totalVisitInOct),
-          November: Number(totalVisitInNov),
-          December: Number(totalVisitInDec),
-        };
+
+        const filteredData = [
+          {id:1, month: 'January', totalVisit: Number(totalVisitInJan) },
+          {id:2, month: 'February', totalVisit: Number(totalVisitInFeb) },
+          {id:3, month: 'March', totalVisit: Number(totalVisitInMarch) },
+          {id:4, month: 'April', totalVisit: Number(totalVisitInApril) },
+          {id:5, month: 'May', totalVisit: Number(totalVisitInMay) },
+          {id:6, month: 'June', totalVisit: Number(totalVisitInJune) },
+          {id:7, month: 'July', totalVisit: Number(totalVisitInJuly) },
+          {id:8, month: 'August', totalVisit: Number(totalVisitInAug) },
+          {id:9, month: 'September', totalVisit: Number(totalVisitInSept) },
+          {id:10, month: 'October', totalVisit: Number(totalVisitInOct) },
+          {id:11, month: 'November', totalVisit: Number(totalVisitInNov) },
+          {id:12, month: 'December', totalVisit: Number(totalVisitInDec) },
+        ];
+        
+
 
         return Util?.handleSuccessRespone(
           filteredData,
