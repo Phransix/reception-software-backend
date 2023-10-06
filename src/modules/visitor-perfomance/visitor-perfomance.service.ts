@@ -251,7 +251,7 @@ export class VisitorPerfomanceService {
       }
       
 
-         //  Filter Visitor Activity Performanc By week(days)
+         //  Filter Visitor Activity Performance By week(days)
       if (filterData === filter?.WEEK) {
         const today = new Date();
         const year = today.getFullYear();
@@ -471,8 +471,7 @@ export class VisitorPerfomanceService {
         );
       }
 
-  // Filter Visitor Activity Performanc By Day(hours)
-  
+  // Filter Visitor Activity Performance In A Day(hours)
        if ( filterData === filter?.Day){
 
         const start0 = new Date ()

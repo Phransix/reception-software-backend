@@ -274,7 +274,7 @@ export class OrganizationService {
       const org = await Organization.findOne({ where: { organizationId } });
       if (!org) {
         return Util?.handleFailResponse(
-          'Organization with this #${organizationId} not found',
+          'Organization not found',
         );
       }
 
@@ -307,7 +307,7 @@ export class OrganizationService {
       });
       if (!org_data) {
         return Util?.handleFailResponse(
-          'Organization with this organizationId not found',
+          'Organization not found',
         );
       }
 
@@ -353,7 +353,7 @@ export class OrganizationService {
       });
 
       return Util?.SuccessRespone(
-        'Organization with this organizationId, Image updated successfully',
+        'Organization Image updated successfully',
       );
     } catch (error) {
       if (rollImage) {

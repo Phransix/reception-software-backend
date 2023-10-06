@@ -241,5 +241,34 @@ export class DepartmentController {
       console.log(error);
       return Util?.handleRequestError(Util?.getTryCatchMsg(error),ErrorCode)
     }
+  
+}
+
+  // Bulk Create
+  @UseGuards(AuthGuard('jwt'))
+  @ApiBearerAuth('defaultBearerAuth')
+  @Public()
+  @UseGuards(AtGuard)
+  @ApiOperation({ summary: 'Create Multiple Department' })
+  @Public()
+  @UseGuards(DoesDeptExist)
+  @Post('bulkCreateDepartment/create')
+  async bulkCreateDept(
+    @Body() createDepartmentDto: CreateDepartmentDto[],
+    @GetCurrentUserId() userId: string
+  ) {
+    let ErrorCode: number
+    try {
+      const dept_data = await this.departmentService?.bulkCreateDept( createDepartmentDto, userId)
+      if (dept_data?.status_code != HttpStatus.CREATED) {
+        ErrorCode = dept_data?.status_code;
+        throw new Error(dept_data?.message)
+      }
+      return dept_data
+    } catch (error) {
+      console.log(error)
+      return Util?.handleRequestError(Util?.getTryCatchMsg(error), ErrorCode)
+    }
   }
+
 }

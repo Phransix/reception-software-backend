@@ -288,7 +288,7 @@ export class UsersService {
     try {
       const user = await User.findOne({ where: { userId } });
       if (!user) {
-        throw new BadRequestException('User with this ${id} does not exist');
+        throw new BadRequestException('User does not exist');
       }
 
       // Verify the old password
@@ -317,7 +317,7 @@ export class UsersService {
       Object.assign(user, changepassDto);
       await user.save();
       return Util?.SuccessRespone(
-        'User with this #${userId}  password changed succcessful',
+        'User password changed succcessfully',
       );
     } catch (error) {
       console.log(error);
@@ -351,6 +351,7 @@ export class UsersService {
       return Util?.handleGrpcTryCatchError(Util?.getTryCatchMsg(error));
     }
   }
+
 
   // Reset Password
   async resetPassword(token: any, data: ResetPasswordDto) {
@@ -444,7 +445,7 @@ export class UsersService {
       });
 
       return Util?.SuccessRespone(
-        'User with this #${userId} and Image updated successfully',
+        'User Image updated successfully',
       );
     } catch (error) {
       if (rollImage) {
