@@ -238,18 +238,18 @@ export class DeliveryController {
   ) {
     let ErrorCode: number;
     try {
-      let enquiryData = await this.deliveryService.findDeliveryByDateRange(
+      let deliveryData = await this.deliveryService.findDeliveryByDateRange(
         startDate,
         endDate,
         page,
         size,
         userId
       );
-      if (enquiryData?.status_code != HttpStatus.OK) {
-        ErrorCode = enquiryData?.status_code;
-        throw new Error(enquiryData?.message);
+      if (deliveryData?.status_code != HttpStatus.OK) {
+        ErrorCode = deliveryData?.status_code;
+        throw new Error(deliveryData?.message);
       }
-      return enquiryData;
+      return deliveryData;
     } catch (error) {
       console.log(error);
       return Util?.handleRequestError(Util?.getTryCatchMsg(error), ErrorCode);

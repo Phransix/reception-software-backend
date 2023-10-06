@@ -260,7 +260,12 @@ export class DeliveryService {
 
         limit,
         offset,
-        where: { organizationId: get_org?.organizationId },
+        where: {
+           organizationId: get_org?.organizationId,
+           createdAt:{
+            [Op.between]:[startDate,endDate]
+          },
+           },
         attributes: { exclude: ['updatedAt', 'deletedAt'] },
         order: [
           ['createdAt', 'ASC']
