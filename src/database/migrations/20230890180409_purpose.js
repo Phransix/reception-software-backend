@@ -84,7 +84,7 @@ module.exports = {
       signInTime: {
         type: Sequelize.TIME,
         allowNull: true,
-        defaultValue: Sequelize.literal('CURRENT_TIMESTAMP'),
+        defaultValue: Sequelize.literal('CURRENT_TIMESTAMP')
       },
       signOutTime: {
         type: Sequelize.TIME,
@@ -130,3 +130,5 @@ module.exports = {
     await queryInterface.dropTable('Purposes');
   }
 };
+
+

@@ -5,7 +5,6 @@ import { Enquiry } from './entities/enquiry.entity';
 import { Sequelize } from 'sequelize-typescript';
 import { InjectModel } from '@nestjs/sequelize';
 import * as Util from '../../utils/index';
-import * as Abstract from '../../utils/abstract';
 import { Op } from 'sequelize';
 import { Organization } from '../organization/entities/organization.entity';
 import { User } from '../users/entities/user.entity';
