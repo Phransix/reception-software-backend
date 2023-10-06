@@ -235,7 +235,6 @@ export class DeliveryService {
     userId: any
   ) {
     try {
-      let deliveryData = { startDate, endDate };
 
       let currentPage = Util?.Checknegative(page);
       if (currentPage) {
@@ -261,10 +260,10 @@ export class DeliveryService {
         limit,
         offset,
         where: {
-           organizationId: get_org?.organizationId,
            createdAt:{
             [Op.between]:[startDate,endDate]
           },
+          organizationId: get_org?.organizationId,
            },
         attributes: { exclude: ['updatedAt', 'deletedAt'] },
         order: [

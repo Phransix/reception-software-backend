@@ -362,19 +362,19 @@ export class GuestService {
       }
 
     // Check for duplicates within the same organization
-    const duplicatePhoneNumbers = [];
+    const duplicatePhoneNumbers = new Set();
     for (const guestData of data) {
       const existingGuest = await myModel.findOne({
         where: { phoneNumber: guestData.phoneNumber, organizationId: user.organizationId },
       });
       if (existingGuest) {
-        duplicatePhoneNumbers.push(guestData.phoneNumber);
+        duplicatePhoneNumbers.add(guestData.phoneNumber); // Add to the Set
       }
     }
 
-    if (duplicatePhoneNumbers.length > 0) {
+    if (duplicatePhoneNumbers.size > 0) {
       t.rollback(); // Rollback the transaction if duplicate phone numbers are found
-      return Util?.handleErrorRespone('Duplicate phone numbers within this organization: ' + duplicatePhoneNumbers.join(', '));
+      return Util?.handleErrorRespone('Duplicate phone numbers within this organization: ' + [...duplicatePhoneNumbers].join(', '));
     }
 
       const createMultipleGuest = await myModel.bulkCreate(data, { transaction: t })
