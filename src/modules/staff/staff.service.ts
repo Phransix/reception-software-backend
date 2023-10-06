@@ -11,10 +11,12 @@ import { Organization } from '../organization/entities/organization.entity';
 import { Department } from '../department/entities/department.entity';
 import { User } from '../users/entities/user.entity';
 const fs = require('fs');
+import { Sequelize } from 'sequelize-typescript';
 
 @Injectable()
 export class StaffService {
   constructor(
+    private sequelize: Sequelize,
     @InjectModel(Staff) private staffModel: typeof Staff,
     @InjectModel(User) private userModel: typeof User,
     @InjectModel(Organization) private orgModel: typeof Organization,
@@ -35,18 +37,6 @@ export class StaffService {
       if(!get_org)
       return Util?.CustomhandleNotFoundResponse('organization not found');
 
-
-      // var image_matches = createStaffDto?.profilePhoto?.match(
-      //   /^data:([A-Za-z-+\/]+);base64,(.+)$/,
-      // );
-      // if (!image_matches) {
-      //   return Util?.handleFailResponse('Invalid Input file');
-      // }
-
-      // let staff_image = await this?.staffImgHelper?.uploadStaffImage(
-      //   createStaffDto?.profilePhoto,
-      // );
-
       let insertQry = {
         organizationId: createStaffDto?.organizationId,
         organizationName: createStaffDto?.organizationName,
@@ -56,9 +46,7 @@ export class StaffService {
         fullName: createStaffDto?.fullName,
         email: createStaffDto?.email,
         phoneNumber: createStaffDto?.phoneNumber,
-        // gender: createStaffDto?.gender,
         role: createStaffDto?.role,
-        // profilePhoto: staff_image,
       };
       console.log(insertQry);
 
@@ -205,7 +193,7 @@ export class StaffService {
 
       if (!staff) {
         return Util?.CustomhandleNotFoundResponse(
-          `Staff with this id not found`,
+          `Staff not found`,
         );
       }
 
@@ -238,7 +226,7 @@ export class StaffService {
       const staff_data = await this.staffModel.findOne({ where: { staffId , organizationId:get_org?.organizationId,} });
       if (!staff_data) {
         return Util?.handleFailResponse(
-          'Staff with this #${staffId} not found',
+          'Staff not found',
         );
       }
 
@@ -261,7 +249,7 @@ export class StaffService {
       });
 
       return Util?.SuccessRespone(
-        'Staff with this #${staffId} updated successfully',
+        'Staff updated successfully',
       );
     } catch (error) {
       console.log(error);
@@ -288,7 +276,7 @@ export class StaffService {
       const staff_data = await this.staffModel.findOne({ where: { staffId ,organizationId:get_org?.organizationId} });
       if (!staff_data) {
         return Util?.CustomhandleNotFoundResponse(
-          'Staff with this #${staffId} not found',
+          'Staff not found',
         );
       }
 
@@ -336,7 +324,7 @@ export class StaffService {
       });
 
       return Util?.SuccessRespone(
-        'Staff with this #${staffId}  Image updated successfully',
+        'Staff Image updated successfully',
       );
     } catch (error) {
       if (rollImage) {
@@ -364,7 +352,7 @@ export class StaffService {
       const staff = await Staff.findOne({ where: { staffId ,organizationId:get_org?.organizationId} });
       if (!staff) {
         return Util?.handleFailResponse(
-          'Staff with this #${staffId} not found',
+          'Staff not found',
         );
       }
 
@@ -372,7 +360,7 @@ export class StaffService {
 
       return Util?.handleSuccessRespone(
         Util?.SuccessRespone,
-        'Staff with this #${staffId}  deleted successfully',
+        'Staff deleted successfully',
       );
     } catch (error) {
       console.log(error);
@@ -442,6 +430,40 @@ export class StaffService {
       );
     } catch (error) {
       console.log(error);
+      return Util?.handleGrpcTryCatchError(Util?.getTryCatchMsg(error));
+    }
+  }
+
+  // Bulk Create Staff
+  async bulkCreateStaff(createStaffDto: CreateStaffDto[],userId:any){
+    const t = await this?.sequelize?.transaction()
+    try {
+      console.log(userId)
+
+      let user = await this?.userModel.findOne({where:{userId}})
+      console.log(user?.organizationId)
+      if(!user){
+        t?.rollback()
+      return Util?.CustomhandleNotFoundResponse('User not found');
+      }
+
+      let get_org = await this?.orgModel.findOne({where:{organizationId:user?.organizationId}})
+      if(!get_org){
+        t?.rollback
+      return Util?.CustomhandleNotFoundResponse('organization not found');
+      }
+
+      const createBulk = await this?.staffModel?.bulkCreate( createStaffDto, {transaction:t})
+      t?.commit()
+      console.log(createBulk)
+     
+      return Util?.handleCreateSuccessRespone(
+        'Staffs created successfully.',
+      );
+    
+
+    } catch (error) {
+      console.log(error)
       return Util?.handleGrpcTryCatchError(Util?.getTryCatchMsg(error));
     }
   }

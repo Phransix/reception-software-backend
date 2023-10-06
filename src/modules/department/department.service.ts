@@ -367,6 +367,40 @@ export class DepartmentService {
     }
   }
 
+   // Bulk Create Staff
+   async bulkCreateDept(createDepartmentDto: CreateDepartmentDto[],userId:any){
+    const t = await this?.sequelize?.transaction()
+    try {
+      console.log(userId)
+
+      let user = await this?.userModel.findOne({where:{userId}})
+      console.log(user?.organizationId)
+      if(!user){
+        t?.rollback()
+      return Util?.CustomhandleNotFoundResponse('User not found');
+      }
+
+      let get_org = await this?.orgModel.findOne({where:{organizationId:user?.organizationId}})
+      if(!get_org){
+        t?.rollback
+      return Util?.CustomhandleNotFoundResponse('organization not found');
+      }
+
+      const createBulk = await this?.departmentModel?.bulkCreate( createDepartmentDto, {transaction:t})
+      t?.commit()
+      console.log(createBulk)
+     
+      return Util?.handleCreateSuccessRespone(
+        'Departments created successfully.',
+      );
+    
+
+    } catch (error) {
+      console.log(error)
+      return Util?.handleGrpcTryCatchError(Util?.getTryCatchMsg(error));
+    }
+  }
+
 
   async findOneByorganizationName(departmentName: string): Promise<Department> {
     return await this.departmentModel.findOne<Department>({ where: { departmentName } })

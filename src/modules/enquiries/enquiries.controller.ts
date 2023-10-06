@@ -300,5 +300,32 @@ export class EnquiriesController {
     }
   }
 
+  // Bulk Create
+   @UseGuards(AuthGuard('jwt'))
+   @ApiBearerAuth('defaultBearerAuth')
+   @Public()
+   @UseGuards(AtGuard)
+   @ApiOperation({ summary: 'Create Multiple Enquiries' })
+   @Public()
+   @Post('bulkCreateEnquiry/create')
+   async bulkCreateEnquiry(
+     @Body() createEnquiryDto: CreateEnquiryDto[],
+     @GetCurrentUserId() userId: string
+   ) {
+     let ErrorCode: number
+     try {
+       const enquiryData = await this.enquiriesService?.bulkCreateEnquiry( createEnquiryDto, userId)
+       if (enquiryData?.status_code != HttpStatus.CREATED) {
+         ErrorCode = enquiryData?.status_code;
+         throw new Error(enquiryData?.message)
+       }
+       return enquiryData
+     } catch (error) {
+       console.log(error)
+       return Util?.handleRequestError(Util?.getTryCatchMsg(error), ErrorCode)
+     }
+   }
+
+
 
 }

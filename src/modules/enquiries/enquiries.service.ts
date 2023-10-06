@@ -289,72 +289,9 @@ export class EnquiriesService {
       return Util?.handleGrpcTryCatchError(Util?.getTryCatchMsg(error));
     }
 
-  }
-
-  // async findEnquiryByDateRanges(
-  //   startDate: Date,
-  //   endDate: Date,
-  //   userId: any, 
-   
-  // ) {
-  //   try {
-  //     let enquiryData = { startDate, endDate };
-  
-  //     let user = await this?.userModel.findOne({ where: { userId } });
-  //     console.log(user?.organizationId);
-  //     if (!user) return Util?.CustomhandleNotFoundResponse('User not found');
-  
-  //     let get_org = await this?.orgModel.findOne({
-  //       where: { organizationId: user?.organizationId }
-  //     });
-  
-  //     if (!get_org) return Util?.CustomhandleNotFoundResponse('Organization not found');
-  
-  //     const allQueries = await Enquiry.findAll({
-  //       where: {
-  //         organizationId: get_org?.organizationId,
-  //         createdAt: {
-  //           [Op.between]: [startDate, endDate]
-  //         }
-  //       },
-  //       attributes: { exclude: ['updatedAt', 'deletedAt'] },
-  //       order: [['createdAt', 'ASC']],
-  //       include: [
-  //         {
-  //           model: Organization,
-  //           attributes: {
-  //             exclude: [
-  //               'id',
-  //               'createdAt',
-  //               'updatedAt',
-  //               'deletedAt',
-  //               'isVerified'
-  //             ]
-  //           }
-  //         }
-  //       ]
-  //     });
-  
-  //     const dataResult = {
-  //       ...enquiryData,
-  //       result: allQueries
-  //     };
-  
-  //     return Util?.handleSuccessRespone(
-  //       // dataResult,
-  //       allQueries,
-  //       'Enquiries data retrieved successfully'
-  //     );
-  //   } catch (error) {
-  //     console.log(error);
-  //     return Util?.handleGrpcTryCatchError(Util?.getTryCatchMsg(error));
-  //   }
-  // }
-  
+  }  
 
   // Filter Enquiries By Purpose
- 
- 
   async purposefilter(
     keyword: string,
      userId:any
@@ -488,7 +425,6 @@ export class EnquiriesService {
     }
   }
   
-
   // Search Enquiry Data by Full Name
   async searchEnquiry(keyword: string,userId:any) {
     try {
@@ -539,6 +475,40 @@ export class EnquiriesService {
   }
 
 
+
+  // Bulk Create Enquiry
+  async bulkCreateEnquiry(createEnquiryDto: CreateEnquiryDto[],userId:any){
+    const t = await this?.sequelize?.transaction()
+    try {
+      console.log(userId)
+
+      let user = await this?.userModel.findOne({where:{userId}})
+      console.log(user?.organizationId)
+      if(!user){
+        t?.rollback()
+      return Util?.CustomhandleNotFoundResponse('User not found');
+      }
+
+      let get_org = await this?.orgModel.findOne({where:{organizationId:user?.organizationId}})
+      if(!get_org){
+        t?.rollback
+      return Util?.CustomhandleNotFoundResponse('organization not found');
+      }
+
+      const createBulk = await this?.enquiryModel?.bulkCreate( createEnquiryDto, {transaction:t})
+      t?.commit()
+      console.log(createBulk)
+     
+      return Util?.handleCreateSuccessRespone(
+        'Enquiries created successfully.',
+      );
+    
+
+    } catch (error) {
+      console.log(error)
+      return Util?.handleGrpcTryCatchError(Util?.getTryCatchMsg(error));
+    }
+  }
 
 
 

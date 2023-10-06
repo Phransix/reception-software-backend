@@ -243,5 +243,32 @@ export class StaffController {
     }
   }
 
+   // Bulk Create
+   @UseGuards(AuthGuard('jwt'))
+   @ApiBearerAuth('defaultBearerAuth')
+   @Public()
+   @UseGuards(AtGuard)
+   @ApiOperation({ summary: 'Create Multiple Staff' })
+   @Public()
+   @UseGuards(DoesStaffExist)
+   @Post('bulkCreateStaff/create')
+   async bulkCreateDept(
+     @Body() createStaffDto: CreateStaffDto[],
+     @GetCurrentUserId() userId: string
+   ) {
+     let ErrorCode: number
+     try {
+       const staff_data = await this.staffService?.bulkCreateStaff( createStaffDto, userId)
+       if (staff_data?.status_code != HttpStatus.CREATED) {
+         ErrorCode = staff_data?.status_code;
+         throw new Error(staff_data?.message)
+       }
+       return staff_data
+     } catch (error) {
+       console.log(error)
+       return Util?.handleRequestError(Util?.getTryCatchMsg(error), ErrorCode)
+     }
+   }
+
   
 }
