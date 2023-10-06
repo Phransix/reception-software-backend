@@ -120,7 +120,7 @@ export class EnquiriesService {
       return Util?.CustomhandleNotFoundResponse('organization not found');
 
       const enquiry = await Enquiry.findOne({
-        attributes: { exclude: ['createdAt', 'updatedAt', 'deletedAt'] },
+        attributes: { exclude: [ 'updatedAt', 'deletedAt'] },
         order: [
           ['createdAt', 'ASC']
         ],
