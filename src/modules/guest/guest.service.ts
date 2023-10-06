@@ -379,7 +379,7 @@ export class GuestService {
 
       const createMultipleGuest = await myModel.bulkCreate(data, { transaction: t })
       t.commit()
-      return Util?.handleCustonCreateResponse(createMultipleGuest, 'Multiple Guests created successfully')
+      return Util?.handleCreateSuccessRespone('Multiple Guests created successfully')
 
     } catch (error) {
       t.rollback()

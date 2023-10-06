@@ -506,16 +506,36 @@ export class PurposeService {
         }
       })
 
+      if (!guest)
+      return Util?.handleFailResponse('Guest not found')
+
+    if (!guest || !cCode)
+      return Util?.handleFailResponse('Invalid phone number or country code')
+
+    const purpose = await this.PurposeModel.findOne(
+      {
+        where: {
+          guestId: guest?.guestId
+        }
+      });
+
       // const currentTime = new Date().toLocaleTimeString();
 
-      if (!guest)
-        return Util?.handleFailResponse('Guest not found')
+        let guest_data = {
+          guestId: guest?.guestId,
+          firstName: guest?.firstName,
+          lastname: guest?.lastName,
+          gender: guest?.gender,
+          countryCode: guest?.countryCode,
+          phoneNumber: guest?.phoneNumber,
+          guestPurpose: purpose?.purpose,
+          signInDate: purpose?.signInDate,
+          signInTime: purpose?.signInTime,
+          signOutTime: purpose?.signOutTime
+        }
 
-      if (!guest || !cCode)
-        return Util?.handleFailResponse('Invalid phone number or country code')
-
-      console.log(phoneNumber);
-      return Util?.handleCreateSuccessRespone('Logout successful');
+      // console.log(phoneNumber);
+      return Util?.handleCustonCreateResponse(guest_data, 'Logout Successful');
     } catch (error) {
       console.log(error)
       return Util?.handleGrpcTryCatchError(Util?.getTryCatchMsg(error));
@@ -688,7 +708,7 @@ export class PurposeService {
   }
 
   // Bulk Purpose
-  async bulkPurpose(Guest: string, data: any[], userId: any) {
+  async bulkPurpose(Purpose: string, data: any[], userId: any) {
     const myModel = this.sequelize.model(Purpose);
     const t = await this.sequelize.transaction();
     try {
@@ -712,7 +732,7 @@ export class PurposeService {
 
       const createMultiplePurpose = await myModel.bulkCreate(data, { transaction: t })
       t.commit()
-      return Util?.handleCustonCreateResponse(createMultiplePurpose, 'Multiple Purposes created successfully')
+      return Util?.handleCreateSuccessRespone("Purposes Created Successfully")
 
     } catch (error) {
       t.rollback()

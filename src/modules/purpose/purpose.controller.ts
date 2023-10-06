@@ -404,7 +404,7 @@ export class PurposeController {
       ) {
         let ErrorCode: number
         try {
-          const modelName = 'Guest'
+          const modelName = 'Purpose'
           const purposeResults = await this.purposeService.bulkPurpose(modelName, data, userId)
           if (purposeResults?.status_code != HttpStatus.CREATED) {
             ErrorCode = purposeResults?.status_code;
