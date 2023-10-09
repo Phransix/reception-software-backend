@@ -119,6 +119,7 @@ export class UsersService {
 
       let tokens = await this?.getTokens(
         user.userId,
+        user.userId,
         user.email,
         user?.roleName,
       );
@@ -464,8 +465,27 @@ export class UsersService {
         throw new Error('User data not found.');
       }
 
-      Object.assign(user);
+      let get_org = await this?.orgModel.findOne({
+        where: { organizationId: user?.organizationId },
+      });
+
+      if (!get_org)
+        return Util?.CustomhandleNotFoundResponse('organization not found');
+
+      await User.update(
+        { isLogin: false },
+        {
+          where: {
+            password: user?.password,
+            organizationId: get_org?.organizationId,
+          },
+        },
+      );
+
+      Object?.assign(user);
       await user?.destroy();
+
+
       return Util?.SuccessRespone('User deleted successfully.');
     } catch (error) {
       console.log(error);
@@ -532,8 +552,9 @@ export class UsersService {
     }
   }
 
-  async getTokens(user_id: string, email: string, role: string) {
+  async getTokens( tokenId: string, user_id: string, email: string, role: string) {
     const jwtPayload = {
+      id: tokenId,
       sub: user_id,
       email: email,
       scopes: role,
@@ -546,6 +567,7 @@ export class UsersService {
         // expiresIn: '15m',
         expiresIn: '3d',
       }),
+
       this.jwtService.signAsync(jwtPayload, {
         secret: this.config.get<string>('RT_SECRET'),
         expiresIn: '360d',
@@ -557,6 +579,13 @@ export class UsersService {
       refresh_token: rt,
     };
   }
+
+
+
+  
+
+
+
 
   async makeid(length) {
     let result = '';

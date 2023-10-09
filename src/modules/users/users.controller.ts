@@ -353,4 +353,28 @@ export class UsersController {
       return Util?.handleRequestError(Util?.getTryCatchMsg(error), ErrorCode);
     }
   }
+
+
+  // Refresh Token EndPoint
+  @ApiTags('Users')
+  @UseGuards(AuthGuard('jwt'))
+  @ApiBearerAuth('defaultBearerAuth')
+  @ApiOperation({ summary: 'Refresh Access Token' })
+  @Public()
+  @UseGuards(AtGuard)
+  @Post('refresh/:refreshToken')
+  async refresh(@Param('refreshToken') refreshToken: string) {
+    let ErrorCode: number;
+    try {
+      // Validate the provided refresh token, if invalid, throw an error.
+      // const 
+      
+    } catch (error) {
+      console.log(error);
+      return Util?.handleRequestError(Util?.getTryCatchMsg(error), ErrorCode);
+    }
+
+  }
+
+
 }

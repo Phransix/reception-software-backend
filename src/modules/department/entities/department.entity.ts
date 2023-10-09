@@ -48,7 +48,6 @@ as: 'Organization',
    @Column({
     type: DataType.STRING,
     allowNull: false,
-    unique: true
    })
    departmentName: string;
 

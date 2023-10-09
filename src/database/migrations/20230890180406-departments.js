@@ -38,7 +38,6 @@ module.exports = {
       departmentName: {
         type: Sequelize.STRING,
         allowNull: false,
-        unique: true
       },
 
       departmentRoomNum: {
