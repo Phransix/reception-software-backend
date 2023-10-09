@@ -321,4 +321,34 @@ export class DeliveryController {
 
   }
 
+   // Bulk create delivery
+   @UseGuards(AuthGuard('jwt'))
+   @ApiBearerAuth('defaultBearerAuth')
+   @Public()
+   @UseGuards(AtGuard)
+   @ApiOperation({ summary: 'Create Multiple Deliveries' })
+   @Public()
+   @ApiTags('Delivery')
+   @Post('bulkDeliveryCreate/create')
+   async multipleCreateDelivery(
+    @Body() data: any[],
+    @GetCurrentUserId() userId: string
+   ){
+    let ErrorCode: number
+
+    try {
+
+      const modelName = 'Delivery'
+      const deliveryResults = await this.deliveryService.BulkcreateDelivery(modelName, data, userId)
+      if (deliveryResults?.status_code != HttpStatus.CREATED) {
+        ErrorCode = deliveryResults?.status_code;
+        throw new Error(deliveryResults?.message)
+      }
+      return deliveryResults
+    } catch (error) {
+      console.log(error)
+      return Util?.handleRequestError(Util?.getTryCatchMsg(error), ErrorCode)
+    }
+   }
+
 }

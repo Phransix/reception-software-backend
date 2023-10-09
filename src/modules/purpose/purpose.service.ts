@@ -492,7 +492,7 @@ export class PurposeService {
       if (!get_org)
         return Util?.CustomhandleNotFoundResponse('organization not found');
 
-      const { phoneNumber, countryCode } = guestOpDTO
+      const { countryCode, phoneNumber } = guestOpDTO
       const guest = await this.GuestModel.findOne({
         where: {
           phoneNumber: phoneNumber,
@@ -507,34 +507,39 @@ export class PurposeService {
       })
 
       if (!guest)
-      return Util?.handleFailResponse('Guest not found')
+        return Util?.handleFailResponse('Guest not found')
 
-    if (!guest || !cCode)
-      return Util?.handleFailResponse('Invalid phone number or country code')
+      if (!cCode || !guest)
+        return Util?.handleFailResponse('Invalid phone number or country code')
 
-    const purpose = await this.PurposeModel.findOne(
-      {
-        where: {
-          guestId: guest?.guestId
-        }
-      });
+      const purpose = await this.PurposeModel.findOne(
+        {
+          where: {
+            guestId: guest?.guestId
+          }
+        });
+
+      // Checking if guest is signed In
+      if (purpose?.isLogOut != false) {
+        return Util?.handleFailResponse('Guest logged Out')
+      };
 
       // const currentTime = new Date().toLocaleTimeString();
 
-        let guest_data = {
-          guestId: guest?.guestId,
-          firstName: guest?.firstName,
-          lastname: guest?.lastName,
-          gender: guest?.gender,
-          countryCode: guest?.countryCode,
-          phoneNumber: guest?.phoneNumber,
-          guestPurpose: purpose?.purpose,
-          signInDate: purpose?.signInDate,
-          signInTime: purpose?.signInTime,
-          signOutTime: purpose?.signOutTime
-        }
+      let guest_data = {
+        guestId: guest?.guestId,
+        firstName: guest?.firstName,
+        lastname: guest?.lastName,
+        gender: guest?.gender,
+        countryCode: guest?.countryCode,
+        phoneNumber: guest?.phoneNumber,
+        guestPurpose: purpose?.purpose,
+        signInDate: purpose?.signInDate,
+        signInTime: purpose?.signInTime,
+        signOutTime: purpose?.signOutTime
+      }
 
-      // console.log(phoneNumber);
+      // console.log(phoneNumber)
       return Util?.handleCustonCreateResponse(guest_data, 'Logout Successful');
     } catch (error) {
       console.log(error)
@@ -555,7 +560,7 @@ export class PurposeService {
       if (!get_org)
         return Util?.CustomhandleNotFoundResponse('organization not found');
 
-      const { phoneNumber, countryCode } = guestOpDTO
+      const { countryCode, phoneNumber } = guestOpDTO
       const guest = await this.GuestModel.findOne({
         where: {
           phoneNumber: phoneNumber,
@@ -575,7 +580,7 @@ export class PurposeService {
       if (!guest)
         return Util?.handleFailResponse('Guest not found')
 
-      if (!guest || !cCode)
+      if (!cCode || !guest)
         return Util?.handleFailResponse('Invalid phone number or country code')
 
       const purpose = await this.PurposeModel.findOne(
@@ -584,11 +589,6 @@ export class PurposeService {
             guestId: guest?.guestId
           }
         });
-
-      // Checking if guest is signed In
-      if (purpose?.isLogOut != false) {
-        return Util?.handleFailResponse('Guest already logged Out')
-      };
 
       await Purpose.update({ isLogOut: true },
         { where: { guestId: guest?.guestId } }
@@ -661,7 +661,7 @@ export class PurposeService {
       filter = {
         signed_in: Number(getSingedInCount),
         signed_out: Number(getSingedOutCount),
-        total : total
+        total: total
       }
 
       return Util?.handleSuccessRespone(filter, "Guest Data filtered Successfully")
@@ -716,16 +716,14 @@ export class PurposeService {
       console.log(userId)
       let user = await this?.UserModel.findOne({ where: { userId } })
       console.log(user?.organizationId)
-      if (!user)
-      {
+      if (!user) {
         t.rollback();
         return Util?.handleErrorRespone('User not found');
       }
 
       let get_org = await this?.OrgModel.findOne({ where: { organizationId: user?.organizationId } })
 
-      if (!get_org)
-      {
+      if (!get_org) {
         t.rollback();
         return Util?.handleErrorRespone('organization not found');
       }

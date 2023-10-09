@@ -2,7 +2,7 @@
 
 /** @type {import('sequelize-cli').Migration} */
 module.exports = {
-  async up (queryInterface, Sequelize) {
+  async up(queryInterface, Sequelize) {
     /**
      * Add altering commands here.
      *
@@ -18,6 +18,12 @@ module.exports = {
         primaryKey: true,
         type: Sequelize.INTEGER
       },
+      visitlogId: {
+        type: Sequelize.UUID,
+        defaultValue: Sequelize.UUIDV4,
+        allowNull: false,
+        unique: true
+      },
       organizationId: {
         type: Sequelize.UUID,
         allowNull: false,
@@ -26,17 +32,6 @@ module.exports = {
             tableName: 'Organizations',
           },
           key:'organizationId'
-        },
-        onDelete: 'CASCADE'
-      },
-      purposeId: {
-        type: Sequelize.UUID,
-        allowNull: true,
-        references: {
-          model:{
-            tableName: 'Purposes',
-          },
-          key:'purposeId'
         },
         onDelete: 'CASCADE'
       },
@@ -52,50 +47,16 @@ module.exports = {
         },
         onDelete: 'CASCADE'
       },
-      purpose: {
-        type: Sequelize.ENUM('personal', 'official'),
-        allowNull: false,
-        required:true,
-        defaultValue: 'official',
-        validate: {
-          isIn: [['personal', 'official']] 
-        }
-      },
-      departmentId: {
+      purposeId: {
         type: Sequelize.UUID,
         allowNull: true,
         references: {
-          model:{
-            tableName: 'Departments',
+          model: {
+            tableName: 'Purposes',
           },
-          key:'departmentId'
+          key: 'purposeId'
         },
         onDelete: 'CASCADE'
-      },
-      staffId: {
-        type: Sequelize.UUID,
-        allowNull: true,
-        references: {
-          model:{
-            tableName: 'Staffs',
-          },
-          key:'staffId'
-        },
-        onDelete: 'CASCADE'
-      },
-      signInDate: {
-        type: Sequelize.DATEONLY,
-        allowNull: true,
-        defaultValue: Sequelize.literal('CURRENT_TIMESTAMP'),
-      },
-      signInTime: {
-        type: Sequelize.TIME,
-        allowNull: true,
-        defaultValue: Sequelize.literal('CURRENT_TIMESTAMP'),
-      },
-      signOutTime: {
-        type: Sequelize.TIME,
-        allowNull: true
       },
       createdAt: {
         type: Sequelize.DATE,
@@ -109,14 +70,14 @@ module.exports = {
       },
       deletedAt: {
         type: Sequelize.DATE,
-      allowNull: true,
-     defaultValue: null
-      }, 
+        allowNull: true,
+        defaultValue: null
+      },
     })
 
   },
 
-  async down (queryInterface, Sequelize) {
+  async down(queryInterface, Sequelize) {
     /**
      * Add reverting commands here.
      *

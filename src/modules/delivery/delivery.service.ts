@@ -8,6 +8,7 @@ import { Op } from 'sequelize';
 import { User } from '../users/entities/user.entity';
 import { Organization } from '../organization/entities/organization.entity';
 import { UpdateDeliveryStatus } from './dto/updateDeliveryStatus';
+import { Sequelize } from 'sequelize-typescript';
 
 
 @Injectable()
@@ -17,7 +18,8 @@ export class DeliveryService {
   constructor(
     @InjectModel(Delivery) private readonly DeliveryModel: typeof Delivery,
     @InjectModel(User) private readonly UserModel: typeof User,
-    @InjectModel(Organization) private readonly OrgModel: typeof Organization
+    @InjectModel(Organization) private readonly OrgModel: typeof Organization,
+    private readonly sequelize: Sequelize
   ) { }
 
   // Create Delivery
@@ -361,6 +363,41 @@ export class DeliveryService {
     } catch (error) {
       console.log(error)
       return Util?.handleGrpcTryCatchError(Util?.getTryCatchMsg(error));
+    }
+  }
+
+  // Bulk create delivery
+  async BulkcreateDelivery(Purpose: string, data: any[], userId: any){
+    const myModel = this.sequelize.model(Purpose);
+    const t = await this.sequelize.transaction();
+
+    try {
+      
+      console.log(userId)
+      const user = await this?.UserModel.findOne({ where: {userId }})
+      console.log(user?.organizationId)
+      if (!user)
+      {
+        t.rollback;
+        return Util?.handleErrorRespone('User not found');
+      }
+
+      const get_org = await this?.OrgModel.findOne({where: { organizationId: user?.organizationId}})
+
+      if (!get_org)
+      {
+        t.rollback();
+        return Util?.handleErrorRespone('Organization not found')
+      }
+
+      const createMultipleDelivery = await myModel.bulkCreate( data, { transaction: t })
+      t.commit()
+      return Util?.handleCreateSuccessRespone('Deliveries Created Successfully')
+
+    } catch (error) {
+      t.rollback()
+      console.log(error)
+      return Util?.handleGrpcTryCatchError(Util?.getTryCatchMsg(error))
     }
   }
 
