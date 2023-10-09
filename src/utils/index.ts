@@ -451,7 +451,7 @@ export const formatDateToDDMMYYYY = (date: Date): string => {
 
  export const  reseetpassToken = (data)  => {
   let {email,userId } = data
-   return jwt.sign({email,userId}, process.env.JWT_RESET_PASSWORD, {expiresIn: '2m'});
+   return jwt.sign({email,userId}, process.env.JWT_RESET_PASSWORD, {expiresIn: '1h'});
  };
 
  export const verifyToken = (token) =>{
@@ -473,7 +473,7 @@ export const  createAccessToken = ({id})  => {
 
 export const createEmailToken = (data) => {
   let {email,organizationId } = data
-  return jwt.sign({email,organizationId}, process.env.JWT_EMAIL_TOKEN, {expiresIn: '1d'});
+  return jwt.sign({email,organizationId}, process.env.JWT_EMAIL_TOKEN, {expiresIn: '1h'});
 }
 
 export const verifyEmailToken = (token) => {

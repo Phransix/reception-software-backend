@@ -356,7 +356,8 @@ export class StaffService {
         );
       }
 
-      await this?.staffModel?.destroy();
+      Object?.assign(staff);
+     await staff?.destroy()
 
       return Util?.handleSuccessRespone(
         Util?.SuccessRespone,

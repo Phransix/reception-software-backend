@@ -305,8 +305,8 @@ export class DepartmentService {
         );
       }
 
-      Object.assign(data);
-      await data.destroy();
+      Object?.assign(data);
+      await data?.destroy();
       return Util?.SuccessRespone(
         `Department deleted successfully`,
       );
