@@ -42,7 +42,15 @@ export class PurposeService {
         organizationId: get_org?.organizationId
       })
       await purpose.save()
-      return Util?.handleCreateSuccessRespone("Purpose Created Successfully")
+      let purpose_data = {
+        purposeId: purpose?.purposeId,
+        guestId: purpose?.guestId,
+        organizationId: purpose?.organizationId,
+        purpose: purpose?.purpose,
+        departmentId: purpose?.departmentId,
+        staffId: purpose?.staffId
+      }
+      return Util?.handleCustonCreateResponse(purpose_data,"Purpose Created Successfully")
     } catch (error) {
       console.log(error)
       return Util?.handleGrpcTryCatchError(Util?.getTryCatchMsg(error));
@@ -204,9 +212,6 @@ export class PurposeService {
           }
         ]
       });
-      // if (!purpose) {
-      //   throw new NotAcceptableException('The Purpose data not exist')
-      // }
       return Util?.handleSuccessRespone(purpose, 'Purpose Data retrieved Successfully')
     } catch (error) {
       console.log(error)
@@ -230,9 +235,6 @@ export class PurposeService {
         return Util?.handleErrorRespone('organization not found');
 
       const purpose = await Purpose.findOne({ where: { purposeId, organizationId: get_org?.organizationId } })
-      if (!purpose) {
-        throw new NotAcceptableException("Purpose Data does not exist")
-      }
       Object.assign(purpose, updatePurposeDto)
       await purpose.save()
       return Util?.SuccessRespone("Purpose Data updated Successfully")
@@ -258,9 +260,6 @@ export class PurposeService {
         return Util?.handleErrorRespone('organization not found');
 
       const purpose = await Purpose.findOne({ where: { purposeId, organizationId: get_org?.organizationId } })
-      if (!purpose) {
-        throw new NotAcceptableException("Purpose Data does not exist")
-      }
       await purpose.destroy()
       return Util?.handleSuccessRespone(Util?.SuccessRespone, "Purpose Data deleted successfully")
     } catch (error) {

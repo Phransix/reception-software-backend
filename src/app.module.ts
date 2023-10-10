@@ -40,7 +40,7 @@ import { AnalyticsModule } from './modules/analytics/analytics.module';
 import { VisitorPerfomanceModule } from './modules/visitor-perfomance/visitor-perfomance.module';
 import { VisitorLogsModule } from './modules/visitor-logs/visitor-logs.module';
 import { VisitorLog } from './modules/visitor-logs/entities/visitor-log.entity';
-import { VisitLogger } from './interceptors/visit-logger.interceptor';
+// import { VisitLogger } from './interceptors/visit-logger.interceptor';
 
 
 
@@ -155,10 +155,10 @@ import { VisitLogger } from './interceptors/visit-logger.interceptor';
       useClass: AtGuard,
     },
 
-    {
-      provide: APP_INTERCEPTOR,
-      useClass: VisitLogger,
-    },
+    // {
+    //   provide: APP_INTERCEPTOR,
+    //   useClass: VisitLogger,
+    // },
     
   ],
 })

@@ -10,12 +10,12 @@ import { AtGuard } from 'src/common/guards';
 import { GetCurrentUserId } from 'src/common/decorators/get-current-user-id.decorator';
 import { guestOpDTO } from 'src/guard/auth/guestOpDTO';
 import { Gender, status } from '../guest/dto/create-guest.dto';
-import { VisitLogger } from 'src/interceptors/visit-logger.interceptor'; 
+// import { VisitLogger } from 'src/interceptors/visit-logger.interceptor'; 
 
 
 
 
-@UseInterceptors(VisitLogger)
+// @UseInterceptors(VisitLogger)
 @Controller('purpose')
 export class PurposeController {
   constructor(private readonly purposeService: PurposeService) { }
