@@ -41,7 +41,8 @@ module.exports = {
       },
 
       departmentRoomNum: {
-        type: Sequelize.STRING
+        type: Sequelize.STRING,
+        allowNull: false,
       },
 
       profilePhoto: {

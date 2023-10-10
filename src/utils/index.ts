@@ -466,8 +466,8 @@ export const  createAccessToken = ({id})  => {
 };
 
 
- export const  generateRefreshToken = ({id})  => {
-  return jwt.sign({organization_Id : id}, process.env.jWT_REFRESH_SECRET, {expiresIn: '30d'});
+ export const  generateRefreshToken = ({userId})  => {
+  return jwt.sign({user_id : userId}, process.env.jWT_REFRESH_SECRET, {expiresIn: '30d'});
 };
 
 

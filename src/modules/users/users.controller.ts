@@ -66,7 +66,7 @@ export class UsersController {
   ) {
     let ErrorCode: number;
     try {
-      let new_user = await this.usersService.create(createUserDto,userId);
+      let new_user = await this.usersService.create(createUserDto, userId);
       if (new_user?.status_code != HttpStatus.CREATED) {
         ErrorCode = new_user?.status_code;
         throw new Error(new_user?.message);
@@ -122,15 +122,11 @@ export class UsersController {
   async findAll(
     @Query('page') page: number,
     @Query('size') size: number,
-   @GetCurrentUserId() userId : string
+    @GetCurrentUserId() userId: string,
   ) {
     let ErrorCode: number;
     try {
-      let userData = await this.usersService?.findAll(
-        page,
-        size,
-        userId,
-      );
+      let userData = await this.usersService?.findAll(page, size, userId);
 
       if (userData?.status_code != HttpStatus.OK) {
         ErrorCode = userData?.status_code;
@@ -337,23 +333,22 @@ export class UsersController {
   @UseGuards(AtGuard)
   @Post('logout')
   async logout(
-    @GetCurrentUserId() userId : string,
+    @GetCurrentUserId() userId: string,
     @Body() logoutDto: LogOutDTO,
-    ) {
+  ) {
     let ErrorCode: number;
     try {
-      const user = await this.usersService.logout(logoutDto,userId);
+      const user = await this.usersService.logout(logoutDto, userId);
       if (user?.status_code != HttpStatus.CREATED) {
         ErrorCode = user?.status_code;
         throw new Error(user?.message);
       }
-      return user
+      return user;
     } catch (error) {
       console.log(error);
       return Util?.handleRequestError(Util?.getTryCatchMsg(error), ErrorCode);
     }
   }
-
 
   // Refresh Token EndPoint
   @ApiTags('Users')
@@ -363,18 +358,59 @@ export class UsersController {
   @Public()
   @UseGuards(AtGuard)
   @Post('refresh/:refreshToken')
-  async refresh(@Param('refreshToken') refreshToken: string) {
+  async refresh(
+    @Param('refreshToken') refreshToken: string,
+    @GetCurrentUserId() userId: string,
+  ) {
     let ErrorCode: number;
     try {
       // Validate the provided refresh token, if invalid, throw an error.
-      // const 
-      
+      const user = await this?.usersService?.decodeRefreshToken(refreshToken,userId)
+       
+    
+      const new_tokens = await this?.usersService?.getTokens
+       
+
+      if (user?.status_code != HttpStatus.CREATED) {
+        ErrorCode = user?.status_code;
+        throw new Error(user?.message);
+      }
+
+      // Return The New Access And Refresh Token
+      return new_tokens;
     } catch (error) {
       console.log(error);
       return Util?.handleRequestError(Util?.getTryCatchMsg(error), ErrorCode);
     }
-
   }
 
+  // Refresh Token EndPoint
+  // @ApiTags('Users')
+  // @UseGuards(AuthGuard('jwt'))
+  // @ApiBearerAuth('defaultBearerAuth')
+  // @ApiOperation({ summary: 'Refresh Access Token' })
+  // @Public()
+  // @UseGuards(AtGuard)
+  // @Post('refresh/:refreshToken')
+  // async refresh(@Param('refreshToken') refreshToken: string) {
+  //   let ErrorCode: number;
+  //   try {
+  //     // Validate the provided refresh token, if invalid, throw an error.
+  //     const user = await this?.usersService?.decodeRefreshToken(refreshToken)
+  //       .id;
+  //     const new_tokens = await this?.usersService?.getTokens(
+  //       user?.organizationId,
+  //       user?.userId,
+  //       user?.email,
+  //       user?.roleName,
+  //     );
+  //     console.log(new_tokens)
+  //     return false
 
+  //     return new_tokens;
+  //   } catch (error) {
+  //     console.log(error);
+  //     return Util?.handleRequestError(Util?.getTryCatchMsg(error), ErrorCode);
+  //   }
+  // }
 }

@@ -118,9 +118,9 @@ export class UsersService {
       if (!user_role) return Util.handleNotFoundResponse();
 
       let tokens = await this?.getTokens(
-        user.userId,
-        user.userId,
-        user.email,
+        user?.organizationId,
+        user?.userId,
+        user?.email,
         user?.roleName,
       );
 
@@ -574,6 +574,7 @@ export class UsersService {
       }),
     ]);
 
+
     return {
       access_token: at,
       refresh_token: rt,
@@ -582,7 +583,53 @@ export class UsersService {
 
 
 
-  
+ async decodeRefreshToken(token:any, userId:string) {
+    try {
+
+      // let user = await this?.userModel.findOne({where:{userId}})
+      // console.log(user?.organizationId)
+      // if(!user)
+      // return Util?.CustomhandleNotFoundResponse('User not found');
+
+      // let newAccess_token =  await this?.getTokens(
+      //     user?.organizationId,
+      //   user?.userId,
+      //   user?.email,
+      //   user?.roleName,
+      // )
+      // console.log(newAccess_token)
+      // return refreshtoken
+
+      await this.jwtService.verify(token);
+      return Util?.handleCreateSuccessRespone('User Created Successfully');
+      // return newAccess_token
+    } catch (error) {
+      throw new UnauthorizedException('Invalid refresh token');
+    }
+  }
+
+
+// decodeRefreshToken(token: string) {
+//   try {
+//     console.log(token)
+//     return this.jwtService.verify(token);
+    
+//   } catch (error) {
+//     throw new UnauthorizedException('Invalid refresh token');
+//   }
+// }
+
+
+
+    
+ 
+
+ 
+
+
+
+
+
 
 
 
