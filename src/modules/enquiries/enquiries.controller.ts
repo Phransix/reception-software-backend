@@ -303,7 +303,6 @@ export class EnquiriesController {
   // Bulk Create
    @UseGuards(AuthGuard('jwt'))
    @ApiBearerAuth('defaultBearerAuth')
-   @Public()
    @UseGuards(AtGuard)
    @ApiOperation({ summary: 'Create Multiple Enquiries' })
    @Public()

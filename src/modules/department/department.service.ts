@@ -366,8 +366,9 @@ export class DepartmentService {
     }
   }
 
-   // Bulk Create Staff
-   async bulkCreateDept(createDepartmentDto: CreateDepartmentDto[],userId:any){
+   // Bulk Create Department
+  
+  async bulkCreateDept(createDepartmentDto: CreateDepartmentDto[],userId:any){
     const t = await this?.sequelize?.transaction()
     try {
       console.log(userId)
@@ -385,6 +386,22 @@ export class DepartmentService {
       return Util?.CustomhandleNotFoundResponse('organization not found');
       }
 
+        // Check for duplicates within the same organization
+    const duplicateDepartmentName = new Set();
+    for (const deptData of createDepartmentDto) {
+      const existingGuest = await Department?.findOne({
+        where: { departmentName: deptData?.departmentName, organizationId: user.organizationId },
+      });
+      if (existingGuest) {
+        duplicateDepartmentName.add(deptData.departmentName); // Add to the Set
+      }
+    }
+
+    if (duplicateDepartmentName.size > 0) {
+      t.rollback(); // Rollback the transaction if duplicate departnment names are found
+      return Util?.handleErrorRespone('Duplicate departnment names within this organization: ' + [...duplicateDepartmentName].join(', '));
+    }
+
       const createBulk = await this?.departmentModel?.bulkCreate( createDepartmentDto, {transaction:t})
       t?.commit()
       console.log(createBulk)
@@ -393,13 +410,11 @@ export class DepartmentService {
         'Departments created successfully.',
       );
     
-
     } catch (error) {
       console.log(error)
       return Util?.handleGrpcTryCatchError(Util?.getTryCatchMsg(error));
     }
   }
-
 
   async findOneByDepartmentName(departmentName: string, ): Promise<Department> {
 
