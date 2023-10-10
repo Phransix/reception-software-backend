@@ -204,9 +204,9 @@ export class PurposeService {
           }
         ]
       });
-      if (!purpose) {
-        throw new NotAcceptableException('The Purpose data not exist')
-      }
+      // if (!purpose) {
+      //   throw new NotAcceptableException('The Purpose data not exist')
+      // }
       return Util?.handleSuccessRespone(purpose, 'Purpose Data retrieved Successfully')
     } catch (error) {
       console.log(error)

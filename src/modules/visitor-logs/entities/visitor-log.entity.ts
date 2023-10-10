@@ -60,10 +60,10 @@ export class VisitorLog extends Model <VisitorLog>{
     @BelongsTo(() => Purpose)
     purpose: Purpose
 
-    @Column({
-        type : DataType.DATE,
-        allowNull: true,
-        defaultValue: null
-      })
-      deletedAt: Date
+    // @Column({
+    //     type : DataType.DATE,
+    //     allowNull: true,
+    //     defaultValue: null
+    //   })
+    //   deletedAt: Date
 }

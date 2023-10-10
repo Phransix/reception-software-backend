@@ -193,19 +193,13 @@ export class DeliveryService {
       const confirmDelivery = await this.DeliveryModel.findOne({
         where: {
           deliveryId,
+          receipientName,
           organizationId: get_org?.organizationId
         }
       })
 
-      const receipient = await this.DeliveryModel.findOne({
-        where: {
-          receipientName
-        }
-      }
-      )
-
-      if (!receipient || !confirmDelivery) {
-        return Util?.handleFailResponse('Receipient Does not exist')
+      if (!confirmDelivery) {
+        return Util?.handleFailResponse('Receipient not found')
       }
 
       let confirmStas = {
