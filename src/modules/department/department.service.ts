@@ -37,7 +37,6 @@ export class DepartmentService {
       if(!get_org)
       return Util?.CustomhandleNotFoundResponse('organization not found');
 
-
       const insertQry ={
         organizationId: createDepartmentDto?.organizationId,
         departmentName: createDepartmentDto?.departmentName,
@@ -402,8 +401,9 @@ export class DepartmentService {
   }
 
 
-  async findOneByorganizationName(departmentName: string): Promise<Department> {
-    return await this.departmentModel.findOne<Department>({ where: { departmentName } })
+  async findOneByDepartmentName(departmentName: string, ): Promise<Department> {
+
+    return await this.departmentModel.findOne<Department>({ where: { departmentName, } })
   }
 
 

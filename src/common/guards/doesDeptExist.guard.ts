@@ -22,7 +22,7 @@ export class DoesDeptExist implements CanActivate {
     const { departmentName, e } = request.body;
 
     const existingDepartmentName =
-      await this.deptService.findOneByorganizationName(departmentName);
+      await this.deptService.findOneByDepartmentName(departmentName);
     if (existingDepartmentName) {
       throw new ForbiddenException('This department name already exists');
     }
