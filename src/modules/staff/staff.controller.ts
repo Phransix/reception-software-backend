@@ -42,12 +42,12 @@ export class StaffController {
   @UseGuards(DoesStaffExist)
   @Post('registerNewStaff')
   async create(
-    @GetCurrentUserId() userId : string,
-    @Body() createStaffDto: CreateStaffDto
-    ) {
+    @GetCurrentUserId() userId: string,
+    @Body() createStaffDto: CreateStaffDto,
+  ) {
     let ErrorCode: number;
     try {
-      let new_data = await this.staffService.create(createStaffDto,userId);
+      let new_data = await this.staffService.create(createStaffDto, userId);
       if (new_data?.status_code != HttpStatus.CREATED) {
         ErrorCode = new_data?.status_code;
         throw new Error(new_data?.message);
@@ -78,16 +78,12 @@ export class StaffController {
   @Get('getAllStaffs')
   async findAll(
     @Query('page') page: number,
-     @Query('size') size: number,
-     @GetCurrentUserId() userId : string
-     ) {
+    @Query('size') size: number,
+    @GetCurrentUserId() userId: string,
+  ) {
     let ErrorCode: number;
     try {
-      let staffData = await this.staffService?.findAll(
-        page, 
-        size,
-        userId
-        );
+      let staffData = await this.staffService?.findAll(page, size, userId);
 
       if (staffData?.status_code != HttpStatus.OK) {
         ErrorCode = staffData?.status_code;
@@ -108,12 +104,12 @@ export class StaffController {
   @UseGuards(AtGuard)
   @Get(':staffId')
   async findOne(
-    @GetCurrentUserId() userId : string,
-    @Param('staffId') staffId: string
-    ) {
+    @GetCurrentUserId() userId: string,
+    @Param('staffId') staffId: string,
+  ) {
     let ErrorCode: number;
     try {
-      let staff_data = await this.staffService?.findOne(staffId,userId);
+      let staff_data = await this.staffService?.findOne(staffId, userId);
       if (staff_data?.status_code != HttpStatus.OK) {
         ErrorCode = staff_data?.status_code;
         throw new Error(staff_data?.message);
@@ -133,7 +129,7 @@ export class StaffController {
   @UseGuards(AtGuard)
   @Patch(':staffId')
   async update(
-    @GetCurrentUserId() userId : string,
+    @GetCurrentUserId() userId: string,
     @Param('staffId') staffId: string,
     @Body() updateStaffDto: UpdateStaffDto,
   ) {
@@ -142,7 +138,7 @@ export class StaffController {
       let staff_update = await this.staffService.update(
         staffId,
         updateStaffDto,
-        userId
+        userId,
       );
       if (staff_update?.status_code != HttpStatus.OK) {
         ErrorCode = staff_update?.status_code;
@@ -163,7 +159,7 @@ export class StaffController {
   @UseGuards(AtGuard)
   @Patch(':staffId/profilePhoto')
   async updateImg(
-    @GetCurrentUserId() userId : string,
+    @GetCurrentUserId() userId: string,
     @Param('staffId') staffId: string,
     @Body() createStaffImgDto: CreateStaffImgDto,
   ) {
@@ -172,7 +168,7 @@ export class StaffController {
       let staff_update = await this.staffService.updateImg(
         staffId,
         createStaffImgDto,
-        userId
+        userId,
       );
       if (staff_update?.status_code != HttpStatus.OK) {
         ErrorCode = staff_update?.status_code;
@@ -193,12 +189,12 @@ export class StaffController {
   @UseGuards(AtGuard)
   @Delete(':staffId')
   async remove(
-    @GetCurrentUserId() userId : string,
-    @Param('staffId') staffId: string
-    ) {
+    @GetCurrentUserId() userId: string,
+    @Param('staffId') staffId: string,
+  ) {
     let ErrorCode: number;
     try {
-      let staff_delete = await this.staffService.remove(staffId,userId);
+      let staff_delete = await this.staffService.remove(staffId, userId);
       if (staff_delete?.status_code != HttpStatus.OK) {
         ErrorCode = staff_delete?.status_code;
         throw new Error(staff_delete?.message);
@@ -224,13 +220,13 @@ export class StaffController {
   @Get('staff/search')
   async searchStaff(
     @Query('keyword') keyword: string,
-    @GetCurrentUserId() userId : string,
-    ) {
+    @GetCurrentUserId() userId: string,
+  ) {
     let ErrorCode: number;
     try {
       let staff_search = await this?.staffService?.searchStaff(
         keyword.charAt(0).toUpperCase(),
-        userId
+        userId,
       );
       if (staff_search?.status_code != HttpStatus.OK) {
         ErrorCode = staff_search?.status_code;
@@ -243,32 +239,31 @@ export class StaffController {
     }
   }
 
-   // Bulk Create
-   @UseGuards(AuthGuard('jwt'))
-   @ApiBearerAuth('defaultBearerAuth')
-   @Public()
-   @UseGuards(AtGuard)
-   @ApiOperation({ summary: 'Create Multiple Staff' })
-   @Public()
-   @UseGuards(DoesStaffExist)
-   @Post('bulkCreateStaff/create')
-   async bulkCreateDept(
-     @Body() createStaffDto: CreateStaffDto[],
-     @GetCurrentUserId() userId: string
-   ) {
-     let ErrorCode: number
-     try {
-       const staff_data = await this.staffService?.bulkCreateStaff( createStaffDto, userId)
-       if (staff_data?.status_code != HttpStatus.CREATED) {
-         ErrorCode = staff_data?.status_code;
-         throw new Error(staff_data?.message)
-       }
-       return staff_data
-     } catch (error) {
-       console.log(error)
-       return Util?.handleRequestError(Util?.getTryCatchMsg(error), ErrorCode)
-     }
-   }
-
-  
+  // Bulk Create
+  @UseGuards(AuthGuard('jwt'))
+  @ApiBearerAuth('defaultBearerAuth')
+  @UseGuards(AtGuard)
+  @ApiOperation({ summary: 'Create Multiple Staffs' })
+  @Public()
+  @Post('bulkCreateStaff/create')
+  async bulkCreateStaff(
+    @Body() createStaffDto: CreateStaffDto[],
+    @GetCurrentUserId() userId: string,
+  ) {
+    let ErrorCode: number;
+    try {
+      const staff_data = await this.staffService?.bulkCreateStaff(
+        createStaffDto,
+        userId,
+      );
+      if (staff_data?.status_code != HttpStatus.CREATED) {
+        ErrorCode = staff_data?.status_code;
+        throw new Error(staff_data?.message);
+      }
+      return staff_data;
+    } catch (error) {
+      console.log(error);
+      return Util?.handleRequestError(Util?.getTryCatchMsg(error), ErrorCode);
+    }
+  }
 }

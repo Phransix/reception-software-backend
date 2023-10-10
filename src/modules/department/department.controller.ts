@@ -245,13 +245,12 @@ export class DepartmentController {
 }
 
   // Bulk Create
+
   @UseGuards(AuthGuard('jwt'))
   @ApiBearerAuth('defaultBearerAuth')
-  @Public()
   @UseGuards(AtGuard)
-  @ApiOperation({ summary: 'Create Multiple Department' })
+  @ApiOperation({ summary: 'Create Multiple Departments' })
   @Public()
-  @UseGuards(DoesDeptExist)
   @Post('bulkCreateDepartment/create')
   async bulkCreateDept(
     @Body() createDepartmentDto: CreateDepartmentDto[],
