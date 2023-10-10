@@ -38,15 +38,15 @@ import { ResetPasswordService } from './helper/ResetPassHelper';
 import { OverviewModule } from './modules/overview/overview.module';
 import { AnalyticsModule } from './modules/analytics/analytics.module';
 import { VisitorPerfomanceModule } from './modules/visitor-perfomance/visitor-perfomance.module';
-import { VisitorLogsModule } from './modules/visitor-logs/visitor-logs.module';
-import { VisitorLog } from './modules/visitor-logs/entities/visitor-log.entity';
+// import { VisitorLogsModule } from './modules/visitor-logs/visitor-logs.module';
+// import { VisitorLog } from './modules/visitor-logs/entities/visitor-log.entity';
 // import { VisitLogger } from './interceptors/visit-logger.interceptor';
 
 
 
 @Module({
   imports: [
-    SequelizeModule.forFeature([User,Role,Organization,VisitorLog]),
+    SequelizeModule.forFeature([User,Role,Organization]),
     BullModule.registerQueue({name:'resetPassword'}),
 
    
@@ -123,7 +123,7 @@ import { VisitorLog } from './modules/visitor-logs/entities/visitor-log.entity';
     OverviewModule,
     AnalyticsModule,
     VisitorPerfomanceModule,
-    VisitorLogsModule,
+    // VisitorLogsModule,
   ],
 
   controllers: [AppController],

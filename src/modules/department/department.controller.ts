@@ -35,7 +35,6 @@ export class DepartmentController {
   constructor(private readonly departmentService: DepartmentService) {}
 
   // Create New Department
-  
   @UseGuards(AuthGuard('jwt'))
   @ApiBearerAuth('defaultBearerAuth')
   @ApiOperation({ summary: 'Create New Department' })
@@ -245,7 +244,6 @@ export class DepartmentController {
 }
 
   // Bulk Create
-
   @UseGuards(AuthGuard('jwt'))
   @ApiBearerAuth('defaultBearerAuth')
   @UseGuards(AtGuard)

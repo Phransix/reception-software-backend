@@ -367,7 +367,6 @@ export class DepartmentService {
   }
 
    // Bulk Create Department
-  
   async bulkCreateDept(createDepartmentDto: CreateDepartmentDto[],userId:any){
     const t = await this?.sequelize?.transaction()
     try {
