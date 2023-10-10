@@ -7,7 +7,6 @@ import { AuthGuard } from '@nestjs/passport';
 import { AtGuard } from 'src/common/guards';
 import { GetCurrentUserId } from 'src/common/decorators/get-current-user-id.decorator';
 
-// @ApiTags('Visitor Logs')
 @Controller('visitor-logs')
 export class VisitorLogsController {
   constructor

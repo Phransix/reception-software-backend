@@ -38,9 +38,7 @@ import { ResetPasswordService } from './helper/ResetPassHelper';
 import { OverviewModule } from './modules/overview/overview.module';
 import { AnalyticsModule } from './modules/analytics/analytics.module';
 import { VisitorPerfomanceModule } from './modules/visitor-perfomance/visitor-perfomance.module';
-// import { VisitorLogsModule } from './modules/visitor-logs/visitor-logs.module';
-// import { VisitorLog } from './modules/visitor-logs/entities/visitor-log.entity';
-// import { VisitLogger } from './interceptors/visit-logger.interceptor';
+import { VisitorLogsModule } from './modules/visitor-logs/visitor-logs.module';
 
 
 
@@ -123,7 +121,7 @@ import { VisitorPerfomanceModule } from './modules/visitor-perfomance/visitor-pe
     OverviewModule,
     AnalyticsModule,
     VisitorPerfomanceModule,
-    // VisitorLogsModule,
+    VisitorLogsModule,
   ],
 
   controllers: [AppController],
@@ -153,12 +151,7 @@ import { VisitorPerfomanceModule } from './modules/visitor-perfomance/visitor-pe
     {
       provide: APP_GUARD,
       useClass: AtGuard,
-    },
-
-    // {
-    //   provide: APP_INTERCEPTOR,
-    //   useClass: VisitLogger,
-    // },
+    }
     
   ],
 })

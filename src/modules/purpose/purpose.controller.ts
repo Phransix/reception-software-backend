@@ -88,6 +88,34 @@ export class PurposeController {
   }
 
 
+    // Get All Purposes Tablet
+    @UseGuards(AuthGuard('jwt'))
+    @ApiBearerAuth('defaultBearerAuth')
+    @Public()
+    @UseGuards(AtGuard)
+    @ApiTags('Purpose')
+    @ApiOperation({ summary: 'Get Purpose - Tablet' })
+    @Get('getAllPurposes/Tablet')
+    async findAllByTablet(
+      @GetCurrentUserId() userId?: string
+    ) {
+      let ErrorCode: number;
+      try {
+        let purposeData = await this.purposeService.findAllPurpose(userId);
+  
+        if (purposeData?.status_code != HttpStatus.OK) {
+          ErrorCode = purposeData?.status_code;
+          throw new Error(purposeData?.message);
+        }
+        return purposeData;
+      } catch (error) {
+        console.log(error);
+        return Util?.handleRequestError(Util?.getTryCatchMsg(error), ErrorCode);
+      }
+  
+    }
+
+
   // Get Purpose By purposeId
   @Public()
   @ApiTags('Purpose')
