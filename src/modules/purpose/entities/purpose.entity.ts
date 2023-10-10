@@ -1,8 +1,9 @@
-import { BelongsTo, Column, DataType, ForeignKey, Model, Table } from "sequelize-typescript";
+import { BelongsTo, Column, DataType, ForeignKey, HasMany, Model, Table } from "sequelize-typescript";
 import { Department } from "src/modules/department/entities/department.entity";
 import { Guest } from "src/modules/guest/entities/guest.entity";
 import { Organization } from "src/modules/organization/entities/organization.entity";
 import { Staff } from "src/modules/staff/entities/staff.entity";
+import { VisitorLog } from "src/modules/visitor-logs/entities/visitor-log.entity";
 const { v4: uuidv4 } = require('uuid');
 
 @Table({
@@ -141,5 +142,8 @@ export class Purpose extends Model <Purpose> {
         defaultValue: false
       })
       isLogOut: boolean;
+
+      @HasMany(() => VisitorLog)
+      visitorLog: VisitorLog[]
 
 }

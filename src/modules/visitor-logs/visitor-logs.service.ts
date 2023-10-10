@@ -4,6 +4,7 @@ import { Organization } from '../organization/entities/organization.entity';
 import { User } from '../users/entities/user.entity';
 import { Sequelize } from 'sequelize-typescript';
 import * as Util from '../../utils/index'
+// import { VisitorLog } from './entities/visitor-log.entity';
 
 @Injectable()
 export class VisitorLogsService {

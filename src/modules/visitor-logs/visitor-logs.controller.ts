@@ -32,7 +32,7 @@ export class VisitorLogsController {
     let ErrorCode: number
 
     try {
-      const modelName = 'Visitlog'
+      const modelName = 'VisitorLog'
       const logsResults = await this.visitorLogsService.saveVisitorLog(modelName, data, userId)
       if (logsResults?.status_code != HttpStatus.CREATED) {
         ErrorCode = logsResults?.status_code;
@@ -44,4 +44,8 @@ export class VisitorLogsController {
       return Util?.handleRequestError(Util?.getTryCatchMsg(error), ErrorCode)
     }
   }
+
+  // Getting logs for a Guest
+  // async getGuestLogs 
+
 }
