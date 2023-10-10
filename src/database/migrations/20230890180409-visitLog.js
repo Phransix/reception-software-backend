@@ -35,18 +35,6 @@ module.exports = {
         },
         onDelete: 'CASCADE'
       },
-      guestId: {
-        type: Sequelize.UUID,
-        defaultValue: Sequelize.UUIDV4,
-        allowNull: false,
-        references: {
-          model:{
-            tableName: 'Guests',
-          },
-          key:'guestId'
-        },
-        onDelete: 'CASCADE'
-      },
       purposeId: {
         type: Sequelize.UUID,
         allowNull: true,
