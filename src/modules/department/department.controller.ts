@@ -245,7 +245,6 @@ export class DepartmentController {
 }
 
   // Bulk Create
-
   @UseGuards(AuthGuard('jwt'))
   @ApiBearerAuth('defaultBearerAuth')
   @UseGuards(AtGuard)
