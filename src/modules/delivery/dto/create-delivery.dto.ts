@@ -39,7 +39,7 @@ export class CreateDeliveryDto {
     readonly from: string;
 
     @ApiProperty({
-        description: 'The receipient ofthe Delivery',
+        description: 'The receipient of the Delivery',
         example: 'Ansah'
     })
     readonly receipientName: string;
@@ -98,5 +98,11 @@ export class CreateDeliveryDto {
     })
     @IsString()
     readonly itemDescription: string;
+
+    @ApiProperty({
+        description: 'The picker of the Delivery',
+        example: 'Ansah'
+    })
+    readonly deliveryPicker: string;
 
 }

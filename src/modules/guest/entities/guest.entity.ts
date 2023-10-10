@@ -1,5 +1,6 @@
-import { BelongsTo, Column, DataType, ForeignKey, Model, Table } from "sequelize-typescript";
+import { BelongsTo, Column, DataType, ForeignKey, HasMany, Model, Table } from "sequelize-typescript";
 import { Organization } from "src/modules/organization/entities/organization.entity";
+import { VisitorLog } from "src/modules/visitor-logs/entities/visitor-log.entity";
 const { v4: uuidv4 } = require('uuid');
 
 @Table({
@@ -77,6 +78,9 @@ export class Guest extends Model<Guest>{
         defaultValue: null
     })
     deletedAt: Date
+
+    @HasMany(() => VisitorLog)
+    visitorLog: VisitorLog[]
 
 
 }

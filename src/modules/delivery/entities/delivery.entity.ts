@@ -104,6 +104,12 @@ export class Delivery extends Model <Delivery> {
     })
     itemDescription: string
 
+    @Column({
+      type: DataType.STRING,
+      allowNull: true
+  })
+  deliveryPicker: string
+
     @Column ({
         type: DataType.DATE,
         allowNull: true,

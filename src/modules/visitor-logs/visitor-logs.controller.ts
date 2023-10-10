@@ -1,4 +1,4 @@
-import { Body, Controller, HttpStatus, Post, UseGuards } from '@nestjs/common';
+import { Body, Controller, Get, HttpStatus, Param, Post, UseGuards } from '@nestjs/common';
 import { VisitorLogsService } from './visitor-logs.service';
 import { ApiBearerAuth, ApiOperation, ApiQuery, ApiTags } from '@nestjs/swagger';
 import { Public } from 'src/common/decorators/public.decorator';
@@ -7,7 +7,7 @@ import { AuthGuard } from '@nestjs/passport';
 import { AtGuard } from 'src/common/guards';
 import { GetCurrentUserId } from 'src/common/decorators/get-current-user-id.decorator';
 
-
+// @ApiTags('Visitor Logs')
 @Controller('visitor-logs')
 export class VisitorLogsController {
   constructor
@@ -46,6 +46,32 @@ export class VisitorLogsController {
   }
 
   // Getting logs for a Guest
-  // async getGuestLogs 
+  @UseGuards(AuthGuard('jwt'))
+  @ApiBearerAuth('defaultBearerAuth')
+  @Public()
+  @UseGuards(AtGuard)
+  @ApiOperation({ summary: 'Get All Visitlogs' })
+  @Public()
+  @ApiTags('Visitor Logs')
+  @Get(':guestId')
+  async logVisitorInfo
+  (
+    @Param('guestId') guestId: string,
+    @GetCurrentUserId() userId: string
+  ) {
+    let ErrorCode: number
+
+    try {
+      const logsResults = await this.visitorLogsService.getGuestLogs(userId,guestId)
+      if (logsResults?.status_code != HttpStatus.CREATED) {
+        ErrorCode = logsResults?.status_code;
+        throw new Error(logsResults?.message)
+      }
+      return logsResults
+    } catch (error) {
+      console.log(error)
+      return Util?.handleRequestError(Util?.getTryCatchMsg(error), ErrorCode)
+    }
+  }
 
 }

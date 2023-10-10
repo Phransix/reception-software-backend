@@ -46,6 +46,40 @@ module.exports = {
         },
         onDelete: 'CASCADE'
       },
+      guestId: {
+        type: Sequelize.UUID,
+        defaultValue: Sequelize.UUIDV4,
+        allowNull: false,
+        references: {
+          model:{
+            tableName: 'Guests',
+          },
+          key:'guestId'
+        },
+        onDelete: 'CASCADE'
+      },
+      departmentId: {
+        type: Sequelize.UUID,
+        allowNull: true,
+        references: {
+          model:{
+            tableName: 'Departments',
+          },
+          key:'departmentId'
+        },
+        onDelete: 'CASCADE'
+      },
+      staffId: {
+        type: Sequelize.UUID,
+        allowNull: true,
+        references: {
+          model:{
+            tableName: 'Staffs',
+          },
+          key:'staffId'
+        },
+        onDelete: 'CASCADE'
+      },
       createdAt: {
         type: Sequelize.DATE,
         allowNull: false,
