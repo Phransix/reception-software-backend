@@ -203,7 +203,8 @@ export class DeliveryService {
       }
 
       let confirmStas = {
-        name: updateDeliveryStatus?.receipientName
+        name: updateDeliveryStatus?.receipientName,
+        picker: updateDeliveryStatus?.deliveryPicker
       }
 
       if (confirmDelivery?.status != 'awaiting_pickup')
@@ -214,6 +215,13 @@ export class DeliveryService {
           deliveryId: confirmDelivery?.deliveryId
         }
       })
+
+      await Delivery.update({ deliveryPicker: updateDeliveryStatus?.deliveryPicker }, {
+        where: {
+          deliveryId: confirmDelivery?.deliveryId
+        }
+      })
+
       return Util?.SuccessRespone('Delivery Confirmation Success')
     } catch (error) {
       console.log(error)

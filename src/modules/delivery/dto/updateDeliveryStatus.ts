@@ -8,4 +8,10 @@ export class UpdateDeliveryStatus {
         example: 'Kofi Amponsah'
     })
     readonly receipientName: string
+
+    @ApiProperty({
+        description: 'The name of the picker',
+        example: 'Kofi Amponsah'
+    })
+    readonly deliveryPicker: string
 }

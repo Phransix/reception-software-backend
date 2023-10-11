@@ -7,6 +7,7 @@ import { Guest } from "src/modules/guest/entities/guest.entity";
 import { Purpose } from "src/modules/purpose/entities/purpose.entity";
 import { Staff } from "src/modules/staff/entities/staff.entity";
 import { User } from "src/modules/users/entities/user.entity";
+import { VisitorLog } from "src/modules/visitor-logs/entities/visitor-log.entity";
 const { v4: uuidv4 } = require('uuid');
 
 @Table({
@@ -99,6 +100,9 @@ export class Organization extends Model<Organization>  {
 
     @HasMany(() => Purpose)
     purpose: Purpose[]
+
+    @HasMany(() => VisitorLog)
+    visitorLog: VisitorLog[]
 
     
   static organizationName: any;

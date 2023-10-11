@@ -3,6 +3,7 @@ import { BelongsTo, Column, DataType, ForeignKey, Table, Model, HasMany } from "
 import { Department } from "src/modules/department/entities/department.entity";
 import { Organization } from "src/modules/organization/entities/organization.entity";
 import { Purpose } from "src/modules/purpose/entities/purpose.entity";
+import { VisitorLog } from "src/modules/visitor-logs/entities/visitor-log.entity";
 const { v4: uuidv4 } = require('uuid');
 
 
@@ -137,4 +138,7 @@ export class Staff extends Model<Staff>{
         allowNull: true
        })
        profilePhoto: string;
+
+       @HasMany(() => VisitorLog)
+       visitorLog: VisitorLog[]
 }

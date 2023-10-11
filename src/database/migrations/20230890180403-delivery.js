@@ -82,6 +82,10 @@ module.exports = {
           isIn: [['delivered', 'awaiting_pickup']]
         }
       },
+      deliveryPicker: {
+        type: Sequelize.STRING,
+        allowNull: true
+      },
       createdAt: {
         type: Sequelize.DATE,
         allowNull: false,

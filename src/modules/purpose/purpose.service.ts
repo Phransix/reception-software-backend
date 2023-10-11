@@ -154,6 +154,90 @@ export class PurposeService {
     }
   }
 
+
+    // Get All Purposes Tablet
+    async findAllPurpose(userId: string) {
+      try {
+  
+        console.log(userId)
+  
+        let user = await this?.UserModel.findOne({ where: { userId } })
+        console.log(user?.organizationId)
+        if (!user)
+          return Util?.handleErrorRespone('User not found');
+        let get_org = await this?.OrgModel.findOne({ where: { organizationId: user?.organizationId } })
+  
+        if (!get_org)
+          return Util?.handleErrorRespone('organization not found');
+  
+        const allQueries = await Purpose.findAll({
+          where: {
+            organizationId: get_org?.organizationId
+          },
+          attributes: { exclude: ['updatedAt', 'deletedAt'] },
+          include: [
+            {
+              model: Guest,
+              attributes: {
+                exclude: [
+                  'id',
+                  'guestId',
+                  'organizationId',
+                  'createdAt',
+                  'updatedAt',
+                  'deletedAt'
+                ]
+              },
+              order: [['id', 'DESC']],
+              as: 'guestData'
+            },
+            {
+              model: Department,
+              attributes: {
+                exclude: [
+                  'id',
+                  'organizationId',
+                  'departmentId',
+                  'createdAt',
+                  'updatedAt',
+                  'deletedAt'
+                ]
+              },
+              order: [['id', 'DESC']],
+              as: 'departmentData'
+            },
+            {
+              model: Staff,
+              attributes: {
+                exclude: [
+                  'id',
+                  'departmentId',
+                  'organizationId',
+                  'staffId',
+                  'organizationName',
+                  'departmentName',
+                  'createdAt',
+                  'updatedAt',
+                  'deletedAt'
+                ]
+              },
+              order: [['id', 'DESC']],
+              as: 'staffData'
+            }
+          ]
+        });
+  
+        return Util?.handleSuccessRespone(
+          allQueries,
+          'Purpose Data retrieved successfully.',
+        );
+      } catch (error) {
+        console.log(error);
+        return Util?.handleGrpcTryCatchError(Util?.getTryCatchMsg(error));
+      }
+    }
+
+
   // Get Purpose By purposeId
   async findOne(purposeId: string, userId: string) {
     try {
