@@ -584,13 +584,10 @@ export class PurposeService {
       });
       const cCode = await this.GuestModel.findOne({
         where: {
-          countryCode,
+          countryCode: countryCode,
           organizationId: get_org?.organizationId
         }
       })
-
-      if (!guest)
-        return Util?.handleFailResponse('Guest not found')
 
       if (!cCode || !guest)
         return Util?.handleFailResponse('Invalid phone number or country code')
@@ -652,16 +649,13 @@ export class PurposeService {
       });
       const cCode = await this.GuestModel.findOne({
         where: {
-          countryCode,
+          countryCode: countryCode,
           organizationId: get_org?.organizationId
         }
       }
       )
 
       const currentTime = new Date().toLocaleTimeString();
-
-      if (!guest)
-        return Util?.handleFailResponse('Guest not found')
 
       if (!cCode || !guest)
         return Util?.handleFailResponse('Invalid phone number or country code')
@@ -725,25 +719,25 @@ export class PurposeService {
         filter = { visitStatus: keyword }
       }
 
-      const getSingedInCount = await this.PurposeModel.count({
+      const getSignedInCount = await this.PurposeModel.count({
         where: {
           visitStatus: 'Signed In',
           organizationId: get_org?.organizationId
         },
       });
 
-      const getSingedOutCount = await this.PurposeModel.count({
+      const getSignedOutCount = await this.PurposeModel.count({
         where: {
           visitStatus: 'Signed Out',
           organizationId: get_org?.organizationId
         },
       });
 
-      const total = Number(getSingedInCount) + Number(getSingedOutCount)
+      const total = Number(getSignedInCount) + Number(getSignedOutCount)
 
       filter = {
-        signed_in: Number(getSingedInCount),
-        signed_out: Number(getSingedOutCount),
+        signed_in: Number(getSignedInCount),
+        signed_out: Number(getSignedOutCount),
         total: total
       }
 
