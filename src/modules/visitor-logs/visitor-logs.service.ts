@@ -148,4 +148,97 @@ export class VisitorLogsService {
     }
 
   }
+
+      // Filter by Official and Personal Visits count for logs
+      async guestPurposeCount( guestId: string,  userId: string, keyword: string) {
+        try {
+    
+          console.log(userId)
+          let user = await this?.UserModel.findOne({ where: { userId } })
+          console.log(user?.organizationId)
+          if (!user)
+            return Util?.handleErrorRespone('User not found');
+    
+          let get_org = await this?.OrgModel.findOne({ where: { organizationId: user?.organizationId } })
+    
+          if (!get_org)
+            return Util?.handleErrorRespone('organization not found');
+    
+          let filter = {}
+    
+          if (keyword != null) {
+            filter = { purpose: keyword }
+          }
+  
+          const purposeLog = await this.VisitlogModel.findOne({
+            where:{
+              guestId
+            }
+          })
+    
+          const getOfficialCount = await this.VisitlogModel.count({
+            include: [
+              {
+                model: Purpose,
+                attributes: {
+                  exclude: [
+                    'id',
+                    'guestId',
+                    'organizationId',
+                    'departmentId',
+                    'staffId',
+                    'updatedAt',
+                    'deletedAt'
+                  ]
+                },
+                order: [['id', 'DESC']],
+                as: 'purposeData',
+                where: {
+                  purpose: 'official',
+                  guestId: purposeLog?.guestId,
+                  organizationId: get_org?.organizationId
+                },
+              }
+            ]
+          });
+    
+          const getPersonalCount = await this.VisitlogModel.count({
+            include: [
+              {
+                model: Purpose,
+                attributes: {
+                  exclude: [
+                    'id',
+                    'guestId',
+                    'organizationId',
+                    'departmentId',
+                    'staffId',
+                    'updatedAt',
+                    'deletedAt'
+                  ]
+                },
+                order: [['id', 'DESC']],
+                as: 'purposeData',
+                where: {
+                  purpose: 'personal',
+                  guestId: purposeLog?.guestId,
+                  organizationId: get_org?.organizationId
+                },
+              }
+            ]
+          });
+    
+          const total = Number(getOfficialCount) + Number(getPersonalCount)
+    
+          filter = {
+            official: Number(getOfficialCount),
+            personal: Number(getPersonalCount),
+            total: total
+          }
+          return Util?.handleSuccessRespone(filter, "Purpose Data retrieved Successfully")
+        } catch (error) {
+          console.log(error)
+          return Util?.handleGrpcReqError(Util?.getTryCatchMsg(error))
+        }
+      }
 }
