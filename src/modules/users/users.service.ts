@@ -1,10 +1,6 @@
 import {
   BadRequestException,
-  ForbiddenException,
-  HttpException,
-  HttpStatus,
   Injectable,
-  NotFoundException,
   UnauthorizedException,
 } from '@nestjs/common';
 import { CreateUserDto } from './dto/create-user.dto';
@@ -23,16 +19,13 @@ import { imageUploadProfile } from 'src/helper/usersProfile';
 import { CreateUserImgDto } from './dto/create-userImg.dto';
 const fs = require('fs');
 import { Sequelize } from 'sequelize-typescript';
-import { query } from 'express';
-import { where } from 'sequelize';
 import {
   ForgotPasswordDto,
   ResetPasswordDto,
 } from '../organization/dto/create-organization.dto';
 import { ResetPasswordService } from 'src/helper/ResetPassHelper';
-import { log } from 'console';
 import { LogOutDTO } from 'src/guard/auth/logoutDto';
-import { UsersModule } from './users.module';
+
 
 @Injectable()
 export class UsersService {
@@ -69,7 +62,7 @@ export class UsersService {
         fullName: createUserDto?.fullName,
         email: createUserDto?.email,
         phoneNumber: createUserDto?.phoneNumber,
-        // profilePhoto: createUserDto?.profilePhoto,
+        
         password: hash,
       };
 
