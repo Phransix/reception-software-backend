@@ -240,13 +240,13 @@ export class GuestService {
       const { phoneNumber, countryCode } = guestOpDTO
       const guestNo = await this.GuestModel.findOne({
         where: {
-          phoneNumber,
+          phoneNumber: phoneNumber,
           organizationId: get_org?.organizationId
         }
       })
       const cCode = await this.GuestModel.findOne({
         where: {
-          countryCode,
+          countryCode: countryCode,
           organizationId: get_org?.organizationId
         }
       })
