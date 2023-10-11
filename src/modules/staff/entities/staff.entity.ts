@@ -55,7 +55,7 @@ export class Staff extends Model<Staff> {
     as: 'Organization',
   })
   organization: Organization;
-
+  
   @Column({
     type: DataType.STRING,
     allowNull: true,
