@@ -7,10 +7,8 @@ import {
   Param,
   Delete,
   UseGuards,
-  HttpException,
   HttpStatus,
   Query,
-  UnauthorizedException,
 } from '@nestjs/common';
 import { UsersService } from './users.service';
 import { CreateUserDto } from './dto/create-user.dto';
@@ -38,10 +36,8 @@ import {
   ForgotPasswordDto,
   ResetPasswordDto,
 } from '../organization/dto/create-organization.dto';
-// import { RolesGuard } from 'src/common/guards/roles.guard';
 import { LogOutDTO } from 'src/guard/auth/logoutDto';
-// import * as jwt from 'jsonwebtoken';
-// import { log } from 'console';
+
 
 @ApiTags('Users')
 @Controller('users')
