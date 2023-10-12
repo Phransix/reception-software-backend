@@ -228,7 +228,7 @@ export class DeliveryController {
   })
   @UseGuards(AtGuard)
   @ApiTags('Delivery')
-  @Get('enquiry/filterEnquiry')
+  @Get('filter/filterDelivery')
   async findDeliveryByDateRange(
     @Query('startDate') startDate: Date,
     @Query('endDate') endDate: Date,

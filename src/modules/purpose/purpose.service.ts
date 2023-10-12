@@ -389,62 +389,6 @@ export class PurposeService {
     }
   }
 
-    // Filter by Official and Personal Visits count for logs
-    // async guestPurposeCount( guestId: string,  userId: string, keyword: string) {
-    //   try {
-  
-    //     console.log(userId)
-    //     let user = await this?.UserModel.findOne({ where: { userId } })
-    //     console.log(user?.organizationId)
-    //     if (!user)
-    //       return Util?.handleErrorRespone('User not found');
-  
-    //     let get_org = await this?.OrgModel.findOne({ where: { organizationId: user?.organizationId } })
-  
-    //     if (!get_org)
-    //       return Util?.handleErrorRespone('organization not found');
-  
-    //     let filter = {}
-  
-    //     if (keyword != null) {
-    //       filter = { purpose: keyword }
-    //     }
-
-    //     const purposeLog = await this.PurposeModel.findOne({
-    //       where:{
-    //         guestId
-    //       }
-    //     })
-  
-    //     const getOfficialCount = await this.PurposeModel.count({
-    //       where: {
-    //         purpose: 'official',
-    //         guestId: purposeLog?.guestId,
-    //         organizationId: get_org?.organizationId
-    //       },
-    //     });
-  
-    //     const getPersonalCount = await this.PurposeModel.count({
-    //       where: {
-    //         purpose: 'personal',
-    //         guestId: purposeLog?.guestId,
-    //         organizationId: get_org?.organizationId
-    //       },
-    //     });
-  
-    //     const total = Number(getOfficialCount) + Number(getPersonalCount)
-  
-    //     filter = {
-    //       official: Number(getOfficialCount),
-    //       personal: Number(getPersonalCount),
-    //       total: total
-    //     }
-    //     return Util?.handleSuccessRespone(filter, "Purpose Data retrieved Successfully")
-    //   } catch (error) {
-    //     console.log(error)
-    //     return Util?.handleGrpcReqError(Util?.getTryCatchMsg(error))
-    //   }
-    // }
 
   // Filter By Date Range
   async findByDateRange(startDate: Date, endDate: Date, userId: string) {
@@ -635,36 +579,32 @@ export class PurposeService {
       const { countryCode, phoneNumber } = guestOpDTO
       const guest = await this.GuestModel.findOne({
         where: {
+          countryCode: countryCode,
           phoneNumber: phoneNumber,
           organizationId: get_org?.organizationId
         }
       });
-      const cCode = await this.GuestModel.findOne({
-        where: {
-          countryCode: countryCode,
-          organizationId: get_org?.organizationId
-        }
-      })
 
-      if (!cCode || !guest)
+      if (!guest)
         return Util?.handleFailResponse('Invalid phone number or country code')
 
-      const purpose = await this.PurposeModel.findOne(
-        {
-          where: {
-            guestId: guest?.guestId
-          }
-        });
+        const purpose = await this.PurposeModel.findOne(
+          {
+            where: {
+              guestId: guest?.guestId
+            },
+            order: [['createdAt', 'DESC']]
+          });
+    
 
       // Checking if guest is signed In
       if (purpose?.isLogOut != false) {
         return Util?.handleFailResponse('Guest logged Out')
       };
 
-      // const currentTime = new Date().toLocaleTimeString();
-
       let guest_data = {
         guestId: guest?.guestId,
+        purposeId: purpose?.purposeId,
         firstName: guest?.firstName,
         lastname: guest?.lastName,
         gender: guest?.gender,
@@ -685,7 +625,7 @@ export class PurposeService {
   }
 
   // Confirm Guest Signout
-  async guestConfirmSignOut(guestOpDTO: guestOpDTO, userId: any) {
+  async guestConfirmSignOut(guestOpDTO: guestOpDTO, userId: any, purposeId: string) {
     try {
 
       let user = await this?.UserModel.findOne({ where: { userId } })
@@ -700,41 +640,38 @@ export class PurposeService {
       const { countryCode, phoneNumber } = guestOpDTO
       const guest = await this.GuestModel.findOne({
         where: {
+          countryCode: countryCode,
           phoneNumber: phoneNumber,
           organizationId: get_org?.organizationId
         }
       });
-      const cCode = await this.GuestModel.findOne({
-        where: {
-          countryCode: countryCode,
-          organizationId: get_org?.organizationId
-        }
-      }
-      )
 
       const currentTime = new Date().toLocaleTimeString();
 
-      if (!cCode || !guest)
+      if (!guest)
         return Util?.handleFailResponse('Invalid phone number or country code')
 
       const purpose = await this.PurposeModel.findOne(
         {
           where: {
-            guestId: guest?.guestId
-          }
+            purposeId
+          },
+          order: [['createdAt', 'DESC']]
         });
 
       await Purpose.update({ isLogOut: true },
-        { where: { guestId: guest?.guestId } }
+        { 
+          where: {
+            purposeId
+          }
+         }
       )
       await Purpose.update({ visitStatus: 'Signed Out' },
-        { where: { guestId: guest?.guestId } }
+        { where: {purposeId} }
       )
       await Purpose.update({ signOutTime: currentTime },
-        { where: { guestId: guest?.guestId } }
+        { where: {purposeId} }
       )
-
-      console.log(phoneNumber);
 
       let guest_data = {
         guestId: guest?.guestId,

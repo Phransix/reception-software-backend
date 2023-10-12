@@ -229,39 +229,6 @@ export class PurposeController {
     }
   }
 
-
-  // Serch and filter by purpose of visit for logs
-  // @UseGuards(AuthGuard('jwt'))
-  // @ApiBearerAuth('defaultBearerAuth')
-  // @ApiQuery({
-  //   name: 'keyword',
-  //   enum: visitPurpose,
-  //   required: false
-  // })
-  // @Public()
-  // @UseGuards(AtGuard)
-  // @ApiTags('Purpose')
-  // @ApiOperation({ summary: 'Filter Purpose Count For Logs' })
-  // @Get(':guestId')
-  // async purposeFilterCount(
-  //   @Param('guestId') guestId: string,
-  //   @GetCurrentUserId() userId: string,
-  //   @Query('keyword') keyword: string
-  // ) {
-  //   let ErrorCode: number
-  //   try {
-  //     const purpose = await this.purposeService.guestPurposeCount(guestId, userId, keyword);
-  //     if (purpose && 'status_code' in purpose && purpose.status_code !== HttpStatus.OK) {
-  //       ErrorCode = purpose?.status_code;
-  //       throw new Error(purpose?.message)
-  //     }
-  //     return purpose
-  //   } catch (error) {
-  //     console.log(error)
-  //     return Util?.handleRequestError(Util?.getTryCatchMsg(error), ErrorCode)
-  //   }
-  // }
-
   // Search guest by custom range
   @UseGuards(AuthGuard('jwt'))
   @ApiBearerAuth('defaultBearerAuth')
@@ -366,14 +333,15 @@ export class PurposeController {
   @UseGuards(AtGuard)
   @ApiTags('Purpose')
   @ApiOperation({ summary: 'Confirm Guest Sign Out' })
-  @Post('guestConfirmSignOut')
+  @Post(':purposeId')
   async signOutConfirm(
     @Body() guestOpDTO: guestOpDTO,
+    @Param ('purposeId') purposeId: string,
     @GetCurrentUserId() userId: string
   ) {
     let ErrorCode: number
     try {
-      const purpose = await this.purposeService.guestConfirmSignOut(guestOpDTO, userId)
+      const purpose = await this.purposeService.guestConfirmSignOut(guestOpDTO, userId,purposeId)
       if (purpose?.status_code != HttpStatus.CREATED) {
         ErrorCode = purpose?.status_code;
         throw new Error(purpose?.message)
