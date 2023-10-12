@@ -551,7 +551,7 @@ export class UsersService {
       sub: user_id,
       email: email,
       scopes: role,
-      role: role,
+      roleName: role,
     };
 
     const [at, rt] = await Promise.all([

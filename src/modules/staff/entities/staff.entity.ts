@@ -83,7 +83,8 @@ export class Staff extends Model<Staff> {
     as: 'Department',
   })
   department: Department;
-
+ 
+  
   @Column({
     type: DataType.STRING,
     allowNull: false,

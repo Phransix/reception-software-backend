@@ -39,6 +39,8 @@ import { OverviewModule } from './modules/overview/overview.module';
 import { AnalyticsModule } from './modules/analytics/analytics.module';
 import { VisitorPerfomanceModule } from './modules/visitor-perfomance/visitor-perfomance.module';
 import { VisitorLogsModule } from './modules/visitor-logs/visitor-logs.module';
+import { ChatGateway } from './chat/chat.gateway';
+;
 
 
 
@@ -127,8 +129,6 @@ import { VisitorLogsModule } from './modules/visitor-logs/visitor-logs.module';
   controllers: [AppController],
   providers: [
    
-    
-   
     UsersService,
     AuthPassService,
     PasswordService,
@@ -151,7 +151,8 @@ import { VisitorLogsModule } from './modules/visitor-logs/visitor-logs.module';
     {
       provide: APP_GUARD,
       useClass: AtGuard,
-    }
+    },
+    ChatGateway
     
   ],
 })
