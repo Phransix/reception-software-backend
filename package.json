@@ -37,6 +37,7 @@
     "@nestjs/jwt": "^10.1.0",
     "@nestjs/passport": "^9.0.3",
     "@nestjs/platform-express": "^9.0.0",
+    "@nestjs/platform-socket.io": "^10.2.7",
     "@nestjs/sequelize": "^9.0.0",
     "@types/uuid": "^8.3.4",
     "argon2": "^0.30.3",
@@ -82,6 +83,7 @@
     "uuid": "^8.3.2",
     "validate-date": "^2.0.0",
     "validator": "^13.9.0",
+    "@nestjs/websockets": "10.2.6",
     "yarn": "^1.22.19"
   },
   "devDependencies": {
