@@ -660,11 +660,7 @@ export class PurposeService {
         });
 
       await Purpose.update({ isLogOut: true },
-        { 
-          where: {
-            purposeId
-          }
-         }
+        { where: {purposeId} }
       )
       await Purpose.update({ visitStatus: 'Signed Out' },
         { where: {purposeId} }
