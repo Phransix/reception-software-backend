@@ -23,6 +23,7 @@
 
 
 
+import { Logger } from '@nestjs/common';
 import {
     WebSocketGateway,
     WebSocketServer,
@@ -36,6 +37,14 @@ import {
   export class ChatGateway implements OnGatewayConnection, OnGatewayDisconnect {
     @WebSocketServer() server: Server;
     users: number = 0;
+
+
+    private logger: Logger = new Logger('ChatGateway')
+
+    afterConnection(sever:any){
+        this?.logger.log('Initialized')
+    }
+
   
     async handleConnection() {
       // A client has connected
@@ -56,5 +65,7 @@ import {
     @SubscribeMessage('chat')
     async onChat(client: Socket, message: string) {
       client.broadcast.emit('message', `chat: ${message}`);
+    //   return message
     }
+
   }
