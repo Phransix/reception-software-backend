@@ -11,7 +11,7 @@ import { ValidationPipe } from '@nestjs/common';
 
 async function bootstrap() {
 
-  const app = await NestFactory.create<NestExpressApplication>(AppModule);
+  const app = await NestFactory.create<NestExpressApplication>(AppModule, {cors:true});
   app.enableCors();
 
   app.useGlobalPipes(
@@ -40,5 +40,7 @@ const configService = app.get(ConfigService);
   // app.useLogger(app.get(Logger));
   await app.listen(process.env.PORT);
   console.log(`Application is running on: ${await app.getUrl()}`);
+
+
 }
 bootstrap();
