@@ -39,11 +39,11 @@ import {
     users: number = 0;
 
 
-    private logger: Logger = new Logger('ChatGateway')
+    // private logger: Logger = new Logger('ChatGateway')
 
-    afterConnection(sever:any){
-        this?.logger.log('Initialized')
-    }
+    // afterConnection(sever:any){
+    //     this?.logger.log('Initialized')
+    // }
 
   
     async handleConnection() {
