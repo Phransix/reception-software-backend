@@ -6,15 +6,14 @@ import { urlencoded, json } from 'express';
 import { join } from 'path';
 import { ConfigService } from '@nestjs/config';
 import { ValidationPipe } from '@nestjs/common';
-// import { HttpExceptionFilter } from 'src/filters/http-exception.filter';
 
 
 async function bootstrap() {
 
-  const app = await NestFactory.create<NestExpressApplication>(AppModule,);
+  const app = await NestFactory.create<NestExpressApplication>(AppModule);
   app.enableCors({
-    allowedHeaders: ['conten-type'],
-    origin: 'http://localhost:3000',
+    allowedHeaders: '*',
+    origin: '*',
     credentials: true
   });
 
