@@ -238,28 +238,24 @@ export class GuestService {
         return Util?.handleErrorRespone('organization not found');
 
       const { phoneNumber, countryCode } = guestOpDTO
-      const guestNo = await this.GuestModel.findOne({
+      const guest = await this.GuestModel.findOne({
         where: {
+          countryCode: countryCode,
           phoneNumber: phoneNumber,
           organizationId: get_org?.organizationId
         }
       })
-      const cCode = await this.GuestModel.findOne({
-        where: {
-          countryCode: countryCode,
-          organizationId: get_org?.organizationId
-        }
-      })
+
       let guest_data = {
-        guestId: guestNo?.guestId,
-        firstName: guestNo?.firstName,
-        lastname: guestNo?.lastName,
-        gender: guestNo?.gender,
-        countryCode: guestNo?.countryCode,
-        phoneNumber: guestNo?.phoneNumber
+        guestId: guest?.guestId,
+        firstName: guest?.firstName,
+        lastname: guest?.lastName,
+        gender: guest?.gender,
+        countryCode: guest?.countryCode,
+        phoneNumber: guest?.phoneNumber
       }
 
-      if (!guestNo || !cCode) {
+      if (!guest) {
         return Util?.handleFailResponse('Invalid phone number or country code')
       }
 
