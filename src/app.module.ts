@@ -156,25 +156,4 @@ import { ChatGateway } from './chat/chat.gateway';
     
   ],
 })
-export class AppModule {
-  // constructor(){
-  //   // Enable CORS for routes
-  //   this?.configureCORS()
-  // }
-
-  // configureCORS(){
-  //   const allowedOrigins = ['http://localhost:3000','http://192.168.100.187:3000']
-
-  //   const corsOptions = {
-  //     origin: (origin, callback) => {
-  //       if (!origin || allowedOrigins.indexOf(origin) !== -1) {
-  //         callback(null, true);
-  //       } else {
-  //         callback(new Error('Not allowed by CORS'));
-  //       }
-  //     },
-  //   };
-
-  //   this.app.enablecors(corsOptions);
-  // }
-}
+export class AppModule {}

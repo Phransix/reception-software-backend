@@ -33,16 +33,11 @@ import {
   } from '@nestjs/websockets';
   import { Server, Socket } from 'socket.io';
 
-  @WebSocketGateway({
-    path:"/api/v1/ws",
-    serveClients: false,
-    cors:{origin:`*`}
-  })
+  @WebSocketGateway()
 
   export class ChatGateway implements OnGatewayConnection, OnGatewayDisconnect {
     @WebSocketServer() server: Server;
     users: number = 0;
-
 
   
     async handleConnection() {
