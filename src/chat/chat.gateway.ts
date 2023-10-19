@@ -23,41 +23,50 @@
 
 import { Logger } from '@nestjs/common';
 import {
-    WebSocketGateway,
-    WebSocketServer,
-    SubscribeMessage,
-    OnGatewayConnection,
-    OnGatewayDisconnect,
-  } from '@nestjs/websockets';
-  import { Server, Socket } from 'socket.io';
+  WebSocketGateway,
+  WebSocketServer,
+  OnGatewayConnection,
+  OnGatewayDisconnect,
+  SubscribeMessage,
+  MessageBody,
+} from '@nestjs/websockets';
+import { Server, Socket } from 'socket.io';
 
-  @WebSocketGateway()
+@WebSocketGateway({
+  cors: {
+    origin: '*',
+  },
+})
+export class ChatGateway implements OnGatewayConnection, OnGatewayDisconnect {
+  @WebSocketServer()
+  server: Server;
 
-  export class ChatGateway implements OnGatewayConnection, OnGatewayDisconnect {
-    @WebSocketServer() server: Server;
-    users: number = 0;
-
-  
-    async handleConnection() {
-      // A client has connected
-      this.users++;
-  
-      // Notify connected clients of current users
-      this.server.emit('message', `Users ${this.users} connected.`);
-    }
-  
-    async handleDisconnect() {
-      // A client has disconnected
-      this.users--;
-  
-      // Notify connected clients of current users
-      this.server.emit('message', `Users ${this.users} disconnected.`);
-    }
-  
-    @SubscribeMessage('chat')
-    async onChat(client: Socket, message: string) {
-      client.broadcast.emit('message', `chat: ${message}`);
-    //   return message
-    }
-
+  // Client Connection
+  async handleConnection(client: Socket) {
+    console.log(`client id: ${client?.id}`);
+    this.server.emit('message', `User ${client.id} connected.`);
+    console.log('connected');
   }
+
+  // Client Disconnection
+  handleDisconnect(client: Socket) {
+    console.log(`client id: ${client.id}`);
+    this.server.emit('message', `User ${client.id} disconnected.`);
+    console.log('disconnected');
+  }
+
+  // Chat Messgaes
+  @SubscribeMessage('newMessage')
+  onNewMessage(@MessageBody() body: any) {
+    console.log(body);
+    this.server.emit('new_notification', {
+     data:{
+      type: 'Sign In',
+      uniqueId: '15d86ff1-94ec-468b-9e47-3f4e666cc876',
+      name: 'John Doe',
+      time: '1:20 pm',
+     }
+    });
+    
+  }
+}
