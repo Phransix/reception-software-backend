@@ -806,5 +806,50 @@ export class PurposeService {
     }
   }
 
+  // Bulk Purpose Update
+  async bulkPurposeUpdate(data: any[], userId: any) {
+    const t = await this.sequelize.transaction();
+  
+    try {
+      console.log(userId);
+      let user = await this?.UserModel.findOne({ where: { userId } });
+      console.log(user?.organizationId);
+  
+      if (!user) {
+        t.rollback();
+        return Util?.handleErrorRespone('User not found');
+      }
+  
+      let get_org = await this?.OrgModel.findOne({ where: { organizationId: user?.organizationId } });
+  
+      if (!get_org) {
+        t.rollback();
+        return Util?.handleErrorRespone('Organization not found');
+      }
+  
+      // Create an array of update promises
+      const updatePromises = data.map(async (update) => {
+        return this.PurposeModel.update(
+          update,
+          {
+            where: {
+              purposeId: update.purposeId,
+            },
+            transaction: t,
+          }
+        );
+      });
+  
+      // Execute all update promises
+      await Promise.all(updatePromises);
+  
+      t.commit();
+      return Util?.handleCreateSuccessRespone('Purposes Updated Successfully');
+    } catch (error) {
+      console.log(error);
+      return Util?.handleGrpcTryCatchError(Util?.getTryCatchMsg(error));
+    }
+  }
+
 }
 

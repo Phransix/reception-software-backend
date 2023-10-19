@@ -1,4 +1,4 @@
-import { Controller, Get, Post, Body, Patch, Param, Delete, UseGuards, Query, HttpStatus, UseInterceptors } from '@nestjs/common';
+import { Controller, Get, Post, Body, Patch, Param, Delete, UseGuards, Query, HttpStatus, UseInterceptors, Put } from '@nestjs/common';
 import { PurposeService } from './purpose.service';
 import { CreatePurposeDto, visitPurpose } from './dto/create-purpose.dto';
 import { UpdatePurposeDto } from './dto/update-purpose.dto';
@@ -445,5 +445,32 @@ export class PurposeController {
         }
       }
 
+      // Bulk Purpose Update
+      @UseGuards(AuthGuard('jwt'))
+      @ApiBearerAuth('defaultBearerAuth')
+      @Public()
+      @UseGuards(AtGuard)
+      @ApiOperation({ summary: 'Update Multiple Purposes' })
+      @Public()
+      @ApiTags('Purpose')
+      @Patch('bulkPurposeCreate/update')
+      async buklUpdatePurpose(
+        @Body() data: any[],
+        @GetCurrentUserId() userId: string
+      )
+      {
+        let ErrorCode: number
+        try {
+          const purposeUpdate = await this.purposeService.bulkPurposeUpdate(data, userId)
+          if (purposeUpdate?.status_code != HttpStatus.CREATED) {
+            ErrorCode = purposeUpdate?.status_code;
+            throw new Error(purposeUpdate?.message)
+          }
+          return purposeUpdate
+        } catch (error) {
+          console.log(error)
+          return Util?.handleRequestError(Util?.getTryCatchMsg(error), ErrorCode)
+        }
+      }
 
 }
