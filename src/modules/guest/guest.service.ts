@@ -35,9 +35,13 @@ export class GuestService {
 
       if (!get_org)
         return Util?.handleErrorRespone('organization not found');
-
+      
+      // Checking if there's a guest with an existing phone number in the database
         const existingGuest = await this.GuestModel.findOne({
-          where: { phoneNumber: createGuestDto.phoneNumber, organizationId: get_org?.organizationId },
+          where: { 
+            countryCode: createGuestDto.countryCode,
+            phoneNumber: createGuestDto.phoneNumber, 
+            organizationId: get_org?.organizationId },
         });
     
         if (existingGuest) {
@@ -360,11 +364,15 @@ export class GuestService {
     // Check for duplicates within the same organization
     const duplicatePhoneNumbers = new Set();
     for (const guestData of data) {
+      const phoneNumberWithCountryCode = `${guestData.countryCode}${guestData.phoneNumber}`
       const existingGuest = await myModel.findOne({
-        where: { phoneNumber: guestData.phoneNumber, organizationId: user.organizationId },
+        where: { 
+          phoneNumber: phoneNumberWithCountryCode, 
+          organizationId: user.organizationId 
+        },
       });
       if (existingGuest) {
-        duplicatePhoneNumbers.add(guestData.phoneNumber); // Add to the Set
+        duplicatePhoneNumbers.add(phoneNumberWithCountryCode); // Add to the Set
       }
     }
 

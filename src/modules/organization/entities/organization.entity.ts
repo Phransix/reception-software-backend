@@ -4,6 +4,7 @@ import { Delivery } from "src/modules/delivery/entities/delivery.entity";
 import { Department } from "src/modules/department/entities/department.entity";
 import { Enquiry } from "src/modules/enquiries/entities/enquiry.entity";
 import { Guest } from "src/modules/guest/entities/guest.entity";
+import { Notification } from "src/modules/notification/entities/notification.entity";
 import { Purpose } from "src/modules/purpose/entities/purpose.entity";
 import { Staff } from "src/modules/staff/entities/staff.entity";
 import { User } from "src/modules/users/entities/user.entity";
@@ -103,6 +104,9 @@ export class Organization extends Model<Organization>  {
 
     @HasMany(() => VisitorLog)
     visitorLog: VisitorLog[]
+
+    @HasMany(() => Notification)
+    notification: Notification[]
 
     
   static organizationName: any;

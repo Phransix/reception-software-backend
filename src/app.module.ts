@@ -40,6 +40,7 @@ import { AnalyticsModule } from './modules/analytics/analytics.module';
 import { VisitorPerfomanceModule } from './modules/visitor-perfomance/visitor-perfomance.module';
 import { VisitorLogsModule } from './modules/visitor-logs/visitor-logs.module';
 import { ChatGateway } from './chat/chat.gateway';
+import { NotificationModule } from './modules/notification/notification.module';
 ;
 
 
@@ -124,6 +125,7 @@ import { ChatGateway } from './chat/chat.gateway';
     AnalyticsModule,
     VisitorPerfomanceModule,
     VisitorLogsModule,
+    NotificationModule,
   ],
 
   controllers: [AppController],

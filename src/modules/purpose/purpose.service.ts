@@ -489,7 +489,7 @@ export class PurposeService {
         return Util?.handleErrorRespone('organization not found');
 
       const guest = await this.PurposeModel.findAll({
-
+        // Searching the name of guest by firstname or lastname
         include: [
           {
             model: Guest,
@@ -588,6 +588,7 @@ export class PurposeService {
       if (!guest)
         return Util?.handleFailResponse('Invalid phone number or country code')
 
+        // Checking the last guest or the current guest who has created a purpose
         const purpose = await this.PurposeModel.findOne(
           {
             where: {
@@ -659,12 +660,15 @@ export class PurposeService {
           order: [['createdAt', 'DESC']]
         });
 
+      // Update the status of logout[Boolean]
       await Purpose.update({ isLogOut: true },
         { where: {purposeId} }
       )
+      // Update the visit Status
       await Purpose.update({ visitStatus: 'Signed Out' },
         { where: {purposeId} }
       )
+      // Upadte the current signed out time
       await Purpose.update({ signOutTime: currentTime },
         { where: {purposeId} }
       )

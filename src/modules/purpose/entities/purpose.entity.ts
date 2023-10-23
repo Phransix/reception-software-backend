@@ -142,5 +142,12 @@ export class Purpose extends Model <Purpose> {
       })
       isLogOut: boolean;
 
+      @Column({
+        type : DataType.DATE,
+        allowNull: true,
+        defaultValue: null
+      })
+      deletedAt: Date
+
 
 }
