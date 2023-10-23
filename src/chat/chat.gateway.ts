@@ -1,25 +1,3 @@
-// import { WebSocketGateway, WebSocketServer, OnGatewayConnection, OnGatewayDisconnect } from '@nestjs/websockets';
-// import { Server, Socket } from 'socket.io';
-
-// @WebSocketGateway()
-// export class ChatGateway implements OnGatewayConnection, OnGatewayDisconnect {
-
-//   @WebSocketServer() server: Server;
-
-//  async handleConnection(client: Socket) {
-//     console.log(`Client connected: ${client.id}`);
-//     this.server.emit('message', `User ${client.id} connected.`);
-//   }
-
-//   handleDisconnect(client: Socket) {
-//     console.log(`Client disconnected: ${client.id}`);
-//     this.server.emit('message', `User ${client.id} disconnected.`);
-//   }
-
-//   handleMessage(client: Socket, message: string) {
-//     this.server.emit('message', `User ${client.id}: ${message}`);
-//   }
-// }
 
 import { Logger } from '@nestjs/common';
 import {
@@ -57,15 +35,10 @@ export class ChatGateway implements OnGatewayConnection, OnGatewayDisconnect {
 
   // Chat Messgaes
   @SubscribeMessage('newMessage')
-  onNewMessage(@MessageBody() body: any) {
+  onNewMessage(@MessageBody() body: GustData) {
     console.log(body);
-    this.server.emit('new_notification', {
-     data:{
-      type: 'Sign In',
-      uniqueId: '15d86ff1-94ec-468b-9e47-3f4e666cc876',
-      name: 'John Doe',
-      time: '1:20 pm',
-     }
+    this.server.emit('get_message', {
+     data: body
     });
     
   }
