@@ -202,20 +202,24 @@ export class DeliveryService {
         return Util?.handleFailResponse('Receipient not found')
       }
 
+      // Input the name of the staff and the one to whom you're picking up the delivery
       let confirmStas = {
         name: updateDeliveryStatus?.receipientName,
         picker: updateDeliveryStatus?.deliveryPicker
       }
 
+      // Check if delivery has been confirmed already
       if (confirmDelivery?.status != 'awaiting_pickup')
         return Util?.handleFailResponse('Delivery confirmed already')
 
+      // Update the status of the delivery
       await Delivery.update({ status: 'delivered' }, {
         where: {
           deliveryId: confirmDelivery?.deliveryId
         }
       })
-
+      
+      // Update the name of the one who picked up the delivery on behalf of a staff
       await Delivery.update({ deliveryPicker: updateDeliveryStatus?.deliveryPicker }, {
         where: {
           deliveryId: confirmDelivery?.deliveryId

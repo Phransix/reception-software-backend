@@ -12,6 +12,7 @@ import { DeliveryService } from '../delivery/delivery.service';
 import { EnquiriesService } from '../enquiries/enquiries.service';
 import { Organization } from '../organization/entities/organization.entity';
 import { User } from '../users/entities/user.entity';
+import { ChatGateway } from 'src/chat/chat.gateway';
 
 @Module({
   imports:[SequelizeModule.forFeature([Organization,User,Delivery,Guest,Enquiry,Purpose])],
@@ -21,7 +22,8 @@ import { User } from '../users/entities/user.entity';
     GuestService,
     PurposeService,
     DeliveryService,
-    EnquiriesService
+    EnquiriesService,
+    ChatGateway
   ]
 })
 export class AnalyticsModule {}
