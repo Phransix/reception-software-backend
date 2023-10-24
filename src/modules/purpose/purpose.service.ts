@@ -12,6 +12,7 @@ import { Organization } from '../organization/entities/organization.entity';
 import { User } from '../users/entities/user.entity';
 import { guestOpDTO } from 'src/guard/auth/guestOpDTO';
 import { Sequelize } from 'sequelize-typescript';
+import { ChatGateway } from 'src/chat/chat.gateway';
 
 @Injectable()
 export class PurposeService {
@@ -21,7 +22,8 @@ export class PurposeService {
     @InjectModel(Organization) private readonly OrgModel: typeof Organization,
     @InjectModel(User) private readonly UserModel: typeof User,
     @InjectModel(Guest) private readonly GuestModel: typeof Guest,
-    private readonly sequelize: Sequelize
+    private readonly sequelize: Sequelize,
+    private readonly chatGateWay: ChatGateway
   ) { }
 
   // Create Purpose
@@ -50,6 +52,23 @@ export class PurposeService {
         departmentId: purpose?.departmentId,
         staffId: purpose?.staffId
       }
+      
+      const guest = await this.GuestModel.findOne({
+        where: {
+          guestId: purpose?.guestId,
+          organizationId: get_org?.organizationId
+        },
+        order: [['createdAt', 'DESC']]
+      });
+
+      this.chatGateWay.server.emit
+      (
+        'Guest Sign In',
+        `FirstName: ${guest?.firstName},
+         VisitStatus: ${purpose?.visitStatus},
+         SignInTime: ${purpose?.signInTime}
+        `
+      )
       return Util?.handleCustonCreateResponse(purpose_data,"Purpose Created Successfully")
     } catch (error) {
       console.log(error)
@@ -685,6 +704,14 @@ export class PurposeService {
         signInTime: purpose?.signInTime,
         signOutTime: purpose?.signOutTime
       }
+      this.chatGateWay.server.emit
+      (
+        'Guest Sign Out',
+        `FirstName: ${guest?.firstName},
+         VisitStatus: ${purpose?.visitStatus},
+         SignInTime: ${purpose?.signOutTime}
+        `
+      )
       return Util?.handleCustonCreateResponse(guest_data, 'Logout Confirmation Successful');
     } catch (error) {
       console.log(error)

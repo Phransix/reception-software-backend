@@ -46,7 +46,7 @@ export class NotificationController {
   @Public()
   @UseGuards(AtGuard)
   @ApiTags('Notification')
-  @ApiOperation({ summary: 'Get Notificaions' })
+  @ApiOperation({ summary: 'Get Notifications' })
   @Get('getAllNotification')
   async findAllNotification(
     @GetCurrentUserId() userId?: string
