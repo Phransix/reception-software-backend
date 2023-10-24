@@ -18,8 +18,28 @@ export class NotificationService {
     @InjectModel(Notification) private readonly NotificationModel: typeof Notification
   ) {}
 
-  create(createNotificationDto: CreateNotificationDto) {
-    return 'This action adds a new notification';
+  async create(createNotificationDto: CreateNotificationDto, userId: any) {
+   try {
+
+    let user = await this?.UserModel.findOne({ where: { userId } })
+    console.log(userId)
+    if (!user)
+      return Util?.CustomhandleNotFoundResponse('User not found');
+
+    let get_org = await this?.OrgModel.findOne({ where: { organizationId: user?.organizationId } })
+    if (!get_org)
+      return Util?.CustomhandleNotFoundResponse('organization not found');
+    
+    const createNotification = await this.NotificationModel?.create({
+      ...createNotificationDto,
+      organizationId: get_org?.organizationId
+    })
+    await createNotification.save();
+    return Util?.handleCreateSuccessRespone("Notification Created Successsfully")
+   } catch (error) {
+    console.log(error)
+    return Util?.handleGrpcTryCatchError(Util?.getTryCatchMsg(error));
+   }
   }
 
   async findAll(userId: string) {
@@ -43,25 +63,82 @@ export class NotificationService {
         include: [
           {
             model: Purpose,
+            attributes: {
+              exclude: [
+                'id',
+                'guestId',
+                'organizationId',
+                'departmentId',
+                'staffId',
+                'signInDate',
+                'signInTime',
+                'signOutTime',
+                'isLogOut',
+                'updatedAt',
+                'deletedAt'
+              ]
+            },
+            order: [['id', 'DESC']],
+            as: 'purposeStatus'
           }
         ]
       })
-
+      return Util?.handleSuccessRespone(getAllStatus, 'Notifications Data retrieved Successfully')
     } catch (error) {
       console.log(error)
       return Util?.handleGrpcTryCatchError(Util?.getTryCatchMsg(error))
     }
   }
 
-  findOne(id: number) {
-    return `This action returns a #${id} notification`;
+
+  async update(notificationId: string, updateNotificationDto: UpdateNotificationDto, userId: any) {
+    
+    try {
+
+      console.log(userId)
+      let user = await this?.UserModel.findOne({ where: { userId } })
+      console.log(user?.organizationId)
+      if (!user)
+        return Util?.handleErrorRespone('User not found');
+
+      let get_org = await this?.OrgModel.findOne({ where: { organizationId: user?.organizationId } })
+
+      if (!get_org)
+        return Util?.handleErrorRespone('organization not found');
+
+      const updateNotice = await Notification.findOne({where: {notificationId,organizationId: get_org?.organizationId}})
+      Object.assign(updateNotice, updateNotificationDto);
+      await updateNotice.save()
+
+      return Util?.handleSuccessRespone(Util?.SuccessRespone, 'Delivery Data successfully updated')
+    } catch (error) {
+      console.log(error)
+      return Util?.handleGrpcTryCatchError(Util?.getTryCatchMsg(error));
+    }
+
   }
 
-  update(id: number, updateNotificationDto: UpdateNotificationDto) {
-    return `This action updates a #${id} notification`;
-  }
+  async remove(notificationId: string, userId: any) {
+    try {
 
-  remove(id: number) {
-    return `This action removes a #${id} notification`;
+      console.log(userId)
+      let user = await this?.UserModel.findOne({ where: { userId } })
+      console.log(user?.organizationId)
+      if (!user)
+        return Util?.handleErrorRespone('User not found');
+
+      let get_org = await this?.OrgModel.findOne({ where: { organizationId: user?.organizationId } })
+
+      if (!get_org)
+        return Util?.handleErrorRespone('organization not found');
+
+      const removeNotification = await Notification.findOne({ where: { notificationId, organizationId: get_org?.organizationId } });
+      await removeNotification.destroy()
+      return Util?.handleSuccessRespone(Util?.SuccessRespone, "Delivery Data deleted Successfully")
+
+    } catch (error) {
+      console.log(error)
+      return Util?.handleGrpcTryCatchError(Util?.getTryCatchMsg(error));
+    }
   }
 }

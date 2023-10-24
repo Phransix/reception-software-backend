@@ -8,6 +8,15 @@ const { v4: uuidv4 } = require('uuid')
     paranoid: true
 })
 export class Notification extends Model <Notification>{
+
+    @Column({
+        defaultValue: uuidv4,
+        type: DataType.UUID,
+        allowNull: false,
+        unique: true
+    })
+    notificationId: string
+
     @Column({
         defaultValue: uuidv4,
         type: DataType.UUID,
@@ -15,7 +24,6 @@ export class Notification extends Model <Notification>{
         unique: true
     })
     socketId: string
-
 
     @ForeignKey(() => Organization)
     @Column({
@@ -50,7 +58,11 @@ export class Notification extends Model <Notification>{
         onDelete: 'CASCADE',
     })
     purposeId: string
-    @BelongsTo(() => Purpose)
+    @BelongsTo(() => Purpose, {
+        foreignKey: 'purposeId',
+        targetKey:'purposeId',
+        as:'purposeStatus'
+    })
     purpose: Purpose
     
     @Column({

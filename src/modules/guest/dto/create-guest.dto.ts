@@ -69,6 +69,4 @@ export class CreateGuestDto {
     @IsMobilePhone()
     readonly phoneNumber: string
 
-
-
 }

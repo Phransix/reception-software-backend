@@ -16,6 +16,12 @@ module.exports = {
         primaryKey: true,
         type: Sequelize.INTEGER,
       },
+      notificationId: {
+        type: Sequelize.UUID,
+        defaultValue: Sequelize.UUIDV4,
+        allowNull:false,
+        unique: true
+      },
       socketId: {
         type: Sequelize.UUID,
         defaultValue: Sequelize.UUIDV4,
