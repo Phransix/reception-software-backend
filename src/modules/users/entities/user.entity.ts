@@ -83,6 +83,7 @@ export class User extends Model<User> {
   @Column({
     type: DataType.STRING,
     allowNull: false,
+    unique:true
   })
   phoneNumber: string;
 
@@ -114,13 +115,6 @@ export class User extends Model<User> {
 
   role: Role[];
 
-  // @BeforeValidate
-  // static async validateUserInfo(instance: User, options: any): Promise<void> {
-  //   if (options.fields.includes('email', 'phoneNumber')) {
-  //     if (instance) {
-  //       throw new Error(`Account has been deactivated`);
-  //     }
-  //   }
-  // }
+
 }
 

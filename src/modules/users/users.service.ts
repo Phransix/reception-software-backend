@@ -266,7 +266,7 @@ export class UsersService {
       };
 
       await this?.userModel?.update(insertQry, {
-        where: { id: user?.id, organizationId: get_org?.organizationId },
+        where: { userId: user?.userId, organizationId: get_org?.organizationId },
       });
 
       return Util?.SuccessRespone('User updated successfully');

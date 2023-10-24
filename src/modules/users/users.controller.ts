@@ -9,6 +9,7 @@ import {
   UseGuards,
   HttpStatus,
   Query,
+  UsePipes,
 } from '@nestjs/common';
 import { UsersService } from './users.service';
 import { CreateUserDto } from './dto/create-user.dto';
@@ -39,6 +40,7 @@ import {
 import { LogOutDTO } from 'src/guard/auth/logoutDto';
 import { Roles } from 'src/common/decorators/roles.decorator';
 import { Role } from '../role/role.enum';
+
 
 
 @ApiTags('Users')

@@ -190,7 +190,8 @@ export class DepartmentService {
        await this?.departmentModel.update(
           updateDepartmentDto,
         {where:{
-          departmentId:dept_data?.departmentId
+          departmentId:dept_data?.departmentId,
+          organizationId: get_org?.organizationId,
         }}
        )
       
