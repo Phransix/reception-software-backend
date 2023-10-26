@@ -7,9 +7,10 @@ import { User } from '../users/entities/user.entity';
 import { Organization } from '../organization/entities/organization.entity';
 import { Guest } from '../guest/entities/guest.entity';
 import { ChatGateway } from 'src/chat/chat.gateway';
+import { Notification } from '../notification/entities/notification.entity';
 
 @Module({
-  imports: [SequelizeModule.forFeature([Purpose,User,Organization,Guest])],
+  imports: [SequelizeModule.forFeature([Purpose,User,Organization,Guest,Notification])],
   controllers: [PurposeController],
   providers: [PurposeService,ChatGateway]
 })

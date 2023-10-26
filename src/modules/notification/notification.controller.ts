@@ -1,7 +1,5 @@
 import { Controller, Get, Post, Body, Patch, Param, Delete, UseGuards, HttpStatus } from '@nestjs/common';
 import { NotificationService } from './notification.service';
-import { CreateNotificationDto } from './dto/create-notification.dto';
-import { UpdateNotificationDto } from './dto/update-notification.dto';
 import { GetCurrentUserId } from 'src/common/decorators/get-current-user-id.decorator';
 import { Public } from 'src/common/decorators/public.decorator';
 import { ApiBearerAuth, ApiOperation, ApiTags } from '@nestjs/swagger';
@@ -13,34 +11,7 @@ import { AuthGuard } from '@nestjs/passport';
 export class NotificationController {
   constructor(private readonly notificationService: NotificationService) {}
 
-  @UseGuards(AuthGuard('jwt'))
-  @ApiBearerAuth('defaultBearerAuth')
-  @Public()
-  @UseGuards(AtGuard)
-  @ApiTags('Notification')
-  @Public()
-  @ApiOperation({ summary: 'Create New Notifcation' })
-  @Post('createNotification')
-  async create(
-    @Body() createNotificationDto: CreateNotificationDto,
-    @GetCurrentUserId() userId: string,
-    ) {
-   let ErrorCode: number
-
-   try {
-    
-    let createNotification = await this.notificationService.create(createNotificationDto, userId);
-    if (createNotification && 'status_code' in createNotification && createNotification.status_code !== HttpStatus.CREATED) {
-      ErrorCode = createNotification?.status_code;
-      throw new Error(createNotification?.message)
-    }
-    return createNotification
-   } catch (error) {
-    console.log(error)
-    return Util?.handleRequestError(Util?.getTryCatchMsg(error), ErrorCode)
-   }
-  }
-
+  // Get all Notifications
   @UseGuards(AuthGuard('jwt'))
   @ApiBearerAuth('defaultBearerAuth')
   @Public()
@@ -49,18 +20,19 @@ export class NotificationController {
   @ApiOperation({ summary: 'Get Notifications' })
   @Get('getAllNotification')
   async findAllNotification(
-    @GetCurrentUserId() userId?: string
+    @GetCurrentUserId() userId: string
   ) {
 
     let ErrorCode: number;
     try {
       
       let getNotifications = await this.notificationService.findAll(userId);
+
       if (getNotifications && 'status_code' in getNotifications && getNotifications.status_code !== HttpStatus.OK) {
         ErrorCode = getNotifications?.status_code;
         throw new Error(getNotifications?.message)
       }
-      return getNotifications
+      return getNotifications;
 
     } catch (error) {
       console.log(error)
@@ -70,6 +42,35 @@ export class NotificationController {
   }
 
 
+    // Get Notification by notificationId
+    @UseGuards(AuthGuard('jwt'))
+    @ApiBearerAuth('defaultBearerAuth')
+    @Public()
+    @UseGuards(AtGuard)
+    @ApiTags('Notification')
+    @ApiOperation({ summary: 'Get Notificatoion By notificationId' })
+    @Get(':notificationId')
+    async findOne(
+      @Param('notificationId') notificationId: string,
+      @GetCurrentUserId() userId: string
+    ) {
+      let ErrorCode: number
+      try {
+        let notification = await this.notificationService.findOne(notificationId, userId);
+        if (notification?.status_code != HttpStatus.OK) {
+          ErrorCode = notification?.status_code;
+          throw new Error(notification?.message)
+        }
+        return notification;
+  
+      } catch (error) {
+        console.log(error)
+        return Util?.handleRequestError(Util?.getTryCatchMsg(error), ErrorCode)
+      }
+    }
+
+  
+  // Update notification status
   @Public()
   @ApiTags('Notification')
   @UseGuards(AuthGuard('jwt'))
@@ -80,12 +81,11 @@ export class NotificationController {
   @Patch(':notificationId')
   async update(
     @Param('notificationId') notificationId: string,
-    @Body() updateNotificationDto: UpdateNotificationDto,
     @GetCurrentUserId() userId: string
   ) {
     let ErrorCode: number
     try {
-      const notification = await this.notificationService.update(notificationId, updateNotificationDto, userId)
+      const notification = await this.notificationService.updateStatus(notificationId, userId)
       if (notification && 'status_code' in notification && notification.status_code !== HttpStatus.OK) {
         ErrorCode = notification?.status_code;
         throw new Error(notification?.message)
@@ -97,6 +97,7 @@ export class NotificationController {
     }
   }
 
+  // Delete notification
   @Public()
   @ApiTags('Notification')
   @UseGuards(AuthGuard('jwt'))

@@ -1,56 +1,31 @@
 import { Injectable } from '@nestjs/common';
-import { CreateNotificationDto } from './dto/create-notification.dto';
-import { UpdateNotificationDto } from './dto/update-notification.dto';
 import * as Util from '../../utils/index'
 import { InjectModel } from '@nestjs/sequelize';
 import { Purpose } from '../purpose/entities/purpose.entity';
 import { Organization } from '../organization/entities/organization.entity';
 import { User } from '../users/entities/user.entity';
 import { Notification } from './entities/notification.entity';
+import { Guest } from '../guest/entities/guest.entity';
 
 @Injectable()
 export class NotificationService {
 
   constructor(
-    @InjectModel(Purpose) private readonly PurposeModel: typeof Purpose,
     @InjectModel(Organization) private readonly OrgModel: typeof Organization,
     @InjectModel(User) private readonly UserModel: typeof User,
     @InjectModel(Notification) private readonly NotificationModel: typeof Notification
   ) {}
 
-  async create(createNotificationDto: CreateNotificationDto, userId: any) {
-   try {
-
-    let user = await this?.UserModel.findOne({ where: { userId } })
-    console.log(userId)
-    if (!user)
-      return Util?.CustomhandleNotFoundResponse('User not found');
-
-    let get_org = await this?.OrgModel.findOne({ where: { organizationId: user?.organizationId } })
-    if (!get_org)
-      return Util?.CustomhandleNotFoundResponse('organization not found');
-    
-    const createNotification = await this.NotificationModel?.create({
-      ...createNotificationDto,
-      organizationId: get_org?.organizationId
-    })
-    await createNotification.save();
-    return Util?.handleCreateSuccessRespone("Notification Created Successsfully")
-   } catch (error) {
-    console.log(error)
-    return Util?.handleGrpcTryCatchError(Util?.getTryCatchMsg(error));
-   }
-  }
-
+  // Get all Notifications
   async findAll(userId: string) {
     try {
       
       console.log(userId)
-  
       let user = await this?.UserModel.findOne({ where: { userId } })
       console.log(user?.organizationId)
       if (!user)
         return Util?.handleErrorRespone('User not found');
+
       let get_org = await this?.OrgModel.findOne({ where: { organizationId: user?.organizationId } })
 
       if (!get_org)
@@ -67,6 +42,7 @@ export class NotificationService {
               exclude: [
                 'id',
                 'guestId',
+                'purposeId',
                 'organizationId',
                 'departmentId',
                 'staffId',
@@ -80,6 +56,21 @@ export class NotificationService {
             },
             order: [['id', 'DESC']],
             as: 'purposeStatus'
+          },
+          {
+            model: Guest,
+            attributes: {
+              exclude: [
+                'id',
+                'guestId',
+                'organizationId',
+                'createdAt',
+                'updatedAt',
+                'deletedAt'
+              ]
+            },
+            order: [['id', 'DESC']],
+            as: 'guestData'
           }
         ]
       })
@@ -90,8 +81,73 @@ export class NotificationService {
     }
   }
 
-
-  async update(notificationId: string, updateNotificationDto: UpdateNotificationDto, userId: any) {
+    // Get Notification by notificationId
+    async findOne(notificationId: string, userId: any) {
+      try {
+        console.log(userId)
+        let user = await this?.UserModel.findOne({ where: { userId } })
+        console.log(user?.organizationId)
+        if (!user)
+          return Util?.handleErrorRespone('User not found');
+  
+        let get_org = await this?.OrgModel.findOne({ where: { organizationId: user?.organizationId } })
+  
+        if (!get_org)
+          return Util?.handleErrorRespone('organization not found');
+        const getOneNotification = await Notification.findOne({
+          include: [
+            {
+              model: Purpose,
+              attributes: {
+                exclude: [
+                  'id',
+                  'guestId',
+                  'purposeId',
+                  'organizationId',
+                  'departmentId',
+                  'staffId',
+                  'signInDate',
+                  'signInTime',
+                  'signOutTime',
+                  'isLogOut',
+                  'updatedAt',
+                  'deletedAt'
+                ]
+              },
+              order: [['id', 'DESC']],
+              as: 'purposeStatus'
+            },
+            {
+              model: Guest,
+              attributes: {
+                exclude: [
+                  'id',
+                  'guestId',
+                  'organizationId',
+                  'createdAt',
+                  'updatedAt',
+                  'deletedAt'
+                ]
+              },
+              order: [['id', 'DESC']],
+              as: 'guestData'
+            }
+          ],
+          where: { 
+            notificationId,
+            organizationId: get_org?.organizationId 
+          },
+          attributes: { exclude: ['createdAt', 'updatedAt', 'deletedAt'] }
+        });
+        return Util?.handleSuccessRespone(getOneNotification, "Notification retrieved successfully")
+      } catch (error) {
+        console.log(error)
+        return Util?.handleGrpcTryCatchError(Util?.getTryCatchMsg(error));
+      }
+    }
+ 
+  // Update notification status
+  async updateStatus(notificationId: string,userId: any) {
     
     try {
 
@@ -107,10 +163,9 @@ export class NotificationService {
         return Util?.handleErrorRespone('organization not found');
 
       const updateNotice = await Notification.findOne({where: {notificationId,organizationId: get_org?.organizationId}})
-      Object.assign(updateNotice, updateNotificationDto);
-      await updateNotice.save()
+      await Notification.update({ status: 'read'},{where: {notificationId}})
 
-      return Util?.handleSuccessRespone(Util?.SuccessRespone, 'Delivery Data successfully updated')
+      return Util?.handleSuccessRespone(Util?.SuccessRespone, 'Notification status successfully updated')
     } catch (error) {
       console.log(error)
       return Util?.handleGrpcTryCatchError(Util?.getTryCatchMsg(error));
@@ -118,6 +173,7 @@ export class NotificationService {
 
   }
 
+  // Delete notification
   async remove(notificationId: string, userId: any) {
     try {
 

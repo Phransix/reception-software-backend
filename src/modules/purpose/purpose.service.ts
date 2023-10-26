@@ -13,6 +13,7 @@ import { User } from '../users/entities/user.entity';
 import { guestOpDTO } from 'src/guard/auth/guestOpDTO';
 import { Sequelize } from 'sequelize-typescript';
 import { ChatGateway } from 'src/chat/chat.gateway';
+import { Notification } from '../notification/entities/notification.entity';
 
 @Injectable()
 export class PurposeService {
@@ -22,6 +23,7 @@ export class PurposeService {
     @InjectModel(Organization) private readonly OrgModel: typeof Organization,
     @InjectModel(User) private readonly UserModel: typeof User,
     @InjectModel(Guest) private readonly GuestModel: typeof Guest,
+    @InjectModel(Notification) private readonly NotificationModel: typeof Notification,
     private readonly sequelize: Sequelize,
     private readonly chatGateWay: ChatGateway
   ) { }
@@ -52,7 +54,7 @@ export class PurposeService {
         departmentId: purpose?.departmentId,
         staffId: purpose?.staffId
       }
-      
+
       const guest = await this.GuestModel.findOne({
         where: {
           guestId: purpose?.guestId,
@@ -61,15 +63,27 @@ export class PurposeService {
         order: [['createdAt', 'DESC']]
       });
 
+      // Save the emitted data to the database
+      const emittedData = {
+        purposeId: purpose?.purposeId,
+        guestId: purpose?.guestId,
+        organizationId: purpose?.organizationId,
+        message: guest?.firstName + ' Signed In',
+        type: purpose?.visitStatus
+      };
+
+      // Saving emitted data in to database
+      const savedEmittedData = await this.NotificationModel.create(emittedData);
+
       this.chatGateWay.server.emit
-      (
-        'Guest Sign In',
-        `FirstName: ${guest?.firstName},
+        (
+          'Guest Sign In',
+          `FirstName: ${guest?.firstName} Signed In,
          VisitStatus: ${purpose?.visitStatus},
          SignInTime: ${purpose?.signInTime}
         `
-      )
-      return Util?.handleCustonCreateResponse(purpose_data,"Purpose Created Successfully")
+        )
+      return Util?.handleCustonCreateResponse(purpose_data, "Purpose Created Successfully")
     } catch (error) {
       console.log(error)
       return Util?.handleGrpcTryCatchError(Util?.getTryCatchMsg(error));
@@ -174,87 +188,87 @@ export class PurposeService {
   }
 
 
-    // Get All Purposes Tablet
-    async findAllPurpose(userId: string) {
-      try {
-  
-        console.log(userId)
-  
-        let user = await this?.UserModel.findOne({ where: { userId } })
-        console.log(user?.organizationId)
-        if (!user)
-          return Util?.handleErrorRespone('User not found');
-        let get_org = await this?.OrgModel.findOne({ where: { organizationId: user?.organizationId } })
-  
-        if (!get_org)
-          return Util?.handleErrorRespone('organization not found');
-  
-        const allQueries = await Purpose.findAll({
-          where: {
-            organizationId: get_org?.organizationId
+  // Get All Purposes Tablet
+  async findAllPurpose(userId: string) {
+    try {
+
+      console.log(userId)
+
+      let user = await this?.UserModel.findOne({ where: { userId } })
+      console.log(user?.organizationId)
+      if (!user)
+        return Util?.handleErrorRespone('User not found');
+      let get_org = await this?.OrgModel.findOne({ where: { organizationId: user?.organizationId } })
+
+      if (!get_org)
+        return Util?.handleErrorRespone('organization not found');
+
+      const allQueries = await Purpose.findAll({
+        where: {
+          organizationId: get_org?.organizationId
+        },
+        attributes: { exclude: ['updatedAt', 'deletedAt'] },
+        include: [
+          {
+            model: Guest,
+            attributes: {
+              exclude: [
+                'id',
+                'guestId',
+                'organizationId',
+                'createdAt',
+                'updatedAt',
+                'deletedAt'
+              ]
+            },
+            order: [['id', 'DESC']],
+            as: 'guestData'
           },
-          attributes: { exclude: ['updatedAt', 'deletedAt'] },
-          include: [
-            {
-              model: Guest,
-              attributes: {
-                exclude: [
-                  'id',
-                  'guestId',
-                  'organizationId',
-                  'createdAt',
-                  'updatedAt',
-                  'deletedAt'
-                ]
-              },
-              order: [['id', 'DESC']],
-              as: 'guestData'
+          {
+            model: Department,
+            attributes: {
+              exclude: [
+                'id',
+                'organizationId',
+                'departmentId',
+                'createdAt',
+                'updatedAt',
+                'deletedAt'
+              ]
             },
-            {
-              model: Department,
-              attributes: {
-                exclude: [
-                  'id',
-                  'organizationId',
-                  'departmentId',
-                  'createdAt',
-                  'updatedAt',
-                  'deletedAt'
-                ]
-              },
-              order: [['id', 'DESC']],
-              as: 'departmentData'
+            order: [['id', 'DESC']],
+            as: 'departmentData'
+          },
+          {
+            model: Staff,
+            attributes: {
+              exclude: [
+                'id',
+                'departmentId',
+                'organizationId',
+                'staffId',
+                'organizationName',
+                'departmentName',
+                'createdAt',
+                'updatedAt',
+                'deletedAt'
+              ]
             },
-            {
-              model: Staff,
-              attributes: {
-                exclude: [
-                  'id',
-                  'departmentId',
-                  'organizationId',
-                  'staffId',
-                  'organizationName',
-                  'departmentName',
-                  'createdAt',
-                  'updatedAt',
-                  'deletedAt'
-                ]
-              },
-              order: [['id', 'DESC']],
-              as: 'staffData'
-            }
-          ]
-        });
-  
-        return Util?.handleSuccessRespone(
-          allQueries,
-          'Purpose Data retrieved successfully.',
-        );
-      } catch (error) {
-        console.log(error);
-        return Util?.handleGrpcTryCatchError(Util?.getTryCatchMsg(error));
-      }
+            order: [['id', 'DESC']],
+            as: 'staffData'
+          }
+        ]
+      });
+
+      return Util?.handleSuccessRespone(
+        allQueries,
+        'Purpose Data retrieved successfully.',
+      );
+    } catch (error) {
+      console.log(error);
+      return Util?.handleGrpcTryCatchError(Util?.getTryCatchMsg(error));
     }
+  }
 
 
   // Get Purpose By purposeId
@@ -607,15 +621,15 @@ export class PurposeService {
       if (!guest)
         return Util?.handleFailResponse('Invalid phone number or country code')
 
-        // Checking the last guest or the current guest who has created a purpose
-        const purpose = await this.PurposeModel.findOne(
-          {
-            where: {
-              guestId: guest?.guestId
-            },
-            order: [['createdAt', 'DESC']]
-          });
-    
+      // Checking the last guest or the current guest who has created a purpose
+      const purpose = await this.PurposeModel.findOne(
+        {
+          where: {
+            guestId: guest?.guestId
+          },
+          order: [['createdAt', 'DESC']]
+        });
+
 
       // Checking if guest is signed In
       if (purpose?.isLogOut != false) {
@@ -681,15 +695,15 @@ export class PurposeService {
 
       // Update the status of logout[Boolean]
       await Purpose.update({ isLogOut: true },
-        { where: {purposeId} }
+        { where: { purposeId } }
       )
       // Update the visit Status
       await Purpose.update({ visitStatus: 'Signed Out' },
-        { where: {purposeId} }
+        { where: { purposeId } }
       )
       // Upadte the current signed out time
       await Purpose.update({ signOutTime: currentTime },
-        { where: {purposeId} }
+        { where: { purposeId } }
       )
 
       let guest_data = {
@@ -704,14 +718,42 @@ export class PurposeService {
         signInTime: purpose?.signInTime,
         signOutTime: purpose?.signOutTime
       }
+
+      // Find and update the last purpose created by purposeId
+      const notification = await this.NotificationModel.findOne(
+        {
+          where: {
+            purposeId
+          },
+          order: [['createdAt', 'DESC']]
+        });
+
+      // Update the visit Status in the notification table
+       await this.NotificationModel.update({type: 'Signed Out'},
+       {
+        where: {
+          purposeId
+        }
+       }
+      );
+
+      // Update the message in the notification table
+      await this.NotificationModel.update({message: guest?.firstName + ' Signed Out'},
+      {
+       where: {
+         purposeId
+       }
+      }
+     );
+
       this.chatGateWay.server.emit
-      (
-        'Guest Sign Out',
-        `FirstName: ${guest?.firstName},
+        (
+          'Guest Sign Out',
+          `FirstName: ${guest?.firstName} Signed Out,
          VisitStatus: ${purpose?.visitStatus},
-         SignInTime: ${purpose?.signOutTime}
+         SignOutTime: ${purpose?.signOutTime}
         `
-      )
+        )
       return Util?.handleCustonCreateResponse(guest_data, 'Logout Confirmation Successful');
     } catch (error) {
       console.log(error)
@@ -840,24 +882,24 @@ export class PurposeService {
   // Bulk Purpose Update
   async bulkPurposeUpdate(data: any[], userId: any) {
     const t = await this.sequelize.transaction();
-  
+
     try {
       console.log(userId);
       let user = await this?.UserModel.findOne({ where: { userId } });
       console.log(user?.organizationId);
-  
+
       if (!user) {
         t.rollback();
         return Util?.handleErrorRespone('User not found');
       }
-  
+
       let get_org = await this?.OrgModel.findOne({ where: { organizationId: user?.organizationId } });
-  
+
       if (!get_org) {
         t.rollback();
         return Util?.handleErrorRespone('Organization not found');
       }
-  
+
       // Create an array of update promises
       const updatePromises = data.map(async (update) => {
         return this.PurposeModel.update(
@@ -870,10 +912,10 @@ export class PurposeService {
           }
         );
       });
-  
+
       // Execute all update promises
       await Promise.all(updatePromises);
-  
+
       t.commit();
       return Util?.handleCreateSuccessRespone('Purposes Updated Successfully');
     } catch (error) {

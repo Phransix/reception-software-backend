@@ -17,14 +17,6 @@ export class Notification extends Model <Notification>{
     })
     notificationId: string
 
-    @Column({
-        defaultValue: uuidv4,
-        type: DataType.UUID,
-        allowNull: false,
-        unique: true
-    })
-    socketId: string
-
     @ForeignKey(() => Organization)
     @Column({
         defaultValue: uuidv4,
@@ -64,6 +56,28 @@ export class Notification extends Model <Notification>{
         as:'purposeStatus'
     })
     purpose: Purpose
+
+    @ForeignKey(() => Guest)
+    @Column({
+        defaultValue: uuidv4,
+        type: DataType.STRING,
+        allowNull: false,
+        unique: true,
+        references: {
+            model: {
+                tableName: 'Guests',
+            },
+            key: 'guestId',
+        },
+        onDelete: 'CASCADE',
+    })
+    guestId: string
+    @BelongsTo(() => Guest, {
+        foreignKey: 'guestId',
+        targetKey:'guestId',
+        as:'guestData'
+    })
+    guest: Guest
     
     @Column({
         type: DataType.STRING,
@@ -78,8 +92,9 @@ export class Notification extends Model <Notification>{
      message: string
 
      @Column({
-        type: DataType.STRING,
-        allowNull: false
+        type: DataType.ENUM,
+        values: ['read','unread'],
+        allowNull: true
     })
     status: string
 

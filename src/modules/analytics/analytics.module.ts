@@ -13,9 +13,10 @@ import { EnquiriesService } from '../enquiries/enquiries.service';
 import { Organization } from '../organization/entities/organization.entity';
 import { User } from '../users/entities/user.entity';
 import { ChatGateway } from 'src/chat/chat.gateway';
+import { Notification } from '../notification/entities/notification.entity';
 
 @Module({
-  imports:[SequelizeModule.forFeature([Organization,User,Delivery,Guest,Enquiry,Purpose])],
+  imports:[SequelizeModule.forFeature([Organization,User,Delivery,Guest,Enquiry,Purpose,Notification])],
   controllers: [AnalyticsController],
   providers: [
     AnalyticsService,

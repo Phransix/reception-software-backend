@@ -32,10 +32,7 @@ export class CreateUserDto {
         example: 'ampong@gmail.com'
     })
     @IsNotEmpty()
-    @IsEmail()
-    @Matches(/^[a-zA-Z0-9._%+-]+@.+\.com$/, {
-        message: 'Invalid Format, must be a valid email with the .com',
-     })
+    // @IsEmail()
     readonly email: string;
 
     @ApiProperty({

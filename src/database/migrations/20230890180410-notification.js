@@ -22,12 +22,6 @@ module.exports = {
         allowNull:false,
         unique: true
       },
-      socketId: {
-        type: Sequelize.UUID,
-        defaultValue: Sequelize.UUIDV4,
-        allowNull:false,
-        unique: true
-      },
       organizationId: {
         type: Sequelize.UUID,
         allowNull: false,
@@ -51,6 +45,18 @@ module.exports = {
         },
         onDelete: 'CASCADE'
       },
+      guestId: {
+        type: Sequelize.UUID,
+        defaultValue: Sequelize.UUIDV4,
+        allowNull: false,
+        references: {
+          model:{
+            tableName: 'Guests',
+          },
+          key:'guestId'
+        },
+        onDelete: 'CASCADE'
+      },
       type: {
         type: Sequelize.STRING,
         allowNull: false
@@ -60,8 +66,12 @@ module.exports = {
         allowNull: false
       },
       status: {
-        type: Sequelize.STRING,
-        allowNull: false
+        type: Sequelize.ENUM('read','unread'),
+        allowNull: true,
+        defaultValue: 'unread',
+        validate: {
+          isIn: [['read',' unread']]
+        }
       },
       createdAt: {
         type: Sequelize.DATE,
