@@ -1,5 +1,6 @@
 
 import { BelongsTo, Column, DataType, ForeignKey, Table,Model, HasMany } from "sequelize-typescript";
+import { Designation } from "src/modules/designation/entities/designation.entity";
 import { Organization } from "src/modules/organization/entities/organization.entity";
 import { Purpose } from "src/modules/purpose/entities/purpose.entity";
 import { Staff } from "src/modules/staff/entities/staff.entity";
@@ -67,6 +68,9 @@ as: 'Organization',
 
    @HasMany(() => Staff)
    staff: Staff[]
+
+   @HasMany(() => Designation)
+   designation: Designation[]
 
    @HasMany(() => Purpose)
    purpose: Purpose[]
