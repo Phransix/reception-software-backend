@@ -37,7 +37,7 @@ module.exports = {
 
       departmentId: {
         type: Sequelize.UUID,
-        allowNull: true,
+        allowNull: false,
         references: {
           model:{
             tableName: 'Departments',
