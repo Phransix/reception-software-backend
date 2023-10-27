@@ -103,12 +103,8 @@ export class DesignationService {
         ],
       });
 
-
-      const dataResult = [
-        { ...allQueries }
-      ];
       return Util?.handleSuccessRespone(
-        dataResult,
+        allQueries,
         'Designations Data retrieved successfully.',
       );
     } catch (error) {
