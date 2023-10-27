@@ -1,5 +1,4 @@
 import { BelongsTo, Column, DataType, ForeignKey, Model, Table } from "sequelize-typescript";
-import { Col } from "sequelize/types/utils";
 import { Department } from "src/modules/department/entities/department.entity";
 import { Organization } from "src/modules/organization/entities/organization.entity";
 const { v4: uuidv4 } = require('uuid');

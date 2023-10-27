@@ -36,10 +36,6 @@ export class CreateEnquiryDto {
         description: 'The email of the Person ',
         example: 'kemiqals93@gmail.com'
     })
-    @IsEmail()
-    @Matches(/^[a-zA-Z0-9._%+-]+@.+\.com$/, {
-        message: 'Invalid Format',
-    })
     readonly email: string;
 
     @ApiProperty({

@@ -2,6 +2,7 @@ import { Column, DataType, HasMany, Model, Table } from "sequelize-typescript";
 import { LoginDTO } from "src/guard/auth/loginDTO";
 import { Delivery } from "src/modules/delivery/entities/delivery.entity";
 import { Department } from "src/modules/department/entities/department.entity";
+import { Designation } from "src/modules/designation/entities/designation.entity";
 import { Enquiry } from "src/modules/enquiries/entities/enquiry.entity";
 import { Guest } from "src/modules/guest/entities/guest.entity";
 import { Notification } from "src/modules/notification/entities/notification.entity";
@@ -95,6 +96,9 @@ export class Organization extends Model<Organization>  {
 
     @HasMany(() => Department)
     department: Department[]
+
+    @HasMany(() => Designation)
+    designation: Designation[];
 
     @HasMany(() => Staff)
     staff: Staff[]
