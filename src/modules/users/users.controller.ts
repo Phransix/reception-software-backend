@@ -351,67 +351,6 @@ export class UsersController {
     }
   }
 
-  // Refresh Token EndPoint
-  @ApiTags('Users')
-  @UseGuards(AuthGuard('jwt'))
-  @ApiBearerAuth('defaultBearerAuth')
-  @ApiOperation({ summary: 'Refresh Access Token' })
-  @Public()
-  @UseGuards(AtGuard)
-  @Post('refresh/:refreshToken')
-  async refresh(
-    @Param('refreshToken') refreshToken: string,
-    @GetCurrentUserId() userId: string,
-  ) {
-    let ErrorCode: number;
-    try {
-      // Validate the provided refresh token, if invalid, throw an error.
-      const user = await this?.usersService?.decodeRefreshToken(refreshToken,userId)
-       
-    
-      const new_tokens = await this?.usersService?.getTokens
-       
-
-      if (user?.status_code != HttpStatus.CREATED) {
-        ErrorCode = user?.status_code;
-        throw new Error(user?.message);
-      }
-
-      // Return The New Access And Refresh Token
-      return new_tokens;
-    } catch (error) {
-      console.log(error);
-      return Util?.handleRequestError(Util?.getTryCatchMsg(error), ErrorCode);
-    }
-  }
-
-  // Refresh Token EndPoint
-  // @ApiTags('Users')
-  // @UseGuards(AuthGuard('jwt'))
-  // @ApiBearerAuth('defaultBearerAuth')
-  // @ApiOperation({ summary: 'Refresh Access Token' })
-  // @Public()
-  // @UseGuards(AtGuard)
-  // @Post('refresh/:refreshToken')
-  // async refresh(@Param('refreshToken') refreshToken: string) {
-  //   let ErrorCode: number;
-  //   try {
-  //     // Validate the provided refresh token, if invalid, throw an error.
-  //     const user = await this?.usersService?.decodeRefreshToken(refreshToken)
-  //       .id;
-  //     const new_tokens = await this?.usersService?.getTokens(
-  //       user?.organizationId,
-  //       user?.userId,
-  //       user?.email,
-  //       user?.roleName,
-  //     );
-  //     console.log(new_tokens)
-  //     return false
-
-  //     return new_tokens;
-  //   } catch (error) {
-  //     console.log(error);
-  //     return Util?.handleRequestError(Util?.getTryCatchMsg(error), ErrorCode);
-  //   }
-  // }
+ 
+  
 }

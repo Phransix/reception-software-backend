@@ -31,13 +31,13 @@ export class DoesOrgExist implements CanActivate {
 
             const existingOrganizationEmail = await this.organizationService.findOneByEmail(email);
             if (existingOrganizationEmail) {
-                throw new ForbiddenException('This Email already exists');
+                throw new ForbiddenException('This email already exists');
                 
             }
 
             const existingOrganizationPhoneNumber = await this.organizationService.findOneByPhoneNumber(phoneNumber);
             if (existingOrganizationPhoneNumber) {
-                throw new ForbiddenException('This PhoneNumber already exists');
+                throw new ForbiddenException('This phone number already exists');
                 
             }
 

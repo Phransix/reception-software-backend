@@ -32,14 +32,16 @@ export class CreateOrganizationDto {
    @IsNotEmpty()
    @IsEmail()
    @Matches(/^[a-zA-Z0-9._%+-]+@.+\.com$/, {
-      message: 'Invalid Format, must be a valid email with the .com',
+      message:'Invalid Format,'
    })
    email: string;
-
 
    @ApiProperty({
       description: 'The phoneNumber of the Organization',
       example: '0244454587'
+   })
+   @Matches(/^[0-9]{7,10}$/, {
+      message:'Invalid Format, must be numbers'
    })
    @IsNotEmpty()
    @MaxLength(10)

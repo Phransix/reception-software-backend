@@ -32,13 +32,19 @@ export class CreateUserDto {
         example: 'ampong@gmail.com'
     })
     @IsNotEmpty()
-    // @IsEmail()
+    @IsEmail()
+    @Matches(/^[a-zA-Z0-9._%+-]+@.+\.com$/, {
+        message: 'Invalid Format.',
+     })
     readonly email: string;
 
     @ApiProperty({
         description: 'The phonenumber of the User/Customer',
         example: '************'
     })
+    @Matches(/^[0-9]{7,10}$/, {
+        message:'Invalid Format, must be numbers'
+     })
     @IsNotEmpty()
     @MinLength(10)
     @MaxLength(10)

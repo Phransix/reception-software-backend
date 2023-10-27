@@ -64,17 +64,9 @@ export class StaffService {
   }
 
   // Get All Staffs
-  async findAll(page: number, size: number, userId: string) {
+  async findAll( userId: string) {
     try {
       console.log(userId);
-
-      let currentPage = Util.Checknegative(page);
-      if (currentPage) {
-        return Util?.handleErrorRespone(
-          'Staffs current page cannot be negative',
-        );
-      }
-      const { limit, offset } = Util.getPagination(page, size);
 
       let user = await this?.userModel.findOne({ where: { userId } });
       console.log(user?.organizationId);
@@ -87,9 +79,8 @@ export class StaffService {
       if (!get_org)
         return Util?.CustomhandleNotFoundResponse('organization not found');
 
-      const allQueries = await Staff.findAndCountAll({
-        limit,
-        offset,
+      const allQueries = await Staff.findAll({
+        
         where: { organizationId: get_org?.organizationId },
         attributes: {
           exclude: [
@@ -130,10 +121,7 @@ export class StaffService {
         ],
       });
 
-      let result = Util?.getPagingData(allQueries, page, limit);
-      console.log(result);
-
-      const dataResult = { ...result };
+      const dataResult = { ...allQueries };
       return Util?.handleSuccessRespone(
         dataResult,
         'Staffs Data retrieved successfully.',
@@ -250,6 +238,7 @@ export class StaffService {
       await this?.staffModel?.update(insertQry, {
         where: {
           staffId: staff_data?.staffId,
+          organizationId: user?.organizationId
         },
       });
 

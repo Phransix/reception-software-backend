@@ -22,13 +22,13 @@ export class DoesUserExist implements CanActivate{
 
         const existingUserEmail = await this.usersService.findOneByEmail(email);
         if (existingUserEmail) {
-            throw new ForbiddenException('This Email already exists');
+            throw new ForbiddenException('This email already exists');
             
         }
 
         const existingUserPhoneNumber = await this.usersService.findOneByPhoneNumber(phoneNumber);
         if (existingUserPhoneNumber) {
-            throw new ForbiddenException('This PhoneNumber already exists');
+            throw new ForbiddenException('This phone number already exists');
             
         }
 
