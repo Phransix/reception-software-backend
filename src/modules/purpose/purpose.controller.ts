@@ -10,6 +10,7 @@ import { AtGuard } from 'src/common/guards';
 import { GetCurrentUserId } from 'src/common/decorators/get-current-user-id.decorator';
 import { guestOpDTO } from 'src/guard/auth/guestOpDTO';
 import { Gender, status } from '../guest/dto/create-guest.dto';
+import { size } from 'lodash';
 
 
 
@@ -243,6 +244,16 @@ export class PurposeController {
     type: Date,
     required: false
   })
+  @ApiQuery({
+    name: 'page',
+    type: 'number',
+    required: false,
+  })
+  @ApiQuery({
+    name: 'size',
+    type: 'number',
+    required: false,
+  })
   @Public()
   @UseGuards(AtGuard)
   @ApiTags('Purpose')
@@ -251,11 +262,13 @@ export class PurposeController {
   async findGuestByDateRange(
     @Query('startDate') startDate: Date,
     @Query('endDate') endDate: Date,
-    @GetCurrentUserId() userId: string
+    @GetCurrentUserId() userId: string,
+    @Query('page') page: number,
+    @Query('size') size: number
   ) {
     let ErrorCode: number
     try {
-      const guestSearch = await this.purposeService.findByDateRange(startDate, endDate, userId)
+      const guestSearch = await this.purposeService.findByDateRange(startDate, endDate, userId,page,size)
       if (guestSearch?.status_code != HttpStatus.OK) {
         ErrorCode = guestSearch?.status_code;
         throw new Error(guestSearch?.message)

@@ -263,15 +263,13 @@ export class DeliveryService {
         return Util?.CustomhandleNotFoundResponse('organization not found');
 
       const allQueries = await Delivery.findAndCountAll({
-
-
         limit,
         offset,
         where: {
+           organizationId: get_org?.organizationId,
            createdAt:{
-            [Op.between]:[startDate,endDate]
+            [Op.between]:[startDate,endDate],
           },
-          organizationId: get_org?.organizationId,
            },
         attributes: { exclude: ['updatedAt', 'deletedAt'] },
         order: [
@@ -281,8 +279,10 @@ export class DeliveryService {
 
       const result = Util?.getPagingData(allQueries, page, limit);
 
+      const dataResult = {...result}
+
       return Util?.handleSuccessRespone(
-        result,
+        dataResult,
         'Deliveries data retrieved successfully',
       );
     } catch (error) {

@@ -14,6 +14,7 @@ import { guestOpDTO } from 'src/guard/auth/guestOpDTO';
 import { Sequelize } from 'sequelize-typescript';
 import { ChatGateway } from 'src/chat/chat.gateway';
 import { Notification } from '../notification/entities/notification.entity';
+import { VisitorLog } from '../visitor-logs/entities/visitor-log.entity';
 
 @Injectable()
 export class PurposeService {
@@ -24,6 +25,7 @@ export class PurposeService {
     @InjectModel(User) private readonly UserModel: typeof User,
     @InjectModel(Guest) private readonly GuestModel: typeof Guest,
     @InjectModel(Notification) private readonly NotificationModel: typeof Notification,
+    @InjectModel(VisitorLog) private readonly VisitlogModel: typeof VisitorLog,
     private readonly sequelize: Sequelize,
     private readonly chatGateWay: ChatGateway
   ) { }
@@ -44,7 +46,10 @@ export class PurposeService {
       const purpose = await Purpose?.create({
         ...createPurposeDto,
         organizationId: get_org?.organizationId
-      },{transaction: t})
+      },
+      {
+        transaction: t
+      })
       await purpose.save()
       let purpose_data = {
         purposeId: purpose?.purposeId,
@@ -55,6 +60,7 @@ export class PurposeService {
         staffId: purpose?.staffId
       }
 
+      // Guest Notifications
       const guest = await this.GuestModel.findOne({
         where: {
           guestId: purpose?.guestId,
@@ -63,8 +69,25 @@ export class PurposeService {
         order: [['createdAt', 'DESC']]
       });
 
-      // Save the emitted data to the database
-      const emittedData = {
+      // Save VisitorLog in the database
+      const guestLogs = {
+        organizationId: purpose?.organizationId,
+        purposeId: purpose?.purposeId,
+        guestId: purpose?.guestId,
+        departmentId: purpose?.departmentId,
+        staffId: purpose?.staffId
+      }
+
+      const visitLog = await this.VisitlogModel.create({
+        ...guestLogs,
+        organizationId: get_org?.organizationId
+      },
+      {
+        transaction: t
+      })
+
+      // Save the notification data to the database
+      const notificationData = {
         organizationId: purpose?.organizationId,
         purposeId: purpose?.purposeId,
         guestId: purpose?.guestId,
@@ -74,11 +97,14 @@ export class PurposeService {
         type: purpose?.visitStatus
       };
 
-      // Saving emitted data in to database
-      const savedEmittedData = await this.NotificationModel.create({
-        ...emittedData}
-        ,{transaction: t}
-        );
+      // Saving notification data in to database
+      const saveNotificationData = await this.NotificationModel.create({
+        ...notificationData,
+        organizationId: get_org?.organizationId
+      }
+      ,{
+          transaction: t
+        });
 
       this.chatGateWay.server.emit
         (
@@ -431,7 +457,13 @@ export class PurposeService {
 
 
   // Filter By Date Range
-  async findByDateRange(startDate: Date, endDate: Date, userId: string) {
+  async findByDateRange(
+    startDate: Date, 
+    endDate: Date, 
+    userId: string,
+    page:number,
+    size:number
+    ) {
     try {
 
       console.log(userId)
@@ -445,15 +477,27 @@ export class PurposeService {
       if (!get_org)
         return Util?.handleErrorRespone('organization not found');
 
-      const purpose = await Purpose.findAll({
+        let currentPage = Util.Checknegative(page);
+        if (currentPage) {
+          return Util?.handleErrorRespone(
+            'Purpose current page cannot be negative',
+          );
+        }
+  
+        const {limit, offset} = Util?.getPagination(page,size)
+
+      const purpose = await Purpose.findAndCountAll({
+        limit,
+        offset,
         where: {
+          organizationId: get_org?.organizationId,
           createdAt:
           {
             [Op.between]: [startDate, endDate],
           },
-          organizationId: get_org?.organizationId
         },
         attributes: { exclude: ['createdAt', 'updatedAt', 'deletedAt'] },
+        order:[['createdAt','ASC']],
         include: [
           {
             model: Guest,
@@ -506,7 +550,11 @@ export class PurposeService {
         ]
       });
 
-      return Util?.handleSuccessRespone(purpose, "Delivery Successfully retrieved")
+      let result = Util?.getPagingData(purpose,page,limit)
+      console.log(result)
+
+      const dataResult = {...result}
+      return Util?.handleSuccessRespone(dataResult, "Delivery Successfully retrieved")
     } catch (error) {
       console.log(error)
       return Util?.handleGrpcTryCatchError(Util?.getTryCatchMsg(error));

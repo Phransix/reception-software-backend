@@ -322,13 +322,13 @@ export class GuestService {
 
       const guestSearch = await Guest.findAll({
         where: {
-          createdAt:
-          {
+          organizationId: get_org?.organizationId,
+          createdAt:{
             [Op.between]: [startDate, endDate],
           },
-          organizationId: get_org?.organizationId
         },
-        attributes: { exclude: ['createdAt', 'updated', 'deletedAt'] }
+        attributes: { exclude: ['createdAt', 'updated', 'deletedAt'] },
+        order:[['createdAt','ASC']],
       });
       return Util?.handleSuccessRespone(guestSearch, "Guest Data retrieved Successfully")
     } catch (error) {
