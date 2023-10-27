@@ -103,7 +103,14 @@ export class OrganizationService {
     } catch (error) {
       t.rollback();
       console.log(error);
-      return Util?.handleGrpcTryCatchError(Util?.getTryCatchMsg(error));
+      if (error.name === 'SequelizeUniqueConstraintError') {
+        // Customize the error message when a duplicate email is detected
+        return Util?.checkFileResponse(
+          'Acount has been deactivated;Please choose a different email and phone number',
+        );
+      } else {
+        return Util?.handleGrpcTryCatchError(Util?.getTryCatchMsg(error));
+      }
     }
   }
 
@@ -132,6 +139,12 @@ export class OrganizationService {
         return Util?.handleFailResponse(
           'Organization account already verified',
         );
+
+      // Check if the token has expired
+      const currentTimestamp = Math.floor(Date.now() / 1000);
+      if (decodeToken.exp && decodeToken.exp < currentTimestamp) {
+        return Util?.handleFailResponse('Token has expired');
+      }
 
       await Organization.update(
         { isVerified: true },
@@ -210,6 +223,7 @@ export class OrganizationService {
   // }
 
   // Get All
+
   async findAll(page: number, size: number) {
     try {
       let currentPage = Util.Checknegative(page);
@@ -273,9 +287,7 @@ export class OrganizationService {
     try {
       const org = await Organization.findOne({ where: { organizationId } });
       if (!org) {
-        return Util?.handleFailResponse(
-          'Organization not found',
-        );
+        return Util?.handleFailResponse('Organization not found');
       }
 
       let insertQry = {
@@ -306,9 +318,7 @@ export class OrganizationService {
         where: { organizationId },
       });
       if (!org_data) {
-        return Util?.handleFailResponse(
-          'Organization not found',
-        );
+        return Util?.handleFailResponse('Organization not found');
       }
 
       if (
@@ -352,9 +362,7 @@ export class OrganizationService {
         where: { id: org_data?.id },
       });
 
-      return Util?.SuccessRespone(
-        'Organization Image updated successfully',
-      );
+      return Util?.SuccessRespone('Organization Image updated successfully');
     } catch (error) {
       if (rollImage) {
         await this?.imgHelper?.unlinkFile(rollImage);

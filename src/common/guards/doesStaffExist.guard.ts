@@ -22,13 +22,13 @@ export class DoesStaffExist implements CanActivate{
 
         const existingStaffEmail = await this.staffService.findOneByEmail(email);
         if (existingStaffEmail) {
-            throw new ForbiddenException('This Email already exists');
+            throw new ForbiddenException('This email already exists');
             
         }
 
         const existingStaffPhoneNumber = await this.staffService.findOneByPhoneNumber(phoneNumber);
         if (existingStaffPhoneNumber) {
-            throw new ForbiddenException('This PhoneNumber already exists');
+            throw new ForbiddenException('This phone number already exists');
             
         }
 

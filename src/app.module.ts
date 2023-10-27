@@ -41,6 +41,7 @@ import { VisitorPerfomanceModule } from './modules/visitor-perfomance/visitor-pe
 import { VisitorLogsModule } from './modules/visitor-logs/visitor-logs.module';
 import { ChatGateway } from './chat/chat.gateway';
 import { NotificationModule } from './modules/notification/notification.module';
+import { DesignationModule } from './modules/designation/designation.module';
 ;
 
 
@@ -126,6 +127,7 @@ import { NotificationModule } from './modules/notification/notification.module';
     VisitorPerfomanceModule,
     VisitorLogsModule,
     NotificationModule,
+    DesignationModule,
   ],
 
   controllers: [AppController],

@@ -60,15 +60,8 @@ export class DepartmentService {
   }
 
   // Get All Departments
-  async findAll(page: number, size: number, userId:any) {
+  async findAll( userId:any) {
     try {
-      let currentPage = Util.Checknegative(page);
-      if (currentPage) {
-        return Util?.handleErrorRespone(
-          'Departments current page cannot be negative',
-        );
-      }
-      const { limit, offset } = Util.getPagination(page, size);
 
       let user = await this?.userModel.findOne({where:{userId}})
       console.log(user?.organizationId)
@@ -80,9 +73,8 @@ export class DepartmentService {
       if(!get_org)
       return Util?.CustomhandleNotFoundResponse('organization not found');
 
-      const allQueries = await Department.findAndCountAll({
-        limit,
-        offset,
+      const allQueries = await Department.findAll({
+       
         where:{organizationId:get_org?.organizationId},
         attributes: { exclude: ['updatedAt', 'deletedAt'] },
         order: [
@@ -104,10 +96,10 @@ export class DepartmentService {
 
       });
 
-      let result = Util?.getPagingData(allQueries, page, limit);
-      console.log(result);
+     
+      console.log(allQueries);
 
-      const dataResult = { ...result };
+      const dataResult = { ...allQueries };
       
       return Util?.handleSuccessRespone(
         dataResult,

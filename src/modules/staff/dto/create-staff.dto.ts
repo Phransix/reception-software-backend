@@ -67,7 +67,7 @@ export class CreateStaffDto {
     @IsNotEmpty()
     @IsEmail()
     @Matches(/^[a-zA-Z0-9._%+-]+@.+\.com$/, {
-        message: 'Invalid Format, must be a valid email with the .com',
+        message: 'Invalid Format',
      })
     readonly email: string;
 
@@ -75,6 +75,9 @@ export class CreateStaffDto {
         description: 'The phonenumber of the Staff',
         example: '************'
     })
+    @Matches(/^[0-9]{7,10}$/, {
+        message:'Invalid Format, must be numbers'
+     })
     @IsNotEmpty()
     @MinLength(10)
     @MaxLength(10)

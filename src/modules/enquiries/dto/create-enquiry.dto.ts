@@ -38,7 +38,7 @@ export class CreateEnquiryDto {
     })
     @IsEmail()
     @Matches(/^[a-zA-Z0-9._%+-]+@.+\.com$/, {
-        message: 'Invalid Format, must be a valid email with the @ and .com',
+        message: 'Invalid Format',
     })
     readonly email: string;
 
@@ -46,6 +46,9 @@ export class CreateEnquiryDto {
         description: 'The phoneNumber of the Person',
         example: '0244454587'
     })
+    @Matches(/^[0-9]{7,10}$/, {
+        message:'Invalid Format, must be numbers'
+     })
     @IsNotEmpty()
     @MaxLength(10)
     @MinLength(10)

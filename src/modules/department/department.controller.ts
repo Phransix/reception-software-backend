@@ -66,28 +66,14 @@ export class DepartmentController {
    @ApiBearerAuth('defaultBearerAuth')
    @ApiOperation({ summary: 'Get All Departments' })
    @Public()
-   @ApiQuery({
-     name: 'page',
-     type: 'number',
-     required: false,
-   })
-   @ApiQuery({
-     name: 'size',
-     type: 'number',
-     required: false,
-   })
    @UseGuards(AtGuard)
    @Get('getAllDepartments')
    async findAll(
     @GetCurrentUserId() userId : string,
-    @Query('page') page: number,
-     @Query('size') size: number
      ) {
      let ErrorCode: number;
      try {
        let deptData = await this.departmentService?.findAll(
-        page,
-         size,
          userId
          );
  

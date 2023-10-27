@@ -26,7 +26,6 @@ import {
 import { ResetPasswordService } from 'src/helper/ResetPassHelper';
 import { LogOutDTO } from 'src/guard/auth/logoutDto';
 
-
 @Injectable()
 export class UsersService {
   constructor(
@@ -62,7 +61,7 @@ export class UsersService {
         fullName: createUserDto?.fullName,
         email: createUserDto?.email,
         phoneNumber: createUserDto?.phoneNumber,
-        
+
         password: hash,
       };
 
@@ -75,7 +74,14 @@ export class UsersService {
       return Util?.handleCreateSuccessRespone('User Created Successfully');
     } catch (error) {
       console.error(error);
-      return Util?.handleGrpcTryCatchError(Util?.getTryCatchMsg(error));
+      if (error.name === 'SequelizeUniqueConstraintError') {
+        // Customize the error message when a duplicate email is detected
+        return Util?.checkFileResponse(
+          'Acount has been deactivated;Please choose a different email and phone number',
+        );
+      } else {
+        return Util?.handleGrpcTryCatchError(Util?.getTryCatchMsg(error));
+      }
     }
   }
 
@@ -266,7 +272,10 @@ export class UsersService {
       };
 
       await this?.userModel?.update(insertQry, {
-        where: { userId: user?.userId, organizationId: get_org?.organizationId },
+        where: {
+          userId: user?.userId,
+          organizationId: get_org?.organizationId,
+        },
       });
 
       return Util?.SuccessRespone('User updated successfully');
@@ -310,9 +319,7 @@ export class UsersService {
       // await this.userModel.save(user);
       Object.assign(user, changepassDto);
       await user.save();
-      return Util?.SuccessRespone(
-        'User password changed succcessfully',
-      );
+      return Util?.SuccessRespone('User password changed succcessfully');
     } catch (error) {
       console.log(error);
       return Util?.handleGrpcTryCatchError(Util?.getTryCatchMsg(error));
@@ -345,7 +352,6 @@ export class UsersService {
       return Util?.handleGrpcTryCatchError(Util?.getTryCatchMsg(error));
     }
   }
-
 
   // Reset Password
   async resetPassword(token: any, data: ResetPasswordDto) {
@@ -438,9 +444,7 @@ export class UsersService {
         where: { id: user_data?.id, organizationId: get_org?.organizationId },
       });
 
-      return Util?.SuccessRespone(
-        'User Image updated successfully',
-      );
+      return Util?.SuccessRespone('User Image updated successfully');
     } catch (error) {
       if (rollImage) {
         await this.imagehelper.unlinkFile(rollImage);
@@ -477,7 +481,6 @@ export class UsersService {
 
       Object?.assign(user);
       await user?.destroy();
-
 
       return Util?.SuccessRespone('User deleted successfully.');
     } catch (error) {
@@ -545,9 +548,18 @@ export class UsersService {
     }
   }
 
-  async getTokens( tokenId: string, user_id: string, email: string, role: string) {
+
+  
+
+
+  async getTokens(
+    org_Id: string,
+    user_id: string,
+    email: string,
+    role: string,
+  ) {
     const jwtPayload = {
-      id: tokenId,
+      id: org_Id,
       sub: user_id,
       email: email,
       scopes: role,
@@ -567,61 +579,11 @@ export class UsersService {
       }),
     ]);
 
-
     return {
       access_token: at,
       refresh_token: rt,
     };
   }
-
-
-
- async decodeRefreshToken(token:any, userId:string) {
-    try {
-
-      // let user = await this?.userModel.findOne({where:{userId}})
-      // console.log(user?.organizationId)
-      // if(!user)
-      // return Util?.CustomhandleNotFoundResponse('User not found');
-
-      // let newAccess_token =  await this?.getTokens(
-      //     user?.organizationId,
-      //   user?.userId,
-      //   user?.email,
-      //   user?.roleName,
-      // )
-      // console.log(newAccess_token)
-      // return refreshtoken
-
-      await this.jwtService.verify(token);
-      return Util?.handleCreateSuccessRespone('User Created Successfully');
-      // return newAccess_token
-    } catch (error) {
-      throw new UnauthorizedException('Invalid refresh token');
-    }
-  }
-
-
-// decodeRefreshToken(token: string) {
-//   try {
-//     console.log(token)
-//     return this.jwtService.verify(token);
-    
-//   } catch (error) {
-//     throw new UnauthorizedException('Invalid refresh token');
-//   }
-// }
-
-
-
-    
- 
-
- 
-
-
-
-
 
 
 

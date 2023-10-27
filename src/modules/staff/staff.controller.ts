@@ -64,26 +64,14 @@ export class StaffController {
   @ApiBearerAuth('defaultBearerAuth')
   @ApiOperation({ summary: 'Get All Staffs' })
   @Public()
-  @ApiQuery({
-    name: 'page',
-    type: 'number',
-    required: false,
-  })
-  @ApiQuery({
-    name: 'size',
-    type: 'number',
-    required: false,
-  })
   @UseGuards(AtGuard)
   @Get('getAllStaffs')
   async findAll(
-    @Query('page') page: number,
-    @Query('size') size: number,
     @GetCurrentUserId() userId: string,
   ) {
     let ErrorCode: number;
     try {
-      let staffData = await this.staffService?.findAll(page, size, userId);
+      let staffData = await this.staffService?.findAll(userId);
 
       if (staffData?.status_code != HttpStatus.OK) {
         ErrorCode = staffData?.status_code;
