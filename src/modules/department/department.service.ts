@@ -99,10 +99,10 @@ export class DepartmentService {
      
       console.log(allQueries);
 
-      const dataResult = { ...allQueries };
+     
       
       return Util?.handleSuccessRespone(
-        dataResult,
+        allQueries,
         'Departments Data retrieved successfully.',
       );
     } catch (error) {

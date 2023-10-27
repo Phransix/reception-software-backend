@@ -120,10 +120,9 @@ export class StaffService {
           },
         ],
       });
-
-      const dataResult = { ...allQueries };
+      
       return Util?.handleSuccessRespone(
-        dataResult,
+        allQueries,
         'Staffs Data retrieved successfully.',
       );
     } catch (error) {
