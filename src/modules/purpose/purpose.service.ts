@@ -30,8 +30,8 @@ export class PurposeService {
 
   // Create Purpose
   async createPurpose(createPurposeDto: CreatePurposeDto, userId: any) {
+    const t = await this.sequelize.transaction();
     try {
-
       let user = await this?.UserModel.findOne({ where: { userId } })
       console.log(userId)
       if (!user)
@@ -44,7 +44,7 @@ export class PurposeService {
       const purpose = await Purpose?.create({
         ...createPurposeDto,
         organizationId: get_org?.organizationId
-      })
+      },{transaction: t})
       await purpose.save()
       let purpose_data = {
         purposeId: purpose?.purposeId,
@@ -65,15 +65,20 @@ export class PurposeService {
 
       // Save the emitted data to the database
       const emittedData = {
+        organizationId: purpose?.organizationId,
         purposeId: purpose?.purposeId,
         guestId: purpose?.guestId,
-        organizationId: purpose?.organizationId,
+        departmentId: purpose?.departmentId,
+        staffId: purpose?.staffId,
         message: guest?.firstName + ' Signed In',
         type: purpose?.visitStatus
       };
 
       // Saving emitted data in to database
-      const savedEmittedData = await this.NotificationModel.create(emittedData);
+      const savedEmittedData = await this.NotificationModel.create({
+        ...emittedData}
+        ,{transaction: t}
+        );
 
       this.chatGateWay.server.emit
         (
@@ -83,8 +88,10 @@ export class PurposeService {
          SignInTime: ${purpose?.signInTime}
         `
         )
+      t.commit();
       return Util?.handleCustonCreateResponse(purpose_data, "Purpose Created Successfully")
     } catch (error) {
+      t.rollback();
       console.log(error)
       return Util?.handleGrpcTryCatchError(Util?.getTryCatchMsg(error));
     }
