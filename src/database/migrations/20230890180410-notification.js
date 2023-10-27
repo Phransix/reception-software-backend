@@ -57,6 +57,28 @@ module.exports = {
         },
         onDelete: 'CASCADE'
       },
+      departmentId: {
+        type: Sequelize.UUID,
+        allowNull: true,
+        references: {
+          model:{
+            tableName: 'Departments',
+          },
+          key:'departmentId'
+        },
+        onDelete: 'CASCADE'
+      },
+      staffId: {
+        type: Sequelize.UUID,
+        allowNull: true,
+        references: {
+          model:{
+            tableName: 'Staffs',
+          },
+          key:'staffId'
+        },
+        onDelete: 'CASCADE'
+      },
       type: {
         type: Sequelize.STRING,
         allowNull: false

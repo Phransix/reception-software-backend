@@ -6,6 +6,8 @@ import { Organization } from '../organization/entities/organization.entity';
 import { User } from '../users/entities/user.entity';
 import { Notification } from './entities/notification.entity';
 import { Guest } from '../guest/entities/guest.entity';
+import { Staff } from '../staff/entities/staff.entity';
+import { Department } from '../department/entities/department.entity';
 
 @Injectable()
 export class NotificationService {
@@ -71,6 +73,39 @@ export class NotificationService {
             },
             order: [['id', 'DESC']],
             as: 'guestData'
+          },
+          {
+            model: Department,
+            attributes: {
+              exclude: [
+                'id',
+                'organizationId',
+                'departmentId',
+                'createdAt',
+                'updatedAt',
+                'deletedAt'
+              ]
+            },
+            order: [['id', 'DESC']],
+            as: 'departmentData'
+          },
+          {
+            model: Staff,
+            attributes: {
+              exclude: [
+                'id',
+                'departmentId',
+                'organizationId',
+                'staffId',
+                'organizationName',
+                'departmentName',
+                'createdAt',
+                'updatedAt',
+                'deletedAt'
+              ]
+            },
+            order: [['id', 'DESC']],
+            as: 'staffData'
           }
         ]
       })
@@ -131,6 +166,39 @@ export class NotificationService {
               },
               order: [['id', 'DESC']],
               as: 'guestData'
+            },
+            {
+              model: Department,
+              attributes: {
+                exclude: [
+                  'id',
+                  'organizationId',
+                  'departmentId',
+                  'createdAt',
+                  'updatedAt',
+                  'deletedAt'
+                ]
+              },
+              order: [['id', 'DESC']],
+              as: 'departmentData'
+            },
+            {
+              model: Staff,
+              attributes: {
+                exclude: [
+                  'id',
+                  'departmentId',
+                  'organizationId',
+                  'staffId',
+                  'organizationName',
+                  'departmentName',
+                  'createdAt',
+                  'updatedAt',
+                  'deletedAt'
+                ]
+              },
+              order: [['id', 'DESC']],
+              as: 'staffData'
             }
           ],
           where: { 

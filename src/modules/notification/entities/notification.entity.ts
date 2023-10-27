@@ -1,7 +1,9 @@
 import { BelongsTo, Column, DataType, ForeignKey, Model, Table } from "sequelize-typescript";
+import { Department } from "src/modules/department/entities/department.entity";
 import { Guest } from "src/modules/guest/entities/guest.entity";
 import { Organization } from "src/modules/organization/entities/organization.entity";
 import { Purpose } from "src/modules/purpose/entities/purpose.entity";
+import { Staff } from "src/modules/staff/entities/staff.entity";
 const { v4: uuidv4 } = require('uuid')
 
 @Table({
@@ -78,6 +80,52 @@ export class Notification extends Model <Notification>{
         as:'guestData'
     })
     guest: Guest
+
+
+    @ForeignKey(() => Department)
+    @Column({
+        defaultValue: uuidv4,
+        type: DataType.STRING,
+        allowNull: true,
+        unique: true,
+        references: {
+            model: {
+                tableName: 'Departments',
+            },
+            key: 'departmentId',
+        },
+        onDelete: 'CASCADE',
+    })
+    departmentId: string
+    @BelongsTo(() => Department, {
+        foreignKey:'departmentId',
+        targetKey: 'departmentId',
+        as: 'departmentData'
+    })
+    department: Department
+
+    @ForeignKey(() => Staff)
+    @Column({
+        defaultValue: uuidv4,
+        type: DataType.STRING,
+        allowNull: true,
+        unique: true,
+        references: {
+            model: {
+                tableName: 'Staffs',
+            },
+            key: 'staffId',
+        },
+        onDelete: 'CASCADE',
+    })
+    staffId: string
+    @BelongsTo(() => Staff, {
+        foreignKey:'staffId',
+        targetKey: 'staffId',
+        as: 'staffData'
+    }
+    )
+    staff: Staff
     
     @Column({
         type: DataType.STRING,
