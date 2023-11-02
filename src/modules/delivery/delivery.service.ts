@@ -76,6 +76,7 @@ export class DeliveryService {
           organizationId: get_org?.organizationId
         },
         attributes: { exclude: ['updatedAt', 'deletedAt'] },
+        order: [['id', 'DESC']]
       });
 
       let result = Util?.getPagingData(allQueries, page, limit);
@@ -110,6 +111,9 @@ export class DeliveryService {
         where: { deliveryId, organizationId: get_org?.organizationId },
         attributes: { exclude: ['createdAt', 'updatedAt', 'deletedAt'] }
       });
+      if (!delivery) {
+        return Util?.CustomhandleNotFoundResponse('Delivery not found');
+      }
       return Util?.handleSuccessRespone(delivery, "Delivery Data retrieved successfully")
     } catch (error) {
       console.log(error)
@@ -163,7 +167,7 @@ export class DeliveryService {
 
       const delivery = await Delivery.findOne({ where: { deliveryId, organizationId: get_org?.organizationId } });
       if (!delivery) {
-        return Util?.handleFailResponse("Delivery Data does not exist")
+        return Util?.handleFailResponse("Delivery not found")
       }
       await delivery.destroy()
       return Util?.handleSuccessRespone(Util?.SuccessRespone, "Delivery Data deleted Successfully")
@@ -202,7 +206,7 @@ export class DeliveryService {
         return Util?.handleFailResponse('Receipient not found')
       }
 
-      // Input the name of the staff and the one to whom you're picking up the delivery
+      // Input for the name of the staff and the one to whom you're picking up the delivery
       let confirmStas = {
         name: updateDeliveryStatus?.receipientName,
         picker: updateDeliveryStatus?.deliveryPicker

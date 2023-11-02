@@ -37,6 +37,7 @@ export class NotificationService {
         where: {
           organizationId: get_org?.organizationId
         },
+        order: [['id', 'DESC']],
         include: [
           {
             model: Purpose,

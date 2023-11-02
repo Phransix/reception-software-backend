@@ -1,4 +1,4 @@
-import { HttpException, HttpStatus, Injectable, NotAcceptableException } from '@nestjs/common';
+import { HttpException, HttpStatus, Injectable } from '@nestjs/common';
 import { CreatePurposeDto } from './dto/create-purpose.dto';
 import { UpdatePurposeDto } from './dto/update-purpose.dto';
 import { InjectModel } from '@nestjs/sequelize';
@@ -33,6 +33,7 @@ export class PurposeService {
   // Create Purpose
   async createPurpose(createPurposeDto: CreatePurposeDto, userId: any) {
     const t = await this.sequelize.transaction();
+
     try {
       let user = await this?.UserModel.findOne({ where: { userId } })
       console.log(userId)
@@ -154,6 +155,7 @@ export class PurposeService {
           organizationId: get_org?.organizationId
         },
         attributes: { exclude: ['updatedAt', 'deletedAt'] },
+        order: [['id', 'DESC']],
         include: [
           {
             model: Guest,
@@ -362,6 +364,11 @@ export class PurposeService {
           }
         ]
       });
+
+      if (!purpose) {
+        return Util?.CustomhandleNotFoundResponse('Purpose not found');
+      }
+
       return Util?.handleSuccessRespone(purpose, 'Purpose Data retrieved Successfully')
     } catch (error) {
       console.log(error)
@@ -385,8 +392,14 @@ export class PurposeService {
         return Util?.handleErrorRespone('organization not found');
 
       const purpose = await Purpose.findOne({ where: { purposeId, organizationId: get_org?.organizationId } })
+
+      if (!purpose) {
+        return Util?.CustomhandleNotFoundResponse('Purpose not found');
+      }
+
       Object.assign(purpose, updatePurposeDto)
       await purpose.save()
+
       return Util?.SuccessRespone("Purpose Data updated Successfully")
     } catch (error) {
       console.log(error)
@@ -410,6 +423,11 @@ export class PurposeService {
         return Util?.handleErrorRespone('organization not found');
 
       const purpose = await Purpose.findOne({ where: { purposeId, organizationId: get_org?.organizationId } })
+
+      if (!purpose) {
+        return Util?.CustomhandleNotFoundResponse('Purpose not found');
+      }
+
       await purpose.destroy()
       return Util?.handleSuccessRespone(Util?.SuccessRespone, "Purpose Data deleted successfully")
     } catch (error) {
@@ -972,6 +990,7 @@ export class PurposeService {
       await Promise.all(updatePromises);
 
       t.commit();
+      
       return Util?.handleCreateSuccessRespone('Purposes Updated Successfully');
     } catch (error) {
       console.log(error);
