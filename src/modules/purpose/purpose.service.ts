@@ -155,6 +155,7 @@ export class PurposeService {
           organizationId: get_org?.organizationId
         },
         attributes: { exclude: ['updatedAt', 'deletedAt'] },
+        order: [['id', 'DESC']],
         include: [
           {
             model: Guest,

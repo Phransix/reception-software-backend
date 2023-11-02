@@ -76,6 +76,7 @@ export class DeliveryService {
           organizationId: get_org?.organizationId
         },
         attributes: { exclude: ['updatedAt', 'deletedAt'] },
+        order: [['id', 'DESC']]
       });
 
       let result = Util?.getPagingData(allQueries, page, limit);
