@@ -75,7 +75,7 @@ export class EnquiriesService {
         where:{organizationId:get_org?.organizationId},
         attributes: { exclude: [ 'updatedAt', 'deletedAt'] },
         order: [
-          ['createdAt', 'ASC']
+          ['createdAt', 'DESC']
         ],
         include:[{
           model:Organization,
@@ -257,7 +257,7 @@ export class EnquiriesService {
           },
         },
          attributes:{exclude:['updatedAt','deletedAt']},
-         order:[['createdAt','ASC']],
+         order:[['createdAt','DESC']],
          include:[
           {
             model: Organization,
@@ -443,7 +443,7 @@ export class EnquiriesService {
           exclude: [ 'updatedAt', 'deletedAt'],
         },
         order: [
-          ['createdAt', 'ASC']
+          ['createdAt', 'DESC']
         ],
         include:[{
           model: Organization,

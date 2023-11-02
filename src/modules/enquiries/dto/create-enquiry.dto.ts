@@ -58,6 +58,7 @@ export class CreateEnquiryDto {
     @IsEnum(Purpose, {
         message: 'Purpose must be an Official, Personal,Partnership,Legal,Career,Sales,Complaints,Payments,Investments,Events '
      })
+     
     readonly purpose: string;
 
     @ApiProperty({
