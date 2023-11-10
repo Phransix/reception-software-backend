@@ -6,31 +6,31 @@ module.exports = {
         allowNull: false,
         autoIncrement: true,
         primaryKey: true,
-        type: Sequelize.INTEGER
+        type: Sequelize.INTEGER,
       },
 
       organizationId: {
         type: Sequelize.UUID,
         defaultValue: Sequelize.UUIDV4,
         allowNull: false,
-        unique: true
+        unique: true,
       },
 
       organizationName: {
         type: Sequelize.STRING,
         allowNull: false,
-        unique: true
+        unique: true,
       },
 
       email: {
         type: Sequelize.STRING,
         allowNull: false,
-        unique: true
+        unique: true,
       },
       phoneNumber: {
         type: Sequelize.STRING,
         allowNull: false,
-        unique: true
+        unique: true,
       },
 
       profilePhoto: {
@@ -39,28 +39,25 @@ module.exports = {
 
       isVerified: {
         type: Sequelize.BOOLEAN,
-        defaultValue: false
+        defaultValue: false,
       },
-      
+
       createdAt: {
         allowNull: false,
-        type: Sequelize.DATE
-
+        type: Sequelize.DATE,
       },
       updatedAt: {
         allowNull: false,
-        type: Sequelize.DATE
+        type: Sequelize.DATE,
       },
       deletedAt: {
         type: Sequelize.DATE,
-      allowNull: true,
-     defaultValue: null
-      }, 
-    
-
+        allowNull: true,
+        defaultValue: null,
+      },
     });
   },
   down: async (queryInterface, Sequelize) => {
     await queryInterface.dropTable('Organizations');
-  }
+  },
 };

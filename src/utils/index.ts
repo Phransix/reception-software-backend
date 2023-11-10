@@ -8,8 +8,6 @@ var randomize = require('randomatic');
 
 
 export const handleCustonCreateResponse = (data, msg) => {
-
-  
     return {
       status_code: HttpStatus?.CREATED,
       data: data,
