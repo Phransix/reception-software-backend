@@ -1,43 +1,40 @@
 {
-    "development": {
-      "username": "postgres",
-      "password": "Kings",
-      "port": 5432,
-      "database": "reception_db",
-      "host": "localhost",
-      "dialect": "postgres",
-      "distinct": true,
-      "pool": {
-        "max": 100,
-        "min": 0,
-        "idle": 200000,
-        "acquire": 1000000
-      },
-      "dialectOptions": {
-        "idle_in_transaction_session_timeout": 5000,
-        "useUTC": false, 
-        "dateStrings": true
-       
-      }
+  "development": {
+    "username": "tewaa",
+    "password": "n71990GH@#0164",
+    "port": 5432,
+    "database": "reception_db_production",
+    "host": "ec2-34-204-154-168.compute-1.amazonaws.com",
+    "dialect": "postgres",
+    "pool": {
+      "max": 100,
+      "min": 0,
+      "idle": 200000,
+      "acquire": 1000000
     },
-    "production": {
-      "username": "",
-      "password": "",
-      "port": 5432,
-      "database": "",
-      "host": "",
-      "dialect": "postgres",
-      "pool": {
-        "max": 100,
-        "min": 0,
-        "idle": 200000,
-        "acquire": 1000000
-      },
-      "dialectOptions": {
-        "idle_in_transaction_session_timeout": 5000
-      }
-      
+    "dialectOptions": {
+      "idle_in_transaction_session_timeout": 5000,
+      "useUTC": false, 
+      "dateStrings": true
+     
     }
+  },
+  "production": {
+    "username": "tewaa",
+    "password": "n71990GH@#0164",
+    "port": 5432,
+    "database": "reception_db_production",
+    "host": "ec2-34-204-154-168.compute-1.amazonaws.com",
+    "dialect": "postgres",
+    "pool": {
+      "max": 100,
+      "min": 0,
+      "idle": 200000,
+      "acquire": 1000000
+    },
+    "dialectOptions": {
+      "idle_in_transaction_session_timeout": 5000
+    }
+    
   }
-  
-  
+}
