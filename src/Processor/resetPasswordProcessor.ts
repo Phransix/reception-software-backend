@@ -23,13 +23,13 @@ export class ResetPasswordProcessor{
 
         try {
 
-            let dir_path = process.env.MAIL_FROM_ADDRESS == 'production' ? '../../mail/ResetPassword' : 'ResetPassword'
+         
 
             await this.mailService.sendMail({
                 from: process.env.MAIL_FROM_ADDRESS,
                 to: details?.email,
                 subject: 'Reset Password Mail',
-                template: dir_path,
+                template: 'ResetPassword',
                 context: {
                     email : details?.email,
                     org_name: details?.org_name,

@@ -18,12 +18,11 @@ export class defaultPaswordProcessor{
         let details = job.data?.details;
         // console.log(details?.email)
         try {
-            let dir_path = process.env.MAIL_FROM_ADDRESS == 'production' ? '../../mail/defaultPassword' : 'defaultPassword'
             await this.mailService.sendMail({
                 from: process.env.MAIL_FROM_ADDRESS,
                 to: details?.email,
                 subject: 'Default Password',
-                template: dir_path,
+                template: 'defaultPassword',
                 context: {
                     email : details?.email,
                     org_name: details?.org_name,
