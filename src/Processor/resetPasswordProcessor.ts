@@ -23,14 +23,13 @@ export class ResetPasswordProcessor{
 
         try {
 
-            console.log(details);
-            
+         
 
             await this.mailService.sendMail({
                 from: process.env.MAIL_FROM_ADDRESS,
                 to: details?.email,
                 subject: 'Reset Password Mail',
-                template: 'ResetPassword',
+                template: '/ResetPassword',
                 context: {
                     email : details?.email,
                     org_name: details?.org_name,
