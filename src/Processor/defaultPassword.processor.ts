@@ -17,13 +17,13 @@ export class defaultPaswordProcessor{
         this.logger.debug('Start transcoding...');
         let details = job.data?.details;
         // console.log(details?.email)
-        let dir_path = process.env.NODE_ENV == 'production' ? 'mail/Emailverification' : 'Emailverification'
+        let dir_path = process.env.NODE_ENV == 'production' ? 'dist/mails/defaultPassword' : 'defaultPassword'
         try {
             await this.mailService.sendMail({
                 from: process.env.MAIL_FROM_ADDRESS,
                 to: details?.email,
                 subject: 'Default Password',
-                template: 'defaultPassword',
+                template: dir_path,
                 context: {
                     email : details?.email,
                     org_name: details?.org_name,

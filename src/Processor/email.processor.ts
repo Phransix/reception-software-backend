@@ -19,7 +19,7 @@ export class EmailProcessor{
         let details = job.data?.details;
         // console.log(details?.email)
         try {
-            let dir_path = process.env.NODE_ENV == 'production' ? 'mail/Emailverification' : 'Emailverification'
+            let dir_path = process.env.NODE_ENV == 'production' ? 'dist/mails/Emailverification' : 'Emailverification'
             console.log('====================================');
             console.log(dir_path);
             console.log('====================================');
