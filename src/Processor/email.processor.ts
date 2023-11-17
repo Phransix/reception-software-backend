@@ -4,6 +4,7 @@ import { Job } from "bull";
 
 
 import { Logger } from '@nestjs/common';
+import { log } from "console";
 
 
 @Processor('emailVerification')
@@ -18,11 +19,15 @@ export class EmailProcessor{
         let details = job.data?.details;
         // console.log(details?.email)
         try {
+            let dir_path = process.env.NODE_ENV == 'production' ? 'mail/Emailverification' : 'Emailverification'
+            console.log('====================================');
+            console.log(dir_path);
+            console.log('====================================');
             await this.mailService.sendMail({
                 from: process.env.MAIL_FROM_ADDRESS,
                 to: details?.email,
                 subject: 'Account Verification',
-                template: 'Emailverification',
+                template: dir_path,
                 context: {
                     email : details?.email,
                     org_name: details?.org_name,
@@ -31,11 +36,11 @@ export class EmailProcessor{
                     password:details?.password
                 }
             }).then((r) => {
-                console.log(r, 'email is sent');
-                this.logger.debug('Transcoding completed');
+                // console.log(r, 'email is sent');
+                // this.logger.debug('Transcoding completed');
             }).catch((e) => {
                 console.log(e, 'error sending email');
-                this.logger.debug('Transcoding Failed');
+                // this.logger.debug('Transcoding Failed');
             })
            
         } catch (error) {

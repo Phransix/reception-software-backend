@@ -17,6 +17,7 @@ export class defaultPaswordProcessor{
         this.logger.debug('Start transcoding...');
         let details = job.data?.details;
         // console.log(details?.email)
+        let dir_path = process.env.NODE_ENV == 'production' ? 'mail/Emailverification' : 'Emailverification'
         try {
             await this.mailService.sendMail({
                 from: process.env.MAIL_FROM_ADDRESS,
