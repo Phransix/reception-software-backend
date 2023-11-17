@@ -18,11 +18,12 @@ export class EmailProcessor{
         let details = job.data?.details;
         // console.log(details?.email)
         try {
+            let dir_path = process.env.MAIL_FROM_ADDRESS == 'production' ? '../../mail/Emailverification' : 'Emailverification'
             await this.mailService.sendMail({
                 from: process.env.MAIL_FROM_ADDRESS,
                 to: details?.email,
                 subject: 'Account Verification',
-                template: 'Emailverification',
+                template: dir_path,
                 context: {
                     email : details?.email,
                     org_name: details?.org_name,
