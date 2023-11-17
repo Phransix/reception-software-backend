@@ -39,7 +39,7 @@ import {
   
           const { statusCode } = response;
           const contentLength = response.get('content-length');
-  
+
           this.logger.log(
             `[${correlationKey}] ${method} ${url} ${statusCode} ${contentLength}: ${
               Date.now() - now

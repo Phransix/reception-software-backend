@@ -2,7 +2,9 @@ import { Column, DataType, HasMany, Model, Table } from "sequelize-typescript";
 import { User } from "src/modules/users/entities/user.entity";
 const { v4: uuidv4 } = require('uuid');
 
-@Table
+@Table({
+  paranoid: true,
+})
 export class Role extends Model<Role>{
 
     @Column({
@@ -33,8 +35,14 @@ export class Role extends Model<Role>{
     })
     status: string;
 
-    @HasMany(() => User)
-    users: User[];
+    @Column({
+        type : DataType.DATE,
+        allowNull: true,
+        defaultValue: null
+      })
+      deletedAt: Date
+
+   
 }
 
 

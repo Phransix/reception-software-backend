@@ -15,17 +15,7 @@ module.exports = {
           allowNull: false,
           unique: true
       },
-      roleId: {
-        type: Sequelize.UUID,
-        allowNull: false,
-        references: {
-          model:{
-            tableName: 'Roles',
-          },
-          key:'roleId'
-        },
-        onDelete: 'CASCADE'
-      },
+
       organizationId: {
         type: Sequelize.UUID,
         allowNull: false,
@@ -37,6 +27,18 @@ module.exports = {
         },
         onDelete: 'CASCADE'
       },
+
+      roleName: {
+        type: Sequelize.ENUM('Admin', 'Receptionist'),
+        allowNull: true,
+        required:false,
+        defaultValue: 'Receptionist',
+        validate: {
+          isIn: [['Admin', 'Receptionist']] 
+        }
+      },
+      
+
       fullName: {
         type: Sequelize.STRING,
         allowNull: false
@@ -57,11 +59,17 @@ module.exports = {
         allowNull: true
       },
 
-       isVerified: {
-        type: Sequelize.BOOLEAN,
-         defaultValue: false
+      profilePhoto: {
+        type: Sequelize.STRING
       },
- 
+
+
+      isLogin: {
+        type: Sequelize.BOOLEAN,
+        defaultValue: false
+      },
+
+
       createdAt: {
         allowNull: false,
         type: Sequelize.DATE
@@ -70,19 +78,13 @@ module.exports = {
         allowNull: false,
         type: Sequelize.DATE
       },
+      
       deletedAt: {
         type: Sequelize.DATE,
       allowNull: true,
-     defaultValue: Sequelize.literal('CURRENT_TIMESTAMP'),
+     defaultValue: null
       }, 
-      // soft_Delete: {
-      //   type: Sequelize.Date,
-      //   allowNull: true,
-      //  defaultValue: Sequelize.literal('CURRENT_TIMESTAMP'),
-      //   after: 'updatedAt'
-      // }
-
-     
+   
 
     });
   },

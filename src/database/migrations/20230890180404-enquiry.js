@@ -10,26 +10,26 @@ module.exports = {
         type: Sequelize.INTEGER,
       },
 
-      enquiryId:{
+      enquiryId: {
         type: Sequelize.UUID,
         defaultValue: Sequelize.UUIDV4,
         allowNull: false,
-        unique:true
+        unique: true,
       },
 
       organizationId: {
         type: Sequelize.UUID,
         allowNull: false,
         references: {
-          model:{
+          model: {
             tableName: 'Organizations',
           },
-          key:'organizationId'
+          key: 'organizationId',
         },
-        onDelete: 'CASCADE'
+        onDelete: 'CASCADE',
       },
 
-      name: {
+      enquirerFullName: {
         allowNull: false,
         type: Sequelize.STRING,
       },
@@ -37,38 +37,49 @@ module.exports = {
       email: {
         allowNull: true,
         type: Sequelize.STRING,
-        unique:true
       },
 
       phoneNumber: {
         allowNull: false,
         type: Sequelize.STRING,
-        unique: true
       },
 
       purpose: {
         allowNull: false,
-        type: Sequelize.ENUM('official', 'personal'),
+        type: Sequelize.ENUM(
+          'Official',
+          'Personal',
+          'Partnership',
+          'Legal',
+          'Career',
+          'Sales',
+          'Complaints',
+          'Payments',
+          'Investments',
+          'Events',
+        ),
       },
 
-      enquiryDescription: {
+      description: {
         allowNull: false,
         type: Sequelize.STRING,
       },
 
       createdAt: {
-        allowNull: false,
         type: Sequelize.DATE,
+        allowNull: false,
+        defaultValue: Sequelize.fn('now'),
+      },
+      updatedAt: {
+        type: Sequelize.DATE,
+        allowNull: false,
+        defaultValue: Sequelize.fn('now'),
       },
 
-      updatedAt: {
-        allowNull: false,
-        type: Sequelize.DATE,
-      },
-      
       deletedAt: {
-        allowNull: true,
         type: Sequelize.DATE,
+        allowNull: true,
+        defaultValue: null,
       },
     });
   },

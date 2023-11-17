@@ -4,98 +4,512 @@ import { UpdateEnquiryDto } from './dto/update-enquiry.dto';
 import { Enquiry } from './entities/enquiry.entity';
 import { Sequelize } from 'sequelize-typescript';
 import { InjectModel } from '@nestjs/sequelize';
-import * as Util from '../../utils/index'
-import * as Abstract from '../../utils/abstract'
+import * as Util from '../../utils/index';
+import { Op } from 'sequelize';
+import { Organization } from '../organization/entities/organization.entity';
+import { User } from '../users/entities/user.entity';
+import { error } from 'console';
+// import sequelize from 'sequelize';
 
 @Injectable()
 export class EnquiriesService {
-
-  constructor (
+  constructor(
     private sequelize: Sequelize,
-    @InjectModel(Enquiry) private readonly EnquiryModel: typeof Enquiry
-  ){}
+    @InjectModel(Enquiry) private readonly enquiryModel: typeof Enquiry,
+    @InjectModel(User) private userModel: typeof User,
+    @InjectModel(Organization) private orgModel: typeof Organization,
+  ) {}
 
-
-
- async create(createEnquiryDto: CreateEnquiryDto) {
+  // Create Enquiry
+  async createEnquiry(createEnquiryDto: CreateEnquiryDto,userId:any) {
     try {
-      console.log(createEnquiryDto)
-      await Abstract?.createData(Enquiry,createEnquiryDto);
-      return Util?.handleSuccessRespone(Util?.SuccessRespone,"Enquiry created successfully.")
+
+      let user = await this?.userModel.findOne({where:{userId}})
+      console.log(userId)
+      if(!user)
+      return Util?.CustomhandleNotFoundResponse('User not found');
+
+      let get_org = await this?.orgModel.findOne({where:{organizationId:user?.organizationId}})
+      if(!get_org)
+      return Util?.CustomhandleNotFoundResponse('organization not found');
+
+      const enquiry = await Enquiry?.create({
+        ...createEnquiryDto,
+        organizationId:get_org?.organizationId
+      })
+      await enquiry.save();
+      return Util?.handleCreateSuccessRespone(
+        'Enquiry created successfully.',
+      );
+    } catch (error) {
+      console.log(error);
+      return Util?.handleGrpcTryCatchError(Util?.getTryCatchMsg(error));
+    }
+  }
+
+
+  // Get All Enquiries
+  async findAll(page: number, size: number,userId:any) {
+    try {
+      let currentPage = Util.Checknegative(page);
+      if (currentPage) {
+        return Util?.handleErrorRespone(
+          'Enquiries current page cannot be negative',
+        );
+      }
+      const { limit, offset } = Util.getPagination(page, size);
+
+      let user = await this?.userModel.findOne({where:{userId}})
+      console.log(user?.organizationId)
+      if(!user)
+      return Util?.CustomhandleNotFoundResponse('User not found');
+
+      let get_org = await this?.orgModel.findOne({where:{organizationId:user?.organizationId}})
+
+      if(!get_org)
+      return Util?.CustomhandleNotFoundResponse('organization not found');
+
+      const allQueries = await Enquiry.findAndCountAll({
+        limit,
+        offset,
+        where:{organizationId:get_org?.organizationId},
+        attributes: { exclude: [ 'updatedAt', 'deletedAt'] },
+        order: [
+          ['createdAt', 'DESC']
+        ],
+        include:[{
+          model:Organization,
+          attributes:{
+            exclude:[
+              'id',
+              'createdAt',
+              'updatedAt',
+              'deletedAt',
+              'isVerified'
+            ]
+          }
+        }]
+      });
+
+      let result = Util?.getPagingData(allQueries, page, limit);
+      console.log(result);
+
+      const dataResult = { ...result };
+      return Util?.handleSuccessRespone(
+        dataResult,
+        'Enquiries Data retrieved successfully.',
+      );
+    } catch (error) {
+      console.log(error);
+      return Util?.handleGrpcTryCatchError(Util?.getTryCatchMsg(error));
+    }
+  }
+
+  // Get Enquiry by The Id
+  async findOne(enquiryId: string,userId:any) {
+    try {
+
+      let user = await this?.userModel.findOne({where:{userId}})
+      console.log(user?.organizationId)
+      if(!user)
+      return Util?.CustomhandleNotFoundResponse('User not found');
+
+      let get_org = await this?.orgModel.findOne({where:{organizationId:user?.organizationId}})
+
+      if(!get_org)
+      return Util?.CustomhandleNotFoundResponse('organization not found');
+
+      const enquiry = await Enquiry.findOne({
+        attributes: { exclude: [ 'updatedAt', 'deletedAt'] },
+        order: [
+          ['createdAt', 'ASC']
+        ],
+        include:[{
+          model:Organization,
+          attributes:{
+            exclude:[
+              'id',
+              'createdAt',
+              'updatedAt',
+              'deletedAt',
+              'isVerified'
+            ]
+          }
+        }],
+        where: { enquiryId,organizationId:get_org?.organizationId },
+      });
+
+      if (!enquiry) {
+        return Util?.CustomhandleNotFoundResponse('Enquiry not found');
+      }
+
+      return Util?.handleSuccessRespone(
+        enquiry,
+        'Enquiry retrieve successfully.',
+      );
+    } catch (error) {
+      console.log(error);
+      return Util?.handleGrpcTryCatchError(Util?.getTryCatchMsg(error));
+    }
+  }
+
+  // Update Enquiy
+  async update(enquiryId: string, updateEnquiryDto: UpdateEnquiryDto,userId:any) {
+    try {
+
+      let user = await this?.userModel.findOne({where:{userId}})
+      console.log(user?.organizationId)
+      if(!user)
+      return Util?.CustomhandleNotFoundResponse('User not found');
+
+      let get_org = await this?.orgModel.findOne({where:{organizationId:user?.organizationId}})
+
+      if(!get_org)
+      return Util?.CustomhandleNotFoundResponse('organization not found');
+
+      const enquiry = await Enquiry.findOne({ where: { enquiryId ,organizationId:get_org?.organizationId} });
+      if (!enquiry) {
+        return Util?.CustomhandleNotFoundResponse('Enquiry not found');
+      }
+
+      Object.assign(enquiry, updateEnquiryDto);
+      await enquiry.save();
+      return Util?.SuccessRespone('Enquiry updated successfully.');
+    } catch (error) {
+      console.log(error);
+      return Util?.handleGrpcTryCatchError(Util?.getTryCatchMsg(error));
+    }
+  }
+
+  // Delete Enquiry
+  async remove(enquiryId: string,userId:any) {
+    try {
+
+      let user = await this?.userModel.findOne({where:{userId}})
+      console.log(user?.organizationId)
+      if(!user)
+      return Util?.CustomhandleNotFoundResponse('User not found');
+
+      let get_org = await this?.orgModel.findOne({where:{organizationId:user?.organizationId}})
+
+      if(!get_org)
+      return Util?.CustomhandleNotFoundResponse('organization not found');
+
+      const enquiry = await Enquiry.findOne({ where: { enquiryId, organizationId:get_org?.organizationId } });
+      if (!enquiry) {
+        return Util?.CustomhandleNotFoundResponse('Enquiry not found');
+      }
+
+      Object.assign(enquiry);
+      await enquiry.destroy();
+      return Util?.SuccessRespone('Enquiry deleted successfully.');
+    } catch (error) {
+      console.log(error);
+      return Util?.handleGrpcTryCatchError(Util?.getTryCatchMsg(error));
+    }
+  }
+
+  // Filter Enquiry Data By Costom Range
+  async findEnquiryByDateRange(
+    startDate:Date,
+    endDate:Date,
+    userId:any,
+    page:number,
+    size:number,
+  ){
+
+    try {
+      console.log(userId)
+
+      let currentPage = Util.Checknegative(page);
+      if (currentPage) {
+        return Util?.handleErrorRespone(
+          'Enquiries current page cannot be negative',
+        );
+      }
+
+      const {limit, offset} = Util?.getPagination(page,size)
+
+      let user = await this?.userModel?.findOne({where:{userId}})
+      console.log(user?.organizationId)
+      if(!user){
+        return Util?.CustomhandleNotFoundResponse(
+          'User not found'
+        )
+      }
+
+      let get_org = await this?.orgModel?.findOne({
+        where:{organizationId:user?.organizationId}
+      })
+      if(!get_org){
+        return Util?.CustomhandleNotFoundResponse(
+          'Organization not found'
+        )
+      }
+
+      const allQueries = await this?.enquiryModel?.findAndCountAll({
+        limit,
+        offset,
+        where:{
+          organizationId:get_org?.organizationId,
+          createdAt:{
+            [Op.between]:[startDate,endDate]
+          },
+        },
+         attributes:{exclude:['updatedAt','deletedAt']},
+         order:[['createdAt','DESC']],
+         include:[
+          {
+            model: Organization,
+            attributes:{
+              exclude:[
+                'id',
+                'createdAt',
+                'updatedAt',
+                'deletedAt',
+                'isverified'
+              ]
+            }
+          }
+         ]
+      })
       
-    }catch(error){
+      let result = Util?.getPagingData(allQueries,page,limit)
+      console.log(result)
+
+      const dataResult = {...result}
+      return Util?.handleSuccessRespone(
+        dataResult,
+        'Enquiries Data retrieved successfully.'
+      )
+      
+    } catch (error) {
       console.log(error)
-      // return Util
-      return Util?.handleFailResponse('Enquiry registration failed')
+      return Util?.handleGrpcTryCatchError(Util?.getTryCatchMsg(error));
     }
-  };
 
-  
+  }  
 
-  async findAll(){
+  // Filter Enquiries By Purpose
+  async purposefilter(
+    keyword: string,
+     userId:any
+     ) {
     try {
-      const enquiries = await Enquiry.findAll()
-      return Util?.handleSuccessRespone(enquiries,"Enquiries Data retrieved successfully.")
+      let filterData = {};
 
-    }catch(error){
-      console.log(error)
-      return Util?.handleTryCatchError(Util?.getTryCatchMsg(error));
-    }
-  };
-
-  async findOne(id: number) {
-    try{
-      const enquiry = await Enquiry.findOne({where:{id}});
-      if (!enquiry) {
-        throw new Error('Enquiry not found.'); 
+      if (keyword != null) {
+        filterData = { purpose: keyword };
       }
+
+      let user = await this?.userModel.findOne({where:{userId}})
+      console.log(user?.organizationId)
+      if(!user)
+      return Util?.CustomhandleNotFoundResponse('User not found');
+
+      let get_org = await this?.orgModel.findOne({where:{organizationId:user?.organizationId}})
+
+      if(!get_org)
+      return Util?.CustomhandleNotFoundResponse('organization not found');
+
+
+      const filterOfficial = await this?.enquiryModel.count({
+        where: {
+          purpose:'Official',
+          organizationId:get_org?.organizationId
+        },
+      });
+      // console.log(filterPersonal)
+
+      const filterPersonal = await this?.enquiryModel.count({
+        where: {
+          purpose:'Personal',
+          organizationId:get_org?.organizationId
+        },
+      });
+      // console.log(filterPersonal)
+
+      const filterPartnership = await this?.enquiryModel.count({
+        where: {
+          purpose:'Partnership',
+          organizationId:get_org?.organizationId
+        },
+      });
+      // console.log(filterPartnership)
+
+      const filterLegal = await this?.enquiryModel.count({
+        where: {
+          purpose:'Legal',
+          organizationId:get_org?.organizationId
+        },
+      });
+      // console.log(filterLegal)
+
+      const filterCareer = await this?.enquiryModel.count({
+        where: {
+          purpose:'Career',
+          organizationId:get_org?.organizationId
+        },
+      });
+      // console.log(filterCareer)
+
+      const filterSales = await this?.enquiryModel.count({
+        where: {
+          purpose:'Sales',
+          organizationId:get_org?.organizationId
+        },
+      });
+      // console.log(filterSales)
+
+      const filterComplaints = await this?.enquiryModel.count({
+        where: {
+          purpose:'Complaints',
+          organizationId:get_org?.organizationId
+        },
+      });
+      // console.log(filterComplaints)
+
+      const filterPayments = await this?.enquiryModel.count({
+        where: {
+          purpose:'Payments',
+          organizationId:get_org?.organizationId
+        },
+      });
+      // console.log(filterPayments)
+
+      const filterInvestments = await this?.enquiryModel.count({
+        where: {
+          purpose:'Investments',
+          organizationId:get_org?.organizationId
+        },
+      });
+      // console.log(filterInvestments)
+
+      const filterEvents = await this?.enquiryModel.count({
+        where: {
+          purpose:'Events',
+          organizationId:get_org?.organizationId
+        },
+      });
+      // console.log(filterEvents)
+
+      const total = Number(filterOfficial) + Number(filterPersonal) + Number(filterPartnership) +
+      Number(filterLegal) + Number(filterCareer) + Number(filterSales) + Number(filterComplaints) +
+      Number(filterPayments) + Number(filterInvestments) + Number(filterEvents)
+
+      filterData = {
+        Official:  Number(filterOfficial),
+        Personal: Number(filterPersonal) ,
+        Partnership: Number(filterPartnership),
+        Legal: Number(filterLegal) ,
+        Career: Number(filterCareer),
+        Sales: Number(filterSales),
+        Complaints: Number(filterComplaints),
+        Payments:  Number(filterPayments),
+        Investments: Number(filterInvestments),
+        Events: Number(filterEvents),
+        Total: total
+      }
+
+      
+      return Util?.handleSuccessRespone(
+        filterData,
+        'Enquiries Purpose Data Filtered and Counted Successfully.',
+      );
+      
+    
+    } catch (error) {
+      console.log(error);
+      return Util?.handleGrpcTryCatchError(Util?.getTryCatchMsg(error));
+    }
+  }
   
-      return Util?.handleSuccessRespone(enquiry,"Enquiry retrieve successfully.")
-
-    }catch(error){
-      console.log(error)
-      return Util?.handleTryCatchError(Util?.getTryCatchMsg(error));
-    }
-  }
-
-
-  async update(id: number, updateEnquiryDto: UpdateEnquiryDto)  {
+  // Search Enquiry Data by Full Name
+  async searchEnquiry(keyword: string,userId:any) {
     try {
-    
-      const enquiry = await Enquiry.findOne({where:{id}});
-      if (!enquiry) {
-        throw new Error('Enquiry not found.'); 
-      }
 
-      Object.assign(enquiry,updateEnquiryDto)
-      await enquiry.save()
-      return Util?.handleSuccessRespone(Util?.SuccessRespone,"Enquiry updated successfully.")
+      let user = await this?.userModel.findOne({where:{userId}})
+      console.log(user?.organizationId)
+      if(!user)
+      return Util?.CustomhandleNotFoundResponse('User not found');
 
-  }catch(error){
-    console.log(error)
-    return Util?.handleTryCatchError(Util?.getTryCatchMsg(error));
-  }
-    
-  };
+      let get_org = await this?.orgModel.findOne({where:{organizationId:user?.organizationId}})
 
+      if(!get_org)
+      return Util?.CustomhandleNotFoundResponse('organization not found');
 
+      const enquiryData = await this?.enquiryModel.findAll({
+        attributes: {
+          exclude: [ 'updatedAt', 'deletedAt'],
+        },
+        order: [
+          ['createdAt', 'DESC']
+        ],
+        include:[{
+          model: Organization,
+          attributes:{
+            exclude:[
+              "id",
+              "createdAt",
+              "updatedAt",
+              "deletedAt",
+              "isVerified",
+            ]
+          }
+        }],
+        where: {
+          enquirerFullName: { [Op.like]: `%${keyword}%` },
+          organizationId:get_org?.organizationId
+        },
+      });
 
-  async remove(id: number) {
-    try{
-      const enquiry = await Enquiry.findOne({where:{id}});
-      if (!enquiry) {
-        throw new Error('Enquiry not found.'); 
-      }
-
-      Object.assign(enquiry)
-      await enquiry.destroy()
-      return Util?.handleSuccessRespone(Util?.SuccessRespone,"Enquiry deleted successfully.")
-
-    }catch(error){
-      console.log(error)
-      return Util?.handleTryCatchError(Util?.getTryCatchMsg(error));
+      return Util?.handleSuccessRespone(
+        enquiryData,
+        'Enquiries Data retrieved successfully.',
+      );
+    } catch (error) {
+      console.log(error);
+      return Util?.handleGrpcTryCatchError(Util?.getTryCatchMsg(error));
     }
-   
   }
+
+
+
+  // Bulk Create Enquiry
+  async bulkCreateEnquiry(createEnquiryDto: CreateEnquiryDto[],userId:any){
+    const t = await this?.sequelize?.transaction()
+    try {
+      console.log(userId)
+
+      let user = await this?.userModel.findOne({where:{userId}})
+      console.log(user?.organizationId)
+      if(!user){
+        t?.rollback()
+      return Util?.CustomhandleNotFoundResponse('User not found');
+      }
+
+      let get_org = await this?.orgModel.findOne({where:{organizationId:user?.organizationId}})
+      if(!get_org){
+        t?.rollback
+      return Util?.CustomhandleNotFoundResponse('organization not found');
+      }
+
+      const createBulk = await this?.enquiryModel?.bulkCreate( createEnquiryDto, {transaction:t})
+      t?.commit()
+      console.log(createBulk)
+     
+      return Util?.handleCreateSuccessRespone(
+        'Enquiries created successfully.',
+      );
+    
+
+    } catch (error) {
+      console.log(error)
+      return Util?.handleGrpcTryCatchError(Util?.getTryCatchMsg(error));
+    }
+  }
+
+
+
+
 }
-

@@ -1,11 +1,12 @@
 {
   "development": {
-    "username": "tewaa",
-    "password": "n71990GH@#0164",
+    "username": "postgres",
+    "password": "admin",
     "port": 5432,
-    "database": "reception_db_production",
-    "host": "ec2-34-204-154-168.compute-1.amazonaws.com",
+    "database": "reception_db",
+    "host": "localhost",
     "dialect": "postgres",
+    "distinct": true,
     "pool": {
       "max": 100,
       "min": 0,

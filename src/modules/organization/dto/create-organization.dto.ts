@@ -14,6 +14,8 @@ export class CreateOrganizationDto {
    @IsNotEmpty()
    readonly fullName: string;
 
+  
+
    @ApiProperty({
       description: 'The Name of the Organization',
       example: 'TechO'
@@ -30,30 +32,32 @@ export class CreateOrganizationDto {
    @IsNotEmpty()
    @IsEmail()
    @Matches(/^[a-zA-Z0-9._%+-]+@.+\.com$/, {
-      message: 'Invalid Format, must be a valid email with the .com',
+      message:'Invalid Format,'
    })
    email: string;
-
 
    @ApiProperty({
       description: 'The phoneNumber of the Organization',
       example: '0244454587'
+   })
+   @Matches(/^[0-9]{7,10}$/, {
+      message:'Invalid Format, must be numbers'
    })
    @IsNotEmpty()
    @MaxLength(10)
    @MinLength(10)
    readonly phoneNumber: string;
 
+  
+  readonly profilePhoto: string;
+
    readonly isVerified: boolean
+
+   readonly deletedAt: Date
 
 }
 
 export class VerifyEmailDto {    
-   // @IsNotEmpty()
-   // @IsEmail()
-   // @ApiProperty()
-   // email: string;
-
    @IsNotEmpty()
    @ApiProperty()
    token: string;

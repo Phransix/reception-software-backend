@@ -1,9 +1,17 @@
 import { ApiProperty } from "@nestjs/swagger";
 import { IsEmail, IsEnum, IsNotEmpty, IsString, Matches, MaxLength, MinLength } from "class-validator";
 
-enum Purpose {
-    OFFICAIL = 'official',
-    PERSONAL = 'personal'
+export enum Purpose {
+    OFFICAIL = 'Official',
+    PERSONAL = 'Personal',
+    PARTNERSHIP= 'Partnership',
+    LEGAL = 'Legal',
+    CAREER = 'Career',
+    SALES = 'Sales',
+    COMPLAINTS = 'Complaints',
+    PAYMENTS = 'Payments',
+    INVESTMENTS = 'Investments',
+    EVENTS = 'Events'
 };
 
 
@@ -11,7 +19,7 @@ export class CreateEnquiryDto {
 
     @ApiProperty({
         description: 'The Id of the Organization',
-        example: '1'
+        example: 'a036ad92-bccf-405a-8876-6fd7f6bd1514'
     })
     @IsNotEmpty()
     readonly organizationId: string;
@@ -22,15 +30,11 @@ export class CreateEnquiryDto {
     })
     @IsString()
     @IsNotEmpty()
-    readonly name: string;
+    readonly enquirerFullName: string;
 
     @ApiProperty({
         description: 'The email of the Person ',
-        example: 'kemi@gmail.com'
-    })
-    @IsEmail()
-    @Matches(/^[a-zA-Z0-9._%+-]+@.+\.com$/, {
-        message: 'Invalid Format, must be a valid email with the @ and .com',
+        example: 'kemiqals93@gmail.com'
     })
     readonly email: string;
 
@@ -38,6 +42,9 @@ export class CreateEnquiryDto {
         description: 'The phoneNumber of the Person',
         example: '0244454587'
     })
+    @Matches(/^[0-9]{7,10}$/, {
+        message:'Invalid Format, must be numbers'
+     })
     @IsNotEmpty()
     @MaxLength(10)
     @MinLength(10)
@@ -49,16 +56,17 @@ export class CreateEnquiryDto {
     })
     @IsNotEmpty()
     @IsEnum(Purpose, {
-        message: 'Purpose must be an official or personal '
+        message: 'Purpose must be an Official, Personal,Partnership,Legal,Career,Sales,Complaints,Payments,Investments,Events '
      })
+     
     readonly purpose: string;
 
     @ApiProperty({
-        description: ' What is the enquiry about',
-        example: 'Job availabilty'
+        description: 'Description about the enquiry',
+        example: 'write short message on the enquiry'
     })
     @IsNotEmpty()
-    readonly  enquiryDescription: string
+    readonly description: string;
 
 }
 

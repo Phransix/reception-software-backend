@@ -1,10 +1,16 @@
-// import { DataType } from "sequelize";
-import { BelongsTo, Column, DataType, ForeignKey, Model, Table } from "sequelize-typescript";
+import { BelongsTo, Column, DataType, ForeignKey, HasMany, Model, Table } from "sequelize-typescript";
 import { Organization } from "src/modules/organization/entities/organization.entity";
 const { v4: uuidv4 } = require('uuid');
 
-@Table
+
+
+@Table({
+    paranoid: true,
+  })
 export class Delivery extends Model <Delivery> {
+  static findByDateRange(startDate: Date, endDate: Date) {
+    throw new Error('Method not implemented.');
+  }
 
     @Column({
         type: DataType.INTEGER,
@@ -22,7 +28,6 @@ export class Delivery extends Model <Delivery> {
       })
       deliveryId: string
 
-
       @ForeignKey(() => Organization)
       @Column({
         defaultValue: uuidv4,
@@ -31,7 +36,7 @@ export class Delivery extends Model <Delivery> {
           unique:true,
           references: {
             model: {
-              tableName: 'Organization',
+              tableName: 'Organizations',
             },
             key: 'organizationId',
           },
@@ -52,13 +57,13 @@ export class Delivery extends Model <Delivery> {
         type: DataType.STRING,
         allowNull: false
     })
-    to: string
+    receipientName: string
 
     @Column({
         type: DataType.STRING,
         allowNull: false
     })
-    phoneNumber: string
+    receipientPhoneNumber: string
 
     @Column({
         type: DataType.STRING,
@@ -67,15 +72,9 @@ export class Delivery extends Model <Delivery> {
     email: string
 
     @Column({
-        type: DataType.STRING,
-        allowNull: false
-    })
-    date_and_time: string
-
-    @Column({
         type: DataType.ENUM,
-        values: ['delivered','not delivered'],
-        allowNull: false,
+        values: ['delivered','awaiting_pickup'],
+        allowNull: true,
     })
     status: string;
 
@@ -88,15 +87,34 @@ export class Delivery extends Model <Delivery> {
 
     @Column({
         type: DataType.STRING,
-        allowNull: true
+        allowNull: false
     })
-    deliveryDescription: string
+    itemQuantity: string
+
+    @Column({
+      type: DataType.ENUM,
+      values: ['pc(c)','bx(s)','pck(s)'],
+      allowNull: true,
+    })
+    unit: string
+
+    @Column({
+        type: DataType.STRING,
+        allowNull: false
+    })
+    itemDescription: string
+
+    @Column({
+      type: DataType.STRING,
+      allowNull: true
+  })
+  deliveryPicker: string
 
     @Column ({
         type: DataType.DATE,
         allowNull: true,
-        // defaultValue: null
-      })
-      deletedAt: Date
-
+        defaultValue: null
+    })
+    deletedAt: Date
+  
 }

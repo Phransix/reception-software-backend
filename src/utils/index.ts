@@ -119,7 +119,16 @@ export const handleCustonCreateResponse = (data, msg) => {
       message:msg,    };
   }
 
-  
+  export const handleGrpcTryCatchError = (
+    message = "There was an error processing your request"
+  ) => {
+    return {
+      status_code: HttpStatus?.BAD_REQUEST,
+      failed: true,
+      message : message,
+      // service_id: "PRODUCT_CATEGORY_SERVICE"
+    };
+  };
   
   export const handleGrpcReqError = (error) => {
     console.error(error);
@@ -293,26 +302,27 @@ export const handleCustonCreateResponse = (data, msg) => {
   }
 
 
-export const getPagingData = (data, page, limit,length) => {
-  let { rows: items } = data;
-  const currentPage = page ? +page : 1;
-  let totalItems = length;
+export const getPagingData = (data, page, limit) => {
+  let { count: totalItems,rows: items } = data;
+  const currentPage = page ? +page : 0;
   const totalPages = Math.ceil(totalItems / limit);
   items = items || [];
 
-console.log(data?.rows?.length)
   return {
-    status_code: HttpStatus?.OK,
-    message: "success",
-    data: items,
+    items,
     currentPage,
     totalItems,
-    totalPages,
-    // service_id: "PRODUCT_CATEGORY_SERVICE"
-   
+    totalPages
   };
 };
 
+export const formatDateToDDMMYYYY = (date: Date): string => {
+  const day = String(date.getDate()).padStart(2, '0');
+  const month = String(date.getMonth() + 1).padStart(2, '0');
+  const year = date.getFullYear();
+
+  return `${day}/${month}/${year}`;
+}
 
   export const paginate = (query, schema) => {
     let page = query.page ? query.page - 1 : 0;
@@ -427,7 +437,8 @@ console.log(data?.rows?.length)
 
 
   export const verifyUserToken = (token) =>{
-   const decode = jwt.verify(token,process.env.JWT_PUBLIC_KEY);
+  //  const decode = jwt.verify(token,process.env.JWT_PUBLIC_KEY)
+  const decode = jwt.verify(token,process.env.JWT_SECRET)
    return decode;
  
  };
@@ -438,8 +449,9 @@ console.log(data?.rows?.length)
 
 // };
 
- export const  reseetpassToken = (user_id)  => {
-   return jwt.sign({user_id}, process.env.JWT_RESET_PASSWORD, {expiresIn: '20m'});
+ export const  reseetpassToken = (data)  => {
+  let {email,userId } = data
+   return jwt.sign({email,userId}, process.env.JWT_RESET_PASSWORD, {expiresIn: '1h'});
  };
 
  export const verifyToken = (token) =>{
@@ -454,14 +466,14 @@ export const  createAccessToken = ({id})  => {
 };
 
 
- export const  generateRefreshToken = ({id})  => {
-  return jwt.sign({organization_Id : id}, process.env.jWT_REFRESH_SECRET, {expiresIn: '30d'});
+ export const  generateRefreshToken = ({userId})  => {
+  return jwt.sign({user_id : userId}, process.env.jWT_REFRESH_SECRET, {expiresIn: '30d'});
 };
 
 
 export const createEmailToken = (data) => {
   let {email,organizationId } = data
-  return jwt.sign({email,organizationId}, process.env.JWT_EMAIL_TOKEN, {expiresIn: '2h'});
+  return jwt.sign({email,organizationId}, process.env.JWT_EMAIL_TOKEN, {expiresIn: '1h'});
 }
 
 export const verifyEmailToken = (token) => {
@@ -474,9 +486,8 @@ export const generateId =(pattern,length) => {
 }
 
 
-
-
-
 // export const destroyToken = (token) => {
 //   return jwt.(token);
 // }
+
+

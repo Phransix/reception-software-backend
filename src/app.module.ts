@@ -7,30 +7,53 @@ import { BullModule } from '@nestjs/bull';
 import { MailerModule } from '@nestjs-modules/mailer';
 import { HandlebarsAdapter } from '@nestjs-modules/mailer/dist/adapters/handlebars.adapter';
 import { join } from 'path';
-// import { APP_GUARD } from '@nestjs/core';
-// import { AtGuard } from 'src/common/guards';
 import { LoggingInterceptor } from './logging.interceptor';
-import { APP_INTERCEPTOR } from '@nestjs/core';
-// import { AppController } from './app.controller';
-// import { AppService } from './app.service';
+import { APP_GUARD, APP_INTERCEPTOR } from '@nestjs/core';
 import { OrganizationModule } from './modules/organization/organization.module';
 import { UsersModule } from './modules/users/users.module';
 import { EnquiriesModule } from './modules/enquiries/enquiries.module';
-import { VisitorModule } from './modules/visitor/visitor.module';
 import { DeliveryModule } from './modules/delivery/delivery.module';
 import { AppService } from './app.service';
-import { AuthModule } from './modules/auth/auth.module';
 import { RoleModule } from './modules/role/role.module';
-import { PaginateModule } from 'nestjs-sequelize-paginate'
+import { RolesGuard } from './common/guards/roles.guard';
+import { PassportModule } from '@nestjs/passport';
+import { JwtModule } from '@nestjs/jwt'
+import { AppController } from './app.controller';
+import { UsersService } from './modules/users/users.service';
+import { Role } from './modules/role/entities/role.entity';
+import { Organization } from './modules/organization/entities/organization.entity';
+import { User } from './modules/users/entities/user.entity';
+import { GuestModule } from './modules/guest/guest.module';
+import { AtGuard } from './common/guards';
+import { DepartmentModule } from './modules/department/department.module';
+import { StaffModule } from './modules/staff/staff.module';
+import { AuthPassService } from './guard/auth/authPass.service';
+import { PasswordService } from './guard/passwordhash.service';
+import { PurposeModule } from './modules/purpose/purpose.module';
+import { MulterModule } from '@nestjs/platform-express';
+import { imageUploadProfile } from './helper/usersProfile';
+import { staffImageUploadProfile } from './helper/staffProfiles';
+import { orgImageUploadProfile } from './helper/organizationsProfile';
+import { ResetPasswordService } from './helper/ResetPassHelper';
+import { OverviewModule } from './modules/overview/overview.module';
+import { AnalyticsModule } from './modules/analytics/analytics.module';
+import { VisitorPerfomanceModule } from './modules/visitor-perfomance/visitor-perfomance.module';
+import { VisitorLogsModule } from './modules/visitor-logs/visitor-logs.module';
+import { ChatGateway } from './chat/chat.gateway';
+import { NotificationModule } from './modules/notification/notification.module';
+import { DesignationModule } from './modules/designation/designation.module';
+;
 
 
 
 @Module({
   imports: [
+    SequelizeModule.forFeature([User,Role,Organization]),
+    BullModule.registerQueue({name:'resetPassword'}),
 
-    PaginateModule.forRoot({
-      url: 'http://localhost:3005',
-    }),
+   
+    PassportModule,
+    JwtModule.register({secret:process.env.jWT_ACCESS_SECRET, signOptions: {expiresIn:'5hrs'}}),
 
     BullModule.forRoot({
       redis: {
@@ -60,7 +83,6 @@ import { PaginateModule } from 'nestjs-sequelize-paginate'
         transport: {
           service: 'Gmail',
           host: config.get('MAIL_HOST'),
-          // secure: false,
           port: 465,
           ignoreTLS: true,
           secure: true,
@@ -91,32 +113,51 @@ import { PaginateModule } from 'nestjs-sequelize-paginate'
       ...DB_CONFIGS[process.env.NODE_ENV],
       autoLoadModels: true,
     }),
-    VisitorModule,
     DeliveryModule,
     OrganizationModule,
     UsersModule,
     EnquiriesModule,
-    AuthModule,
     RoleModule,
-    
+    GuestModule,
+    DepartmentModule,
+    StaffModule,
+    PurposeModule,
+    OverviewModule,
+    AnalyticsModule,
+    VisitorPerfomanceModule,
+    VisitorLogsModule,
+    NotificationModule,
+    DesignationModule,
   ],
 
-  controllers: [],
+  controllers: [AppController],
   providers: [
-
+   
+    UsersService,
+    AuthPassService,
+    PasswordService,
+    imageUploadProfile,
+    staffImageUploadProfile,
+    orgImageUploadProfile,
     AppService,
-    
-    // {
-    //   provide: APP_GUARD,
-    //   useClass: AtGuard
-      
-    // },
+    ResetPasswordService,
+
+     {
+      provide: APP_GUARD,
+      useClass: RolesGuard
+     },
 
     {
       provide: APP_INTERCEPTOR,
       useClass:LoggingInterceptor
       
     },
+    {
+      provide: APP_GUARD,
+      useClass: AtGuard,
+    },
+    ChatGateway
+    
   ],
 })
 export class AppModule {}
