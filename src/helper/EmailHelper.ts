@@ -33,7 +33,7 @@ export class EmailService {
                 {
                     details,
                 },
-                // { delay: 1000 },
+                { delay: 1000 },
             );
 
         } catch (error) {
@@ -62,7 +62,7 @@ export class EmailService {
                 {
                     details,
                 },
-                // { delay: 1000 },
+                { delay: 5000 },
             );
 
         } catch (error) {
