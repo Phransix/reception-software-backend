@@ -58,12 +58,6 @@ export class CreateDeliveryDto {
         description: "The senders'/s email address",
         example: 'ansah@gmail.com'
     })
-    @IsString()
-    @IsEmail()
-    // @IsNotEmpty()
-    @Matches(/^[a-zA-Z0-9._%+-]+@.+\.com$/, {
-        message: 'Invalid Format, must be a valid email with the .com',
-     })
     readonly email: string;
 
     @ApiProperty({
