@@ -60,7 +60,7 @@ export class CreateDeliveryDto {
     })
     @IsString()
     @IsEmail()
-    @IsNotEmpty()
+    // @IsNotEmpty()
     @Matches(/^[a-zA-Z0-9._%+-]+@.+\.com$/, {
         message: 'Invalid Format, must be a valid email with the .com',
      })

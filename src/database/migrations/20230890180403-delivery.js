@@ -48,7 +48,7 @@ module.exports = {
       },
       email: {
         type: Sequelize.STRING,
-        allowNull: false
+        allowNull: true
       },
       type: {
         type: Sequelize.ENUM('document', 'food', 'other'),
