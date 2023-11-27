@@ -44,6 +44,20 @@ export class PurposeService {
       if (!get_org)
         return Util?.CustomhandleNotFoundResponse('organization not found');
 
+      // Check if guest is signed out first before a new purpose is created
+      const guestSignOutChecks = await this.PurposeModel.findOne({
+        where: {
+          guestId: createPurposeDto.guestId,
+          visitStatus: 'Signed In',
+          organizationId: get_org?.organizationId
+        }
+      })
+
+      // Checks one (1)
+      if (guestSignOutChecks) {
+        return Util?.handleErrorRespone('Guest Signed In, Sign out first to create a new purpose')
+      }
+
       const purpose = await Purpose?.create({
         ...createPurposeDto,
         organizationId: get_org?.organizationId

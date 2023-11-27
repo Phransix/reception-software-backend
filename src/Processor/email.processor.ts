@@ -22,7 +22,7 @@ export class EmailProcessor{
                 from: process.env.MAIL_FROM_ADDRESS,
                 to: details?.email,
                 subject: 'Account Verification',
-                template: '/var/www/html/receptionapi.webbermill.com/dist/mails/Emailverification',
+                template: 'Emailverification',
                 context: {
                     email : details?.email,
                     org_name: details?.org_name,
