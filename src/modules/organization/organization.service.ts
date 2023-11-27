@@ -145,7 +145,7 @@ export class OrganizationService {
       if (decodeToken.exp && decodeToken.exp < currentTimestamp) {
         return Util?.handleFailResponse('Token has expired');
       }
-
+      
       await Organization.update(
         { isVerified: true },
         { where: { id: orgToken?.id, email: orgToken?.email } },

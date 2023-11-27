@@ -183,9 +183,10 @@ export class UsersService {
         offset,
         where: { organizationId: get_org?.organizationId },
         attributes: {
-          exclude: ['password', 'updatedAt', 'deletedAt'],
+          exclude: ['password', 'updatedAt'],
         },
         order: [['createdAt', 'ASC']],
+        paranoid: false,
 
         include: [
           {
@@ -482,7 +483,7 @@ export class UsersService {
       Object?.assign(user);
       await user?.destroy();
 
-      return Util?.SuccessRespone('User deleted successfully.');
+      return Util?.SuccessRespone('Receptionist disabled.');
     } catch (error) {
       console.log(error);
       return Util?.handleGrpcTryCatchError(Util?.getTryCatchMsg(error));
@@ -495,7 +496,7 @@ export class UsersService {
       const organization = await this.userModel.restore({ where: { userId } });
       console.log(organization);
       return Util?.handleCreateSuccessRespone(
-        'Organization restored successfully.',
+        'Receptionist enabled.',
       );
     } catch (error) {
       console.log(error);

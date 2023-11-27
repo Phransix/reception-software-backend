@@ -32,7 +32,7 @@ export class CreateOrganizationDto {
    @IsNotEmpty()
    @IsEmail()
    @Matches(/^[a-zA-Z0-9._%+-]+@.+\.com$/, {
-      message:'Invalid Format,'
+      message:'Invalid email format,'
    })
    email: string;
 
