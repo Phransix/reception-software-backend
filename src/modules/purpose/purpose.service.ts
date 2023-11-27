@@ -51,9 +51,8 @@ export class PurposeService {
           visitStatus: 'Signed In',
           organizationId: get_org?.organizationId
         }
-      })
+      });
 
-      // Checks one (1)
       if (guestSignOutChecks) {
         return Util?.handleErrorRespone('Guest Signed In, Sign out first to create a new purpose')
       }
