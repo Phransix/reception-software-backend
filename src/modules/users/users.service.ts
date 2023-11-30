@@ -425,7 +425,7 @@ export class UsersService {
         createUserImgDto?.profilePhoto,
       );
 
-      rollImage = user_image;
+      rollImage = user_image?.profilePhoto;
 
       // Delete the old profile photo if it exists in the directorate
       let front_path = user_data?.profilePhoto;
@@ -439,7 +439,8 @@ export class UsersService {
         });
       }
       let insertQrys = {
-        profilePhoto: user_image,
+        profilePhoto: user_image?.profilePhoto,
+        imageUrl: user_image?.imageUrl
       };
       await this?.userModel?.update(insertQrys, {
         where: { id: user_data?.id, organizationId: get_org?.organizationId },

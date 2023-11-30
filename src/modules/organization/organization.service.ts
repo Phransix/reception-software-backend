@@ -311,6 +311,7 @@ export class OrganizationService {
     organizationId: string,
     createOrganizationImgDto: CreateOrganizationImgDto,
   ) {
+    
     let rollImage = '';
 
     try {
@@ -339,8 +340,8 @@ export class OrganizationService {
       let org_image = await this?.imgHelper?.uploadOrganizationImage(
         createOrganizationImgDto?.profilePhoto,
       );
-
-      rollImage = org_image;
+   
+      rollImage = org_image?.profilePhoto;
 
       // Delete the old profile photo if it exists in the directorate
       let front_path = org_data?.profilePhoto;
@@ -355,9 +356,12 @@ export class OrganizationService {
       }
 
       let insertQry = {
-        profilePhoto: org_image,
+        profilePhoto: org_image?.profilePhoto,
+        imageUrl: org_image?.imageUrl
+
       };
-      // console.log(insertQry)
+      console.log(insertQry)
+     
       await this?.organizationModel?.update(insertQry, {
         where: { id: org_data?.id },
       });
@@ -463,3 +467,7 @@ export class OrganizationService {
   //   };
   // }
 }
+
+
+
+

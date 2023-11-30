@@ -66,6 +66,12 @@ as: 'Organization',
    })
    profilePhoto: string;
 
+   @Column({
+    type: DataType.STRING,
+    allowNull: true,
+  })
+  imageUrl:string;
+
    @HasMany(() => Staff)
    staff: Staff[]
 
