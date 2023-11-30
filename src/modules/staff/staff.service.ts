@@ -294,7 +294,7 @@ export class StaffService {
         createStaffImgDto?.profilePhoto,
       );
 
-      rollImage = staff_image;
+      rollImage = staff_image?.profilePhoto;
 
       // Delete the old profile photo if it exists in the directorate
       let front_path = staff_data?.profilePhoto;
@@ -309,7 +309,8 @@ export class StaffService {
         });
       }
       let insertQry = {
-        profilePhoto: staff_image,
+        profilePhoto: staff_image?.profilePhoto,
+        imageUrl: staff_image?.imageUrl,
       };
       await this?.staffModel?.update(insertQry, {
         where: {

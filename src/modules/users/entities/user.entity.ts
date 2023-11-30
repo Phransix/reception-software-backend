@@ -113,6 +113,12 @@ export class User extends Model<User> {
   })
   deletedAt: Date;
 
+  @Column({
+    type: DataType.STRING,
+    allowNull: true,
+  })
+  imageUrl:string;
+
   role: Role[];
 
 

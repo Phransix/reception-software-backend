@@ -237,7 +237,7 @@ export class DepartmentService {
         createDepartImageDto?.profilePhoto
       )
 
-      rollImage = dept_image;
+      rollImage = dept_image?.profilePhoto;
 
       // Delete the old profile photo if it exists in the directorate
       let front_path = dept_data?.profilePhoto;
@@ -253,7 +253,8 @@ export class DepartmentService {
       }
 
       let insertQry = {
-        profilePhoto: dept_image
+        profilePhoto: dept_image?.profilePhoto,
+        imageUrl: dept_image?.imageUrl
       };
 
       await this?.departmentModel?.update(
