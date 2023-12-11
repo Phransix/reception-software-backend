@@ -300,13 +300,8 @@ export class StaffService {
       let front_path = staff_data?.profilePhoto;
 
       if (front_path != null) {
-        fs.access(front_path, fs.F_OK, async (err) => {
-          if (err) {
-            console.error(err);
-            return;
-          }
-          await this.staffImgHelper.unlinkFile(front_path);
-        });
+        const s3FilePath = front_path.replace(process.env.AWS_BUCKET_URL, '');
+        await this.staffImgHelper.unlinkFile(s3FilePath);
       }
       let insertQry = {
         profilePhoto: staff_image?.profilePhoto,

@@ -66,6 +66,8 @@ var Buffer = require('buffer/').Buffer
         console.error('Failed to delete file from S3.', error);
       }
     }
+
+    
   }
 
 
