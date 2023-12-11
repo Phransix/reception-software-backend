@@ -6,10 +6,39 @@ import { ApiBearerAuth, ApiOperation, ApiTags } from '@nestjs/swagger';
 import * as Util from '../../utils/index'
 import { AtGuard } from 'src/common/guards';
 import { AuthGuard } from '@nestjs/passport';
+import { CreateNotificationDto } from './dto/create-notification.dto';
 
 @Controller('notification')
 export class NotificationController {
-  constructor(private readonly notificationService: NotificationService) {}
+  constructor(private readonly notificationService: NotificationService) { }
+
+  // Bulk Purpose
+  @UseGuards(AuthGuard('jwt'))
+  @ApiBearerAuth('defaultBearerAuth')
+  @Public()
+  @UseGuards(AtGuard)
+  @ApiOperation({ summary: 'Create Multiple Notifications' })
+  @Public()
+  @ApiTags('Notification')
+  @Post('bulkNotificationsCreate/create')
+  async buklCreatePurpose(
+    @Body() createNotificationDto: CreateNotificationDto[],
+    @GetCurrentUserId() userId: string
+  ) {
+    let ErrorCode: number
+    try {
+      const modelName = 'Notification'
+      const notificationsResults = await this.notificationService.bulkNotification(createNotificationDto, userId)
+      if (notificationsResults?.status_code != HttpStatus.CREATED) {
+        ErrorCode = notificationsResults?.status_code;
+        throw new Error(notificationsResults?.message)
+      }
+      return notificationsResults
+    } catch (error) {
+      console.log(error)
+      return Util?.handleRequestError(Util?.getTryCatchMsg(error), ErrorCode)
+    }
+  }
 
   // Get all Notifications
   @UseGuards(AuthGuard('jwt'))
@@ -25,7 +54,7 @@ export class NotificationController {
 
     let ErrorCode: number;
     try {
-      
+
       let getNotifications = await this.notificationService.findAll(userId);
 
       if (getNotifications && 'status_code' in getNotifications && getNotifications.status_code !== HttpStatus.OK) {
@@ -36,40 +65,40 @@ export class NotificationController {
 
     } catch (error) {
       console.log(error)
-      return Util?.handleRequestError(Util?.getTryCatchMsg(error),ErrorCode)
+      return Util?.handleRequestError(Util?.getTryCatchMsg(error), ErrorCode)
     }
 
   }
 
 
-    // Get Notification by notificationId
-    @UseGuards(AuthGuard('jwt'))
-    @ApiBearerAuth('defaultBearerAuth')
-    @Public()
-    @UseGuards(AtGuard)
-    @ApiTags('Notification')
-    @ApiOperation({ summary: 'Get Notificatoion By notificationId' })
-    @Get(':notificationId')
-    async findOne(
-      @Param('notificationId') notificationId: string,
-      @GetCurrentUserId() userId: string
-    ) {
-      let ErrorCode: number
-      try {
-        let notification = await this.notificationService.findOne(notificationId, userId);
-        if (notification?.status_code != HttpStatus.OK) {
-          ErrorCode = notification?.status_code;
-          throw new Error(notification?.message)
-        }
-        return notification;
-  
-      } catch (error) {
-        console.log(error)
-        return Util?.handleRequestError(Util?.getTryCatchMsg(error), ErrorCode)
+  // Get Notification by notificationId
+  @UseGuards(AuthGuard('jwt'))
+  @ApiBearerAuth('defaultBearerAuth')
+  @Public()
+  @UseGuards(AtGuard)
+  @ApiTags('Notification')
+  @ApiOperation({ summary: 'Get Notificatoion By notificationId' })
+  @Get(':notificationId')
+  async findOne(
+    @Param('notificationId') notificationId: string,
+    @GetCurrentUserId() userId: string
+  ) {
+    let ErrorCode: number
+    try {
+      let notification = await this.notificationService.findOne(notificationId, userId);
+      if (notification?.status_code != HttpStatus.OK) {
+        ErrorCode = notification?.status_code;
+        throw new Error(notification?.message)
       }
-    }
+      return notification;
 
-  
+    } catch (error) {
+      console.log(error)
+      return Util?.handleRequestError(Util?.getTryCatchMsg(error), ErrorCode)
+    }
+  }
+
+
   // Update notification status
   @Public()
   @ApiTags('Notification')

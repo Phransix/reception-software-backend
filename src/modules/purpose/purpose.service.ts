@@ -15,6 +15,7 @@ import { Sequelize } from 'sequelize-typescript';
 import { ChatGateway } from 'src/chat/chat.gateway';
 import { Notification } from '../notification/entities/notification.entity';
 import { VisitorLog } from '../visitor-logs/entities/visitor-log.entity';
+import { CreateVisitlogDto } from '../visitor-logs/visitor-log.dto';
 
 @Injectable()
 export class PurposeService {
@@ -43,6 +44,19 @@ export class PurposeService {
       let get_org = await this?.OrgModel.findOne({ where: { organizationId: user?.organizationId } })
       if (!get_org)
         return Util?.CustomhandleNotFoundResponse('organization not found');
+
+      // Check if guest is signed out first before a new purpose is created
+      const guestSignOutChecks = await this.PurposeModel.findOne({
+        where: {
+          guestId: createPurposeDto.guestId,
+          visitStatus: 'Signed In',
+          organizationId: get_org?.organizationId
+        }
+      });
+
+      if (guestSignOutChecks) {
+        return Util?.handleErrorRespone('Guest Signed In, Sign out first to create a new purpose')
+      }
 
       const purpose = await Purpose?.create({
         ...createPurposeDto,
@@ -921,8 +935,7 @@ export class PurposeService {
   }
 
   // Bulk Purpose
-  async bulkPurpose(Purpose: string, data: any[], userId: any) {
-    const myModel = this.sequelize.model(Purpose);
+  async bulkPurpose(createPurposeDto: CreatePurposeDto[], userId: any) {
     const t = await this.sequelize.transaction();
     try {
 
@@ -941,7 +954,8 @@ export class PurposeService {
         return Util?.handleErrorRespone('organization not found');
       }
 
-      const createMultiplePurpose = await myModel.bulkCreate(data, { transaction: t })
+      const createMultiplePurpose = await this.PurposeModel.bulkCreate(createPurposeDto, { transaction: t })
+      
       t.commit()
       return Util?.handleCreateSuccessRespone("Purposes Created Successfully")
 

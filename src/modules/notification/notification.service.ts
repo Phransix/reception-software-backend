@@ -8,6 +8,8 @@ import { Notification } from './entities/notification.entity';
 import { Guest } from '../guest/entities/guest.entity';
 import { Staff } from '../staff/entities/staff.entity';
 import { Department } from '../department/entities/department.entity';
+import { CreateNotificationDto } from './dto/create-notification.dto';
+import { Sequelize } from 'sequelize-typescript';
 
 @Injectable()
 export class NotificationService {
@@ -15,8 +17,41 @@ export class NotificationService {
   constructor(
     @InjectModel(Organization) private readonly OrgModel: typeof Organization,
     @InjectModel(User) private readonly UserModel: typeof User,
-    @InjectModel(Notification) private readonly NotificationModel: typeof Notification
+    @InjectModel(Notification) private readonly NotificationModel: typeof Notification,
+    private readonly sequelize: Sequelize,
   ) {}
+  
+  // Creating Bulk NOtifications
+  async bulkNotification(createNotificationDto: CreateNotificationDto[], userId: any) {
+    const t = await this.sequelize.transaction();
+    try {
+
+      console.log(userId)
+      let user = await this?.UserModel.findOne({ where: { userId } })
+      console.log(user?.organizationId)
+      if (!user) {
+        t.rollback();
+        return Util?.handleErrorRespone('User not found');
+      }
+
+      let get_org = await this?.OrgModel.findOne({ where: { organizationId: user?.organizationId } })
+
+      if (!get_org) {
+        t.rollback();
+        return Util?.handleErrorRespone('organization not found');
+      }
+
+      const createMultipleNotification = await this.NotificationModel.bulkCreate(createNotificationDto, { transaction: t })
+      
+      t.commit()
+      return Util?.handleCreateSuccessRespone("Notifications Created Successfully")
+
+    } catch (error) {
+      t.rollback()
+      console.log(error)
+      return Util?.handleGrpcTryCatchError(Util?.getTryCatchMsg(error));
+    }
+  }
 
   // Get all Notifications
   async findAll(userId: string) {

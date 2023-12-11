@@ -140,6 +140,7 @@ export class VisitorLogsService {
           organizationId: get_org?.organizationId
         },
         attributes: { exclude: ['guestId','purposeId','departmentId','organizationId','staffId','createdAt', 'updatedAt', 'deletedAt'] },
+        order: [['id', 'DESC']]
       })
       return Util?.handleCustonCreateResponse(visitLog, 'Visitlog Successful');
     } catch (error) {
