@@ -21,7 +21,7 @@ export class ResetPasswordProcessor {
           to: details?.email,
           subject: 'Reset Password Mail',
           template:
-            'ResetPassword',
+            '/var/www/html/receptionapi.webbermill.com/dist/mails/ResetPassword',
           context: {
             email: details?.email,
             org_name: details?.org_name,
