@@ -23,7 +23,7 @@ import { orgImageUploadProfile } from 'src/helper/organizationsProfile';
 
 @Module({
   imports: [
-    JwtModule.register({}),
+    // JwtModule.register({}),
     SequelizeModule.forFeature([Organization,User,Role]),
     BullModule.registerQueue({name:'emailVerification'},{name:'defaultPassword'},{name:'resetPassword'}),
     

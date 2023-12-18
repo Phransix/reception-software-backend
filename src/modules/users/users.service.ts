@@ -430,13 +430,8 @@ export class UsersService {
       // Delete the old profile photo if it exists in the directorate
       let front_path = user_data?.profilePhoto;
       if (front_path != null) {
-        fs.access(front_path, fs.F_OK, async (err) => {
-          if (err) {
-            console.error(err);
-            return;
-          }
-          await this.imagehelper.unlinkFile(front_path);
-        });
+        const s3FilePath = front_path.replace(process.env.AWS_BUCKET_URL, '');
+        await this.imagehelper.unlinkFile(s3FilePath);
       }
       let insertQrys = {
         profilePhoto: user_image?.profilePhoto,
