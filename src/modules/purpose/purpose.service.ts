@@ -39,11 +39,11 @@ export class PurposeService {
       let user = await this?.UserModel.findOne({ where: { userId } })
       console.log(userId)
       if (!user)
-        return Util?.CustomhandleNotFoundResponse('User not found');
+        return Util?.AccountNotAuthorizedResponse('Unauthorised');
 
       let get_org = await this?.OrgModel.findOne({ where: { organizationId: user?.organizationId } })
       if (!get_org)
-        return Util?.CustomhandleNotFoundResponse('organization not found');
+        return Util?.AccountNotAuthorizedResponse('Unauthorised');
 
       // Check if guest is signed out first before a new purpose is created
       const guestSignOutChecks = await this.PurposeModel.findOne({
@@ -156,11 +156,11 @@ export class PurposeService {
       let user = await this?.UserModel.findOne({ where: { userId } })
       console.log(user?.organizationId)
       if (!user)
-        return Util?.handleErrorRespone('User not found');
+        return Util?.AccountNotAuthorizedResponse('Unauthorised');
       let get_org = await this?.OrgModel.findOne({ where: { organizationId: user?.organizationId } })
 
       if (!get_org)
-        return Util?.handleErrorRespone('organization not found');
+        return Util?.AccountNotAuthorizedResponse('Unauthorised');
 
       const allQueries = await Purpose.findAndCountAll({
         limit,
@@ -246,11 +246,11 @@ export class PurposeService {
       let user = await this?.UserModel.findOne({ where: { userId } })
       console.log(user?.organizationId)
       if (!user)
-        return Util?.handleErrorRespone('User not found');
+        return Util?.AccountNotAuthorizedResponse('Unauthorised');
       let get_org = await this?.OrgModel.findOne({ where: { organizationId: user?.organizationId } })
 
       if (!get_org)
-        return Util?.handleErrorRespone('organization not found');
+        return Util?.AccountNotAuthorizedResponse('Unauthorised');
 
       const allQueries = await Purpose.findAll({
         where: {
@@ -328,12 +328,12 @@ export class PurposeService {
       let user = await this?.UserModel.findOne({ where: { userId } })
       console.log(user?.organizationId)
       if (!user)
-        return Util?.handleErrorRespone('User not found');
+        return Util?.AccountNotAuthorizedResponse('Unauthorised');
 
       let get_org = await this?.OrgModel.findOne({ where: { organizationId: user?.organizationId } })
 
       if (!get_org)
-        return Util?.handleErrorRespone('organization not found');
+        return Util?.AccountNotAuthorizedResponse('Unauthorised');
 
       const purpose = await Purpose.findOne({
         where:
@@ -398,12 +398,12 @@ export class PurposeService {
       let user = await this?.UserModel.findOne({ where: { userId } })
       console.log(user?.organizationId)
       if (!user)
-        return Util?.handleErrorRespone('User not found');
+        return Util?.AccountNotAuthorizedResponse('Unauthorised');
 
       let get_org = await this?.OrgModel.findOne({ where: { organizationId: user?.organizationId } })
 
       if (!get_org)
-        return Util?.handleErrorRespone('organization not found');
+        return Util?.AccountNotAuthorizedResponse('Unauthorised');
 
       const purpose = await Purpose.findOne({ where: { purposeId, organizationId: get_org?.organizationId } })
 
@@ -429,12 +429,12 @@ export class PurposeService {
       let user = await this?.UserModel.findOne({ where: { userId } })
       console.log(user?.organizationId)
       if (!user)
-        return Util?.handleErrorRespone('User not found');
+        return Util?.AccountNotAuthorizedResponse('Unauthorised');
 
       let get_org = await this?.OrgModel.findOne({ where: { organizationId: user?.organizationId } })
 
       if (!get_org)
-        return Util?.handleErrorRespone('organization not found');
+        return Util?.AccountNotAuthorizedResponse('Unauthorised');
 
       const purpose = await Purpose.findOne({ where: { purposeId, organizationId: get_org?.organizationId } })
 
@@ -458,12 +458,12 @@ export class PurposeService {
       let user = await this?.UserModel.findOne({ where: { userId } })
       console.log(user?.organizationId)
       if (!user)
-        return Util?.handleErrorRespone('User not found');
+        return Util?.AccountNotAuthorizedResponse('Unauthorised');
 
       let get_org = await this?.OrgModel.findOne({ where: { organizationId: user?.organizationId } })
 
       if (!get_org)
-        return Util?.handleErrorRespone('organization not found');
+        return Util?.AccountNotAuthorizedResponse('Unauthorised');
 
       let filter = {}
 
@@ -586,7 +586,7 @@ export class PurposeService {
       console.log(result)
 
       const dataResult = {...result}
-      return Util?.handleSuccessRespone(dataResult, "Delivery Successfully retrieved")
+      return Util?.handleSuccessRespone(dataResult, "Purpose Successfully retrieved")
     } catch (error) {
       console.log(error)
       return Util?.handleGrpcTryCatchError(Util?.getTryCatchMsg(error));
@@ -690,11 +690,11 @@ export class PurposeService {
       let user = await this?.UserModel.findOne({ where: { userId } })
       console.log(userId)
       if (!user)
-        return Util?.CustomhandleNotFoundResponse('User not found');
+        return Util?.AccountNotAuthorizedResponse('Unauthorised');
 
       let get_org = await this?.OrgModel.findOne({ where: { organizationId: user?.organizationId } })
       if (!get_org)
-        return Util?.CustomhandleNotFoundResponse('organization not found');
+        return Util?.AccountNotAuthorizedResponse('Unauthorised');
 
       const { countryCode, phoneNumber } = guestOpDTO
       const guest = await this.GuestModel.findOne({
@@ -752,11 +752,11 @@ export class PurposeService {
       let user = await this?.UserModel.findOne({ where: { userId } })
       console.log(userId)
       if (!user)
-        return Util?.CustomhandleNotFoundResponse('User not found');
+        return Util?.AccountNotAuthorizedResponse('Unauthorised');
 
       let get_org = await this?.OrgModel.findOne({ where: { organizationId: user?.organizationId } })
       if (!get_org)
-        return Util?.CustomhandleNotFoundResponse('organization not found');
+        return Util?.AccountNotAuthorizedResponse('Unauthorised');
 
       const { countryCode, phoneNumber } = guestOpDTO
       const guest = await this.GuestModel.findOne({
