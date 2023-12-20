@@ -55,7 +55,7 @@ export class PurposeService {
       });
 
       if (guestSignOutChecks) {
-        return Util?.handleErrorRespone('Guest Signed In, Sign out first to create a new purpose')
+        return Util?.handleErrorRespone('Guest Signed In, Sign out first to create a new visit')
       }
 
       const purpose = await Purpose?.create({
