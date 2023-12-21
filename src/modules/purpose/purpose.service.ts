@@ -51,9 +51,9 @@ export class PurposeService {
           guestId: createPurposeDto.guestId,
           visitStatus: 'Signed In',
           organizationId: get_org?.organizationId
-        }
+        },
+        order: [['createdAt', 'DESC']]
       });
-
       if (guestSignOutChecks) {
         return Util?.handleErrorRespone('Guest Signed In, Sign out first to create a new visit')
       }
