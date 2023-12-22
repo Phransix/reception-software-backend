@@ -294,7 +294,7 @@ export class NotificationService {
 
       const removeNotification = await Notification.findOne({ where: { notificationId, organizationId: get_org?.organizationId } });
       await removeNotification.destroy()
-      return Util?.handleSuccessRespone(Util?.SuccessRespone, "Delivery Data deleted Successfully")
+      return Util?.handleSuccessRespone(Util?.SuccessRespone, "Notifications Data deleted Successfully")
 
     } catch (error) {
       console.log(error)

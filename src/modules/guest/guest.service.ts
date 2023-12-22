@@ -29,12 +29,12 @@ export class GuestService {
       const user = await this?.UserModel.findOne({ where: { userId } })
       console.log(user?.organizationId)
       if (!user)
-        return Util?.handleErrorRespone('User not found');
+        return Util?.AccountNotAuthorizedResponse('Unauthorised');
 
       const get_org = await this?.OrgModel.findOne({ where: { organizationId: user?.organizationId } })
 
       if (!get_org)
-        return Util?.handleErrorRespone('organization not found');
+        return Util?.AccountNotAuthorizedResponse('Unauthorised');
       
       // Checking if there's a guest with an existing phone number in the database
         const existingGuest = await this.GuestModel.findOne({
@@ -122,11 +122,11 @@ export class GuestService {
         let user = await this?.UserModel.findOne({ where: { userId } })
         console.log(user?.organizationId)
         if (!user)
-          return Util?.handleErrorRespone('User not found');
+          return Util?.AccountNotAuthorizedResponse('Unauthorised');
         let get_org = await this?.OrgModel.findOne({ where: { organizationId: user?.organizationId } })
   
         if (!get_org)
-          return Util?.handleErrorRespone('organization not found');
+          return Util?.AccountNotAuthorizedResponse('Unauthorised');
   
         const guestData = await Guest.findAndCountAll({
           where: {
@@ -234,12 +234,12 @@ export class GuestService {
       console.log(userId)
       console.log(user?.organizationId)
       if (!user)
-        return Util?.handleErrorRespone('User not found');
+        return Util?.AccountNotAuthorizedResponse('Unauthorised');
 
       let get_org = await this?.OrgModel.findOne({ where: { organizationId: user?.organizationId } })
 
       if (!get_org)
-        return Util?.handleErrorRespone('organization not found');
+        return Util?.AccountNotAuthorizedResponse('Unauthorised');
 
       const { phoneNumber, countryCode } = guestOpDTO
       const guest = await this.GuestModel.findOne({

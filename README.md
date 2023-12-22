@@ -26,4 +26,4 @@ Commands:
 
 
 
-/var/www/html/receptionapi.webbermill.com/dist/mails/
+
