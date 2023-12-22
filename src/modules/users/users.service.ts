@@ -61,7 +61,6 @@ export class UsersService {
         fullName: createUserDto?.fullName,
         email: createUserDto?.email,
         phoneNumber: createUserDto?.phoneNumber,
-
         password: hash,
       };
 
