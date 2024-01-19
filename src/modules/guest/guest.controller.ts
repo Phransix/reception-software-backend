@@ -205,7 +205,7 @@ export class GuestController {
     let ErrorCode: number
     try {
       const guest = await this.guestService.guestSignIn(guestOpDTO, userId)
-      if (guest?.status_code != HttpStatus.CREATED) {
+      if (guest?.status_code != HttpStatus.OK) {
         ErrorCode = guest?.status_code;
         throw new Error(guest?.message)
       }

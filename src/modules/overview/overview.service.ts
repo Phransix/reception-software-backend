@@ -258,3 +258,17 @@ export class OverviewService {
  }
 
 }
+
+// Last Month
+// const today = new Date();
+// today.setHours(0, 0, 0, 0); // Set time to the beginning of the day
+
+// const lastMonth = new Date(today);
+// lastMonth.setMonth(today.getMonth() - 1); // Get the date from last month
+
+// Last Year
+// const today = new Date();
+// today.setHours(0, 0, 0, 0); // Set time to the beginning of the day
+
+// const lastYear = new Date(today);
+// lastYear.setFullYear(today.getFullYear() - 1); // Get the date from last year
