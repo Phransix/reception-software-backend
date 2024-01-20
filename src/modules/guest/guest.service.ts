@@ -29,12 +29,12 @@ export class GuestService {
       const user = await this?.UserModel.findOne({ where: { userId } })
       console.log(user?.organizationId)
       if (!user)
-        return Util?.handleErrorRespone('User not found');
+        return Util?.AccountNotAuthorizedResponse('Unauthorised');
 
       const get_org = await this?.OrgModel.findOne({ where: { organizationId: user?.organizationId } })
 
       if (!get_org)
-        return Util?.handleErrorRespone('organization not found');
+        return Util?.AccountNotAuthorizedResponse('Unauthorised');
       
       // Checking if there's a guest with an existing phone number in the database
         const existingGuest = await this.GuestModel.findOne({
@@ -60,6 +60,7 @@ export class GuestService {
         gender: guest?.gender,
         countryCode: guest?.countryCode,
         phoneNumber: guest?.phoneNumber,
+        guestStatus: guest?.guestStatus
       }
       return Util?.handleCustonCreateResponse(guest_data, "Guest Created Successfully")
     } catch (error) {
@@ -122,11 +123,11 @@ export class GuestService {
         let user = await this?.UserModel.findOne({ where: { userId } })
         console.log(user?.organizationId)
         if (!user)
-          return Util?.handleErrorRespone('User not found');
+          return Util?.AccountNotAuthorizedResponse('Unauthorised');
         let get_org = await this?.OrgModel.findOne({ where: { organizationId: user?.organizationId } })
   
         if (!get_org)
-          return Util?.handleErrorRespone('organization not found');
+          return Util?.AccountNotAuthorizedResponse('Unauthorised');
   
         const guestData = await Guest.findAndCountAll({
           where: {
@@ -234,12 +235,12 @@ export class GuestService {
       console.log(userId)
       console.log(user?.organizationId)
       if (!user)
-        return Util?.handleErrorRespone('User not found');
+        return Util?.AccountNotAuthorizedResponse('Unauthorised');
 
       let get_org = await this?.OrgModel.findOne({ where: { organizationId: user?.organizationId } })
 
       if (!get_org)
-        return Util?.handleErrorRespone('organization not found');
+        return Util?.AccountNotAuthorizedResponse('Unauthorised');
 
       const { phoneNumber, countryCode } = guestOpDTO
       const guest = await this.GuestModel.findOne({
@@ -256,7 +257,8 @@ export class GuestService {
         lastname: guest?.lastName,
         gender: guest?.gender,
         countryCode: guest?.countryCode,
-        phoneNumber: guest?.phoneNumber
+        phoneNumber: guest?.phoneNumber,
+        guestStatus: guest?.guestStatus
       }
 
       if (!guest) {
@@ -331,6 +333,42 @@ export class GuestService {
         order:[['createdAt','ASC']],
       });
       return Util?.handleSuccessRespone(guestSearch, "Guest Data retrieved Successfully")
+    } catch (error) {
+      console.log(error)
+      return Util?.handleGrpcTryCatchError(Util?.getTryCatchMsg(error));
+    }
+  }
+
+  // Filter Guest into Registered and Purpose-Created Guest
+  async guestState(keyword: string, userId: any){
+    try {
+      
+      let user = await this?.UserModel.findOne({ where: { userId } })
+      console.log(userId)
+      console.log(user?.organizationId)
+      if (!user)
+        return Util?.handleErrorRespone('User not found');
+
+      let get_org = await this?.OrgModel.findOne({ where: { organizationId: user?.organizationId } })
+
+      if (!get_org)
+        return Util?.handleErrorRespone('organization not found');
+
+      let filter = {}
+
+      if (keyword != null) {
+        filter = { guestStatus: keyword }
+      }
+
+      const guestState = await this.GuestModel.findAll({
+        where: {
+          ...filter,
+          organizationId: get_org?.organizationId
+        },
+      });
+
+      return Util?.handleSuccessRespone(guestState, "Guest State filtered Successfully")
+
     } catch (error) {
       console.log(error)
       return Util?.handleGrpcTryCatchError(Util?.getTryCatchMsg(error));
@@ -418,5 +456,7 @@ export class GuestService {
       return Util?.handleGrpcTryCatchError(Util?.getTryCatchMsg(error));
     }
   }
+
+
 
 }
