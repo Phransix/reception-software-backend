@@ -237,23 +237,19 @@ export class DepartmentService {
         createDepartImageDto?.profilePhoto
       )
 
-      rollImage = dept_image;
+      rollImage = dept_image?.profilePhoto;
 
       // Delete the old profile photo if it exists in the directorate
       let front_path = dept_data?.profilePhoto;
 
       if (front_path != null) {
-        fs.access(front_path, fs.F_OK, async (err) => {
-          if (err) {
-            console.error(err);
-            return;
-          }
-          await this?.deptImageHelper?.unlinkFile(front_path);
-        });
+        const s3FilePath = front_path.replace(process.env.AWS_BUCKET_URL, '');
+        await this.deptImageHelper.unlinkFile(s3FilePath);
       }
 
       let insertQry = {
-        profilePhoto: dept_image
+        profilePhoto: dept_image?.profilePhoto,
+        imageUrl: dept_image?.imageUrl
       };
 
       await this?.departmentModel?.update(

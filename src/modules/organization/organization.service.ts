@@ -20,16 +20,13 @@ import { Sequelize } from 'sequelize-typescript';
 import { User } from 'src/modules/users/entities/user.entity';
 import { EmailService } from 'src/helper/EmailHelper';
 import { verifyEmailToken } from '../../utils/index';
-// import { Role } from '../role/entities/role.entity';
 import { AuthPassService } from 'src/guard/auth/authPass.service';
 import * as argon from 'argon2';
 import { orgImageUploadProfile } from 'src/helper/organizationsProfile';
 import { CreateOrganizationImgDto } from './dto/create-organizationImg.dto';
-import { LoginDTO } from 'src/guard/auth/loginDTO';
 const fs = require('fs');
 import { JwtService } from '@nestjs/jwt';
 import { ConfigService } from '@nestjs/config';
-import { LogOutDTO } from 'src/guard/auth/logoutDto';
 import { Role } from 'src/modules/role/role.enum';
 
 @Injectable()
@@ -37,7 +34,6 @@ export class OrganizationService {
   constructor(
     @InjectModel(Organization) private organizationModel: typeof Organization,
     @InjectModel(User) private user: typeof User,
-    // @InjectModel(Role) private role: typeof Role,
     private sequelize: Sequelize,
     private emailService: EmailService,
     private readonly authPassService: AuthPassService,
@@ -340,24 +336,21 @@ export class OrganizationService {
         createOrganizationImgDto?.profilePhoto,
       );
 
-      rollImage = org_image;
+      rollImage = org_image?.profilePhoto;
 
       // Delete the old profile photo if it exists in the directorate
       let front_path = org_data?.profilePhoto;
       if (front_path != null) {
-        fs.access(front_path, fs.F_OK, async (err) => {
-          if (err) {
-            console.error(err);
-            return;
-          }
-          await this.imgHelper.unlinkFile(front_path);
-        });
+        const s3FilePath = front_path.replace(process.env.AWS_BUCKET_URL, '');
+        await this.imgHelper.unlinkFile(s3FilePath);
       }
 
       let insertQry = {
-        profilePhoto: org_image,
+        profilePhoto: org_image?.profilePhoto,
+        imageUrl: org_image?.imageUrl,
       };
-      // console.log(insertQry)
+      console.log(insertQry);
+
       await this?.organizationModel?.update(insertQry, {
         where: { id: org_data?.id },
       });

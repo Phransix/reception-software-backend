@@ -226,6 +226,7 @@ export class StaffService {
 
       let insertQry = {
         organizationName: updateStaffDto?.organizationName,
+        departmentId: updateStaffDto?.departmentId,
         departmentName: updateStaffDto?.departmentName,
         title: updateStaffDto?.title,
         fullName: updateStaffDto?.fullName,
@@ -293,22 +294,18 @@ export class StaffService {
         createStaffImgDto?.profilePhoto,
       );
 
-      rollImage = staff_image;
+      rollImage = staff_image?.profilePhoto;
 
       // Delete the old profile photo if it exists in the directorate
       let front_path = staff_data?.profilePhoto;
 
       if (front_path != null) {
-        fs.access(front_path, fs.F_OK, async (err) => {
-          if (err) {
-            console.error(err);
-            return;
-          }
-          await this.staffImgHelper.unlinkFile(front_path);
-        });
+        const s3FilePath = front_path.replace(process.env.AWS_BUCKET_URL, '');
+        await this.staffImgHelper.unlinkFile(s3FilePath);
       }
       let insertQry = {
-        profilePhoto: staff_image,
+        profilePhoto: staff_image?.profilePhoto,
+        imageUrl: staff_image?.imageUrl,
       };
       await this?.staffModel?.update(insertQry, {
         where: {

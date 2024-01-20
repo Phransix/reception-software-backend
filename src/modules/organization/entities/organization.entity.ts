@@ -76,6 +76,12 @@ export class Organization extends Model<Organization>  {
     isVerified: boolean;
 
     @Column({
+      type: DataType.STRING,
+      allowNull: true,
+    })
+    imageUrl:string;
+
+    @Column({
       type : DataType.DATE,
       allowNull: true,
       defaultValue: null

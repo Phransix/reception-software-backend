@@ -128,6 +128,12 @@ export class Staff extends Model<Staff> {
   })
   profilePhoto: string;
 
+  @Column({
+    type: DataType.STRING,
+    allowNull: true,
+  })
+  imageUrl:string;
+
   @HasMany(() => VisitorLog)
   visitorLog: VisitorLog[];
 }

@@ -61,7 +61,6 @@ export class UsersService {
         fullName: createUserDto?.fullName,
         email: createUserDto?.email,
         phoneNumber: createUserDto?.phoneNumber,
-
         password: hash,
       };
 
@@ -183,9 +182,10 @@ export class UsersService {
         offset,
         where: { organizationId: get_org?.organizationId },
         attributes: {
-          exclude: ['password', 'updatedAt', 'deletedAt'],
+          exclude: ['password', 'updatedAt'],
         },
         order: [['createdAt', 'ASC']],
+        paranoid: false,
 
         include: [
           {
@@ -424,21 +424,17 @@ export class UsersService {
         createUserImgDto?.profilePhoto,
       );
 
-      rollImage = user_image;
+      rollImage = user_image?.profilePhoto;
 
       // Delete the old profile photo if it exists in the directorate
       let front_path = user_data?.profilePhoto;
       if (front_path != null) {
-        fs.access(front_path, fs.F_OK, async (err) => {
-          if (err) {
-            console.error(err);
-            return;
-          }
-          await this.imagehelper.unlinkFile(front_path);
-        });
+        const s3FilePath = front_path.replace(process.env.AWS_BUCKET_URL, '');
+        await this.imagehelper.unlinkFile(s3FilePath);
       }
       let insertQrys = {
-        profilePhoto: user_image,
+        profilePhoto: user_image?.profilePhoto,
+        imageUrl: user_image?.imageUrl
       };
       await this?.userModel?.update(insertQrys, {
         where: { id: user_data?.id, organizationId: get_org?.organizationId },
@@ -482,7 +478,7 @@ export class UsersService {
       Object?.assign(user);
       await user?.destroy();
 
-      return Util?.SuccessRespone('User deleted successfully.');
+      return Util?.SuccessRespone('Receptionist disabled.');
     } catch (error) {
       console.log(error);
       return Util?.handleGrpcTryCatchError(Util?.getTryCatchMsg(error));
@@ -495,7 +491,7 @@ export class UsersService {
       const organization = await this.userModel.restore({ where: { userId } });
       console.log(organization);
       return Util?.handleCreateSuccessRespone(
-        'Organization restored successfully.',
+        'Receptionist enabled.',
       );
     } catch (error) {
       console.log(error);
@@ -551,7 +547,6 @@ export class UsersService {
 
   
 
-
   async getTokens(
     org_Id: string,
     user_id: string,
@@ -570,7 +565,7 @@ export class UsersService {
       this.jwtService.signAsync(jwtPayload, {
         secret: this.config.get<string>('AT_SECRET'),
         // expiresIn: '15m',
-        expiresIn: '3d',
+        expiresIn: '7d',
       }),
 
       this.jwtService.signAsync(jwtPayload, {
@@ -585,10 +580,7 @@ export class UsersService {
     };
   }
 
-
-
-
-
+  
   async makeid(length) {
     let result = '';
     const characters =

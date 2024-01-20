@@ -440,13 +440,13 @@ export class PurposeController {
       @ApiTags('Purpose')
       @Post('bulkPurposeCreate/create')
       async buklCreatePurpose(
-        @Body() data: any[],
+        @Body() createPurposeDto: CreatePurposeDto[],
         @GetCurrentUserId() userId: string
       ) {
         let ErrorCode: number
         try {
           const modelName = 'Purpose'
-          const purposeResults = await this.purposeService.bulkPurpose(modelName, data, userId)
+          const purposeResults = await this.purposeService.bulkPurpose( createPurposeDto, userId)
           if (purposeResults?.status_code != HttpStatus.CREATED) {
             ErrorCode = purposeResults?.status_code;
             throw new Error(purposeResults?.message)

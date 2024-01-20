@@ -29,7 +29,7 @@ export class ResetPasswordService {
                 {
                     details,
                 },
-                { delay: 1000 },
+                // { delay: 1000 },
             );
 
         } catch (error) {
