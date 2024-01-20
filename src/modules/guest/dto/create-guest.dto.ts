@@ -11,6 +11,11 @@ export enum status {
     SIGNOUT = 'Signed Out'
 }
 
+export enum GuestState {
+    REGISTERED = 'registered',
+    PURPOSECREATED = 'purposeCreated'
+}
+
 
 
 export class CreateGuestDto {
