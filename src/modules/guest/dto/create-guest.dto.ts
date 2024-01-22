@@ -12,8 +12,8 @@ export enum status {
 }
 
 export enum GuestState {
-    REGISTERED = 'registered',
-    PURPOSECREATED = 'created'
+    PENDING = 'pending',
+    ACTIVE = 'active'
 }
 
 

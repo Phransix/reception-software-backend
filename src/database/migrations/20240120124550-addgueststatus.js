@@ -4,11 +4,11 @@
 module.exports = {
   async up (queryInterface, Sequelize) {
     await queryInterface.addColumn('Guests', 'guestStatus', {
-      type: Sequelize.DataTypes.ENUM('registered', 'purposeCreated'),
+      type: Sequelize.DataTypes.ENUM('pending', 'active'),
       allowNull: true,
-      defaultValue: 'registered',
+      defaultValue: 'pending',
       validate: {
-        isIn: [['registered', 'created']]
+        isIn: [['pending', 'active']]
       }
     });
   },
