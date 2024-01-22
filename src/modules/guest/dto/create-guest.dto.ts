@@ -13,7 +13,7 @@ export enum status {
 
 export enum GuestState {
     REGISTERED = 'registered',
-    PURPOSECREATED = 'purposeCreated'
+    PURPOSECREATED = 'created'
 }
 
 

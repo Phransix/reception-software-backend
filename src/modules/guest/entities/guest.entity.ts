@@ -74,7 +74,7 @@ export class Guest extends Model<Guest>{
 
     @Column({
         type: DataType.ENUM,
-        values: ['registered', 'purposeCreated'],
+        values: ['registered', 'created'],
         allowNull: false
     })
     guestStatus: string

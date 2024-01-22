@@ -94,7 +94,7 @@ export class PurposeService {
       }
 
       // Update the status of the guest who created the purpose
-      await Guest.update({ guestStatus: 'purposeCreated' }, {
+      await Guest.update({ guestStatus: 'created' }, {
         where: {
           guestId: purpose?.guestId
         }

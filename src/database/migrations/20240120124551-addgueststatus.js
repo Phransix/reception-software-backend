@@ -8,7 +8,7 @@ module.exports = {
       allowNull: true,
       defaultValue: 'registered',
       validate: {
-        isIn: [['registered', 'purposeCreated']]
+        isIn: [['registered', 'created']]
       }
     });
   },
