@@ -93,6 +93,13 @@ export class PurposeService {
         staffId: purpose?.staffId
       }
 
+      // Update the status of the guest who created the purpose
+      await Guest.update({ guestStatus: 'active' }, {
+        where: {
+          guestId: purpose?.guestId
+        }
+      })
+
       const visitLog = await this.VisitlogModel.create({
         ...guestLogs,
         organizationId: get_org?.organizationId
@@ -731,6 +738,7 @@ export class PurposeService {
         gender: guest?.gender,
         countryCode: guest?.countryCode,
         phoneNumber: guest?.phoneNumber,
+        guestStatus: guest?.guestStatus,
         guestPurpose: purpose?.purpose,
         signInDate: purpose?.signInDate,
         signInTime: purpose?.signInTime,
@@ -800,6 +808,7 @@ export class PurposeService {
         gender: guest?.gender,
         countryCode: guest?.countryCode,
         phoneNumber: guest?.phoneNumber,
+        guestStatus: guest?.guestStatus,
         guestPurpose: purpose?.purpose,
         signInDate: purpose?.signInDate,
         signInTime: purpose?.signInTime,

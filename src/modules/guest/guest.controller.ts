@@ -1,6 +1,6 @@
 import { Controller, Get, Post, Body, Patch, Param, Delete, HttpStatus, UseGuards, Query } from '@nestjs/common';
 import { GuestService } from './guest.service';
-import { CreateGuestDto, Gender } from './dto/create-guest.dto';
+import { CreateGuestDto, Gender, GuestState } from './dto/create-guest.dto';
 import { UpdateGuestDto } from './dto/update-guest.dto';
 import { ApiBearerAuth, ApiOperation, ApiQuery, ApiTags } from '@nestjs/swagger';
 import * as Util from '../../utils/index'
@@ -81,38 +81,38 @@ export class GuestController {
 
   }
 
-    // Get all Guests for Tablet
-    @UseGuards(AuthGuard('jwt'))
-    @ApiBearerAuth('defaultBearerAuth')
-    @Public()
-    @UseGuards(AtGuard)
-    @ApiTags('Guest')
-    @ApiOperation({ summary: 'Get Guest for tablet' })
-    @Get('getAllGuestTablet')
-    async getAllGuestData(
-      @GetCurrentUserId() userId: string
-    ) {
-      let ErrorCode: number;
-      try {
-        let guesData = await this.guestService.findAllGuest(userId);
-  
-        if (guesData?.status_code != HttpStatus.OK) {
-          ErrorCode = guesData?.status_code;
-          throw new Error(guesData?.message);
-        }
-        return guesData;
-      } catch (error) {
-        console.log(error)
-        return Util?.handleRequestError(Util?.getTryCatchMsg(error), ErrorCode);
+  // Get all Guests for Tablet
+  @UseGuards(AuthGuard('jwt'))
+  @ApiBearerAuth('defaultBearerAuth')
+  @Public()
+  @UseGuards(AtGuard)
+  @ApiTags('Guest')
+  @ApiOperation({ summary: 'Get Guest for tablet' })
+  @Get('getAllGuestTablet')
+  async getAllGuestData(
+    @GetCurrentUserId() userId: string
+  ) {
+    let ErrorCode: number;
+    try {
+      let guesData = await this.guestService.findAllGuest(userId);
+
+      if (guesData?.status_code != HttpStatus.OK) {
+        ErrorCode = guesData?.status_code;
+        throw new Error(guesData?.message);
       }
-  
+      return guesData;
+    } catch (error) {
+      console.log(error)
+      return Util?.handleRequestError(Util?.getTryCatchMsg(error), ErrorCode);
     }
 
-// Get Guest by GuestId
-@UseGuards(AuthGuard('jwt'))
-@ApiBearerAuth('defaultBearerAuth')
-@Public()
-@UseGuards(AtGuard)
+  }
+
+  // Get Guest by GuestId
+  @UseGuards(AuthGuard('jwt'))
+  @ApiBearerAuth('defaultBearerAuth')
+  @Public()
+  @UseGuards(AtGuard)
   @ApiTags('Guest')
   @ApiOperation({ summary: 'Get Guest By guestId' })
   @Get(':guestId')
@@ -220,7 +220,38 @@ export class GuestController {
     }
   }
 
-    // Search guest by custom range
+    // Filter Guest by Gender
+    @UseGuards(AuthGuard('jwt'))
+    @ApiBearerAuth('defaultBearerAuth')
+    @ApiQuery({
+      name: 'keyword',
+      enum: Gender,
+      required: false
+    })
+    @Public()
+    @UseGuards(AtGuard)
+    @ApiTags('Guest')
+    @ApiOperation({ summary: 'Filter Guest Gender' })
+    @Get('guest/filterGender')
+    async guestGender(
+      @Query('keyword') keyword: string,
+      @GetCurrentUserId() userId: string
+    ) {
+      let ErrorCode: number
+      try {
+        const guest = await this.guestService.genderFilter(keyword, userId)
+        if (guest?.status_code != HttpStatus.OK) {
+          ErrorCode = guest?.status_code;
+          throw new Error(guest?.message)
+        }
+        return guest
+      } catch (error) {
+        console.log(error)
+        return Util?.handleRequestError(Util?.getTryCatchMsg(error), ErrorCode)
+      }
+    }
+
+  // Search guest by custom range
   @UseGuards(AuthGuard('jwt'))
   @ApiBearerAuth('defaultBearerAuth')
   @ApiQuery({
@@ -246,7 +277,7 @@ export class GuestController {
   ) {
     let ErrorCode: number
     try {
-      const guestSearch = await this.guestService.customGuestSearch(startDate, endDate,userId)
+      const guestSearch = await this.guestService.customGuestSearch(startDate, endDate, userId)
       if (guestSearch?.status_code != HttpStatus.OK) {
         ErrorCode = guestSearch?.status_code;
         throw new Error(guestSearch?.message)
@@ -258,37 +289,36 @@ export class GuestController {
     }
   }
 
-      // Filter Guest by Gender
-      @UseGuards(AuthGuard('jwt'))
-      @ApiBearerAuth('defaultBearerAuth')
-      @ApiQuery({
-        name: 'keyword',
-        enum: Gender,
-        required: false
-      })
-      @Public()
-      @UseGuards(AtGuard)
-      @ApiTags('Guest')
-      @ApiOperation({ summary: 'Filter Guest Gender' })
-      @Get('guest/filterGender')
-      async guestGender(
-        @Query('keyword') keyword: string,
-        @GetCurrentUserId() userId: string
-      ) {
-        let ErrorCode: number
-        try {
-          const guest = await this.guestService.genderFilter(keyword,userId)
-          if (guest?.status_code != HttpStatus.OK) {
-            ErrorCode = guest?.status_code;
-            throw new Error(guest?.message)
-        } 
-        return guest
-        } catch (error) {
-          console.log(error)
-          return Util?.handleRequestError(Util?.getTryCatchMsg(error), ErrorCode)
+    // Filter Guest into Registered and Purpose-Created Guest
+    @UseGuards(AuthGuard('jwt'))
+    @ApiBearerAuth('defaultBearerAuth')
+    @ApiQuery({
+      name: 'keyword',
+      enum: GuestState,
+      required: false
+    })
+    @Public()
+    @UseGuards(AtGuard)
+    @ApiTags('Guest')
+    @ApiOperation({ summary: 'Filter Guest State' })
+    @Get('guest/filterGuestState')
+    async guestGuestState(
+      @Query('keyword') keyword: string,
+      @GetCurrentUserId() userId: string
+    ) {
+      let ErrorCode: number
+      try {
+        const guest = await this.guestService.guestState(keyword, userId)
+        if (guest?.status_code != HttpStatus.OK) {
+          ErrorCode = guest?.status_code;
+          throw new Error(guest?.message)
         }
+        return guest
+      } catch (error) {
+        console.log(error)
+        return Util?.handleRequestError(Util?.getTryCatchMsg(error), ErrorCode)
       }
-    
+    }
 
   // Bulk guest create
   @UseGuards(AuthGuard('jwt'))

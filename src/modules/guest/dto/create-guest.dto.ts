@@ -11,6 +11,11 @@ export enum status {
     SIGNOUT = 'Signed Out'
 }
 
+export enum GuestState {
+    PENDING = 'pending',
+    ACTIVE = 'active'
+}
+
 
 
 export class CreateGuestDto {
