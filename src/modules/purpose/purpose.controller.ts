@@ -441,6 +441,7 @@ export class PurposeController {
       @Post('bulkPurposeCreate/create')
       async buklCreatePurpose(
         @Body() createPurposeDto: CreatePurposeDto[],
+        
         @GetCurrentUserId() userId: string
       ) {
         let ErrorCode: number
@@ -475,7 +476,7 @@ export class PurposeController {
         let ErrorCode: number
         try {
           const purposeUpdate = await this.purposeService.bulkPurposeUpdate(data, userId)
-          if (purposeUpdate?.status_code != HttpStatus.CREATED) {
+          if (purposeUpdate?.status_code != HttpStatus.OK) {
             ErrorCode = purposeUpdate?.status_code;
             throw new Error(purposeUpdate?.message)
           }

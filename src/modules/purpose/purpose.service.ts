@@ -944,36 +944,112 @@ export class PurposeService {
   }
 
   // Bulk Purpose
+  // async bulkPurpose(createPurposeDto: CreatePurposeDto[], userId: any) {
+  //   const t = await this.sequelize.transaction();
+  //   try {
+
+  //     console.log(userId)
+  //     let user = await this?.UserModel.findOne({ where: { userId } })
+  //     console.log(user?.organizationId)
+  //     if (!user) {
+  //       t.rollback();
+  //       return Util?.handleErrorRespone('User not found');
+  //     }
+
+  //     let get_org = await this?.OrgModel.findOne({ where: { organizationId: user?.organizationId } })
+
+  //     if (!get_org) {
+  //       t.rollback();
+  //       return Util?.handleErrorRespone('organization not found');
+  //     }
+
+  //     const createMultiplePurpose = await this.PurposeModel.bulkCreate(createPurposeDto, { transaction: t })
+      
+  //     t.commit()
+  //     return Util?.handleCreateSuccessRespone("Purposes Created Successfully")
+
+  //   } catch (error) {
+  //     t.rollback()
+  //     console.log(error)
+  //     return Util?.handleGrpcTryCatchError(Util?.getTryCatchMsg(error));
+  //   }
+  // }
   async bulkPurpose(createPurposeDto: CreatePurposeDto[], userId: any) {
     const t = await this.sequelize.transaction();
     try {
-
-      console.log(userId)
-      let user = await this?.UserModel.findOne({ where: { userId } })
-      console.log(user?.organizationId)
+      console.log(userId);
+      let user = await this?.UserModel.findOne({ where: { userId } });
+      console.log(user?.organizationId);
       if (!user) {
         t.rollback();
         return Util?.handleErrorRespone('User not found');
       }
-
-      let get_org = await this?.OrgModel.findOne({ where: { organizationId: user?.organizationId } })
-
+  
+      let get_org = await this?.OrgModel.findOne({ where: { organizationId: user?.organizationId } });
+  
       if (!get_org) {
         t.rollback();
-        return Util?.handleErrorRespone('organization not found');
+        return Util?.handleErrorRespone('Organization not found');
       }
+  
+       const purposeData = await this.PurposeModel.findOne({
+        where:{
+          purposeId: createPurposeDto.p
+        }
+       })
 
-      const createMultiplePurpose = await this.PurposeModel.bulkCreate(createPurposeDto, { transaction: t })
+       const guesData = await this.GuestModel.findAll({
+        where:{
+          guestId:purposeData.guestId
+        }
+       }) 
+       console.log [purposeData.guestId]
+       
+
+      const createMultiplePurpose = await this.PurposeModel.bulkCreate(createPurposeDto, { transaction: t });
+
+      // const guestInfo = new Set();
+      // for (const purposeDto of createPurposeDto) {
+      //   // Check if guestId exists in Purpose table
+      //   const guestArray = `${purposeDto.guestId}`
+      //   let existingPurpose = await this?.PurposeModel.findOne({ 
+      //     where:
+      //      {
+      //        guestId: purposeDto.guestId
+      //     } 
+      //   });
+      //   let existingStatus = await this?.GuestModel.findAll({ 
+      //     where:
+      //      {
+      //        guestId: purposeDto.guestId 
+      //     }
+      //   });
+  
+      //   if (existingStatus) {
+      //     guestInfo.add(guestArray); // Add to the Set
+      //   }
+
+        
+      //   if (existingPurpose) {
+      //     // Update the guestStatus of the guest in Guest table to 'active'
+      //     await this?.GuestModel.update(
+      //       { guestStatus: 'active' },
+      //       { where: { guestId: purposeDto.guestId, guestStatus: 'pending' }, transaction: t }
+      //     );
+      //   }
+      // }
       
-      t.commit()
-      return Util?.handleCreateSuccessRespone("Purposes Created Successfully")
-
+      t.commit();
+      return Util?.handleCreateSuccessRespone('Purposes Created Successfully');
     } catch (error) {
-      t.rollback()
-      console.log(error)
+      t.rollback();
+      console.log(error);
       return Util?.handleGrpcTryCatchError(Util?.getTryCatchMsg(error));
     }
   }
+  
+  
+
 
   // Bulk Purpose Update
   async bulkPurposeUpdate(data: any[], userId: any) {
@@ -1014,7 +1090,7 @@ export class PurposeService {
 
       t.commit();
       
-      return Util?.handleCreateSuccessRespone('Purposes Updated Successfully');
+      return Util?.SuccessRespone('Purposes Updated Successfully');
     } catch (error) {
       console.log(error);
       return Util?.handleGrpcTryCatchError(Util?.getTryCatchMsg(error));

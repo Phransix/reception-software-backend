@@ -205,15 +205,11 @@ export class GuestController {
     let ErrorCode: number
     try {
       const guest = await this.guestService.guestSignIn(guestOpDTO, userId)
-      if (guest?.status_code != HttpStatus.OK) {
+      if (guest?.status_code != HttpStatus.CREATED) {
         ErrorCode = guest?.status_code;
         throw new Error(guest?.message)
       }
-      if (!guest) {
-        return Util?.handleFailResponse('Guest does not exist')
-      } else {
-        return guest
-      }
+       return guest
     } catch (error) {
       console.log(error)
       return Util?.handleRequestError(Util?.getTryCatchMsg(error), ErrorCode)

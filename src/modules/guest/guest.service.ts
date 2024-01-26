@@ -251,6 +251,11 @@ export class GuestService {
         }
       })
 
+
+      if (!guest) {
+        return Util?.handleFailResponse('Invalid phone number or country code')
+      }
+
       let guest_data = {
         guestId: guest?.guestId,
         firstName: guest?.firstName,
@@ -261,9 +266,6 @@ export class GuestService {
         guestStatus: guest?.guestStatus
       }
 
-      if (!guest) {
-        return Util?.handleFailResponse('Invalid phone number or country code')
-      }
 
       return Util?.handleCustonCreateResponse(guest_data, "Guest Sign In Success")
     } catch (error) {
@@ -450,7 +452,7 @@ export class GuestService {
       const deleteMultipleGuest = await myModel.destroy({
         where: whereClause
       });
-      return Util?.handleCustonCreateResponse(deleteMultipleGuest, 'Multiple Guests deleted successfully')
+      return Util?.handleSuccessRespone(deleteMultipleGuest, 'Multiple Guests deleted successfully')
     } catch (error) {
       console.log(error)
       return Util?.handleGrpcTryCatchError(Util?.getTryCatchMsg(error));
