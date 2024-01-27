@@ -446,7 +446,7 @@ export class PurposeService {
       const purpose = await Purpose.findOne({ where: { purposeId, organizationId: get_org?.organizationId } })
 
       if (!purpose) {
-        return Util?.CustomhandleNotFoundResponse('Purpose not found');
+        return Util?.handleFailResponse('Purpose not found');
       }
 
       await purpose.destroy()
@@ -943,37 +943,84 @@ export class PurposeService {
     }
   }
 
-  // Bulk Purpose
-  async bulkPurpose(createPurposeDto: CreatePurposeDto[], userId: any) {
-    const t = await this.sequelize.transaction();
-    try {
-
-      console.log(userId)
-      let user = await this?.UserModel.findOne({ where: { userId } })
-      console.log(user?.organizationId)
-      if (!user) {
-        t.rollback();
-        return Util?.handleErrorRespone('User not found');
-      }
-
-      let get_org = await this?.OrgModel.findOne({ where: { organizationId: user?.organizationId } })
-
-      if (!get_org) {
-        t.rollback();
-        return Util?.handleErrorRespone('organization not found');
-      }
-
-      const createMultiplePurpose = await this.PurposeModel.bulkCreate(createPurposeDto, { transaction: t })
-      
-      t.commit()
-      return Util?.handleCreateSuccessRespone("Purposes Created Successfully")
-
-    } catch (error) {
-      t.rollback()
-      console.log(error)
-      return Util?.handleGrpcTryCatchError(Util?.getTryCatchMsg(error));
+// Bulk Purpose
+async bulkPurpose(createPurposeDto: CreatePurposeDto[], userId: any) {
+  const t = await this.sequelize.transaction();
+  try {
+    console.log(userId);
+    let user = await this?.UserModel.findOne({ where: { userId } });
+    console.log(user?.organizationId);
+    if (!user) {
+      t.rollback();
+      return Util?.handleErrorRespone('User not found');
     }
+
+    let get_org = await this?.OrgModel.findOne({ where: { organizationId: user?.organizationId } });
+
+    if (!get_org) {
+      t.rollback();
+      return Util?.handleErrorRespone('Organization not found');
+    }
+
+    // Check for duplicates within the same organization
+    const duplicatePurpose = new Set();
+    for (const purposeDto of createPurposeDto) {
+      const signedInGuest = `${purposeDto.guestId}`
+      // Check if guestId exists in Purpose table
+      let existingPurpose = await this?.PurposeModel.findOne({ 
+        where:
+         { 
+          guestId: purposeDto.guestId,
+          visitStatus: 'Signed In',
+          organizationId: get_org?.organizationId
+        },
+        order: [['createdAt', 'DESC']]
+      });
+      // Checks for Signed In Guests
+      if (existingPurpose) {
+        duplicatePurpose.add(signedInGuest); // Add to the Set
+      }
+
+      // Checks for active or pending Guest
+      let existingGuest = await this?.GuestModel.findOne({ 
+        where:
+         { 
+          guestId: purposeDto.guestId 
+        } 
+      });
+
+      if (existingGuest) {
+        // Update the guestStatus of the guest in Guest table to 'active'
+        await this?.GuestModel.update(
+          { guestStatus: 'active' },
+          {
+             where: {
+             guestId: purposeDto.guestId,
+             guestStatus: 'pending' 
+          }, transaction: t }
+        );
+      }
+    }
+
+    if (duplicatePurpose.size > 0) {
+      t.rollback(); // Rollback the transaction if duplicate phone numbers are found
+      return Util?.handleErrorRespone('Guest Signed In, Sign out first to create a new visit: ' + [...duplicatePurpose].join(', '));
+    }
+
+    const createMultiplePurpose = await this.PurposeModel.bulkCreate(createPurposeDto, { transaction: t });
+
+    t.commit();
+    return Util?.handleCreateSuccessRespone('Purposes Created Successfully');
+  } catch (error) {
+    t.rollback();
+    console.log(error);
+    return Util?.handleGrpcTryCatchError(Util?.getTryCatchMsg(error));
   }
+}
+
+  
+  
+
 
   // Bulk Purpose Update
   async bulkPurposeUpdate(data: any[], userId: any) {
@@ -1014,7 +1061,7 @@ export class PurposeService {
 
       t.commit();
       
-      return Util?.handleCreateSuccessRespone('Purposes Updated Successfully');
+      return Util?.SuccessRespone('Purposes Updated Successfully');
     } catch (error) {
       console.log(error);
       return Util?.handleGrpcTryCatchError(Util?.getTryCatchMsg(error));

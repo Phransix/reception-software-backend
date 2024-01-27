@@ -63,7 +63,7 @@ export class VisitorLogsController {
 
     try {
       const logsResults = await this.visitorLogsService.getGuestLogs(userId,guestId)
-      if (logsResults?.status_code != HttpStatus.CREATED) {
+      if (logsResults?.status_code != HttpStatus.OK) {
         ErrorCode = logsResults?.status_code;
         throw new Error(logsResults?.message)
       }

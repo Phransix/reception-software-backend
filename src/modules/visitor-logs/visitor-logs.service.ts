@@ -142,7 +142,7 @@ export class VisitorLogsService {
         attributes: { exclude: ['guestId','purposeId','departmentId','organizationId','staffId','createdAt', 'updatedAt', 'deletedAt'] },
         order: [['id', 'DESC']]
       })
-      return Util?.handleCustonCreateResponse(visitLog, 'Visitlog Successful');
+      return Util?.handleSuccessRespone(visitLog, 'Visitlog Successful');
     } catch (error) {
       console.log(error)
       return Util?.handleGrpcTryCatchError(Util?.getTryCatchMsg(error));

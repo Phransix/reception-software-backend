@@ -21,7 +21,7 @@ export class NotificationService {
     private readonly sequelize: Sequelize,
   ) {}
   
-  // Creating Bulk NOtifications
+  // Creating Bulk Notifications
   async bulkNotification(createNotificationDto: CreateNotificationDto[], userId: any) {
     const t = await this.sequelize.transaction();
     try {
