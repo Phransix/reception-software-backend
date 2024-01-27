@@ -187,7 +187,7 @@ export class PurposeController {
   ) {
     let ErrorCode: number
     try {
-      const purpose = await this.purposeService.findOne(purposeId, userId);
+      const purpose = await this.purposeService.remove(purposeId, userId);
       if (purpose && 'status_code' in purpose && purpose.status_code !== HttpStatus.OK) {
         ErrorCode = purpose?.status_code;
         throw new Error(purpose?.message)

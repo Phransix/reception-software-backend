@@ -361,7 +361,7 @@ export class GuestController {
     try {
       const modelName = 'Guest'
       const guestResults = await this.guestService.bulkGuestDelete(modelName, whereClause, userId);
-      if (guestResults?.status_code != HttpStatus.CREATED) {
+      if (guestResults?.status_code != HttpStatus.OK) {
         ErrorCode = guestResults?.status_code;
         throw new Error(guestResults?.message)
       }

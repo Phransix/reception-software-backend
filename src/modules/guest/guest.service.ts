@@ -146,7 +146,7 @@ export class GuestService {
       }
     }
 
-  // Get Gest By guestId
+  // Get Guest By guestId
   async findOne(guestId: string, userId: any) {
     try {
 
