@@ -367,6 +367,7 @@ export class GuestService {
           ...filter,
           organizationId: get_org?.organizationId
         },
+        order: [['id', 'DESC']],
       });
 
       return Util?.handleSuccessRespone(guestState, "Guest State filtered Successfully")

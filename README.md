@@ -27,3 +27,38 @@ Commands:
 
 
 
+    const today = new Date();
+        today.setHours(0, 0, 0, 0);
+        // const startOfYear = new Date(startYear, 0, 1);
+        // const endOfYear = new Date(endYear, 11, 31);
+
+        const filteredData = [];
+
+        for (let year = startYear; year <= endYear; year++) {
+          const startDate = new Date(year, 0, 1, 0, 0, 0, 0);
+          const endDate = new Date(year + 1, 0, 1, 0, 0, 0, 0);
+
+          const totalVisit = await this?.guestModel?.count({
+            where: {
+              createdAt: {
+                [Op.between]: [startDate, endDate],
+              },
+              organizationId: user?.organizationId,
+            },
+          });
+
+          filteredData.push({
+            id: (year - startYear + 1).toString(),
+            year: year.toString(),
+            totalVisit: Number(totalVisit),
+          });
+
+        }
+
+        // Sort the data by year in ascending order
+        filteredData.sort((a, b) => a.year - b.year);
+
+        return Util?.handleSuccessRespone(
+          filteredData,
+          'Data requested successfully',
+        );
