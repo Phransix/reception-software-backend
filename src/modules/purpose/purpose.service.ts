@@ -1004,7 +1004,7 @@ async bulkPurpose(createPurposeDto: CreatePurposeDto[], userId: any) {
 
     if (duplicatePurpose.size > 0) {
       t.rollback(); // Rollback the transaction if duplicate phone numbers are found
-      return Util?.handleErrorRespone('Guest Signed In, Sign out first to create a new visit: ' + [...duplicatePurpose].join(', '));
+      return Util?.handleErrorRespone('Guests Signed in, Sign out first to create a new visit');
     }
 
     const createMultiplePurpose = await this.PurposeModel.bulkCreate(createPurposeDto, { transaction: t });
