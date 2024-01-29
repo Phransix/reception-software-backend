@@ -473,8 +473,6 @@ export class EnquiriesService {
     }
   }
 
-
-
   // Bulk Create Enquiry
   async bulkCreateEnquiry(createEnquiryDto: CreateEnquiryDto[],userId:any){
     const t = await this?.sequelize?.transaction()
@@ -508,8 +506,5 @@ export class EnquiriesService {
       return Util?.handleGrpcTryCatchError(Util?.getTryCatchMsg(error));
     }
   }
-
-
-
 
 }
