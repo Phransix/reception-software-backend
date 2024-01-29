@@ -1003,7 +1003,7 @@ async bulkPurpose(createPurposeDto: CreatePurposeDto[], userId: any) {
     }
 
     if (duplicatePurpose.size > 0) {
-      t.rollback(); // Rollback the transaction if duplicate phone numbers are found
+      t.rollback(); // Rollback the transaction if duplicate guest purposes are found
       return Util?.handleErrorRespone('Guests Signed in, Sign out first to create a new visit');
     }
 
