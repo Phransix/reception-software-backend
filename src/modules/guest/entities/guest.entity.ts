@@ -73,6 +73,13 @@ export class Guest extends Model<Guest>{
     phoneNumber: string
 
     @Column({
+        type: DataType.ENUM,
+        values: ['pending', 'active'],
+        allowNull: true
+    })
+    guestStatus: string
+
+    @Column({
         type: DataType.DATE,
         allowNull: true,
         defaultValue: null

@@ -60,6 +60,7 @@ export class GuestService {
         gender: guest?.gender,
         countryCode: guest?.countryCode,
         phoneNumber: guest?.phoneNumber,
+        guestStatus: guest?.guestStatus
       }
       return Util?.handleCustonCreateResponse(guest_data, "Guest Created Successfully")
     } catch (error) {
@@ -145,7 +146,7 @@ export class GuestService {
       }
     }
 
-  // Get Gest By guestId
+  // Get Guest By guestId
   async findOne(guestId: string, userId: any) {
     try {
 
@@ -250,18 +251,21 @@ export class GuestService {
         }
       })
 
+
+      if (!guest) {
+        return Util?.handleFailResponse('Invalid phone number or country code')
+      }
+
       let guest_data = {
         guestId: guest?.guestId,
         firstName: guest?.firstName,
         lastname: guest?.lastName,
         gender: guest?.gender,
         countryCode: guest?.countryCode,
-        phoneNumber: guest?.phoneNumber
+        phoneNumber: guest?.phoneNumber,
+        guestStatus: guest?.guestStatus
       }
 
-      if (!guest) {
-        return Util?.handleFailResponse('Invalid phone number or country code')
-      }
 
       return Util?.handleCustonCreateResponse(guest_data, "Guest Sign In Success")
     } catch (error) {
@@ -331,6 +335,42 @@ export class GuestService {
         order:[['createdAt','ASC']],
       });
       return Util?.handleSuccessRespone(guestSearch, "Guest Data retrieved Successfully")
+    } catch (error) {
+      console.log(error)
+      return Util?.handleGrpcTryCatchError(Util?.getTryCatchMsg(error));
+    }
+  }
+
+  // Filter Guest into Registered and Purpose-Created Guest
+  async guestState(keyword: string, userId: any){
+    try {
+      
+      let user = await this?.UserModel.findOne({ where: { userId } })
+      console.log(userId)
+      console.log(user?.organizationId)
+      if (!user)
+        return Util?.handleErrorRespone('User not found');
+
+      let get_org = await this?.OrgModel.findOne({ where: { organizationId: user?.organizationId } })
+
+      if (!get_org)
+        return Util?.handleErrorRespone('organization not found');
+
+      let filter = {}
+
+      if (keyword != null) {
+        filter = { guestStatus: keyword }
+      }
+
+      const guestState = await this.GuestModel.findAll({
+        where: {
+          ...filter,
+          organizationId: get_org?.organizationId
+        },
+      });
+
+      return Util?.handleSuccessRespone(guestState, "Guest State filtered Successfully")
+
     } catch (error) {
       console.log(error)
       return Util?.handleGrpcTryCatchError(Util?.getTryCatchMsg(error));
@@ -412,11 +452,13 @@ export class GuestService {
       const deleteMultipleGuest = await myModel.destroy({
         where: whereClause
       });
-      return Util?.handleCustonCreateResponse(deleteMultipleGuest, 'Multiple Guests deleted successfully')
+      return Util?.handleSuccessRespone(deleteMultipleGuest, 'Multiple Guests deleted successfully')
     } catch (error) {
       console.log(error)
       return Util?.handleGrpcTryCatchError(Util?.getTryCatchMsg(error));
     }
   }
+
+
 
 }

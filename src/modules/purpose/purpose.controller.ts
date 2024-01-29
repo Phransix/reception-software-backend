@@ -187,7 +187,7 @@ export class PurposeController {
   ) {
     let ErrorCode: number
     try {
-      const purpose = await this.purposeService.findOne(purposeId, userId);
+      const purpose = await this.purposeService.remove(purposeId, userId);
       if (purpose && 'status_code' in purpose && purpose.status_code !== HttpStatus.OK) {
         ErrorCode = purpose?.status_code;
         throw new Error(purpose?.message)
@@ -441,6 +441,7 @@ export class PurposeController {
       @Post('bulkPurposeCreate/create')
       async buklCreatePurpose(
         @Body() createPurposeDto: CreatePurposeDto[],
+        
         @GetCurrentUserId() userId: string
       ) {
         let ErrorCode: number
@@ -475,7 +476,7 @@ export class PurposeController {
         let ErrorCode: number
         try {
           const purposeUpdate = await this.purposeService.bulkPurposeUpdate(data, userId)
-          if (purposeUpdate?.status_code != HttpStatus.CREATED) {
+          if (purposeUpdate?.status_code != HttpStatus.OK) {
             ErrorCode = purposeUpdate?.status_code;
             throw new Error(purposeUpdate?.message)
           }
