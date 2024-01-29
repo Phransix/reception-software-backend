@@ -683,7 +683,7 @@ export class VisitorPerfomanceService {
         const totalVisitfrm10_12 = await this?.guestModel?.count({
           where: {
             createdAt: {
-              [Op.between]: [start10, end8],
+              [Op.between]: [start10, end12],
             },
             organizationId: user?.organizationId,
           },
