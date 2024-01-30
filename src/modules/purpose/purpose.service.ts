@@ -977,8 +977,21 @@ async bulkPurpose(createPurposeDto: CreatePurposeDto[], userId: any) {
         order: [['createdAt', 'DESC']]
       });
       // Checks for Signed In Guests
+      const currentTime = new Date().toLocaleTimeString();
       if (existingPurpose) {
         duplicatePurpose.add(signedInGuest); // Add to the Set
+        await this.PurposeModel.update(
+          {
+          visitStatus: 'Signed Out',
+          signOutTime: currentTime,
+          isLogOut: true  
+        },
+          { where: {
+            guestId: existingPurpose.guestId,
+            organizationId: get_org?.organizationId
+          }
+        }
+        )
       }
 
       // Checks for active or pending Guest
@@ -1002,11 +1015,6 @@ async bulkPurpose(createPurposeDto: CreatePurposeDto[], userId: any) {
       }
     }
 
-    if (duplicatePurpose.size > 0) {
-      t.rollback(); // Rollback the transaction if duplicate guest purposes are found
-      return Util?.handleErrorRespone('Guests Signed in, Sign out first to create a new visit');
-    }
-
     const createMultiplePurpose = await this.PurposeModel.bulkCreate(createPurposeDto, { transaction: t });
 
     t.commit();
@@ -1017,9 +1025,6 @@ async bulkPurpose(createPurposeDto: CreatePurposeDto[], userId: any) {
     return Util?.handleGrpcTryCatchError(Util?.getTryCatchMsg(error));
   }
 }
-
-  
-  
 
 
   // Bulk Purpose Update
