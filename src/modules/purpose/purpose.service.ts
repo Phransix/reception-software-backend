@@ -989,7 +989,7 @@ async bulkPurpose(createPurposeDto: CreatePurposeDto[], userId: any) {
           { where: {
             guestId: existingPurpose.guestId,
             organizationId: get_org?.organizationId
-          }
+          }, transaction: t
         }
         )
       }
