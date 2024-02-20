@@ -20,7 +20,7 @@ export class ResetPasswordProcessor {
           from: process.env.MAIL_FROM_ADDRESS,
           to: details?.email,
           subject: 'Reset Password Mail',
-          template:'ResetPassword',
+          template:'var/www/html/receptionapi/ResetPassword',
           context: {
             email: details?.email,
             org_name: details?.org_name,

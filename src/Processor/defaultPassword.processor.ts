@@ -22,7 +22,7 @@ export class defaultPaswordProcessor{
                 from: process.env.MAIL_FROM_ADDRESS,
                 to: details?.email,
                 subject: 'Default Password',
-                template:'defaultPassword',
+                template:'var/www/html/receptionapi/defaultPassword',
                 context: {
                     email : details?.email,
                     org_name: details?.org_name,

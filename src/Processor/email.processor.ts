@@ -22,7 +22,7 @@ export class EmailProcessor{
                 from: process.env.MAIL_FROM_ADDRESS,
                 to: details?.email,
                 subject: 'Account Verification',
-                template:'Emailverification',
+                template:'var/www/html/receptionapi/Emailverification',
                 context: {
                     email : details?.email,
                     org_name: details?.org_name,
