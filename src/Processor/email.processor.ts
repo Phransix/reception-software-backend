@@ -4,6 +4,7 @@ import { Job } from "bull";
 
 
 import { Logger } from '@nestjs/common';
+import { getFullTemplatePath } from "src/mail.module";
 
 
 @Processor('emailVerification')
@@ -17,12 +18,13 @@ export class EmailProcessor{
         this.logger.debug('Start transcoding...');
         let details = job.data?.details;
         // console.log(details?.email)
+        let mail_path = getFullTemplatePath('Emailverification');
         try {
             await this.mailService.sendMail({
                 from: process.env.MAIL_FROM_ADDRESS,
                 to: details?.email,
                 subject: 'Account Verification',
-                template:'/var/www/html/receptionapi.webbermill.com/dist/mails/Emailverification',
+                template: mail_path,
                 context: {
                     email : details?.email,
                     org_name: details?.org_name,
