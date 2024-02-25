@@ -21,3 +21,17 @@ Commands:
   sequelize-cli model:create                      Generates a model and its migration
   sequelize-cli seed:generate                     Generates a new seed file
   sequelize-cli seed:create                       Generates a new seed file
+
+
+/var/www/html/adminapi.tewaa.africa/dist/mails/
+
+{
+  "collection": "@nestjs/schematics",
+  "sourceRoot": "src",
+  "compilerOptions": {
+    "assets": ["src/**/*.hbs"]
+  }
+}
+
+
+    // "assets": ["mails/**"],
