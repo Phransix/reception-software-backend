@@ -467,7 +467,7 @@ export class PurposeController {
       @ApiOperation({ summary: 'Update Multiple Purposes' })
       @Public()
       @ApiTags('Purpose')
-      @Patch('bulkPurposeCreate/update')
+      @Put('bulkPurposeCreate/update')
       async buklUpdatePurpose(
         @Body() data: any[],
         @GetCurrentUserId() userId: string

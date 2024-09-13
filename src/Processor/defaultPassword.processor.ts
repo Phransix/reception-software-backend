@@ -4,6 +4,7 @@ import { Job } from "bull";
 
 
 import { Logger } from '@nestjs/common';
+import { getFullTemplatePath } from "src/mail.module";
 
 
 @Processor('defaultPassword')
@@ -17,12 +18,14 @@ export class defaultPaswordProcessor{
         this.logger.debug('Start transcoding...');
         let details = job.data?.details;
         // console.log(details?.email)
+
+        let mail_path = getFullTemplatePath('defaultPassword');
         try {
             await this.mailService.sendMail({
                 from: process.env.MAIL_FROM_ADDRESS,
                 to: details?.email,
                 subject: 'Default Password',
-                template:'defaultPassword',
+                template:mail_path,
                 context: {
                     email : details?.email,
                     org_name: details?.org_name,
