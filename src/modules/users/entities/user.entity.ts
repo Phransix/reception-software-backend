@@ -1,3 +1,4 @@
+import { all } from 'bluebird';
 import {
   BeforeValidate,
   BelongsTo,
@@ -105,6 +106,12 @@ export class User extends Model<User> {
     allowNull: true,
   })
   password: string;
+
+  @Column({
+    type: DataType.DATE,
+    allowNull: true,
+  })
+  login_date: Date;
 
   @Column({
     type: DataType.DATE,
