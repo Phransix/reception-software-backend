@@ -1,59 +1,33 @@
-import { ApiProperty } from '@nestjs/swagger';
+import { ApiProperty, ApiPropertyOptional } from '@nestjs/swagger';
 import { IsEmail, IsNotEmpty, IsString, Matches, MaxLength, MinLength } from 'class-validator'
 
 
 export class CreateOrganizationDto {
 
 
-   @ApiProperty({
-      description: 'The Name of the User',
-      example: 'Kofi'
-   })
+   @ApiPropertyOptional()
+   readonly organizationName: string;
 
-   @IsString()
-   @IsNotEmpty()
+   @ApiPropertyOptional()
+   category: string;
+
+   @ApiPropertyOptional()
+   number_of_branches: number;
+
+   @ApiPropertyOptional()
+   location: string;
+
+   @ApiPropertyOptional()
+   readonly organization_phonenumber: string;
+
+   @ApiPropertyOptional()
    readonly fullName: string;
 
-  
+   @ApiPropertyOptional()
+  readonly email: string;
 
-   @ApiProperty({
-      description: 'The Name of the Organization',
-      example: 'TechO'
-   })
-
-   @IsString()
-   @IsNotEmpty()
-    organizationName: string;
-
-   @ApiProperty({
-      description: 'The email of the Organization',
-      example: 'kemi@gmail.com'
-   })
-   @IsNotEmpty()
-   @IsEmail()
-   @Matches(/^[a-zA-Z0-9._%+-]+@.+\.com$/, {
-      message:'Invalid email format,'
-   })
-   email: string;
-
-   @ApiProperty({
-      description: 'The phoneNumber of the Organization',
-      example: '0244454587'
-   })
-   @Matches(/^[0-9]{7,10}$/, {
-      message:'Invalid Format, must be numbers'
-   })
-   @IsNotEmpty()
-   @MaxLength(10)
-   @MinLength(10)
+   @ApiPropertyOptional()
    readonly phoneNumber: string;
-
-  
-  readonly profilePhoto: string;
-
-   readonly isVerified: boolean
-
-   readonly deletedAt: Date
 
 }
 

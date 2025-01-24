@@ -48,8 +48,11 @@ export class OrganizationService {
     try {
       let insertQry = {
         organizationName: createOrganizationDto?.organizationName,
+        category: createOrganizationDto?.category,
+        number_of_branches: createOrganizationDto?.number_of_branches,
         email: createOrganizationDto?.email,
-        phoneNumber: createOrganizationDto?.phoneNumber,
+        organization_phonenumber: createOrganizationDto?.organization_phonenumber,
+        location: createOrganizationDto?.location,
       };
       console.log(insertQry);
 
@@ -84,12 +87,16 @@ export class OrganizationService {
         password: ran_password,
       };
       const user = await this.user?.create({ ...org_data }, { transaction: t });
-      let verifyToken = await this.emailService.sendMailNotification({
-        ...mail_data,
-      });
-      console.log(verifyToken);
+      // let verifyToken = await this.emailService.sendMailNotification({
+      //   ...mail_data,
+      // });
+      // console.log(verifyToken);
 
-      await this.emailService?.sendDeaultPassword({ ...mail_data });
+      console.log(mail_data);
+      
+      
+
+      // await this.emailService?.sendDeaultPassword({ ...mail_data });
 
       t.commit();
       console.log(user);
@@ -99,14 +106,7 @@ export class OrganizationService {
     } catch (error) {
       t.rollback();
       console.log(error);
-      if (error.name === 'SequelizeUniqueConstraintError') {
-        // Customize the error message when a duplicate email is detected
-        return Util?.checkFileResponse(
-          'Acount has been deactivated;Please choose a different email and phone number',
-        );
-      } else {
-        return Util?.handleGrpcTryCatchError(Util?.getTryCatchMsg(error));
-      }
+   return Util?.handleGrpcTryCatchError(Util?.getTryCatchMsg(error));
     }
   }
 
@@ -412,9 +412,9 @@ export class OrganizationService {
     });
   }
 
-  async findOneByPhoneNumber(phoneNumber: string): Promise<Organization> {
+  async findOneByPhoneNumber(organization_phonenumber: string): Promise<Organization> {
     return await this.organizationModel.findOne<Organization>({
-      where: { phoneNumber },
+      where: { organization_phonenumber },
     });
   }
 

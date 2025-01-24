@@ -25,6 +25,7 @@ import {
 } from '../organization/dto/create-organization.dto';
 import { ResetPasswordService } from 'src/helper/ResetPassHelper';
 import { LogOutDTO } from 'src/guard/auth/logoutDto';
+import { Status } from '../organization/organization_ennum';
 
 @Injectable()
 export class UsersService {
@@ -44,6 +45,7 @@ export class UsersService {
     try {
       let user = await this?.userModel.findOne({ where: { userId } });
       console.log(user?.organizationId);
+
       if (!user) return Util?.CustomhandleNotFoundResponse('User not found');
 
       let get_org = await this?.orgModel.findOne({
@@ -68,11 +70,13 @@ export class UsersService {
         ...insertQry,
         organizationId: get_org?.organizationId,
       });
+
       await enquiry.save();
 
       return Util?.handleCreateSuccessRespone('User Created Successfully');
     } catch (error) {
       console.error(error);
+
       if (error.name === 'SequelizeUniqueConstraintError') {
         // Customize the error message when a duplicate email is detected
         return Util?.checkFileResponse(
@@ -100,19 +104,32 @@ export class UsersService {
         user.password,
         loginDto.password,
       );
+
       if (!passwordMatches) {
         return Util.handleFailResponse('Invalid email or password');
       }
 
-      // // Check if the oraganiazation is verified
-      // if (org?.isVerified != true)
-      //   return Util?.handleFailResponse('Oraganiazation account not verified');
-      // console.log(org?.isVerified);
+      // Check if the oraganiazation is verified
+      if (org?.isVerified != true)
+        return Util?.handleFailResponse('Oraganiazation account not verified');
+      console.log(org?.isVerified);
+
+      // Check If The Organization is Active
+      const organization_data = await Organization.findOne({
+        where: { 
+          organizationId: user?.organizationId ,
+          status: Status?.Active
+        },
+      });
+      if (!organization_data) {
+        return Util.handleFailResponse('Organization has not been approved. Please contact webbermill administrator');
+      }
 
       //  Check the Role of the User
       const user_role = await User.findOne({
         where: { roleName: user?.roleName },
       });
+
       if (!user_role) return Util.handleNotFoundResponse();
 
       let tokens = await this?.getTokens(
@@ -130,6 +147,8 @@ export class UsersService {
         fullname: user.fullName,
         email: user.email,
         IsPhoneNumber: user.phoneNumber,
+        isLogin: user?.isLogin,
+        login_date: user?.login_date,
       };
 
       let userDetails = {
@@ -138,7 +157,10 @@ export class UsersService {
       };
 
       await User.update(
-        { isLogin: true },
+        { 
+          isLogin: true,
+          login_date: new Date(),
+        },
         { where: { email: user?.email, password: user?.password } },
       );
 
@@ -159,15 +181,19 @@ export class UsersService {
       console.log(userId);
 
       let currentPage = Util.Checknegative(page);
+
       if (currentPage) {
         return Util?.handleErrorRespone(
           'Users current page cannot be negative',
         );
       }
+
       const { limit, offset } = Util.getPagination(page, size);
 
       let user = await this?.userModel.findOne({ where: { userId } });
+
       console.log(user?.organizationId);
+
       if (!user) return Util?.CustomhandleNotFoundResponse('User not found');
 
       let get_org = await this?.orgModel.findOne({
@@ -207,6 +233,7 @@ export class UsersService {
       console.log(result);
 
       const dataResult = { ...result };
+
       return Util?.handleSuccessRespone(
         dataResult,
         'Users Data retrieved successfully.',
@@ -223,6 +250,7 @@ export class UsersService {
       console.log(userId);
 
       let user = await this?.userModel.findOne({ where: { userId } });
+
       console.log(user?.organizationId);
       if (!user) return Util?.CustomhandleNotFoundResponse('User not found');
 
@@ -254,7 +282,9 @@ export class UsersService {
   async update(userId: string, updateUserDto: UpdateUserDto) {
     try {
       let user = await this?.userModel.findOne({ where: { userId } });
+
       console.log(user?.organizationId);
+
       if (!user) return Util?.CustomhandleNotFoundResponse('User not found');
 
       let get_org = await this?.orgModel.findOne({
@@ -288,14 +318,17 @@ export class UsersService {
   //  Change User Password
   async changePass(userId: string, changepassDto: ChangePassDTO) {
     const { oldPassword, newPassword, confirmNewPassword } = changepassDto;
+
     try {
       const user = await User.findOne({ where: { userId } });
+
       if (!user) {
         throw new BadRequestException('User does not exist');
       }
 
       // Verify the old password
       const match = await argon.verify(user.password, oldPassword);
+
       if (!match) {
         return Util?.handleFailResponse('Incorrect old password');
       }
@@ -342,6 +375,7 @@ export class UsersService {
         await this.resetPasswordService.sendResstPasswordNotification({
           ...email,
         });
+
       console.log(send_Token);
 
       return Util.handleCreateSuccessRespone(
@@ -365,6 +399,7 @@ export class UsersService {
       const hashedDefaultPassword = await argon.hash(defaultPassword);
 
       let decode = Util.verifyToken(token);
+
       const user = await this?.userModel.findOne({
         where: {
           email: decode.email,
@@ -376,11 +411,14 @@ export class UsersService {
       let UpdateData = {
         password: hashedDefaultPassword,
       };
+
       await this?.userModel.update(UpdateData, {
         where: { email: user?.email },
         transaction: t,
       });
+
       t.commit();
+
       return Util.handleCreateSuccessRespone('Password Reset Successfully');
     } catch (error) {
       t.rollback();
@@ -392,9 +430,12 @@ export class UsersService {
   // Update User  Profile Photo
   async updateImg(userId: string, createUserImgDto: CreateUserImgDto) {
     let rollImage = '';
+
     try {
       let user_data = await this?.userModel.findOne({ where: { userId } });
+
       console.log(user_data?.organizationId);
+
       if (!user_data)
         return Util?.CustomhandleNotFoundResponse('User not found');
 
@@ -416,6 +457,7 @@ export class UsersService {
       var image_matches = createUserImgDto?.profilePhoto?.match(
         /^data:([A-Za-z-+\/]+);base64,(.+)$/,
       );
+
       if (!image_matches) {
         return Util?.handleFailResponse('Invalid Input file');
       }
@@ -428,14 +470,17 @@ export class UsersService {
 
       // Delete the old profile photo if it exists in the directorate
       let front_path = user_data?.profilePhoto;
+
       if (front_path != null) {
         const s3FilePath = front_path.replace(process.env.AWS_BUCKET_URL, '');
         await this.imagehelper.unlinkFile(s3FilePath);
       }
+
       let insertQrys = {
         profilePhoto: user_image?.profilePhoto,
         imageUrl: user_image?.imageUrl
       };
+
       await this?.userModel?.update(insertQrys, {
         where: { id: user_data?.id, organizationId: get_org?.organizationId },
       });
@@ -445,6 +490,7 @@ export class UsersService {
       if (rollImage) {
         await this.imagehelper.unlinkFile(rollImage);
       }
+
       console.log(error);
       return Util?.handleGrpcTryCatchError(Util?.getTryCatchMsg(error));
     }
@@ -454,6 +500,7 @@ export class UsersService {
   async remove(userId: string) {
     try {
       const user = await User.findOne({ where: { userId } });
+
       if (!user) {
         throw new Error('User data not found.');
       }
@@ -489,7 +536,9 @@ export class UsersService {
   async restoreUser(userId: string) {
     try {
       const organization = await this.userModel.restore({ where: { userId } });
+
       console.log(organization);
+
       return Util?.handleCreateSuccessRespone(
         'Receptionist enabled.',
       );
@@ -503,7 +552,9 @@ export class UsersService {
   async logout(logout: LogOutDTO, userId: any) {
     try {
       let user = await this?.userModel.findOne({ where: { userId } });
+
       console.log(user?.organizationId);
+
       if (!user) return Util?.CustomhandleNotFoundResponse('User not found');
 
       let get_org = await this?.orgModel.findOne({
@@ -518,6 +569,7 @@ export class UsersService {
         user?.password,
         logout?.password,
       );
+
       if (!passwordMatches) {
         return Util.handleFailResponse('Invalid  password');
       }
