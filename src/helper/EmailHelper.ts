@@ -15,7 +15,6 @@ export class EmailService {
 
     async sendMailNotification(props) {
         let {org_id,email,org_name,password} =props
-      //  console.log(password);
         
         try {
             let token = Util.createEmailToken({ email, org_id });

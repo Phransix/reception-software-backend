@@ -74,29 +74,23 @@ export class OrganizationService {
         fullName: createOrganizationDto?.fullName,
         email: organization?.email,
         phoneNumber: createOrganizationDto?.phoneNumber,
-        password: hash,
+        // password: hash,
       };
-      // console.log(org_data)
-      // return false
+   
 
       let mail_data = {
         organizationId: organization?.organizationId,
         fullName: createOrganizationDto?.fullName,
         email: organization?.email,
         phoneNumber: createOrganizationDto?.phoneNumber,
-        password: ran_password,
+        
       };
       const user = await this.user?.create({ ...org_data }, { transaction: t });
-      // let verifyToken = await this.emailService.sendMailNotification({
-      //   ...mail_data,
-      // });
-      // console.log(verifyToken);
+      let verifyToken = await this.emailService.sendMailNotification({
+        ...mail_data,
+      });
+      console.log(verifyToken);
 
-      console.log(mail_data);
-      
-      
-
-      // await this.emailService?.sendDeaultPassword({ ...mail_data });
 
       t.commit();
       console.log(user);
